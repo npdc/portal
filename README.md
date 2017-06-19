@@ -17,3 +17,4 @@
 - IFTTT hook for twitter
 - how to run cron
 - creating first user account
+- instruction on creating own css
