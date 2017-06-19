@@ -28,7 +28,7 @@ class Contact {
 			$this->formId = str_replace('/', '_', $_SERVER['REQUEST_URI']);
 		} else {
 			$this->name = 'General mailbox of '. \npdc\config::$siteName;
-			$this->to = \npdc\config::$siteMail;
+			$this->to = \npdc\config::$mail['contact'];
 			$this->formId = 'contact';
 		}
 		$this->formController = new \npdc\controller\Form($this->formId);

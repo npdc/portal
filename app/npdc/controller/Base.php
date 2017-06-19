@@ -106,7 +106,7 @@ class Base {
 								}
 								//send mail to NPDC
 								$mail = new \npdc\lib\Mailer();
-								$mail->to(\npdc\config::$siteMail, \npdc\config::$siteName);
+								$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 								$mail->subject(ucfirst($this->name).' for review');
 								$text = 'Dear admin'.",\r\n\r"
 									. 'Please review the '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args[1]."\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
@@ -128,7 +128,7 @@ class Base {
 										$this->sendSubmitterMail($data, 'published');
 									} else {
 										$mail = new \npdc\lib\Mailer();
-										$mail->to(\npdc\config::$siteMail, \npdc\config::$siteName);
+										$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 										$mail->subject(ucfirst($this->name).' published');
 										$text = 'Dear admin'.",\r\n\r"
 											. 'The '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args[1]." has been published by a user.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;

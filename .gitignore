@@ -7,7 +7,6 @@ vocabtool
 nbproject
 .sass-cache
 *.css.map
-.vscode
 
 # OS generated files #
 .DS_Store
