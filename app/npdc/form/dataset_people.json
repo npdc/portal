@@ -1,0 +1,106 @@
+{
+	"method": "post",
+	"action": "dataset",
+	"fileupload": "group",
+	"hint": "simple+table",
+	"fields": {
+		"originating_center": {
+			"type": "options",
+			"label": "Originator",
+			"hint": "Which organization created the dataset?",
+			"multiple": false,
+			"options": {},
+			"asList": true,
+			"newUrl": "organization",
+			"ajaxUrl": "lookup/organization"
+		},
+		"people": {
+			"type": "table",
+			"label": "People",
+			"hint": "Please list all people involved, if a person is not yet present in the database please add the person. Please confirm the person by either clicking the name in the dropdown or selecting it with the arrow keys and pressing enter.",
+			"lookup":{
+				"sourceField": "people_name",
+				"targetField": "people_person_id",
+				"lookupUrl": "person",
+				"newUrl": "add/person"
+			},
+			"nLabel": 3,
+			"fields": {
+				"person_id": {
+					"type": "hidden",
+					"value": ""
+				}, 
+				"name": {
+					"type": "lookup",
+					"label": "Person",
+					"placeholder": "Start typing a name, suggestions will appear",
+					"edit": true,
+					"onSubmit": "people_organization_id"
+				},
+				"organization_id": {
+					"type": "options",
+					"label": "Organization",
+					"hint": "The affiliation of the person when creating this dataset",
+					"multiple": false,
+					"options": {},
+					"asList": true,
+					"newUrl": "organization",
+					"ajaxUrl": "lookup/organization"
+				},
+				"role": {
+					"type": "options",
+					"label": "Role",
+					"placeholder": "PI, Technitian, etc..",
+					"hint": "What was the role of this person?",
+					"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/personnel.html",
+					"options": {
+						"Investigator": "Investigator",
+						"Technical Contact": "Technical Contact",
+						"Metadata Author": "Metadata Author"
+					},
+					"asList": true
+				},
+				"editor":{
+					"type": "checkbox",
+					"label": "Editor",
+					"required": false
+				}
+			}
+		},
+		"data_center": {
+			"type": "fieldset",
+			"multi": true,
+			"label": "Data center",
+			"hint": "Which organization hosts the dataset? Only needed when a different organisation than the NPDC is hosting the data.",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"data_center": {
+					"type": "options",
+					"label": "Data center",
+					"multiple": false,
+					"options": {},
+					"asList": true,
+					"newUrl": "organization",
+					"ajaxUrl": "lookup/organization"
+				},
+				"people":{
+					"type": "options",
+					"label": "Data center people",
+					"multiple": true,
+					"options": {},
+					"asList": true,
+					"newUrl": "person",
+					"ajaxUrl": "lookup/person"
+				}
+			}
+		}, 
+		"submit": {
+			"type": "submit",
+			"value": "Save and preview",
+			"includeNext": true
+		}
+	}
+}

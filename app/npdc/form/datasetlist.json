@@ -1,0 +1,77 @@
+{
+	"method": "get",
+	"action": "dataset",
+	"fields": {
+		"hint":{
+			"type": "hint",
+			"hint": "If no option is selected for a filter that filter will not be used. To apply the filters click 'Apply'."
+		},
+		"submitTop": {
+			"type": "submit",
+			"value": "Apply",
+			"resetLabel": "Clear filters",
+			"resetAction": "dataset"
+		},
+		"region": {
+			"type": "options",
+			"label": "Region",
+			"multiple": true,
+			"required": false,
+			"options": {
+				"Arctica": "Arctic",
+				"Antarctica": "Antarctic",
+				"Bipolar": "Bipolar"
+			},
+			"disabled": true
+		},
+		"period": {
+			"type": "date",
+			"label": "Period",
+			"range": true,
+			"required": false,
+			"hint": "Gives projects running anywhere in the specified timeframe",
+			"min": null,
+			"max": null,
+			"default": "1900-06-25",
+			"default2": "2000-02-20",
+			"fuzzy": true
+		},
+		"organization": {
+			"type": "options",
+			"label": "Organization",
+			"multiple": true,
+			"required": false,
+			"options": {},
+			"asList": true
+		},
+		"program":{
+			"type": "options",
+			"label": "Programme",
+			"multiple": true,
+			"required": false,
+			"options": {},
+			"asList": true,
+			"disabled": true
+		},
+		"editorOptions":{
+			"type": "options",
+			"label": "Show",
+			"options": {
+				"all": "all datasets",
+				"edit": "datasets I can edit",
+				"draft": "datasets with drafts I can edit",
+				"unpublished": "unpublished datasets I can edit"
+			},
+			"required": false,
+			"multiple": false,
+			"disabled": true,
+			"uid": null
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Apply",
+			"resetLabel": "Clear filters",
+			"resetAction": "dataset"
+		}
+	}
+}

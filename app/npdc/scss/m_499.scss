@@ -1,0 +1,14 @@
+.detail, .contact {
+	#right{
+		-webkit-column-count: 1;
+		-moz-column-count: 1;
+		column-count: 1;
+		li {
+			float: left;
+			list-style: none;
+			&:not(:last-child):after {
+				content: ', ';
+			}
+		}
+	}
+}

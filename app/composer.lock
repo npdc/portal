@@ -1,0 +1,193 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "e6612ed852715f66d636e5a486cbdad8",
+    "content-hash": "7b9082f0355118f12082501b85f93fdc",
+    "packages": [
+        {
+            "name": "fpdo/fluentpdo",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fpdo/fluentpdo.git",
+                "reference": "fa0df68d098a1ebb1b0461e4750ef2749869219c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fpdo/fluentpdo/zipball/fa0df68d098a1ebb1b0461e4750ef2749869219c",
+                "reference": "fa0df68d098a1ebb1b0461e4750ef2749869219c",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "FluentPDO/FluentPDO.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0",
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Marek Lichtner",
+                    "homepage": "http://licht.sk/"
+                }
+            ],
+            "description": "FluentPDO is small PHP library for rapid query building. Killer feature is smart join builder which generates joins automatically.",
+            "homepage": "https://github.com/fpdo/fluentpdo",
+            "keywords": [
+                "database",
+                "dbal",
+                "pdo"
+            ],
+            "time": "2016-07-08 13:40:45"
+        },
+        {
+            "name": "moxiecode/plupload",
+            "version": "v2.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/moxiecode/plupload.git",
+                "reference": "d7150ca0a192e3a07ac7468f661edeca767a7163"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/moxiecode/plupload/zipball/d7150ca0a192e3a07ac7468f661edeca767a7163",
+                "reference": "d7150ca0a192e3a07ac7468f661edeca767a7163",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "(GPL-2.0 or OEM)"
+            ],
+            "authors": [
+                {
+                    "name": "Davit Barbakadze",
+                    "email": "david@moxiecode.com",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "Plupload is a JavaScript API for dealing with file uploads it supports features like multiple file selection, file type filtering, request chunking, client side image scaling and it uses different runtimes to achieve this such as HTML 5, Silverlight and Flash.",
+            "homepage": "http://plupload.com",
+            "keywords": [
+                "file upload",
+                "legacy browser support",
+                "multi-runtime",
+                "plupload"
+            ],
+            "time": "2017-02-06 14:01:52"
+        },
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "v5.2.22",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "b18cb98131bd83103ccb26a888fdfe3177b8a663"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/b18cb98131bd83103ccb26a888fdfe3177b8a663",
+                "reference": "b18cb98131bd83103ccb26a888fdfe3177b8a663",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0.0"
+            },
+            "require-dev": {
+                "phpdocumentor/phpdocumentor": "*",
+                "phpunit/phpunit": "4.7.*"
+            },
+            "suggest": {
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "class.phpmailer.php",
+                    "class.phpmaileroauth.php",
+                    "class.phpmaileroauthgoogle.php",
+                    "class.smtp.php",
+                    "class.pop3.php",
+                    "extras/EasyPeasyICS.php",
+                    "extras/ntlm_sasl_client.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Jim Jagielski",
+                    "email": "jimjag@gmail.com"
+                },
+                {
+                    "name": "Marcus Bointon",
+                    "email": "phpmailer@synchromedia.co.uk"
+                },
+                {
+                    "name": "Andy Prevost",
+                    "email": "codeworxtech@users.sourceforge.net"
+                },
+                {
+                    "name": "Brent R. Matzelle"
+                }
+            ],
+            "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+            "time": "2017-01-09 09:33:47"
+        },
+        {
+            "name": "symm/gisconverter",
+            "version": "v1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symm/gisconverter.git",
+                "reference": "21ab697b7692b891dac37c64d10c9d83d4433f80"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symm/gisconverter/zipball/21ab697b7692b891dac37c64d10c9d83d4433f80",
+                "reference": "21ab697b7692b891dac37c64d10c9d83d4433f80",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symm\\Gisconverter": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD"
+            ],
+            "description": "A php library to convert vector geometries between different formats",
+            "time": "2014-08-07 13:50:52"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

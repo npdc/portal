@@ -1,0 +1,27 @@
+{
+	"method": "post",
+	"action": "search",
+	"fields": {
+		"q": {
+			"type": "text",
+			"label": "Search for",
+			"placeholder": "search"
+			},
+		"type": {
+			"type": "options",
+			"label": "Search in",
+			"multiple": true,
+			"required": false,
+			"options": {
+				"project": "Projects",
+				"dataset": "Datasets",
+				"publication": "Publications"
+			},
+			"hint": "If no boxes are checked a search will be performed on all content types"
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Search"
+		}
+	}
+}

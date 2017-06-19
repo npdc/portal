@@ -1,0 +1,89 @@
+h1 {
+	font-size: 20pt;
+}
+body:not(.edit) {
+	padding: 0px;
+	&:before{
+		color: white;
+		display:block;
+		margin: 5px;
+		text-align: center;
+		content: 'This site works best on a screen of at least 600 pixels wide';
+	}
+}
+.debug.top {
+	margin-top: -10px;
+	margin-bottom: 5px;
+}
+.edit #page{
+	#main:after{
+		content: 'The edit interface requires a screen of at least 600 pixels wide';
+	}
+	#main div, #main h2 {
+		display: none;
+	}
+}
+#main > .cols.frontblocks{
+	display: block;
+}
+
+#menu {
+	height: auto;
+	padding: 0px;
+	h4 {
+		display: block;
+		padding: 10px;
+		background: $menu-bg-mobile;
+		border: $border-menu;
+		text-align: center;
+		cursor: pointer;
+	}
+	&.hover > ul {
+		display: block;
+	}
+	> ul {
+		display: none;
+		li {
+			background: $menu-bg-mobile;
+		}
+		> li {
+			&:not(:first-child){
+				border-left: none;
+			}
+			float: none;
+			margin-right: 0px;
+			border-radius: 0px;
+			.no-touch &.sub:hover, &.sub.hover {
+				ul {
+					display: block;
+					position: initial;
+					margin-left: 0px;
+					li {
+						border-width: 1px 0 0 0;
+						a:before {
+							content: '- ';
+						}
+						&:first-child, &:last-child {
+							border-radius: 0px;
+						}
+					}
+				}
+			}
+			a:link, a:visited, &.sub span {
+				text-align: left;
+				height: auto;
+				padding: 10px;
+				padding-left: 30px;
+
+			}
+		}
+	}
+}
+#footer {
+	text-align:center;
+}
+.search, .project {
+	td:not(:nth-child(2)){
+		display: none;
+	}	
+}

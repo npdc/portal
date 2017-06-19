@@ -1,0 +1,406 @@
+{
+	"method": "post",
+	"action": "dataset",
+	"fileupload": true,
+	"hint": "simple+group",
+	"collapsible": true,
+	"fields": {
+		"location": {
+			"type": "table",
+			"label": "Location",
+			"lookup": {
+				"sourceField": "location_location",
+				"targetField": "location_location_id",
+				"lookupUrl": "location"
+			},
+			"nLabel": 3,
+			"noSort":true,
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"value": "",
+					"required": false
+				},
+				"location_id": {
+					"type": "hidden",
+					"value": ""
+				},
+				"location": {
+					"type": "lookup",
+					"label": "Location",
+					"placeholder": "Click here to load the option list or start typing to search for a keyword"
+				},
+				"detailed": {
+					"type": "text",
+					"label": "Detailed location",
+					"required": false,
+					"placeholder": "Further specification within the region selected"
+				}
+			}
+		},
+		"location_old": {
+			"type": "fieldset",
+			"label": "Location",
+			"multi": true,
+			"disabled": true,
+			"hint": "The general area of the research",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/location.html",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"location": {
+					"type": "lookup",
+					"required": true,
+					"vocab": "location",
+					"placeholder": "Click here to load the option list or start typing to search for a location",
+					"hint": "If a new location needs to be added please <a href=\"mailto:%siteMail?subject=New location needed at %siteDomain\">contact the NPDC</a>. When the new location has been added we will update your record."
+				},
+				"detailed": {
+					"type": "text",
+					"label": "Detailed location",
+					"required": false,
+					"placeholder": "Further specification within the region selected above",
+					"max_length": 80
+				}
+			}
+		},
+		"spatial_coverage": {
+			"type": "map",
+			"label": "Spatial coverage",
+			"multi": true,
+			"required": true,
+			"hint": "Detailen location where samples were taken or which area was modelled",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/spatial_coverage.html",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"type": {
+					"type": "options",
+					"label": "Type",
+					"options": {
+						"Point": "Point",
+						"LineString": "Transect",
+						"Area": "Bounding box",
+						"Polygon": "Polygon"
+					},
+					"multiple": false
+				},
+				"Polygon": {
+					"type": "group",
+					"fields": {
+						"hint": {
+							"type": "hint",
+							"hint": "Click every corner of the polygon you want, finish by clicking the first corner again"
+						}
+					}
+				},
+				"LineString": {
+					"type": "group",
+					"fields": {
+						"hint": {
+							"type": "hint",
+							"hint": "Click every point of the transect you want, finish by clicking the last point again"
+						}
+					}
+				},
+				"Area": {
+					"type": "group",
+					"fields": {
+						"hint": {
+							"type": "hint",
+							"hint": "You can draw a box on the map by clicking on the location where you want a corner and then clicking on the location where you want the opposing corner. You can also fill in the 4 fields below. For a region at the pole please use -180 for west, 180 for east, either 90 for north or -90 for south and the edge of your area for the other number."
+						},
+						"north": {
+							"type": "float",
+							"label": "Northernmost latitude",
+							"placeholder": "decimal number"
+						},
+						"south": {
+							"type": "float",
+							"label": "Southernmost latitude",
+							"placeholder": "decimal number"
+						},
+						"east": {
+							"type": "float",
+							"label": "Easternmost longitude",
+							"placeholder": "decimal number"
+						},
+						"west": {
+							"type": "float",
+							"label": "Westernmost longitude",
+							"placeholder": "decimal number"
+						}
+					}
+				},
+				"Point": {
+					"type": "group",
+					"fields": {
+						"hint": {
+							"type": "hint",
+							"hint": "You can create a point by clicking on the map or filling in the 2 fields below.<br/>"
+						},
+						"latitude": {
+							"type": "float",
+							"label": "Latitude",
+							"placeholder": "decimal number"
+						},
+						"longitude": {
+							"type": "float",
+							"label": "Longitude",
+							"placeholder": "decimal number"
+						}
+					}
+				},
+				"wkt": {
+					"type": "textarea",
+					"label": "WKT",
+					"hint": "Will be filled automaticaly when creating a shape on the map, but you can also paste a WKT into this"
+				},
+				"unithint": {
+					"type": "hint",
+					"hint": "Minimum and maximum have the same unit"
+				},
+				"altitude_min": {
+					"type": "number_with_unit",
+					"label": "Minimum altitude",
+					"units": {
+						"m": "meters",
+						"km": "kilometers",
+						"f": "feet"
+					},
+					"placeholder": "number"
+				},
+				"altitude_max": {
+					"type": "number",
+					"label": "Maximum altitude",
+					"placeholder": "number (unit same as above)"
+				},
+				"depth_min": {
+					"type": "number_with_unit",
+					"label": "Minimum depth",
+					"units": {
+						"m": "meters",
+						"km": "kilometers",
+						"f": "feet"
+					},
+					"placeholder": "number"
+				},
+				"depth_max": {
+					"type": "number",
+					"label": "Maximum depth",
+					"placeholder": "number (unit same as above)"
+				}
+			}
+		},
+		"temporal_coverage": {
+			"type": "fieldset",
+			"multi": true,
+			"label": "Temporal coverage",
+			"required": true,
+			"min": 1,
+			"hint": "Description of the time period in which the data was collected.",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/temporal_coverage.html",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"dates": {
+					"type": "fieldset",
+					"label": "Collection period",
+					"multi": true,
+					"required": true,
+					"hint": "When were samples taken",
+					"fields": {
+						"id": {
+							"type": "hidden",
+							"required": false
+						},
+						"range": {
+							"type": "date",
+							"range": true,
+							"hint": "Start and end dates of a collection event (for single day please fill in the same date for start and end)",
+							"min": null,
+							"max": null
+						}
+					}
+				},
+				"periodic": {
+					"type": "fieldset",
+					"label": "Sampling cycle",
+					"multi": true,
+					"hint": "Not required, but if filled in all subfields indicated with * have to be filled in",
+					"fields": {
+						"id": {
+							"type": "hidden",
+							"required": false
+						},
+						"name": {
+							"type": "text",
+							"label": "Name",
+							"hint": "An identifier for the cycle", 
+							"placeholder": "Free text"
+						},
+						"dates": {
+							"type": "date",
+							"range": true,
+							"label": "Dates",
+							"hint": "Start and end dates of the cycle",
+							"min": null,
+							"max": null
+						},
+						"periodic_cycle": {
+							"type": "number_with_unit",
+							"label": "Sampled every",
+							"units": {
+								"s": "seconds",
+								"i": "minutes",
+								"h": "hours",
+								"d": "days",
+								"w": "weeks",
+								"m": "months",
+								"y": "years"
+							}, 
+							"placeholder": "number"
+						}
+					}
+				},
+				"paleo": {
+					"type": "fieldset",
+					"label": "Paleo temporal coverage",
+					"multi": true,
+					"hint": "How far back can you look with these data",
+					"fields": {
+						"id": {
+							"type": "hidden",
+							"required": false
+						},
+						"start": {
+							"type": "number_with_unit",
+							"label": "Start",
+							"required": false,
+							"units": {
+								"Ga": "Ga",
+								"Ma": "Ma",
+								"Ka": "Ka",
+								"ybp": "ybp"
+							}, 
+							"placeholder": "number"
+						},						
+						"end": {
+							"type": "number_with_unit",
+							"label": "End",
+							"required": false,
+							"units": {
+								"Ga": "Ga",
+								"Ma": "Ma",
+								"Ka": "Ka",
+								"ybp": "ybp"
+							}, 
+							"placeholder": "number"
+						},
+						"chronostratigraphic_unit": {
+							"type": "options",
+							"label": "Chronostratigraphic unit",
+							"required": false,
+							"options": {},
+							"asList": true,
+							"multiple": true
+						}
+					}
+				},
+				"ancillary": {
+					"type": "fieldset",
+					"label": "Ancillary Temporal Keyword",
+					"multi": true,
+					"fields": {
+						"id": {
+							"type": "hidden",
+							"required": false
+						},
+						"keyword": {
+							"type": "text",
+							"required": false, 
+							"placeholder": "Free text"
+						}
+					},
+					"hint": "You can use this field for any temporal information you can't fit in the fields above"
+				}
+			}
+		},
+		"resolution": {
+			"type": "fieldset",
+			"label": "Data resolution",
+			"multi": true,
+			"hint": "What is the distance between samplepoints.",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/data_resolution.html",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"latitude_resolution": {
+					"type": "text",
+					"label": "Latitude resolution",
+					"hint": "The minimum difference between two adjacent latitude values, please include a unit (like meters, km or degrees)",
+					"required": false,
+					"placeholder": "number + unit"
+				},
+				"longitude_resolution": {
+					"type": "text",
+					"label": "Longitude resolution",
+					"hint": "The minimum difference between two adjacent longitude values, please include a unit (like meters, km or degrees)",
+					"required": false,
+					"placeholder": "number + unit"
+				},
+				"vocab_res_hor_id": {
+					"type": "options",
+					"label": "Horizontal resolution range",
+					"options": {},
+					"asList": true,
+					"multiple": false,
+					"required": false
+				},
+				"vertical_resolution": {
+					"type": "text",
+					"label": "Vertical resolution",
+					"hint": "The minimum difference between two adjacent vertical values, please include a unit (like meters or km)",
+					"required": false,
+					"placeholder": "number + unit"
+				},
+				"vocab_res_vert_id": {
+					"type": "options",
+					"label": "Vertical resolution range",
+					"options": {},
+					"asList": true,
+					"multiple": false,
+					"required": false
+				},
+				"temporal_resolution": {
+					"type": "text",
+					"label": "Temporal resolution",
+					"hint": "The frequency of sampling, please include a unit (like seconds or days)",
+					"required": false,
+					"placeholder": "number + unit"
+				},
+				"vocab_res_time_id": {
+					"type": "options",
+					"label": "Temporal resolution range",
+					"options": {},
+					"asList": true,
+					"multiple": false,
+					"required": false
+				}
+			}
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save and preview",
+			"includeNext": true
+		}
+	}
+}

@@ -1,0 +1,113 @@
+{
+	"method": "post",
+	"action": "dataset",
+	"fileupload": true,
+	"hint": "simple",
+	"fields": {
+		"hint":{
+			"type": "hint",
+			"hint": "If your data is already hosted somewhere please add a link to the file(s). If the file is not yet hosted somewhere and there is no suitable data archive to host it you can upload your file here."
+		},
+		"file": {
+			"type": "file",
+			"label": "Upload files (only when file is not yet hosted somewhere else)",
+			"required": false,
+			"multiple": true,
+			"noSort": true,
+			"nLabel": 3,
+			"hint": "This metadata record and your dataset should be able to stand-alone - acronyms and abbreviations should be explained. If you are submitting a spreadsheet, each worksheet should be explained, details on how you collected the data, and how you analysed it should be included, and so on. Please also have look at tips for more information on formatting your data.<br/>When the combined size of your files exceeds the upload you can upload them in several batches, each smaller than the limit. Just submit the form and come back again to repeat the uploading. When a single file is larger than the limit, please contact the NPDC and we will help you to add those files as well.",
+			"additionalHint": "When restricting access it will be possible to give access to specific users when the ask permission",
+			"additionalFields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"file": {
+					"type": "text",
+					"edit": false,
+					"required": false,
+					"label": "File"
+				},
+				"title": {
+					"type": "text",
+					"label": "Title",
+					"required": true,
+					"placeholder": "Document title"
+				}, 
+				"description": {
+					"type": "textarea",
+					"label": "Description",
+					"placeholder": "What is in this file?",
+					"required": true,
+					"rows": 2
+				},
+				"perms": {
+					"type": "options",
+					"label": "File permissions",
+					"options": {
+						"public": "Public",
+						"login": "Logged in users",
+						"restricted": "Permission needed",
+						"private": "Private (hidden)"
+					},
+					"multiple": false,
+					"asList": true,
+					"select2": false
+				}
+			}
+		},
+		"links": {
+			"type": "fieldset",
+			"label": "Link to file hosted elsewhere",
+			"required": false,
+			"multi": true,
+			"collapsible": true,
+			"hint": "Links to data files hosted at other locations (like DANS or Pangea)",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/related_url.html",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"type": {
+					"type": "hidden",
+					"value": "4",
+					"required": true
+				},
+				"title": {
+					"type": "text",
+					"label": "Label",
+					"hint": "The displayed text for the link",
+					"placeholder": "Label"
+				},
+				"description": {
+					"type": "textarea",
+					"label": "Description",
+					"placeholder": "Description"
+				},
+				"url": {
+					"type": "fieldset",
+					"label": "Url",
+					"multi": true,
+					"required": true,
+					"fields": {
+						"id": {
+							"type": "hidden",
+							"required": false
+						},
+						"url": {
+							"type":"text",
+							"hint": "link including http:// or other protocol",
+							"placeholder": "https://",
+							"required": true
+						}
+					}
+				}
+			}
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save and preview"
+		}
+	}
+}

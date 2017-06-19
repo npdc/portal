@@ -1,0 +1,189 @@
+{
+	"method": "post",
+	"action": "project",
+	"fileupload": true,
+	"hint": "simple+table",
+	"fields": {
+		"title": {
+			"type": "text",
+			"label": "Title",
+			"placeholder": "Title"
+		},
+		"date": {
+			"type": "date",
+			"label": "Publication date",
+			"range": false,
+			"required": true,
+			"hint": "Only year is shown in most cases",
+			"min": null,
+			"max": null
+		},
+		"journal": {
+			"type": "text",
+			"label": "Journal",
+			"placeholder": "Journal"
+		},
+		"volume": {
+			"type": "text",
+			"label": "Volume",
+			"placeholder": "Volume",
+			"required": false
+		},
+		"issue": {
+			"type": "text",
+			"label": "Issue",
+			"placeholder": "Issue",
+			"required": false
+		},
+		"pages": {
+			"type": "text",
+			"label": "Pages",
+			"placeholder": "Pages",
+			"required": false
+		},
+		"isbn": {
+			"type": "text",
+			"label": "ISBN",
+			"required": false,
+			"placeholder": "International Standard Book Number"
+		},
+		"doi": {
+			"type": "text",
+			"label": "DOI",
+			"placeholder": "Digital Object Identifier",
+			"required": false
+		},
+		"abstract": {
+			"type": "textarea",
+			"label": "Abstract",
+			"placeholder": "The abstract of the publication",
+			"rows":10
+		},
+		"people": {
+			"type": "table",
+			"label": "People",
+			"hint": "Please list all people involved, if a person is not yet present in the database please add the person.",
+			"lookup":{
+				"sourceField": "people_name",
+				"targetField": "people_person_id",
+				"lookupUrl": "person",
+				"newUrl": "add/person"
+			},
+			"nLabel": 3,
+			"fields": {
+				"person_id": {
+					"type": "hidden",
+					"value": ""
+				}, 
+				"name": {
+					"type": "lookup",
+					"label": "Person",
+					"placeholder": "Start typing a name, suggestions will appear",
+					"edit": true,
+					"onSubmit": "people_organization_id"
+				},
+				"organization_id": {
+					"type": "options",
+					"label": "Organization",
+					"hint": "The affiliation of the person when writing this publication",
+					"multiple": false,
+					"options": {},
+					"asList": true,
+					"newUrl": "organization",
+					"ajaxUrl": "lookup/organization"
+				},
+				"editor":{
+					"type": "checkbox",
+					"label": "Editor",
+					"required": false
+				}
+			}
+		},
+		"projects": {
+			"type": "table",
+			"label": "Projects",
+			"hint": "A link created here is also visible at the project",
+			"lookup":{
+				"sourceField": "projects_title",
+				"targetField": "projects_project_id",
+				"lookupUrl": "project"
+			},
+			"noSort":true,
+			"nLabel": 3,
+			"required": false,
+			"fields": {
+				"project_id": {
+					"type": "hidden",
+					"value": "",
+					"edit": false,
+					"label": "Project id"
+				}, 
+				"title": {
+					"type": "lookup",
+					"label": "Project title",
+					"placeholder": "Start typing a name, suggestions will appear",
+					"edit": true,
+					"hint": "Here you can also type in a NWO project number"
+				}
+			}
+		},
+		"datasets": {
+			"type": "table",
+			"label": "Dataset",
+			"hint": "A link created here is also visible at the dataset",
+			"lookup":{
+				"sourceField": "datasets_title",
+				"targetField": "datasets_dataset_id",
+				"lookupUrl": "dataset"
+			},
+			"noSort":true,
+			"nLabel": 3,
+			"required": false,
+			"fields": {
+				"dataset_id": {
+					"type": "hidden",
+					"value": "",
+					"edit": false,
+					"label": "Dataset id"
+				}, 
+				"title": {
+					"type": "lookup",
+					"label": "Dataset title",
+					"placeholder": "Start typing a name, suggestions will appear",
+					"edit": true
+				}
+			}
+		},
+		"keywords":{
+			"type": "multitext",
+			"label": "Keywords",
+			"placeholder": "New keyword"
+		},
+		"location": {
+			"type": "fieldset",
+			"label": "Link",
+			"min": 0,
+			"max": 1,
+			"fields": {
+				"file": {
+					"type": "file",
+					"label": "File upload",
+					"required": false,
+					"format": "application/pdf",
+					"maxSize": "1MB",
+					"hint": "PDF file of publication"
+				},
+				"url": {
+					"type": "text",
+					"label": "Online link",
+					"placeholder": "http://...",
+					"required": false
+				}
+			}
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save and preview"
+		}
+	}
+}

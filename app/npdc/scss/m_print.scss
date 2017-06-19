@@ -1,0 +1,161 @@
+body{
+	background: none !important;
+	padding: 0px;
+	font-size: 11pt;
+}
+
+#title {
+	min-height: 0px;
+	padding: 0px;
+	background: none !important;
+	overflow: auto;
+	border-bottom: $border;
+	h1 a{
+		color: $color-accent-1;
+		text-shadow: none;
+	}
+	img {
+		display: none;
+	}
+}
+#top, #menu {
+	display: none;
+}
+
+#page {
+	background: none !important;
+}
+
+a {
+	text-decoration: none;
+
+	color: $fg-color !important;
+}
+body:not(.report) #main a:after {
+	content: ' ('attr(href)')';
+	font-size: 80%;
+}
+#main td a:after {
+	content: '';
+}
+
+.screenonly, .add {
+	display: none;
+}
+
+.printonly {
+	display: block;
+}
+
+.collapsible:before {
+	content: '' !important;
+}
+
+.cols {
+	display: block;
+	&.frontblocks>div{
+		background: none !important;
+		border: $border;
+		&:last-child {
+			display: none;
+		}
+	}
+}
+
+#mid {
+	padding: 0px !important;
+}
+
+.detail, .page, .contact {
+	#right {
+		padding-left: 0px;
+		border-left: none;
+		margin-top: 1em;
+		-webkit-column-count: 2;
+		-moz-column-count: 2;
+		column-count: 2;
+		-webkit-column-gap: 1em;
+		-moz-column-gap: 1em;
+		column-gap: 1em;
+		max-width: none;
+		> div{
+			break-inside: avoid;
+			-webkit-column-break-inside: avoid;
+		}
+		.contactwrapper {
+			display: none;
+		}
+	}
+}
+
+.front #right {
+	display: none;
+}
+
+#footer {
+	font-size: 80%;
+	.links {
+		display: none;
+	}
+}
+
+table {
+	background: none !important;
+	thead, tfoot {
+		background: none !important;
+		color: $color-accent-1;
+	}
+	tr {
+		border-top: $border;
+		display: table-row !important;
+		background: none !important;
+		&.draft {
+			font-style: italic;
+		}
+	}
+}
+
+.pager {
+	display: none;
+}
+
+.list #left {
+	display: none;
+}
+
+button, input[type=reset], input[type=submit] {
+	display:none;
+}
+input[type=checkbox], input[type=radio]{
+	display: initial;
+	height: auto;
+	+label {
+		background: none !important;
+		padding-left: 0px;
+	}
+}
+
+input[type=checkbox]{
+	-webkit-appearance: checkbox;
+}
+input[type=radio]{
+	-webkit-appearance: radio;
+}
+
+.suggestions li {
+	display: block !important;
+}
+
+body:not(.report) .hiddenSubDiv {
+	display: block !important;
+}
+
+.report{
+	#title, #footer {
+		display: none;
+	}
+
+	p {
+		margin-bottom: 5px;
+	}
+}

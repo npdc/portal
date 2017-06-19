@@ -1,0 +1,89 @@
+{
+	"method": "post",
+	"action": "organization",
+	"hint": "simple",
+	"fields": {
+		"organization_name": {
+			"type": "text",
+			"label": "Organization name",
+			"hint": "Can include department",
+			"placeholder": "Name"
+		},
+		"address": {
+			"type": "fieldset",
+			"label": "Address",
+			"required": true,
+			"use_main_id": false,
+			"fields": {
+				"organization_address": {
+					"type": "text",
+					"label": "Address",
+					"placeholder": "Street + number",
+					"required": false
+				},
+				"organization_zip": {
+					"type": "text",
+					"label": "Zip code",
+					"placeholder": "zip",
+					"required": false
+				},
+				"organization_city": {
+					"type": "text",
+					"label": "City",
+					"placeholder": "City"
+				},
+				"country_id": {
+					"type": "options",
+					"label": "Country",
+					"asList": true,
+					"multiple": false,
+					"options": {},
+					"default": "NL"
+				}
+			}
+		},
+		"visiting_address": {
+			"type": "textarea",
+			"label": "Visiting address",
+			"placeholder": "Street + number\nZipcode + city",
+			"rows": 3,
+			"required": false
+		},
+		"website": {
+			"type": "text",
+			"label": "Website",
+			"placeholder": "url including http(s)://",
+			"hint": "Please include protocol (http(s)://)",
+			"required": false
+		},
+		"edmo": {
+			"type": "text",
+			"label": "EDMO code",
+			"hint": "Code of the organization within SeaDataNet",
+			"placeholder": "number",
+			"required": false
+		},
+		"gcmd": {
+			"type": "fieldset",
+			"label": "GCMD",
+			"fields": {
+				"dif_code": {
+					"type": "text",
+					"label": "Code",
+					"hint": "Code of the organization within the GCMD",
+					"required": false
+				},
+				"dif_name": {
+					"type": "text",
+					"label": "Name",
+					"hint": "Name of the organization within the GCMD",
+					"required": false
+				}
+			}
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save"
+		}
+	}
+}

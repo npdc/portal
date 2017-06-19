@@ -1,0 +1,40 @@
+{
+	"method": "post",
+	"action": "contact",
+	"hint": "all",
+	"fields": {
+		"name": {
+			"type": "text",
+			"label": "Your name",
+			"placeholder": "Your name"
+			},
+		"mail": {
+			"type": "mail",
+			"label": "Your email address",
+			"placeholder": "Email address",
+			"hint": "We will only use this for responding to your message"
+		},
+		"subject": {
+			"type": "text",
+			"label": "Subject",
+			"required": false,
+			"placeholder": "Message subject (not required)"
+		},
+		"message": {
+			"type": "textarea",
+			"label": "Your message",
+			"placeholder": "Message"
+		},
+		"captcha": {
+			"type": "captcha",
+			"label": "Captcha",
+			"placeholder": "Answer",
+			"hint": "This is to check if you are human or a bot"
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Send",
+			"hint": "A copy of your message will be sent to you"
+		}
+	}
+}

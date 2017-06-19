@@ -1,0 +1,180 @@
+{
+	"method": "post",
+	"action": "dataset",
+	"fileupload": true,
+	"hint": "simple+group",
+		"fields": {
+		"dataset_progress": {
+			"type": "options",
+			"label": "Dataset progress",
+			"placeholder": "What have you done?",
+			"options": {
+				"planned": "Planned",
+				"in work": "In work",
+				"complete": "Complete"
+			},
+			"multiple": false,
+			"asList": true
+		},
+		"quality": {
+			"type": "textarea",
+			"label": "Quality",
+			"placeholder": "Describe any problems or concerns with the data.",
+			"hint": "Are there any issues with the data? If you have a file describing quality control procedures you can upload it trough the files tab and refer to the file here.",
+			"rows":3,
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/quality.html",
+			"hasSuggestions": true
+		},
+		"access_constraints": {
+			"type": "textarea",
+			"label": "Access Constraints",
+			"placeholder": "Is data freely accessible or does someone who wants to use this data take specific steps?",
+			"hint": "Is data freely accessible or does someone who wants to use this data take specific steps?",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/access_constraints.html",
+			"rows":3,
+			"hasSuggestions": true
+		},
+		"use_constraints": {
+			"type": "textarea",
+			"label": "Use constraints",
+			"hint": "If a user has access, are there then still limitations what a user is allowed to do?",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/use_constraints.html",
+			"placeholder": "Can a user just publish with this data?",
+			"rows":3,
+			"hasSuggestions": true
+		},
+		
+		"citation": {
+			"type": "fieldset",
+			"label": "Dataset citation",
+			"multi": true,
+			"required": true,
+			"hint": "You can use dataset citatation for 2 functions: <ol><li>How should this dataset be cited in literature</li><li>Citation of datasets (if any) used to compile this dataset</li></ol> For referencing publications and other resources you can use the references tab",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/data_set_citation.html",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"type": {
+					"type": "options",
+					"label": "Type of dataset citation",
+					"options": {
+						"this": "1. How to cite this dataset",
+						"other": "2. Citation of a dataset used to compile this dataset"
+					},
+					"multiple": false
+				},
+				"creator": {
+					"type": "text",
+					"label": "Dataset creator",
+					"hint": "Who collected/generated the data",
+					"required": true,
+					"placeholder": "Creator"
+				},
+				"editor": {
+					"type": "text",
+					"label": "Dataset editor",
+					"hint": "Who processed the dataset",
+					"required": false,
+					"placeholder": "Editor"
+				},
+				"title": {
+					"type": "text",
+					"label": "Dataset title",
+					"required": false,
+					"placeholder": "title",
+					"hint": "Is dataset title",
+					"disabled": true
+				},
+				"series_name": {
+					"type": "text",
+					"label": "Series name",
+					"hint": "Name of a larger data series if this dataset is part of one",
+					"required": false
+				},
+				"release_date": {
+					"type": "date",
+					"label": "Release date",
+					"hint": "When is the dataset made first available",
+					"required": true,
+					"range": false
+				},
+				"release_place": {
+					"type": "text",
+					"label": "Release place",
+					"hint": "City + Country at least",
+					"required": false,
+					"placeholder": "City, the Netherlands"
+				},
+				"publisher": {
+					"type": "text",
+					"label": "Dataset publisher",
+					"hint": "Who made the dataset available",
+					"placeholder": "Publisher",
+					"required": false
+				},
+				"version": {
+					"type": "text",
+					"label": "Dataset version",
+					"required": false,
+					"placeholder": "version"
+				},
+				"issue_identification": {
+					"type": "text",
+					"label": " The volume or issue number of the publication",
+					"required": false,
+					"placeholder": "volume/issue"
+				},
+				"presentation_form": {
+					"type": "text",
+					"label": "Presentation form",
+					"hint": "Paper/digital, which format",
+					"required": false,
+					"placeholder": "image, text, excel, atlas, ..."
+				},
+				"other": {
+					"type": "text",
+					"label": "Other citation details",
+					"hint": "Anything that doesn't fit in the other fields but you want to be here",
+					"required": false,
+					"placeholder": "comment"
+				},
+				"persistent_identifier": {
+					"type": "fieldset",
+					"label": "Persistent identifier",
+					"required": false,
+					"fields": {
+						"type": {
+							"type": "options",
+							"label": "Type",
+							"options": {"doi": "Digital Object Identifer (DOI)", "ark":"Archival Resource Key (ARK)", "na": "<em>Clear selection</em>"},
+							"asList": false,
+							"multiple": false,
+							"required": true
+						},
+						"identifier": {
+							"type": "text",
+							"label": "Identifier",
+							"hint": "In case of DOI start with doi:10.",
+							"required": true,
+							"placeholder": "DOI or ARK"
+						}
+					}
+				},
+				"online_resource": {
+					"type": "text",
+					"label": "Link to the dataset description",
+					"hint": "If left blank this will link back to this website",
+					"required": false,
+					"placeholder": "https://"
+				}
+			}
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save and preview",
+			"includeNext": true
+		}
+	}
+}

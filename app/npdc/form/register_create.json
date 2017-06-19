@@ -1,0 +1,36 @@
+{
+	"method": "post",
+	"action": "",
+	"fields": {
+		"head": {
+			"type": "hint",
+			"hint": "Please enter a password to create your account."
+		},
+		"person": {
+			"type": "options",
+			"label": "Link to",
+			"asList": true,
+			"multiple": false,
+			"options": {},
+			"value": "",
+			"disabled": false,
+			"edit": true
+		},
+		"name": {
+			"type": "text",
+			"label": "Your name (as to be shown everywhere on this site)",
+			"disabled": true,
+			"placeholder": "Your name"
+		},
+		"password": {
+			"type": "password",
+			"label": "Your new password",
+			"placeholder": "Password",
+			"readable": true
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Create account"
+		}
+	}
+}

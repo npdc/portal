@@ -1,0 +1,88 @@
+{
+	"method": "post",
+	"action": "page",
+	"fields": {
+		"page_id": {
+			"type": "hidden"
+		},
+		"title": {
+			"type": "text",
+			"label": "Page title",
+			"placeholder": "Title"
+		},
+		"url": {
+			"type": "text",
+			"label": "Url alias",
+			"hint": "Name for use in url, only lower case letters and underscores",
+			"placeholder": "Alias"
+		},
+		"content": {
+			"label": "Content",
+			"type": "textarea",
+			"hint": "Using html is permitted, please use &lt;p&gt; tags",
+			"rows": 30
+		},
+		"people": {
+			"type": "table",
+			"label": "People",
+			"required": false,
+			"lookup":{
+				"sourceField": "people_name",
+				"targetField": "people_person_id",
+				"lookupUrl": "person",
+				"newUrl": "add/person"
+			},
+			"nLabel": 3,
+			"fields": {
+				"person_id": {
+					"type": "hidden",
+					"value": ""
+				}, 
+				"name": {
+					"type": "lookup",
+					"label": "Person",
+					"hint": "Can only be editted by the NPDC for now",
+					"placeholder": "Start typing a name, suggestions will appear",
+					"edit": true
+				},
+				"role": {
+					"type": "text",
+					"label": "Role"
+				},
+				"editor":{
+					"type": "checkbox",
+					"label": "Can edit",
+					"hint": "Can edit this page",
+					"required": false
+				}
+			}
+		},
+		"links":{
+			"type": "table",
+			"label": "Links",
+			"nLabel": 4,
+			"required": false,
+			"fields":{
+				"id":{
+					"type": "hidden",
+					"required": false
+				},
+				"url": {
+					"type": "text",
+					"label": "Url",
+					"placeholder": "link including http(s)://",
+					"hint": "Please include protocol (e.g. http://) for external links"
+				}, 
+				"label": {
+					"type": "text",
+					"label": "Label",
+					"placeholder": "Label"
+				}
+			}
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save"
+		}
+	}
+}

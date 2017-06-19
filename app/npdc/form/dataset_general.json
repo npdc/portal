@@ -1,0 +1,91 @@
+{
+	"method": "post",
+	"action": "dataset",
+	"hint": "simple+table",
+	"fields": {
+		"dif_id": {
+			"type": "text",
+			"max_length": 80,
+			"permittedChars": "\\w\\.\\-\\_",
+			"label": "Dataset ID",
+			"hint": "ID for the dataset. Letters (upper and lower case), numbers, underscore(_), hyphen (-) and period (.) allowed.",
+			"placeholder": "Descriptive id"
+		},
+		"title": {
+			"type": "text",
+			"max_length": 220,
+			"label": "Title",
+			"placeholder": "Title"
+		},
+		"summary": {
+			"type": "textarea",
+			"label": "Abstract",
+			"placeholder": "What have you done?",
+			"rows":10,
+			"hint": "We don't need an essay, but write this from the viewpoint, \"What if someone were to find and use my data in 100 years when I'm not around to answer questions - would they be able to?\".<br/>This metadata record and your dataset should be able to stand-alone - acronyms and abbreviations should be explained.",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/summary.html"
+
+		},
+		"purpose": {
+			"type": "textarea",
+			"label": "Purpose",
+			"placeholder": "What is the intended use of the dataset?",
+			"hint": "For what kind of usage is the data originaly collected",
+			"rows": 10
+		},
+		"iso_topic": {
+			"hint": "One or more topics from the list",
+			"gcmd_url": "http://gcmd.nasa.gov/add/difguide/iso_topics.html",
+			"type": "options",
+			"label": "ISO Topic",
+			"placeholder": "Topic",
+			"asList": true,
+			"options": {}
+		},
+		"science_keywords": {
+			"hint": "Keyword has to be selected from the list, detailed keyword can be added to explain the keyword in more detail. Please confirm the keyword by either clicking it in the dropdown or selecting it with the arrow keys and pressing enter. If a new keyword needs to be added please <a href=\"mailto:%siteMail?subject=New keyword needed at %siteDomain\">contact the NPDC</a>. When the new keyword has been added we will update your record.",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/parameters.html",
+			"type": "table",
+			"label": "Science keywords",
+			"lookup": {
+				"sourceField": "science_keywords_keyword",
+				"targetField": "science_keywords_keyword_id",
+				"lookupUrl": "science_keyword"
+			},
+			"nLabel": 3,
+			"noSort":true,
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"value": "",
+					"required": false
+				},
+				"keyword_id": {
+					"type": "hidden",
+					"value": ""
+				},
+				"keyword": {
+					"type": "lookup",
+					"label": "Keyword",
+					"placeholder": "Click here to load the option list or start typing to search for a keyword"
+				},
+				"detailed_variable": {
+					"type": "text",
+					"label": "Detailed keyword",
+					"required": false,
+					"placeholder": "Free text"
+				}
+			}
+		},
+		"keywords":{
+			"type": "multitext",
+			"label": "Ancillary keywords",
+			"placeholder": "New keyword"
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save and preview",
+			"includeNext": true
+		}
+	}
+}

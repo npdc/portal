@@ -1,0 +1,118 @@
+{
+	"method": "post",
+	"action": "dataset",
+	"hint": "simple+table",
+	"fields": {
+		"projects": {
+			"type": "table",
+			"label": "Projects",
+			"hint": "A link created here is also visible at the project. Please confirm the project by either clicking it in the dropdown or selecting it with the arrow keys and pressing enter.",
+			"lookup":{
+				"sourceField": "projects_title",
+				"targetField": "projects_project_id",
+				"lookupUrl": "project"
+			},
+			"noSort":true,
+			"nLabel": 4,
+			"fields": {
+				"project_id": {
+					"type": "hidden",
+					"value": "",
+					"edit": false,
+					"label": "Project id",
+					"Hint": "Project ID as given by NWO"
+				}, 
+				"title": {
+					"type": "lookup",
+					"label": "Project title",
+					"placeholder": "Start typing a name, suggestions will appear",
+					"edit": true,
+					"hint": "Here you can also type in a NWO project number"
+				}
+			}
+		},
+		"publications": {
+			"type": "table",
+			"label": "Publications",
+			"required": false,
+			"hint": "A link created here is also visible at the publication. Please confirm the publication by either clicking it in the dropdown or selecting it with the arrow keys and pressing enter.",
+			"lookup":{
+				"sourceField": "publications_title",
+				"targetField": "publications_publication_id",
+				"lookupUrl": "publication",
+				"newUrl": "add/publication"
+			},
+			"noSort":true,
+			"nLabel": 3,
+			"fields": {
+				"publication_id": {
+					"type": "hidden",
+					"value": ""
+				}, 
+				"title": {
+					"type": "lookup",
+					"label": "Publication title",
+					"placeholder": "Start typing a title, suggestions will appear",
+					"edit": true
+				}
+			}
+		},
+		"links": {
+			"type": "fieldset",
+			"label": "Link",
+			"required": false,
+			"multi": true,
+			"collapsible": true,
+			"hint": "Links to external project websites or other external data sources. The record on this site is automaticaly linked in the GCMD",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/related_url.html",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"type": {
+					"type": "options",
+					"label": "Type",
+					"options": {},
+					"multiple": false,
+					"required": true,
+					"asList": true
+				},
+				"title": {
+					"type": "text",
+					"label": "Label",
+					"hint": "The displayed text for the link",
+					"placeholder": "Label"
+				},
+				"description": {
+					"type": "textarea",
+					"label": "Description",
+					"placeholder": "Description"
+				},
+				"url": {
+					"type": "fieldset",
+					"label": "Url",
+					"multi": true,
+					"required": true,
+					"fields": {
+						"id": {
+							"type": "hidden",
+							"required": false
+						},
+						"url": {
+							"type":"text",
+							"hint": "link including http:// or other protocol",
+							"placeholder": "https://",
+							"required": true
+						}
+					}
+				}
+			}
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save and preview",
+			"includeNext": true
+		}
+	}
+}

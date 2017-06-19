@@ -1,0 +1,75 @@
+{
+	"method": "get",
+	"action": "publication",
+	"fields": {
+		"hint":{
+			"type": "hint",
+			"hint": "If no option is selected for a filter that filter will not be used. To apply the filters click 'Apply'."
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Apply",
+			"resetLabel": "Clear filters",
+			"resetAction": "publication"
+		},
+		"region": {
+			"type": "options",
+			"label": "Region",
+			"multiple": true,
+			"required": false,
+			"options": {
+				"Arctica": "Arctic",
+				"Antarctica": "Antarctic",
+				"Bipolar": "Both"
+			}
+		},
+		"year": {
+			"type": "date",
+			"label": "Year",
+			"required": false,
+			"min": null,
+			"max": null,
+			"hint": "For a single year put the same year in both fields",
+			"format": "yyyy",
+			"range": true
+		},
+		"organization": {
+			"type": "options",
+			"label": "Organization",
+			"multiple": true,
+			"required": false,
+			"options": {},
+			"disabled": false,
+			"asList": true
+		},
+		"program":{
+			"type": "options",
+			"label": "Programme",
+			"multiple": true,
+			"required": false,
+			"options": {},
+			"asList": true,
+			"disabled": true
+		},
+		"editorOptions":{
+			"type": "options",
+			"label": "Show",
+			"options": {
+				"all": "all publications",
+				"edit": "publications I can edit",
+				"draft": "publications with drafts I can edit",
+				"unpublished": "unpublished publications I can edit"
+			},
+			"required": false,
+			"multiple": false,
+			"disabled": true,
+			"uid": null
+		},
+		"submit2": {
+			"type": "submit",
+			"value": "Apply",
+			"resetLabel": "Clear filters",
+			"resetAction": "publication"
+		}
+	}
+}

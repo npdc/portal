@@ -1,0 +1,15 @@
+@media screen and (max-width: 799px){
+	@import "m_799";
+}
+
+@media screen and (max-width: 599px){
+	@import "m_599";
+}
+
+@media screen and (max-width:449px){
+	@import "m_499";
+}
+
+@media print {
+	@import "m_print";
+}

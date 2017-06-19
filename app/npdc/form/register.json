@@ -1,0 +1,39 @@
+{
+	"method": "post",
+	"action": "register",
+	"fields": {
+		"referer": {
+			"type": "hidden",
+			"value": null,
+			"required": false
+		},
+		"hint": {
+			"type": "hint",
+			"hint": "After submitting the form below you will recieve a login link through which you can set you password and other account details."
+		},
+		"hint2": {
+			"type": "hint",
+			"hint": "If there are already details of you in the site please use the email address known to the NPDC (most likely the email address you got from your institution) to register. This way you will be able to edit your current details after registration. When you are not sure which email address was is linked to your details please <a href=\"../contact\">contact the NPDC</a>."
+		},
+		"hint3": {
+			"type": "hint",
+			"hint": "When creating a new account it will by default only get the right to download files that require login and request files to which access is restricted. The right to add or edit projects, datasets or publications can be granted by the NPDC. In case you link your newly created account to an already existing personal record these rights may already be granted, otherwise please <a href=\"../contact\">contact the NPDC</a> and ask them to grant you the permissions."
+		},
+		"mail": {
+			"type": "mail",
+			"label": "Your mail address",
+			"placeholder": "Mail address"
+		},
+		"captcha": {
+			"type": "captcha",
+			"label": "Captcha",
+			"placeholder": "Answer",
+			"hint": "This is to check if you are human or a bot"
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Register",
+			"hint": "<a href=\"login/reset\">Forgot your password?</a>"
+		}
+	}
+}

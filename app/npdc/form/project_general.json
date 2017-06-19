@@ -1,0 +1,216 @@
+{
+	"method": "post",
+	"action": "project",
+	"hint": "simple+table",
+	"fields": {
+		"title": {
+			"type": "text",
+			"label": "Project title",
+			"placeholder": "Title"
+		},
+		"acronym": {
+			"type": "text",
+			"label": "Project acronym",
+			"required": false,
+			"placeholder": "Acronym"
+		},
+		"nwo_project_id": {
+			"type": "text",
+			"label": "NWO project ID",
+			"hint": "",
+			"placeholder": "866.xx.xxx",
+			"mask": "999.99.999",
+			"required": false
+		},
+		"period": {
+			"type": "date",
+			"label": "Period",
+			"range": true,
+			"required": true,
+			"hint": "Start and end dates of your project",
+			"min": null,
+			"max": null
+		},
+		"region": {
+			"type": "options",
+			"label": "Region",
+			"multiple": false,
+			"required": true,
+			"options": {
+				"Arctica": "Arctic",
+				"Antarctica": "Antarctic",
+				"Bipolar": "Bipolar"
+			}
+		},
+		"program_id": {
+			"type": "options",
+			"label": "Funding program",
+			"multiple": false,
+			"options": {},
+			"asList": true,
+			"required": false
+		},
+		"science_field": {
+			"type": "text",
+			"label": "Research field",
+			"placeholder": "Archeology, Biology, Climatology, Ecology, Meteorology, Physics, etc..."
+		},
+		"research_type": {
+			"type": "options",
+			"label": "Project type",
+			"multiple": false,
+			"options": {
+				"PhD":"PhD",
+				"Postdoc": "Postdoc",
+				"Development": "Development",
+				"Pilot study": "Pilot study",
+				"Cooperation": "Cooperation",
+				"Other": "Other"
+			}
+		},
+		"summary": {
+			"type": "textarea",
+			"label": "Project summary",
+			"placeholder": "Summary",
+			"rows":10
+		},
+		"keywords":{
+			"type": "multitext",
+			"label": "Keywords",
+			"placeholder": "New keyword"
+		},
+		"people": {
+			"type": "table",
+			"label": "People",
+			"hint": "Please list all people involved, if a person is not yet present in the database please add the person. Please confirm the person by either clicking a name in the dropdown or selecting it with the arrow keys and pressing enter.",
+			"lookup":{
+				"sourceField": "people_name",
+				"targetField": "people_person_id",
+				"lookupUrl": "person",
+				"newUrl": "add/person"
+			},
+			"nLabel": 3,
+			"fields": {
+				"person_id": {
+					"type": "hidden",
+					"value": ""
+				}, 
+				"name": {
+					"type": "lookup",
+					"label": "Person",
+					"hint": "Can only be editted by the NPDC for now",
+					"placeholder": "Start typing a name, suggestions will appear",
+					"edit": true,
+					"onSubmit": "people_organization_id"
+				},
+				"organization_id": {
+					"type": "options",
+					"label": "Organization",
+					"hint": "The affiliation of the person when working on this project",
+					"multiple": false,
+					"options": {},
+					"asList": true,
+					"newUrl": "organization",
+					"ajaxUrl": "lookup/organization"
+				},
+				"role": {
+					"type": "text",
+					"label": "Role",
+					"hint": "PI / PhD / Postdoc / Technician / etc...",
+					"placeholder": "PI / PhD / Postdoc / Technician / etc..."
+				},
+				"contact": {
+					"type": "checkbox",
+					"label": "Contactperson",
+					"hint": "Person will be listed as contact",
+					"default": true,
+					"required": false
+				},
+				"editor":{
+					"type": "checkbox",
+					"label": "Can edit",
+					"hint": "Can edit this project",
+					"required": false
+				}
+			}
+		},
+		"links":{
+			"type": "table",
+			"label": "Links",
+			"nLabel": 3,
+			"required": false,
+			"fields":{
+				"id":{
+					"type": "hidden",
+					"required": false
+				},
+				"url": {
+					"type": "text",
+					"label": "Url",
+					"placeholder": "link including http(s)://",
+					"hint": "Please include protocol (e.g. http://)"
+				}, 
+				"label": {
+					"type": "text",
+					"label": "Label",
+					"placeholder": "Label",
+					"hint": "The display text for the link"
+				}
+			}
+		},
+		"datasets": {
+			"type": "table",
+			"label": "Datasets",
+			"required": false,
+			"hint": "A link created here is also visible at the dataset. Please confirm the dataset by either clicking a title in the dropdown or selecting it with the arrow keys and pressing enter.",
+			"lookup":{
+				"sourceField": "datasets_title",
+				"targetField": "datasets_dataset_id",
+				"lookupUrl": "dataset"
+			},
+			"noSort":true,
+			"nLabel": 3,
+			"fields": {
+				"dataset_id": {
+					"type": "hidden",
+					"value": ""
+				}, 
+				"title": {
+					"type": "lookup",
+					"label": "Dataset title",
+					"placeholder": "Start typing a title, suggestions will appear",
+					"edit": true
+				}
+			}
+		},
+		"publications": {
+			"type": "table",
+			"label": "Publications",
+			"required": false,
+			"hint": "A link created here is also visible at the publication. Please confirm the publication by either clicking a title in the dropdown or selecting it with the arrow keys and pressing enter.",
+			"lookup":{
+				"sourceField": "publications_title",
+				"targetField": "publications_publication_id",
+				"lookupUrl": "publication"
+			},
+			"noSort":true,
+			"nLabel": 3,
+			"fields": {
+				"publication_id": {
+					"type": "hidden",
+					"value": ""
+				}, 
+				"title": {
+					"type": "lookup",
+					"label": "Publication title",
+					"placeholder": "Start typing a title, suggestions will appear",
+					"edit": true
+				}
+			}
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save and preview"
+		}
+	}
+}

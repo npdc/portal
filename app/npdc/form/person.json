@@ -1,0 +1,141 @@
+{
+	"method": "post",
+	"action": "person",
+	"hint": "simple",
+	"fields": {
+		"name": {
+			"type": "text",
+			"label": "Display name",
+			"hint": "Name used for display in pages",
+			"placeholder": "Name"
+		},
+		"nameparts": {
+			"type": "fieldset",
+			"label": "Name details",
+			"required": false,
+			"use_main_id": false,
+			"fields": {
+				"titles": {
+					"type": "text",
+					"label": "Title(s)",
+					"placeholder": "Title(s)",
+					"required": false
+				},
+				"initials": {
+					"type": "text",
+					"label": "Initials",
+					"placeholder": "Initials",
+					"required": false
+				},
+				"given_name": {
+					"type": "text",
+					"label": "First name",
+					"placeholder": "First name",
+					"required": false
+				},
+				"surname": {
+					"type": "text",
+					"label": "Surname",
+					"placeholder": "Surname",
+					"required": false
+				}
+			}
+		},
+		"organization_id": {
+			"type": "options",
+			"label": "Organization",
+			"multiple": false,
+			"options": {},
+			"asList": true,
+			"newUrl": "organization",
+			"hint": "In case the details of your organization need to be updated, please send a mail to info@npdc.nl with the correct details.",
+			"ajaxUrl": "lookup/organization",
+			"required": false,
+			"hint": "The organization where this person is currently working."
+		},
+		"mail":{
+			"type": "mail",
+			"label": "Mail address",
+			"placeholder": "Mail address",
+			"hint": "Your mail address will not be shown on this website. In records in the GCMD where you are linked to it will be shown.",
+			"required": false
+		},
+		"phone":{
+			"type": "fieldset",
+			"label": "Phone numbers",
+			"hint": "You can choose which phone numbers will be displayed. If possible, please have at least 1 public number. The NPDC has access to all numbers. When possible please give both a peronal or mobile number and a general number.",
+			"fields": {
+				"personal": {
+					"type": "text",
+					"label": "Direct phone number",
+					"required": false,
+					"placeholder": "+31 (0) 123 456 789"
+				},
+				"personal_public": {
+					"type": "options",
+					"options": {"yes":"Public", "no":"Hidden"},
+					"multiple": false,
+					"default": "yes"
+				},
+				"secretariat": {
+					"type": "text",
+					"label": "General phone number",
+					"required": false,
+					"placeholder": "+31 (0) 123 456 789"
+				},
+				"secretariat_public": {
+					"type": "options",
+					"options": {"yes":"Public", "no":"Hidden"},
+					"multiple": false,
+					"default": "yes"
+				},
+				"mobile": {
+					"type": "text",
+					"label": "Mobile phone number",
+					"required": false,
+					"placeholder": "+31 (0) 6 123 456 78"
+				},
+				"mobile_public": {
+					"type": "options",
+					"options": {"yes":"Public", "no":"Hidden"},
+					"multiple": false,
+					"default": "no"
+				}
+			}
+		},
+		"address": {
+			"type": "fieldset",
+			"label": "Address",
+			"hint": "If left empty the organization address will be used",
+			"fields": {
+				"address": {
+					"type": "text",
+					"label": "Address",
+					"required": false
+				},
+				"zip": {
+					"type": "text",
+					"label": "Zip code",
+					"required": false
+				},
+				"city": {
+					"type": "text",
+					"label": "City",
+					"required": false
+				}
+			},
+			"disabled": true
+		},
+		"orcid": {
+			"type": "text",
+			"label": "ORCID",
+			"placeholder": "____-____-____-____",
+			"maskAlias": "orcid",
+			"required": false
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save"
+		}
+	}
+}

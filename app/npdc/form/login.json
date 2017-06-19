@@ -1,0 +1,37 @@
+{
+	"method": "post",
+	"action": "login",
+	"fields": {
+		"referer": {
+			"type": "hidden",
+			"value": null,
+			"required": false
+		},
+		"action": {
+			"type": "hidden",
+			"value": "overlay/editor"
+		},
+		"mail": {
+			"type": "mail",
+			"label": "Your mail address",
+			"placeholder": "Mail address"
+		},
+		"password": {
+			"type": "password",
+			"label": "Your password",
+			"placeholder": "Password"
+		},
+		"captcha": {
+			"type": "captcha",
+			"label": "Captcha",
+			"placeholder": "Answer",
+			"hint": "This is to check if you are human or a bot",
+			"disabled": true
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Login",
+			"hint": "<a href=\"login/reset\">Forgot your password?</a>"
+		}
+	}
+}

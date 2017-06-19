@@ -1,0 +1,25 @@
+{
+	"method": "get",
+	"action": "person",
+	"fields": {
+		"hint":{
+			"type": "hint",
+			"hint": "If no option is selected for a filter that filter will not be used. To apply the filters click 'Apply' at the bottom."
+		},
+		"organization": {
+			"type": "options",
+			"label": "Organization",
+			"multiple": true,
+			"required": false,
+			"options": {},
+			"asList": true,
+			"maxOptionLength": 45
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Apply",
+			"resetLabel": "Clear filters",
+			"resetAction": "person"
+		}
+	}
+}

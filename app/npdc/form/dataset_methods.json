@@ -1,0 +1,133 @@
+{
+	"method": "post",
+	"action": "dataset",
+	"hint": "simple+group",
+	"collapsible": true,
+	"fields": {
+		"platform": {
+			"type": "fieldset",
+			"label": "Platform",
+			"multi": true,
+			"required": true,
+			"hint": "From where and how are the data collected",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/platform.html",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"platform": {
+					"type": "lookup",
+					"required": true,
+					"hint": "If a new platform needs to be added please <a href=\"mailto:%siteMail?subject=New platform needed at %siteDomain\">contact the NPDC</a>. You can fill in 'NOT APPLICABLE' for now and when the new platform has been added we will update your record.",
+					"vocab": "platform",
+					"placeholder": "Click here to load the option list or start typing to search for a platform"
+				},
+				"instrument": {
+					"type": "fieldset",
+					"label": "Instrument",
+					"required": true,
+					"multi": true,
+					"fields": {
+						"id": {
+							"type": "hidden",
+							"required": false
+						},
+						"instrument": {
+							"type": "lookup",
+							"required": true,
+							"hint": "If a new instrument needs to be added please <a href=\"mailto:%siteMail?subject=New instrument needed at %siteDomain\">contact the NPDC</a>. You can fill in 'NOT APPLICABLE' for now and when the new instrument has been added we will update your record.",
+							"vocab": "instrument",
+							"placeholder": "Click here to load the option list or start typing to search for an instrument"
+						},
+						"technique": {
+							"type": "text",
+							"label": "Technique",
+							"hint": "What kind of technique does the instrument use to collect data",
+							"required": false
+						},
+						"number_of_sensors": {
+							"type": "number",
+							"label": "Number of sensors",
+							"required": false
+						},
+						"sensor": {
+							"type": "fieldset",
+							"label": "Sensor",
+							"multi": true,
+							"required": false,
+							"fields":{
+								"id": {
+									"type": "hidden",
+									"required": false
+								},
+								"sensor": {
+									"type": "lookup",
+									"required": true,
+									"hint": "If a new sensor needs to be added please <a href=\"mailto:%siteMail?subject=New sensor needed at %siteDomain\">contact the NPDC</a>. You can fill in 'NOT APPLICABLE' for now and when the new sensor has been added we will update your record.",
+									"vocab": "instrument",
+									"placeholder": "Click here to load the option list or start typing to search for a sensor"
+								},
+								"technique": {
+									"type": "text",
+									"label": "Technique",
+									"hint": "What kind of technique does the sensor use to collect data",
+									"required": false
+								},
+								"characteristics": {
+									"type": "table",
+									"label": "Characteristics",
+									"hint": "The characteristics of sensor",
+									"multi": true,
+									"required": false,
+									"disabled": true,
+									"nLabel": 4,
+									"fields": {
+										"id": {
+											"type": "hidden",
+											"value": "",
+											"required": false
+										},
+										"name": {
+											"type": "text",
+											"label": "Name",
+											"placeholder": "e.g. Draft",
+											"hint": "Parameter name"
+										},
+										"description": {
+											"type": "text",
+											"label": "Description",
+											"placeholder": "e.g. Depth of the keel of the ship",
+											"hint": "Definition or clarification"
+										},
+										"datatype": {
+											"type": "text",
+											"label": "Data Type",
+											"placeholder": "e.g. float",
+											"hint": "float, integer, text, ..."
+										},
+										"unit": {
+											"type": "text",
+											"label": "Unit",
+											"placeholder": "e.g. meters"
+										},
+										"value": {
+											"type": "text",
+											"label": "Value",
+											"placeholder": "e.g. 2.5"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Save and preview",
+			"includeNext": true
+		}
+	}
+}
