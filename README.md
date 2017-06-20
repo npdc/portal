@@ -14,6 +14,7 @@
   - xml
   - zip
 - mysql of mariadb (other systems require work on datamodel)
+- composer
 
 **For generating compressed js/css**
 - visual studio code
