@@ -4,7 +4,7 @@
 - Dataset descriptions according to GCMD standards
 - Publication descriptions
 - Responsive
-![Screenshot](screenshots.png)
+![Screenshot](documentation/screenshot.png)
 
 **Dependencies:**
 - Apache or nginx
