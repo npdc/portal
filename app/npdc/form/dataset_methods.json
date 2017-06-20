@@ -19,7 +19,7 @@
 				"platform": {
 					"type": "lookup",
 					"required": true,
-					"hint": "If a new platform needs to be added please <a href=\"mailto:%siteMail?subject=New platform needed at %siteDomain\">contact the NPDC</a>. You can fill in 'NOT APPLICABLE' for now and when the new platform has been added we will update your record.",
+					"hint": "If a new platform needs to be added please <a href=\"mailto:$mail['contact']?subject=New platform needed at $siteDomain\">contact the NPDC</a>. You can fill in 'NOT APPLICABLE' for now and when the new platform has been added we will update your record.",
 					"vocab": "platform",
 					"placeholder": "Click here to load the option list or start typing to search for a platform"
 				},
@@ -36,7 +36,7 @@
 						"instrument": {
 							"type": "lookup",
 							"required": true,
-							"hint": "If a new instrument needs to be added please <a href=\"mailto:%siteMail?subject=New instrument needed at %siteDomain\">contact the NPDC</a>. You can fill in 'NOT APPLICABLE' for now and when the new instrument has been added we will update your record.",
+							"hint": "If a new instrument needs to be added please <a href=\"mailto:$mail['contact']?subject=New instrument needed at $siteDomain\">contact the NPDC</a>. You can fill in 'NOT APPLICABLE' for now and when the new instrument has been added we will update your record.",
 							"vocab": "instrument",
 							"placeholder": "Click here to load the option list or start typing to search for an instrument"
 						},
@@ -64,7 +64,7 @@
 								"sensor": {
 									"type": "lookup",
 									"required": true,
-									"hint": "If a new sensor needs to be added please <a href=\"mailto:%siteMail?subject=New sensor needed at %siteDomain\">contact the NPDC</a>. You can fill in 'NOT APPLICABLE' for now and when the new sensor has been added we will update your record.",
+									"hint": "If a new sensor needs to be added please <a href=\"mailto:$mail['contact']?subject=New sensor needed at $siteDomain\">contact the NPDC</a>. You can fill in 'NOT APPLICABLE' for now and when the new sensor has been added we will update your record.",
 									"vocab": "instrument",
 									"placeholder": "Click here to load the option list or start typing to search for a sensor"
 								},

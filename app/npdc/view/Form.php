@@ -107,7 +107,16 @@ class Form {
 	 * @return string formatted hint
 	 */
 	private function hint($hint, $gcmdUrl = null, $class = null){
-		return '<span class="hint '.$class.'">'.preg_replace_callback('/%([a-z]{1,})/i', function($matches){ return \npdc\config::${$matches[1]};}, $hint).(strlen($hint) === 0 || in_array(substr($hint, -1), ['.', '?']) ? '' : '.').' '.(empty($gcmdUrl) ? '' : '<a href="'.$gcmdUrl.'">GCMD Help</a>').'</span>';
+		return '<span class="hint '.$class.'">'
+			. preg_replace_callback('/\$([a-z]{1,})(\[\'([a-z]{1,})\'\])?/i', function($matches){
+					return count($matches) === 2 
+						? \npdc\config::${$matches[1]} 
+						: \npdc\config::${$matches[1]}[$matches[3]];
+				}, $hint)
+			. (strlen($hint) === 0 || in_array(substr($hint, -1), ['.', '?']) ? '' : '.')
+			. ' '
+			. (empty($gcmdUrl) ? '' : '<a href="'.$gcmdUrl.'">GCMD Help</a>')
+			. '</span>';
 	}
 	
 	private function hasError($id){

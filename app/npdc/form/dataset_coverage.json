@@ -55,7 +55,7 @@
 					"required": true,
 					"vocab": "location",
 					"placeholder": "Click here to load the option list or start typing to search for a location",
-					"hint": "If a new location needs to be added please <a href=\"mailto:%siteMail?subject=New location needed at %siteDomain\">contact the NPDC</a>. When the new location has been added we will update your record."
+					"hint": "If a new location needs to be added please <a href=\"mailto:$mail['contact']?subject=New location needed at $siteDomain\">contact the NPDC</a>. When the new location has been added we will update your record."
 				},
 				"detailed": {
 					"type": "text",
