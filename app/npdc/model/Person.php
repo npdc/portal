@@ -38,8 +38,10 @@ class Person{
 					case 'organization':
 						$q->where('organization_id IN ('.implode(',', $values).')');
 						break;
-					default:
-						\npdc\lib\Error::log('The filter '.$filter.' is not implemented');
+					case 'type':
+						foreach($values as $value){
+							$q->where('person_id IN (SELECT person_id FROM '.$value.'_person)');
+						}
 				}
 			}
 		}

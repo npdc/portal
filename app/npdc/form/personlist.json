@@ -15,6 +15,18 @@
 			"asList": true,
 			"maxOptionLength": 45
 		},
+		"type": {
+			"type": "options",
+			"label": "Only persons with",
+			"required": false,
+			"multiple": true,
+			"hint": "Only persons with all selected options are shown",
+			"options": {
+				"project": "Projects",
+				"dataset": "Datasets",
+				"publication": "Publications"
+			}
+		},
 		"submit": {
 			"type": "submit",
 			"value": "Apply",
