@@ -127,11 +127,12 @@ class Base {
 									if(\npdc\config::$reviewBeforePublish){
 										$this->sendSubmitterMail($data, 'published');
 									} else {
+										$submitter = $this->model->getLastStatusChange($this->args[1], $data[$this->name.'_version'], 'submitted');
 										$mail = new \npdc\lib\Mailer();
 										$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 										$mail->subject(ucfirst($this->name).' published');
 										$text = 'Dear admin'.",\r\n\r"
-											. 'The '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args[1]." has been published by a user.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+											. 'The '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args[1].' has been published by '.$submitter['name'].".\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 
 										$mail->text($text);
 										$mail->send();
