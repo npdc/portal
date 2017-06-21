@@ -10,10 +10,10 @@ echo $this->data['mail'];
 $fields = ['phone_personal'=>'Direct','phone_secretariat'=>'General','phone_mobile'=>'Mobile'];
 foreach($fields as $id=>$label){
 	if(!empty($this->data[$id])){
-		echo ' |&nbsp;'.$this->data[$id].' ('.$label.')';
+		echo ' <nobr>| '.$this->data[$id].' ('.$label.')</nobr>';
 	}
 }
-echo ' |&nbsp;'.$perms['name'].'</p>';
+echo ' <nobr>| '.$perms['name'].'</nobr></p>';
 
 ?>
 <button onclick="$('.hiddenSubDiv').slideDown();$('.collapsible').removeClass('hidden');">Expand all</button> <button onclick="$('.hiddenSubDiv').slideUp();$('.collapsible').addClass('hidden');">Collapse all</button>
