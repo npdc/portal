@@ -95,7 +95,7 @@ if(CALLER === 'index'){
 			break;
 		default://show a item of a type
 			$controllerName = ucfirst($args[0]);
-			if(is_numeric($args[1])){
+			if(strpos($args[1], '.') === false){
 				$id = $args[1];
 			} else {
 				list($id, $args[2]) = explode('.', $args[1]);
