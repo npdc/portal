@@ -19,6 +19,16 @@
 	#user {
 		font-size: 80%;
 		float: right;
+		.unpublished {
+			background: #b71f1c;
+			color: white;
+			display: inline-block;
+			margin-left: 5px;
+			border-radius: 100%;
+			width: 21px;
+			text-align: center;
+			height: 21px;
+		}
 	}
 	#social {
 		a:link, a:visited {

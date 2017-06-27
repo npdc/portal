@@ -17,6 +17,27 @@ class Base {
 		$this->vocab = new \npdc\lib\Vocab();
 	}
 
+	public static function checkUnpublished($list = true){
+		$types = ['project', 'dataset', 'publication'];
+		$filter = ['editorOptions'=>['unpublished']];
+		$count = 0;
+		foreach($types as $type){
+			if(\npdc\config::$partEnabled[$type]){
+				$model = '\\npdc\\model\\'.ucfirst($type);
+				$model = new $model();
+				$c = count($model->getList($filter));
+				if($c > 0 && $list){
+					$_SESSION['notice'] .= (empty($_SESSION['notice']) ? '' : '<br/>').'You have '.$c.' <a href="'.BASE_URL.'/'.$type.'?formid='.$type.'list&amp;editorOptions=unpublished">unpublished '.$type.'s</a>';
+				} else {
+					$count += $c;
+				}
+			}
+		}
+		if(!$list){
+			return $count;
+		}
+	}
+
 	protected function doListStatusChanges($record_id, $record_version){
 		$return = '<div id="statusChanges">';
 		$statusChanges = $this->model->getStatusChanges($record_id, $record_version);

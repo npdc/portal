@@ -1,4 +1,6 @@
-<div class="overlay"><p>Welcome to the editor pages of the NPDC. We recommend to add content in the order below. This provides the most easy workflow. After submitting a project, dataset or publication the record is reviewed by the NPDC to make sure the record meets the technical standards.</p>
+<?php
+\npdc\view\Base::checkUnpublished();
+?><div class="overlay"><p>Welcome to the editor pages of the NPDC. We recommend to add content in the order below. This provides the most easy workflow. After submitting a project, dataset or publication the record is reviewed by the NPDC to make sure the record meets the technical standards.</p>
 
 <p>Please provide all information in English to make information accessible to as many people as possible.</p>
 

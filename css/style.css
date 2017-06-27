@@ -247,6 +247,17 @@ table.files td:first-child {
   float: right;
 }
 
+#top #user .unpublished {
+  background: #b71f1c;
+  color: white;
+  display: inline-block;
+  margin-left: 5px;
+  border-radius: 100%;
+  width: 21px;
+  text-align: center;
+  height: 21px;
+}
+
 #top #social a:link, #top #social a:visited {
   color: #3b6daa;
   text-decoration: none;

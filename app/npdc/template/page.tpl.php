@@ -27,7 +27,12 @@
 				if($session->userLevel > NPDC_PUBLIC){
 					echo 'You are logged in as <a href="'.BASE_URL.'/account">'.$session->name.'</a> ('.$session->levelDetails[$session->userLevel]['name'].')';
 					if($session->userLevel >= NPDC_EDITOR){
-						echo ' - <a href="#" onclick="openOverlay(\''.BASE_URL.'/overlay/editor\')">Editor tools</a>';
+						if($session->userLevel > NPDC_PUBLIC){
+							$unpublished = \npdc\view\Base::checkUnpublished(false);
+						}
+						echo ' - <a href="#" onclick="openOverlay(\''.BASE_URL.'/overlay/editor\')">Editor tools'
+							. ($unpublished > 0 ? '<span class="unpublished">'.$unpublished.'</span>' : '')
+							. '</a>';
 					}
 					echo ' - <a href="?logout">Log out</a>';
 				} else {
