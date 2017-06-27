@@ -97,29 +97,32 @@ class Base {
 						switch($this->args[2]){
 							case 'dosubmit':
 								$data = $this->model->getById($this->args[1], 'draft');
-								if($data !== false){
+								if($data === false){
+									$_SESSION['notice'] = 'No draft was found';
+								} else {
 									$this->model->setStatus($this->args[1], 'draft', 'submitted', $_GET['comment']);
 									$_SESSION['notice'] = 'You record has been submitted for review';
-									
-								} else {
-									$_SESSION['notice'] = 'No draft was found';
-								}
-								//send mail to NPDC
-								$mail = new \npdc\lib\Mailer();
-								$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
-								$mail->subject(ucfirst($this->name).' for review');
-								$text = 'Dear admin'.",\r\n\r"
-									. 'Please review the '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args[1]."\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
-	
-								$mail->text($text);
-								$mail->send();
+									//send mail to NPDC
+									$mail = new \npdc\lib\Mailer();
+									$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
+									$mail->subject(ucfirst($this->name).' for review');
+									$text = 'Dear admin'.",\r\n\r"
+										. 'Please review the '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args[1]."\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 		
+									$mail->text($text);
+									$mail->send();
+								}
+								\npdc\view\Base::checkUnpublished();
 								header('Location: '.BASE_URL.'/'.$this->name.'/'.$this->args[1].'/submitted');
 								die();
 							case 'publish':
 								$prevState = (\npdc\config::$reviewBeforePublish ? 'submitted' : 'draft');
 								$data = $this->model->getById($this->args[1], $prevState);
-								if($data !== false && ($this->session->userLevel === NPDC_ADMIN || !\npdc\config::$reviewBeforePublish)){
+								if($data === false) {
+									$_SESSION['notice'] = 'No version foud to publish';
+								} elseif ($this->session->userLevel < NPDC_ADMIN & \npdc\config::$reviewBeforePublish) {
+									$_SESSION['notice'] = 'You have insufficient rights to publish';
+								} else {
 									$this->model->setStatus($this->args[1], 'published', 'archived');
 									$this->model->setStatus($this->args[1], $prevState, 'published', $_GET['comment']);
 									$_SESSION['notice'] = 'The record has been published';
@@ -138,6 +141,7 @@ class Base {
 										$mail->send();
 									}
 								}
+								\npdc\view\Base::checkUnpublished();
 								header('Location: '.BASE_URL.'/'.$this->name.'/'.$this->args[1]);
 								die();
 							case 'cancel':
