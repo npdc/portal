@@ -119,3 +119,13 @@ function checkUrl($url, $protocol = 'http://'){
 	return parse_url($url, PHP_URL_SCHEME) === null ?
 		$protocol . $url : $url;
 }
+
+function parseLon($lon){
+	while($lon > 180){
+		$lon -= 360;
+	}
+	while($lon < -180){
+		$lon += 360;
+	}
+	return $lon;
+}
