@@ -65,6 +65,11 @@
 					},
 					"multiple": false
 				},
+				"title": {
+					"type": "text",
+					"label": "Dataset title",
+					"placeholder": "Dataset title"
+				},
 				"creator": {
 					"type": "text",
 					"label": "Dataset creator",
@@ -78,14 +83,6 @@
 					"hint": "Who processed the dataset",
 					"required": false,
 					"placeholder": "Editor"
-				},
-				"title": {
-					"type": "text",
-					"label": "Dataset title",
-					"required": false,
-					"placeholder": "title",
-					"hint": "Is dataset title",
-					"disabled": true
 				},
 				"series_name": {
 					"type": "text",
