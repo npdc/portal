@@ -77,7 +77,7 @@ if(CALLER === 'index'){
 	#explode $url if substr above exists
 	$args = ($url === false || strlen($url)<1)
 			? [] 
-			: explode('/', $url);
+			: explode('/', trim($url, " \t\n\r\0\x0B/"));
 
 	if($args[0] === 'home'){
 		unset($args[0]);
