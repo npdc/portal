@@ -352,7 +352,16 @@ class Form {
 	
 	private function textArea($id, $field){
 		if($field->allowMarkdown ?? false){
-			$input = '<span class="hint">You can use Markdown in this field</span>';
+			$input = '<span class="hint markdown">You can use Markdown in this field<div class="markdown"><p>#First level header</br>##Second level header<br/>###Third level header<br/>(Only 3 levels allowed)</p>
+			<p>Blank line creates new paragraph, double space at end of line creates newline</p>
+			
+			<p><strong>Bold</strong> text is created using double **asteriks** or __underscores__<br/>
+			<em>Italics</em> text is created using single *asteriks* or _underscores_<br/>
+			(Bold and italics can be combined by using 3 ***asteriks*** or ___underscores___)</p>
+			
+			<p>Ordered list can be created using numbers followed by a dot, ordered lists can be created by starting each line of the list with a * (Asteriks), - (minus) or + (plus). Lists can be nested, to do so you need to properly indent following lines.</p>
+			
+			<p><a href="https://daringfireball.net/projects/markdown/syntax">Full documentation</a></div></span>';
 		}
 		$input .= '<table><tr><td style="width:50%"><textarea rows="'
 			.(isset($field->rows) ? $field->rows : 6)

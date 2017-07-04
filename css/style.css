@@ -1328,6 +1328,28 @@ fieldset.new {
   text-decoration: underline;
 }
 
+.hint.markdown {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+}
+
+.hint.markdown:hover div {
+  display: block;
+}
+
+.hint.markdown div {
+  cursor: default;
+  text-decoration: none;
+  display: none;
+  position: absolute;
+  background: white;
+  z-index: 999;
+  border: solid 1px #3b6daa;
+  padding: 5px;
+  max-width: 800px;
+}
+
 .counter {
   font-size: 80%;
   font-style: italic;
