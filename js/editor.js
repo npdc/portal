@@ -742,6 +742,23 @@ $().ready(function(){
 			$('textarea[name='+$(this).parent().attr('data-target')+']').val($(this).text());
 		}
 	});
+
+	showDown = {
+		parser: new showdown.Converter(),
+		doParse: function(text){
+			return this.parser.makeHtml(text)
+				.replace('h1', 'h4')
+				.replace('h2', 'h5')
+				.replace('h3', 'h6')
+		}
+	};
+	$('textarea[data-markdown=true]')
+		.each(function(){
+			$(this).parent().next().html(showDown.doParse($(this).val()))
+		})
+		.on('keyup', function(){
+			$(this).parent().next().html(showDown.doParse($(this).val()));
+		});
 });
 
 function createButton(element){

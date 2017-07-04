@@ -351,16 +351,20 @@ class Form {
 	}
 	
 	private function textArea($id, $field){
-		$input .= '<textarea rows="'
+		if($field->allowMarkdown ?? false){
+			$input = '<span class="hint">You can use Markdown in this field</span>';
+		}
+		$input .= '<table><tr><td style="width:50%"><textarea rows="'
 			.(isset($field->rows) ? $field->rows : 6)
 			.'" '
 			. (property_exists($field, 'max_length') ? 'maxlength='.$field->max_length.' ' : '')
 			. (property_exists($field, 'permittedChars') ? 'data-permitted-chars="'.$field->permittedChars.'" ' : '')
 			. 'placeholder="'.$field->placeholder.($field->hasSuggestions ? ' You can click a suggestion below to fill it in and edit it to your needs or provide your own value' : '').'" name="'.$id.'" '. ' class="'.$this->class.'"'
 			. $this->attr
+			. ($field->allowMarkdown ?? false ? 'data-markdown="true"' : '')
 			. '>'
 			.(isset($_SESSION[$this->formId]['data'][$id]) ? $_SESSION[$this->formId]['data'][$id] : '')
-			.'</textarea>';
+			.'</textarea></td><td style="background-color:white"></td></tr></table>';
 		if($field->hasSuggestions ?? false){
 			$input .= '<ul class="suggestions'.(isset($_SESSION[$this->formId]['data'][$id]) ? '' : ' show').'" data-target="'.$id.'" ><li>Suggestions (Click a suggestion to put it in the field above, click this header to show/hide the suggestions)</li>';
 			$model = new \npdc\model\Suggestion();

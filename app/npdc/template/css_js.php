@@ -13,6 +13,7 @@ $js = [
 	'external/select2.full.min',
 	'external/jquery.inputmask.bundle.min',
 	'external/ol',
+	'external/showdown.min',
 	['npdc', '.min']
 ];
 	
