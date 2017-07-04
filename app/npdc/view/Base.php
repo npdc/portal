@@ -11,10 +11,15 @@ class Base {
 	protected $vocab;
 	protected $data;
 	protected $model;
-
+	private $parseDown;
 
 	public function __construct() {
 		$this->vocab = new \npdc\lib\Vocab();
+		$this->parseDown = new \Parsedown();
+	}
+
+	public function parseDown($text){
+		return str_replace(['h1', 'h2', 'h3'], ['h4', 'h5', 'h6'],$this->parseDown->text($text));
 	}
 
 	public static function checkUnpublished($list = true){

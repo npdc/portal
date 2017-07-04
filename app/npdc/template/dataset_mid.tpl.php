@@ -7,7 +7,7 @@ include 'dataset/citation.php';
 	<h4>Dif id</h4>
 	<p><?=$this->data['dif_id']?></p>
 </section>
-	
+
 <?php
 $parts = [
 	['Summary', 'field', 'summary'],
@@ -19,11 +19,11 @@ $parts = [
 	['Dataset progress and usage', 'file', 'usage'],
 	['Projects, publications and other links', 'file', 'references']
 ];
-$parseDown = new \Parsedown();
+
 foreach($parts as $part){
 	$content = '';
 	if($part[1] === 'field' && !empty($this->data[$part[2]])){
-		$content = '<p>'.str_replace(['h1', 'h2', 'h3'], ['h4', 'h5', 'h6'],$parseDown->text($this->data[$part[2]])).'</p>';
+		$content = '<p>'.$this->parseDown($this->data[$part[2]]).'</p>';
 	} elseif($part[1] === 'file'){
 		ob_start();
 		include 'dataset/'.$part[2].'.php';

@@ -72,7 +72,8 @@
 			"type": "textarea",
 			"label": "Project summary",
 			"placeholder": "Summary",
-			"rows":10
+			"rows":10,
+			"allowMarkdown": true
 		},
 		"keywords":{
 			"type": "multitext",

@@ -5,7 +5,7 @@
  */
 
 ?><h4>Abstract</h4>
-<p><?=nl2br($this->data['abstract'])?></p>
+<p><?=$this->parseDown($this->data['abstract'])?></p>
 
 <h4>Authors</h4>
 <?php
