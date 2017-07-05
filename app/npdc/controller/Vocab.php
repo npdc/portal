@@ -23,7 +23,7 @@ class Vocab {
 			if($this->curl->status()['http_code'] === 200){
 				foreach($res->scheme as $scheme){
 					echo $scheme['id'].': '.$scheme['updateDate'].'<br/>';
-					if($this->model->getVocab((int)$scheme['id']) === false){
+					if($this->model->getVocab($scheme['name']) === false){
 						$this->model->addVocab(['vocab_id'=>(int)$scheme['id'], 'vocab_name'=>(string)$scheme['name'], 'last_update_date'=>(string)$scheme['updateDate']]);
 					} else {
 						$this->model->updateVocab((int)$scheme['id'], ['vocab_name'=>(string)$scheme['name'], 'last_update_date'=>(string)$scheme['updateDate']]);
@@ -39,6 +39,7 @@ class Vocab {
 		foreach($vocabs as $vocab){
 			echo 'Starting with '.$vocab['vocab_name'].' - '.$vocab['vocab_id']."\r\n";
 			$url = 'https://gcmdservices.gsfc.nasa.gov/static/kms/'.$vocab['vocab_name'].'/'.$vocab['vocab_name'].'.csv';
+			$url = 'https://gcmdservices.gsfc.nasa.gov/kms/concepts/concept_scheme/'.$vocab['vocab_name'].'?format=csv';
 			$csv = str_getcsv($this->curl->get($url), "\n");
 			$comment_lines = 1;
 			$keys = str_getcsv($csv[$comment_lines]);

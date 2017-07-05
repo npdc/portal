@@ -13,7 +13,11 @@ class Vocab {
 	}
 	
 	public function getVocab($id){
-		return $this->fpdo->from('vocab', $id)->fetch();
+		if(is_numeric($id)){
+			return $this->fpdo->from('vocab', $id)->fetch();
+		} else {
+			return $this->fpdo->from('vocab')->where('vocab_name', $id)->fetch();
+		}
 	}
 	
 	public function getUpdatable(){
@@ -31,7 +35,15 @@ class Vocab {
 	}
 	
 	public function updateVocab($id, $data){
-		return $this->fpdo->update('vocab', $data, $id)->execute();
+		if(is_numeric($id)){
+			return $this->fpdo->update('vocab', $data, $id)->execute();
+		} else {
+			return $this->fpdo
+				->update('vocab')
+				->where('vocab_name', $id)
+				->set($data)
+				->execute();
+		}
 	}
 	
 	public function getTermById($tbl, $id){
