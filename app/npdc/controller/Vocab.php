@@ -48,8 +48,8 @@ class Vocab {
 				$row = array_combine($keys, str_getcsv($row));
 				$uuid = $row['UUID'];
 				if(!empty($uuid)){
-					switch($vocab['vocab_id']){
-						case 341: //chronounits
+					switch($vocab['vocab_name']){
+						case 'chronounits':
 							$tbl = 'vocab_chronounit';
 							$values = ['eon'=>$this->setValue($row['Eon'])
 								, 'era'=>$this->setValue($row['Era'])
@@ -58,7 +58,7 @@ class Vocab {
 								, 'stage'=>$this->setValue($row['Stage'])
 								];
 							break;
-						case 343: //locations
+						case 'locations':
 							$tbl = 'vocab_location';
 							$values = ['location_category'=>$this->setValue($row['Location_Category'])
 								, 'location_type'=>$this->setValue($row['Location_Type'])
@@ -67,7 +67,7 @@ class Vocab {
 								, 'location_subregion3'=>$this->setValue($row['Location_Subregion3'])
 								];
 							break;
-						case 347: //platforms
+						case 'platforms':
 							$tbl = 'vocab_platform';
 							$values = ['category'=>$this->setValue($row['Category'])
 								, 'series_entity'=>$this->setValue($row['Series_Entity'])
@@ -75,40 +75,40 @@ class Vocab {
 								, 'long_name'=>$this->setValue($row['Long_Name'])
 								];
 							break;
-						case 349: //instrument
+						case 'instruments':
 							$tbl = 'vocab_instrument';
 							$values = ['category'=>$this->setValue($row['Category'])
 								, 'class'=>$this->setValue($row['Class'])
 								, 'type'=>$this->setValue($row['Type'])
-								, 'subtype'=>$this->$this->setValue($row['Subtype'])
+								, 'subtype'=>$this->setValue($row['Subtype'])
 								, 'short_name'=>$this->setValue($row['Short_Name'])
 								, 'long_name'=>$this->setValue($row['Long_Name'])
 								];
 							break;
-						case 357: //iso topic
+						case 'isotopiccategory':
 							$tbl = 'vocab_iso_topic_category';
 							//TODO andere databron inbouwen!!!!
 							continue 2;
 							break;
-						case 359:
+						case 'rucontenttype':
 							$tbl = 'vocab_url_type';
 							$values = ['type'=>$this->setValue($row['Type'])
 								,'subtype'=>$this->setValue($row['Subtype'])
 								];
 							break;
-						case 361: //horizontal resolution
+						case 'horizontalresolutionrange':
 							$tbl = 'vocab_res_hor';
-							$values = ['range'=>$this->setValue($row['Horizontal_Resolution_Range'])];
+							$values = ['`range`'=>$this->setValue($row['Horizontal_Resolution_Range'])];
 							break;
-						case 363: //horizontal resolution
+						case 'verticalresolutionrange':
 							$tbl = 'vocab_res_vert';
-							$values = ['range'=>$this->setValue($row['Vertical_Resolution_Range'])];
+							$values = ['`range`'=>$this->setValue($row['Vertical_Resolution_Range'])];
 							break;
-						case 365: //horizontal resolution
+						case 'temporalresolutionrange':
 							$tbl = 'vocab_res_time';
-							$values = ['range'=>$this->setValue($row['Temporal_Resolution_Range'])];
+							$values = ['`range`'=>$this->setValue($row['Temporal_Resolution_Range'])];
 							break;
-						case 419: //science keywords
+						case 'sciencekeywords':
 							$tbl = 'vocab_science_keyword';
 							$values = ['category'=>$this->setValue($row['Category'])
 								, 'topic'=>$this->setValue($row['Topic'])
@@ -119,6 +119,8 @@ class Vocab {
 								, 'detailed_variable'=>$this->setValue($row['Detailed_Variable'])
 								];
 							break;
+						default:
+							continue 2;
 					}
 					$rec = $this->model->getTermByUUID($tbl, $uuid);
 					if($rec === false){
