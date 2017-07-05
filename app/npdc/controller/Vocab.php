@@ -26,7 +26,7 @@ class Vocab {
 					if($this->model->getVocab($scheme['name']) === false){
 						$this->model->addVocab(['vocab_id'=>(int)$scheme['id'], 'vocab_name'=>(string)$scheme['name'], 'last_update_date'=>(string)$scheme['updateDate']]);
 					} else {
-						$this->model->updateVocab((int)$scheme['id'], ['vocab_name'=>(string)$scheme['name'], 'last_update_date'=>(string)$scheme['updateDate']]);
+						$this->model->updateVocab($scheme['name'], ['vocab_name'=>(string)$scheme['name'], 'last_update_date'=>(string)$scheme['updateDate']]);
 					}
 				}
 				$this->model->updateVocab(1, ['last_update_local'=>date('Y-m-d')]);
