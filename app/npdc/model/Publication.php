@@ -90,7 +90,7 @@ class Publication{
 		return $final;
 	}
 	
-	public function getAuthors($publication_id, $publication_version){
+	public function getAuthors($publication_id, $publication_version, $names=2){
 		$res = $this->fpdo
 			->from('publication_person')
 			->join('person')->select('CASE WHEN surname IS NULL THEN name ELSE surname || \', \' || initials END AS name')
@@ -99,18 +99,24 @@ class Publication{
 			->where('(publication_version_max IS NULL OR publication_version_max >= ?)', $publication_version)
 			->orderBy('sort')
 			->fetchAll();
-		switch(count($res)){
-			case '1':
-				$return = $res[0]['name'];
-				break;
-			case '2':
-				$return = $res[0]['name'].' &amp; '.$res[1]['name'];
-				break;
-			case '3':
-				$return = $res[0]['name'].', '.$res[1]['name'].', &amp; '.$res[2]['name'];
-				break;
-			default:
-				$return = $res[0]['name'].', '.$res[1]['name'].', et al.';
+		$c = count($res);
+		if($c === 1){
+			$return = $res[0]['name'];
+		} elseif ($c === 2){
+			$return = $res[0]['name'].' &amp; '.$res[1]['name'];
+		} else {
+			$return = '';
+			if(!is_numeric($names) || $names < 1 || is_nan($names)){
+				$names = 1;
+			}
+			for($i=0;$i<min($c-1, $names);$i++){
+				$return .= ($i>0 ? ', ' : '').$res[$i]['name'];
+			}
+			if($c <= $names){
+				$return .= ', &amp; '.$res[$i]['name'];
+			} else {
+				$return .= ', et al.';
+			}
 		}
 		return $return;
 	}
