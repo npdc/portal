@@ -341,6 +341,7 @@ class Dataset{
 	public function getLinks($id, $version, $getData = false){
 		$q =$this->fpdo
 			->from('dataset_link')
+			->join('vocab_url_type USING(vocab_url_type_id)')->select('vocab_url_type.*')
 			->where('dataset_id = ?', $id)
 			->where('dataset_version_min <= ?',$version)
 			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $version);
