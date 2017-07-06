@@ -112,4 +112,12 @@ class Vocab {
 		}
 		return $q->fetchAll();
 	}
+
+	public function getIDNNode($location_id){
+		return $this->fpdo
+			->from('vocab_idn_node')
+			->join('vocab_location_vocab_idn_node USING(vocab_idn_node_id)')
+			->where('vocab_location_id', $location_id)
+			->fetchAll();
+	}
 }
