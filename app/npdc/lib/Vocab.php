@@ -84,4 +84,8 @@ class Vocab {
 		}
 		return ucwords(strtolower(implode(' > ', $parts)));
 	}
+
+	public function getIDNNodes($location_id){
+		return $this->model->getIDNNode($location_id);
+	}
 }

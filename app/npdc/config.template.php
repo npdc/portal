@@ -73,4 +73,6 @@ class config {
 	public static $loginDisabledMessage = 'Login is disabled because of maintenance. We expect to be finished Friday 12 May at 11 am.';
 
 	public static $cronKey = '';//a random key to prevent cron runs from unauthorized persons
+
+	public static $dataCenter = [];//default datacenter(s) for dif record if no other datacenter provided as <organization_id>=>[<person_id(s)>]
 }

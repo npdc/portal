@@ -92,16 +92,50 @@ class Dataset extends Base{
 		}
 	}
 
-	private function showXml(){
-		header('Content-Type: application/xml');
-		$xml = new \SimpleXMLElement('<xml/>');
-		
-		$dom = new \DOMDocument('1.0');
-		$dom->preserveWhiteSpace = false;
-		$dom->formatOutput = true;
-		$dom->loadXML($xml->asXML());
-		echo $dom->saveXML();
 
+	private function displayDataCenter($organization_id){
+		$organization = $this->organizationModel->getById($organization_id);
+		$return = [
+			'Organization_Type'=>'DISTRIBUTOR',
+			'Organization_Name'=>[
+				'Short_Name'=>$organization['dif_code'],
+				'Long_Name'=>$organization['organization_name']
+			],
+			'Organization_Url'=>$organization['website']
+		];
+		return $return;
+	}
+	
+	private function displayDataCenterPersonnel($person_id){
+		$person = $this->personModel->getById($person_id);
+		$return = [
+			'Role'=>'DATA CENTER CONTACT',
+			'First_Name'=>$person['given_name'] ?? $person['initials'],
+			'Last_Name'=>$person['surname'],
+			'Email'=>$person['mail']
+		];
+		$organizationDetail = $this->organizationModel->getById($person['organization_id']);
+		foreach([
+			'organization_address'=>'Street_Address',
+			'organization_zip'=>'Postal_Code',
+			'organization_city'=>'City',
+			'country_name'=>'Country'
+		] as $source=>$target){
+			$return['Address'][$target] = $organizationDetail[$source];
+		}
+
+		foreach(['personal'=>'Direct Line', 'secretariat'=>'General Line', 'mobile'=>'Mobile Phone'] as $phoneType=>$label){
+			if($person['phone_'.$phoneType.'_public'] === 'yes' && !empty($person['phone_'.$phoneType])){
+				$return['Phone'][] = ['Type'=>$label, 'Number'=>$person['phone_'.$phoneType]];
+			}
+		}
+		return $return;
+	}
+
+	private function showXml(){
+		$this->personModel = new \npdc\model\Person();
+		$this->organizationModel = new \npdc\model\Organization();
+		include('template/dataset/xml.php');
 		die();
 	}
 
