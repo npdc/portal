@@ -90,6 +90,12 @@ class Vocab {
 							//TODO andere databron inbouwen!!!!
 							continue 2;
 							break;
+						case 'idnnode':
+							$tbl = 'vocab_idn_node';
+							$values = ['short_name'=>$this->setValue($row['Short_Name']),
+								'long_name'=>$this->setValue($row['Long_Name'])
+							];
+							break;
 						case 'rucontenttype':
 							$tbl = 'vocab_url_type';
 							$values = ['type'=>$this->setValue($row['Type'])
@@ -120,6 +126,7 @@ class Vocab {
 								];
 							break;
 						default:
+							echo $vocab['vocab_name'].' not implemented';
 							continue 2;
 					}
 					$rec = $this->model->getTermByUUID($tbl, $uuid);
