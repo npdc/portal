@@ -8,6 +8,12 @@ $data = [
 	'Summary'=>[
 		'Abstract'=>$this->data['summary'],
 		'Purpose'=>$this->data['purpose']
+	],
+	'Metadata_Dates'=>[
+		'Metadata_Creation'=>str_replace(' ', 'T', $this->model->getById($this->data['dataset_id'], 1)['published']),
+		'Metadata_Last_Revision'=>str_replace(' ', 'T', $this->data['published']),
+		'Data_Creation'=>$this->data['date_end'],
+		'Data_Last_Revision'=>'unknown'
 	]
 ];
 foreach([
