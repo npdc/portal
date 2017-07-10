@@ -133,7 +133,7 @@ class Person{
 	
 	public function usePasswordNew($id){
 		$this->fpdo->update('account_new')
-			->set(['used_time'=>'now()', 'expire_reason'=>'Used'])
+			->set(['used_time'=>date('Y-m-d h:i:s'), 'expire_reason'=>'Used'])
 			->where('account_new_id', $id)
 			->execute();
 	}
@@ -175,7 +175,7 @@ class Person{
 
 	public function usePasswordReset($account_reset_id){
 		$this->fpdo->update('account_reset')
-			->set(['used_time'=>'now()', 'expire_reason'=>'Used'])
+			->set(['used_time'=>date('Y-m-d h:i:s'), 'expire_reason'=>'Used'])
 			->where('account_reset_id', $account_reset_id)
 			->execute();
 	}
