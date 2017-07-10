@@ -87,7 +87,7 @@ class Register extends Login{
 						} else {
 							if(!empty($_POST['person'])){
 								$person_id = $_POST['person'];
-								$this->model->updatePerson(['password'=>password_hash($_POST['password'], PASSWORD_DEFAULT)]);
+								$this->model->updatePerson(['password'=>password_hash($_POST['password'], PASSWORD_DEFAULT)], $person_id);
 							} else {
 								$person_id = $this->model->insertPerson([
 									'name'=>$_POST['name'],
