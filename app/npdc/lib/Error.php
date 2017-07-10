@@ -16,7 +16,7 @@ class Error {
 		
 		$function = debug_backtrace()[1]['class'].'::'.debug_backtrace()[1]['function'].' ('.debug_backtrace()[0]['file'].':'.  debug_backtrace()[0]['line'].')';
 		$caller = debug_backtrace()[2]['class'].'::'.debug_backtrace()[2]['function'].' ('.debug_backtrace()[1]['file'].':'.  debug_backtrace()[2]['line'].')';
-		if(DEBUG){
+		if(NPDC_DEV){
 			$_SESSION['errors'] .= $error.'<br/>- '.$function.'<br/>&nbsp;&nbsp;- '.$caller.'<br/>';
 		}
 		if($fatal){
