@@ -130,7 +130,7 @@ class Base {
 									if(\npdc\config::$reviewBeforePublish){
 										$this->sendSubmitterMail($data, 'published');
 									} else {
-										$submitter = $this->model->getLastStatusChange($this->args[1], $data[$this->name.'_version'], 'submitted');
+										$submitter = $this->model->getLastStatusChange($this->args[1], $data[$this->name.'_version'], 'published');
 										$mail = new \npdc\lib\Mailer();
 										$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 										$mail->subject(ucfirst($this->name).' published');
