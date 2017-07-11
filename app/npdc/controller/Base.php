@@ -66,6 +66,10 @@ class Base {
 							$errors = [];
 							$this->id = $this->args[1];
 							$baseData = $this->model->getById($this->id, 'draft');
+							if($baseData === false){
+								header('Location: '.BASE_URL.'/'.$this->name.'/'.$this->id);
+								die();
+							}
 							$this->version = $baseData[$this->name.'_version'];
 							$_SESSION['warnings'] = [];
 							foreach($this->pages as $page=>$title){
