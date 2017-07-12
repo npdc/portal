@@ -165,7 +165,7 @@ class Dataset extends Base{
 			$v = $this->data['dataset_version'];
 			$_SESSION['notice'] .= 'See version <select id="versionSelect" style="width:auto">';
 			foreach($this->versions as $version){
-				$_SESSION['notice'] .= '<option value="'.BASE_URL.'/dataset/'.$dataset.'/'.$version['dataset_version'].'" '
+				$_SESSION['notice'] .= '<option value="'.BASE_URL.'/dataset/'.$this->data['dataset_id'].'/'.$version['dataset_version'].'" '
 					. (in_array($v, [$version['dataset_version'], $version['record_status']]) ? 'selected=true' : '')
 					. '>'.$version['dataset_version'].' - '.$version['record_status'].'</option>';
 			}
