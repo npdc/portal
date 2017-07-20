@@ -248,7 +248,7 @@ class Person{
 		$query = $this->fpdo
 			->from('person');
 		if(strlen($string) > 0){
-			$query->where('name REGEXP ?', $string);
+			$query->where('name REGEXP ?', htmlentities($string));
 		}
 		$query->orderBy('name');
 		if(is_array($exclude) && count($exclude) > 0){
