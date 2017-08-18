@@ -361,9 +361,9 @@ class Form {
 			
 			<p>Ordered list can be created using numbers followed by a dot, ordered lists can be created by starting each line of the list with a * (Asteriks), - (minus) or + (plus). Lists can be nested, to do so you need to properly indent following lines.</p>
 			
-			<p><a href="https://daringfireball.net/projects/markdown/syntax">Full documentation</a></div></span>';
+			<p><a href="https://daringfireball.net/projects/markdown/syntax">Full documentation</a></div></span><table><tr><td style="width:50%">';
 		}
-		$input .= '<table><tr><td style="width:50%"><textarea rows="'
+		$input .= '<textarea rows="'
 			.(isset($field->rows) ? $field->rows : 6)
 			.'" '
 			. (property_exists($field, 'max_length') ? 'maxlength='.$field->max_length.' ' : '')
@@ -373,7 +373,10 @@ class Form {
 			. ($field->allowMarkdown ?? false ? 'data-markdown="true"' : '')
 			. '>'
 			.(isset($_SESSION[$this->formId]['data'][$id]) ? $_SESSION[$this->formId]['data'][$id] : '')
-			.'</textarea></td><td style="background-color:white"></td></tr></table>';
+			.'</textarea>';
+		if($field->allowMarkdown ?? false){
+			$input .='</td><td style="background-color:white"></td></tr></table>';
+		}
 		if($field->hasSuggestions ?? false){
 			$input .= '<ul class="suggestions'.(isset($_SESSION[$this->formId]['data'][$id]) ? '' : ' show').'" data-target="'.$id.'" ><li>Suggestions (Click a suggestion to put it in the field above, click this header to show/hide the suggestions)</li>';
 			$model = new \npdc\model\Suggestion();
