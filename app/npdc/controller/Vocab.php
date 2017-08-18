@@ -45,6 +45,9 @@ class Vocab {
 			$keys = str_getcsv($csv[$comment_lines]);
 			$data = array_slice($csv, $comment_lines+1);
 			foreach($data as $row){
+				if(count($keys) !== count(str_getcsv($row))){
+					break;
+				}
 				$row = array_combine($keys, str_getcsv($row));
 				$uuid = $row['UUID'];
 				if(!empty($uuid)){
