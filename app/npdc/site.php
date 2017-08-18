@@ -25,6 +25,9 @@ if(BASE_URL === '/npdc_dev'){
 
 #catch url's from the old website and redirect
 if(CALLER === 'index' && array_key_exists('page', $_GET)){
+	if(strpos($_GET['page'], '..') !== false || strpos($_GET['page'], '/') !== false){
+		die('ILLEGAL URL');
+	}
 	//header("HTTP/1.1 301 Moved Permanently"); 
 	switch (strtolower($_GET['page'])){
 		case 'project_list':
