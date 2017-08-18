@@ -759,6 +759,14 @@ $().ready(function(){
 		.on('keyup', function(){
 			$(this).parent().next().html(showDown.doParse($(this).val()));
 		});
+	$('.hint.markdown').click(function(){
+		hint = $(this).next('div.markdownHelp');
+		if(hint.is(':visible')){
+			hint.slideUp();
+		} else {
+			hint.slideDown();
+		}
+	})
 });
 
 function createButton(element){

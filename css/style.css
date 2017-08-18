@@ -1334,20 +1334,13 @@ fieldset.new {
   cursor: pointer;
 }
 
-.hint.markdown:hover div {
-  display: block;
-}
-
-.hint.markdown div {
+div.markdownHelp {
   cursor: default;
   text-decoration: none;
   display: none;
-  position: absolute;
   background: white;
-  z-index: 999;
   border: solid 1px #3b6daa;
   padding: 5px;
-  max-width: 800px;
 }
 
 .counter {
