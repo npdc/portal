@@ -10,7 +10,8 @@ $colors = [
 	'fg'     => [23,62,105],
 	'border' => [198,215,235],
 	'line'   => [59,109,170,100],
-	'junk'   => [59,79,170,100]
+	'junk'   => [59,79,170,100],
+	'error'  => [255,0,0]
 ];
 
 $width = 240;//breedte afbeelding
@@ -35,36 +36,45 @@ foreach($colors as $id=>$color){
 }
 imagefill($img,0,0,$bg);
 
-$font = 'fonts/'.$fonts[rand(0,count($fonts)-1)].'.ttf';
-
-/* noise */
-$str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456890';
-for($i=0;$i<$noise;$i++){
-	imagettftext($img, rand($fontsize-1,$fontsize+1),rand($rotatie[0], $rotatie[1]), rand(6,$width-15), rand(15, $height-6), $junk, $font, $str{rand(0, strlen($str)-1)});
-}
-
 session_start();
-$captcha = $_SESSION[$_GET['id']]['captcha'];
-session_write_close();
+if(isset($_SESSION[$_GET['id']]['captcha'])){
+	$captcha = $_SESSION[$_GET['id']]['captcha'];
+	session_write_close();
 
-$characterWidth = $width/strlen($captcha);
-
-for($i=0;$i<strlen($captcha);$i++){
-	imagettftext($img, rand($fontsize-1,$fontsize+1), rand($rotatie[0],$rotatie[1]), $characterWidth*$i+rand(6,$characterWidth-15), rand(15,$height-6), $fg, $font, $captcha{$i});
-}
-
-/*lijntjes trekken*/
-for($i=0;$i<$lines;$i++){
-	$y = rand(0,$height-1);
-	$y2 = $y+rand(10,20)*rand(-1,1);
-	imageline($img, 0,$y,$width,$y2,$line);
+	$font = 'fonts/'.$fonts[rand(0,count($fonts)-1)].'.ttf';
 	
-	$x = (rand(0,1) == 0) ? -1*rand(0,10) : $width+rand(0,10);
-	$y = (rand(0,1) == 0) ? -1*rand(0,10) : $height+rand(0,10);
-	imagearc($img, $x, $y, 2*rand(100, $width), 2*rand(15, $height), 0,360, $line);
+	/* noise */
+	$str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456890';
+	for($i=0;$i<$noise;$i++){
+		imagettftext($img, rand($fontsize-1,$fontsize+1),rand($rotatie[0], $rotatie[1]), rand(6,$width-15), rand(15, $height-6), $junk, $font, $str{rand(0, strlen($str)-1)});
+	}
+
+
+	$characterWidth = $width/strlen($captcha);
+
+	for($i=0;$i<strlen($captcha);$i++){
+		imagettftext($img, rand($fontsize-1,$fontsize+1), rand($rotatie[0],$rotatie[1]), $characterWidth*$i+rand(6,$characterWidth-15), rand(15,$height-6), $fg, $font, $captcha{$i});
+	}
+
+	/*lijntjes trekken*/
+	for($i=0;$i<$lines;$i++){
+		$y = rand(0,$height-1);
+		$y2 = $y+rand(10,20)*rand(-1,1);
+		imageline($img, 0,$y,$width,$y2,$line);
+		
+		$x = (rand(0,1) == 0) ? -1*rand(0,10) : $width+rand(0,10);
+		$y = (rand(0,1) == 0) ? -1*rand(0,10) : $height+rand(0,10);
+		imagearc($img, $x, $y, 2*rand(100, $width), 2*rand(15, $height), 0,360, $line);
+	}
+
+	imagerectangle($img,0,0,$width-1,$height-1,$border);
+		
+} else {
+	$font = 'fonts/'.$fonts[0].'.ttf';
+	
+	imagettftext($img, $fontsize, 0, 50, 25, $error, $font, 'No Captcha available');
 }
 
-imagerectangle($img,0,0,$width-1,$height-1,$border);
 header ('Content-type: image/png');
 header('Expires: Mon, 26 Jul 1990 05:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
