@@ -305,7 +305,10 @@ if(count($datacenters) === 0){
 	}
 } else {
 	foreach($datacenters as $i=>$datacenter){
-		$data['Data_Center'][$i] = $datacenter;
+		$data['Data_Center'][$i] = $this->displayDataCenter($datacenter['organization_id']);
+		foreach($this->model->getDataCenterPerson($datacenter['dataset_data_center_id'], $this->data['dataset_version']) as $person){
+			$data['Data_Center'][$i]['Personnel'][$person['person_id']] = $this->displayDataCenterPersonnel($person['person_id']);
+		}
 	}
 }
 
