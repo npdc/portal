@@ -494,7 +494,7 @@ class Publication{
 					}
 					break;
 				case 'url':
-					$values['url'] = $data['location_url'];
+					$values['url'] = $data['location_url'] ?? $data['url'];
 					break;
 				case 'date':
 					if(is_array($data['date'])){
