@@ -1,11 +1,9 @@
 @import "p_colors";
+@import "p_base";
 body {
+	background-color: white;
 	margin: 0px;
-	padding: 20px 0;
-	background: $color-accent-1;
-	background-position: top center;
-	background-size: cover;
-	overflow-y: scroll;
+	padding: 5px;
 	font-size: 16px;
 	font-family: Arial, Helvetica, sans-serif;
 	word-break: break-word;
@@ -15,12 +13,3 @@ body {
 	-moz-text-size-adjust:100%;
 	-ms-text-size-adjust:100%;
 }
-
-@import "p_base";
-
-@import "p_table";
-@import "p_blocks";
-@import "p_map";
-@import "p_form";
-
-@import "p_media.scss";

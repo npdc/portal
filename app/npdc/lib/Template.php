@@ -28,6 +28,6 @@ class Template {
 				$str = date('Y-m-d', strtotime($str));
 				break;
 		}
-		return htmlentities($str, \ENT_COMPAT, 'UTF-8');
+		return $str;
 	}
 }

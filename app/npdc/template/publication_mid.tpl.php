@@ -5,7 +5,7 @@
  */
 
 ?><h4>Abstract</h4>
-<p><?=$this->parseDown($this->data['abstract'])?></p>
+<p><?=$this->data['abstract']?></p>
 
 <h4>Authors</h4>
 <?php

@@ -309,7 +309,9 @@ $().ready(function(){
 								}
 								if($('#optionwrapper').parents('table').attr('data-new-url') !== undefined){
 									$('#optionwrapper').append($('<div>')
-											.html('<i>Add '+$('#optionwrapper').siblings('input').val()+'</i>')
+											.html('<i>Add '+$('#optionwrapper').siblings('input').val()
+												+($('#optionwrapper').parent('td').attr('data-freetext') === 'this' ? ' with details' : '')
+												+'</i>')
 											.attr('id', 'option_'+l)
 											.attr('value', 'new'));							
 									l += 1;
@@ -595,7 +597,7 @@ $().ready(function(){
 		} else {
 			$(this).data('newRowBaseId', $(this).find('[id$=_row_new]').attr('id'));
 			$(this).data('clone', $('#'+$(this).data('newRowBaseId')).clone());
-			$(this).data('newCount', 0);
+			$(this).data('newCount', -1);
 			$(this).find('[id*=_row_new_]').each(function(){
 				var c = parseInt($(this).attr('id').substring($(this).attr('id').lastIndexOf("_") + 1));
 				if(c > $(this).parents('table').data('newCount')){
@@ -743,30 +745,20 @@ $().ready(function(){
 		}
 	});
 
-	showDown = {
-		parser: new showdown.Converter(),
-		doParse: function(text){
-			return this.parser.makeHtml(text)
-				.replace('h1', 'h4')
-				.replace('h2', 'h5')
-				.replace('h3', 'h6')
+	$("textarea[data-tags]").each(function(){
+		switch($(this).attr('data-tags')){
+			case 'extended':
+				var toolbar = ["html", "|", "bold", "italic", "underline", "|", "p", "h1", "h2", "h3", "|", "subscript", "superscript", "|", "link", "unlink"];
+				break;
+			case 'default':
+				var toolbar = ["html", "|", "bold", "italic", "underline", "|", "p", "h4", "h5", "h6", "|", "subscript", "superscript", "|", "link", "unlink"];
+				break;
 		}
-	};
-	$('textarea[data-markdown=true]')
-		.each(function(){
-			$(this).parent().next().html(showDown.doParse($(this).val()))
-		})
-		.on('keyup', function(){
-			$(this).parent().next().html(showDown.doParse($(this).val()));
-		});
-	$('.hint.markdown').click(function(){
-		hint = $(this).next('div.markdownHelp');
-		if(hint.is(':visible')){
-			hint.slideUp();
-		} else {
-			hint.slideDown();
-		}
-	})
+		$(this).htmlarea({
+			css: baseUrl+'/css/textarea.css',
+			toolbar: toolbar
+			});
+	});
 });
 
 function createButton(element){
@@ -1085,7 +1077,7 @@ function addFieldset(id, setFocus){
 		clone.find('.lookuptable,.multivalue').each(function(){
 			$(this).data('newRowBaseId', $(this).find('[id$=_row_new]').attr('id'));
 			$(this).data('clone', $('#'+$(this).data('newRowBaseId')).clone());
-			$(this).data('newCount', 0);
+			$(this).data('newCount', -1);
 			$(this).find('[id*=_row_new_]').each(function(){
 				var c = parseInt($(this).attr('id').substring($(this).attr('id').lastIndexOf("_") + 1));
 				if(c > $(this).parents('table').data('newCount')){

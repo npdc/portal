@@ -23,9 +23,10 @@ $fields = ['date'=>'Date'
 
 foreach($fields as $id=>$label){
 	if(!empty($this->data[$id])){
+		$doi = substr($this->data[$id], strpos($this->data[$id], '10.'));
 		echo '<section class="inline">
 		<h4>'.$label.'</h4>
-		<p>'.($id === 'doi' ? '<a href="https://dx.doi.org/'.$this->data[$id].'">' : '').$this->data[$id].($id === 'doi' ? '</a>' : '').'</p>
+		<p>'.($id === 'doi' ? '<a href="https://doi.org/'.$doi.'">' : '').$doi.($id === 'doi' ? '</a>' : '').'</p>
 		</section>';
 	}
 }

@@ -55,11 +55,7 @@ class Form {
 		}
 		
 		$this->adminOverrule = array_key_exists('adminoverrule', $this->formData) && $this->formData['adminoverrule'] = 'adminoverrule';
-		array_walk_recursive($this->formData, 
-			function(&$value){
-				$value = htmlentities($value);
-			}
-		);
+		
 		foreach($this->form->fields as $id=>$field){
 			if($field->disabled ?? false){
 				continue;
@@ -357,7 +353,7 @@ class Form {
 			$hasValue = !empty(trim($this->value));
 		}
 		
-		$this->filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
+		$this->filter = FILTER_DEFAULT;
 		if(
 				(isset($field->disabled) && $field->disabled)
 				|| (isset($field->edit) && $field->edit === false)
@@ -395,7 +391,7 @@ class Form {
 							$this->addError($id.' 1', 'The start date you provided is not valid', 'Invalid start date for '.$field->label);
 						}
 						$res[1] = $this->checkDate($this->formData[$id][1], 'up');
-						if($required && empty($res[1])){
+						if(($field->endRequired ?? $required) && empty($res[1])){
 							$this->addError($id.' 2', 'The end date you provided is not valid', 'Invalid end date for '.$field->label);
 						}
 						if(!empty($res[0]) && !empty($res[1]) && $res[0] > $res[1]){

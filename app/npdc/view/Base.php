@@ -11,15 +11,9 @@ class Base {
 	protected $vocab;
 	protected $data;
 	protected $model;
-	private $parseDown;
-
+	
 	public function __construct() {
 		$this->vocab = new \npdc\lib\Vocab();
-		$this->parseDown = new \Parsedown();
-	}
-
-	public function parseDown($text){
-		return str_replace(['h1', 'h2', 'h3'], ['h4', 'h5', 'h6'],$this->parseDown->text($text));
 	}
 
 	public static function checkUnpublished($list = true){
@@ -79,26 +73,26 @@ class Base {
 				$return .= '<div class="screenonly">'.ucfirst($this->controller->name).'s with a striped background are not yet published but only visible to editors of that '.$this->controller->name.' and administrators.<br/>'.ucfirst($this->controller->name).'s with an * on the edit button have a draft version</div>'
 					. '<div class="printonly">'.ucfirst($this->controller->name).'s in <i>italics</i> are not yet published but only visible to editors of that '.$this->controller->name.' and administrators.</div>';
 			}
-            $return .= '<table class="'.$class.'"><thead><tr>';
-            foreach($columns as $column){
+			$return .= '<table class="'.$class.'"><thead><tr>';
+			foreach($columns as $column){
 				if(is_array($column)){
 					$column = $column[0];
 				}
-                $return .= '<td>'.$column.'</td>';
-            }
+				$return .= '<td>'.$column.'</td>';
+			}
 			if($editTable){
 				$return .= '<td></td>';
 			}
-            $return .= '</tr></thead>';
-            foreach($data as $item){
-                if($url[0] === 'content_type'){
-                    $id = strtolower($item['content_type']).'_id';
-                    $link = BASE_URL.'/'.strtolower($item['content_type']).'/'.$item[$id];
-                } else {
-                    $link = BASE_URL.'/'.$url[0].'/'.$item[$url[1]];
-                }
-                $return .= '<tr onclick="javascript:location.href=\''.$link.'\'" class="link'.($item['record_status'] === 'draft' && $item[$class.'_version'] === 1 ? ' draft': '').'">';
-                foreach($columns as $id=>$column){
+			$return .= '</tr></thead>';
+			foreach($data as $item){
+				if($url[0] === 'content_type'){
+					$id = strtolower($item['content_type']).'_id';
+					$link = BASE_URL.'/'.strtolower($item['content_type']).'/'.$item[$id];
+				} else {
+					$link = BASE_URL.'/'.$url[0].'/'.$item[$url[1]];
+				}
+				$return .= '<tr onclick="javascript:location.href=\''.$link.'\'" class="link'.($item['record_status'] === 'draft' && $item[$class.'_version'] === 1 ? ' draft': '').'">';
+				foreach($columns as $id=>$column){
 					if(is_array($column)){
 						if($column[1] === 'array'){
 							$value = implode(', ', json_decode($item[$id]));
@@ -106,22 +100,22 @@ class Base {
 					} else {
 						$value = $item[$id];
 					}
-                    $return .= '<td>'.(strpos($value, '<') === false ? '<a href="'.$link.'">'.$value.'</a>' : $value).'</td>';
-                }
+					$return .= '<td>'.(strpos($value, '</a>') === false ? '<a href="'.$link.'">'.$value.'</a>' : $value).'</td>';
+				}
 				if($editTable){
 					$return .= '<td>'.($item['editor'] ? '<button onclick="javascript:event.stopPropagation();location.href=\''.$link.'/edit\'">Edit'.($item['hasDraft'] ? ' *' : '').'</button>' : '').'</td>';
 				}
 				$return .= '</tr>';
-            }
-            $return .= '<tfoot><tr>';
-            foreach($columns as $column){
-                $return .= '<td></td>';
-            }
+			}
+			$return .= '<tfoot><tr>';
+			foreach($columns as $column){
+				$return .= '<td></td>';
+			}
 			if($editTable){
 				$return .= '<td></td>';
 			}
-            $return .= '</tr></tfoot></table>';
-        }
+			$return .= '</tr></tfoot></table>';
+		}
 		
 		return $return;
 	}

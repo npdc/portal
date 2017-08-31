@@ -58,7 +58,7 @@
 			"label": "Abstract",
 			"placeholder": "The abstract of the publication",
 			"rows":10,
-			"allowMarkdown": true
+			"allowTags": "default"
 		},
 		"people": {
 			"type": "table",
@@ -81,7 +81,8 @@
 					"label": "Person",
 					"placeholder": "Start typing a name, suggestions will appear",
 					"edit": true,
-					"onSubmit": "people_organization_id"
+					"onSubmit": "people_organization_id",
+					"freeText": "this"
 				},
 				"organization_id": {
 					"type": "options",
@@ -91,12 +92,14 @@
 					"options": {},
 					"asList": true,
 					"newUrl": "organization",
-					"ajaxUrl": "lookup/organization"
+					"ajaxUrl": "lookup/organization",
+					"freeText": "hide"
 				},
 				"editor":{
 					"type": "checkbox",
 					"label": "Editor",
-					"required": false
+					"required": false,
+					"FreeText": "hide"
 				}
 			}
 		},

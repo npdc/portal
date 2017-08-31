@@ -27,6 +27,7 @@
 			"label": "Period",
 			"range": true,
 			"required": true,
+			"endRequired": false,
 			"hint": "Start and end dates of your project",
 			"min": null,
 			"max": null
@@ -48,7 +49,8 @@
 			"multiple": false,
 			"options": {},
 			"asList": true,
-			"required": false
+			"required": false,
+			"enabled": false
 		},
 		"science_field": {
 			"type": "text",
@@ -65,6 +67,7 @@
 				"Development": "Development",
 				"Pilot study": "Pilot study",
 				"Cooperation": "Cooperation",
+				"Umbrella project": "Umbrella project",
 				"Other": "Other"
 			}
 		},
@@ -73,7 +76,7 @@
 			"label": "Project summary",
 			"placeholder": "Summary",
 			"rows":10,
-			"allowMarkdown": true
+			"allowTags": "default"
 		},
 		"keywords":{
 			"type": "multitext",

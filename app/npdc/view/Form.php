@@ -351,18 +351,6 @@ class Form {
 	}
 	
 	private function textArea($id, $field){
-		if($field->allowMarkdown ?? false){
-			$input = '<span class="hint markdown">You can use Markdown in this field</span><div class="markdownHelp"><p>#First level header</br>##Second level header<br/>###Third level header<br/>(Only 3 levels allowed)</p>
-			<p>Blank line creates new paragraph, double space at end of line creates newline</p>
-			
-			<p><strong>Bold</strong> text is created using double **asteriks** or __underscores__<br/>
-			<em>Italics</em> text is created using single *asteriks* or _underscores_<br/>
-			(Bold and italics can be combined by using 3 ***asteriks*** or ___underscores___)</p>
-			
-			<p>Ordered list can be created using numbers followed by a dot, ordered lists can be created by starting each line of the list with a * (Asteriks), - (minus) or + (plus). Lists can be nested, to do so you need to properly indent following lines.</p>
-			
-			<p><a href="https://daringfireball.net/projects/markdown/syntax">Full documentation</a></div><table><tr><td style="width:50%">';
-		}
 		$input .= '<textarea rows="'
 			.(isset($field->rows) ? $field->rows : 6)
 			.'" '
@@ -370,13 +358,10 @@ class Form {
 			. (property_exists($field, 'permittedChars') ? 'data-permitted-chars="'.$field->permittedChars.'" ' : '')
 			. 'placeholder="'.$field->placeholder.($field->hasSuggestions ? ' You can click a suggestion below to fill it in and edit it to your needs or provide your own value' : '').'" name="'.$id.'" '. ' class="'.$this->class.'"'
 			. $this->attr
-			. ($field->allowMarkdown ?? false ? 'data-markdown="true"' : '')
+			. ($field->allowTags ?? false ? 'data-tags="'.$field->allowTags.'"' : '')
 			. '>'
 			.(isset($_SESSION[$this->formId]['data'][$id]) ? $_SESSION[$this->formId]['data'][$id] : '')
 			.'</textarea>';
-		if($field->allowMarkdown ?? false){
-			$input .='</td><td style="background-color:white"></td></tr></table>';
-		}
 		if($field->hasSuggestions ?? false){
 			$input .= '<ul class="suggestions'.(isset($_SESSION[$this->formId]['data'][$id]) ? '' : ' show').'" data-target="'.$id.'" ><li>Suggestions (Click a suggestion to put it in the field above, click this header to show/hide the suggestions)</li>';
 			$model = new \npdc\model\Suggestion();
@@ -459,7 +444,8 @@ class Form {
 						if($subfield->type === 'hidden'){
 							$input .= $this->hidden($id.'_'.$subid.$rowid, $_SESSION[$this->formId]['data'][$id.'_'.$subid.$rowid]);
 						} else {
-							$input .= '<td>'
+							$input .= '<td '. (property_exists($subfield, 'freeText') ? 'data-freetext="'.$subfield->freeText.'" ' :'')
+							.'>'
 								. $this->field($id.'_'.$subid.$rowid, $subfield, true)
 								.'</td>';
 						}
@@ -481,7 +467,8 @@ class Form {
 				if($subfield->type === 'hidden'){
 					$input .= $this->hidden($id.'_'.$subid.'_'.$rowid, $row[$subid] ?? null);
 				} else {
-					$input .= '<td>'.$this->field($id.'_'.$subid.'_'.$rowid, $subfield, true).'</td>';
+					$input .= '<td '. (property_exists($subfield, 'freeText') ? 'data-freetext="'.$subfield->freeText.'" ' :'')
+					.'>'.$this->field($id.'_'.$subid.'_'.$rowid, $subfield, true).'</td>';
 				}
 
 			}

@@ -4,7 +4,7 @@
  */
 
 ?><h4>Summary</h4>
-<p><?=$this->parseDown($this->data['summary'])?></p>
+<p><?=$this->data['summary']?></p>
 
 <h4>People involved</h4>
 <?php

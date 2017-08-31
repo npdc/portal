@@ -3,7 +3,6 @@
         "phpmailer/phpmailer": "^5.2",
         "fpdo/fluentpdo": "^1.1",
         "symm/gisconverter": "^1.0",
-        "moxiecode/plupload": "^2.3",
-        "erusev/parsedown": "^1.6"
+        "moxiecode/plupload": "^2.3"
     }
 }

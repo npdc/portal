@@ -24,7 +24,7 @@
 			"rows":10,
 			"hint": "We don't need an essay, but write this from the viewpoint, \"What if someone were to find and use my data in 100 years when I'm not around to answer questions - would they be able to?\".<br/>This metadata record and your dataset should be able to stand-alone - acronyms and abbreviations should be explained.",
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/summary.html",
-			"allowMarkdown": true
+			"allowTags": "default"
 
 		},
 		"purpose": {
@@ -34,7 +34,7 @@
 			"hint": "For what kind of usage is the data originaly collected",
 			"rows": 10,
 			"required": false,
-			"allowMarkdown": true
+			"allowTags": "default"
 		},
 		"iso_topic": {
 			"hint": "One or more topics from the list",

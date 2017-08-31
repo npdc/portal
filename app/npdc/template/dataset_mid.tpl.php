@@ -23,7 +23,7 @@ $parts = [
 foreach($parts as $part){
 	$content = '';
 	if($part[1] === 'field' && !empty($this->data[$part[2]])){
-		$content = '<p>'.$this->parseDown($this->data[$part[2]]).'</p>';
+		$content = $this->data[$part[2]];
 	} elseif($part[1] === 'file'){
 		ob_start();
 		include 'dataset/'.$part[2].'.php';

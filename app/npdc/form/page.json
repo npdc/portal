@@ -19,8 +19,8 @@
 		"content": {
 			"label": "Content",
 			"type": "textarea",
-			"hint": "Using html is permitted, please use &lt;p&gt; tags",
-			"rows": 30
+			"rows": 30,
+			"allowTags": "full"
 		},
 		"people": {
 			"type": "table",
