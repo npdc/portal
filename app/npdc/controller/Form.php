@@ -6,7 +6,8 @@
 
 namespace npdc\controller;
 
-use Symm\Gisconverter;
+require __DIR__.'/../../vendor/ezyang/htmlpurifier/library/HTMLPurifier.autoload.php';
+use Symm\Gisconverter, HTMLPurifier_Config, HTMLPurifier;
 
 class Form {
 	public $ok = true;
@@ -20,6 +21,14 @@ class Form {
 	private $dataType;
 	private $adminOverrule;
 
+	private $purifier_allowed = [
+		'full'=>null,//allows all
+		'default'=>'p,b,a[href],i,u,h4,h5,h6,sup,sub,br,div,*[style], em,strong', 
+		'italics'=>'i,em',
+		'none'=>''//allows none
+	];
+	private $purifiers = [];
+	
 	/** 
 	 * The basic constructor
 	 * @param string $formId the id of the form used in the $_SESSION
@@ -74,7 +83,7 @@ class Form {
 					$this->file($id, $field);
 					break;
 				default:
-					$this->formData[$id] = $this->field($id, $field, $field->required ?? true);
+					$this->formData[$id] = $this->purified($this->field($id, $field, $field->required ?? true), $field->allowTags);
 			}
 		}
 		unset($this->formData['formid']);
@@ -93,6 +102,18 @@ class Form {
 		} else {
 			$this->ok = count($this->errors) === 0;
 		}
+	}
+
+	private function purified($value, $allowTags = null){
+		$allowTags = $allowTags ?? 'none';
+		if(!array_key_exists($allowTags, $this->purifiers)){
+			$config = HTMLPurifier_Config::createDefault();
+			if(!is_null($this->purifier_allowed[$allowTags])){
+				$config->set('HTML.Allowed', $this->purifier_allowed[$allowTags]);
+			}
+			$this->purifers[$allowTags] = new HTMLPurifier($config);
+		}
+		return str_replace(['<div><br /></div>','div', '<p></p>'], ['','p', ''], $this->purifers[$allowTags]->purify('<p>'.$value.'</p>'));
 	}
 	
 	private function table($id, $field){
@@ -124,7 +145,7 @@ class Form {
 							foreach($field->fields as $subfieldId=>$subfield){
 								$key = $id.'_'.$subfieldId.$rowid.($rowid === '_new' ? '_'.$c : '');
 								unset($this->formData[$key]);
-							unset($this->errors[$key]);
+								unset($this->errors[$key]);
 							}
 						} else {
 							$c++;
@@ -431,9 +452,21 @@ class Form {
 					break;
 			}
 		}
-		return (is_array($this->value) || empty($this->value))
-				? $this->value 
-				: filter_var($this->value, $this->filter);
+		if(empty($this->value)){
+			$return = null;
+		} elseif(is_array($this->value)){
+			$return = $this->value;
+			foreach($return as &$value){
+				$value = $this->purified($value, $field->allowTags);
+			}
+		} else {
+			if($this->filter === FILTER_DEFAULT){
+				$return = $this->purified($this->value, $field->allowTags);
+			} else {
+				$return = filter_var($this->value, $this->filter);
+			}
+		}
+		return $return;
 	}
 	
 	/**
