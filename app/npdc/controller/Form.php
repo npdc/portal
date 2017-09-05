@@ -83,7 +83,7 @@ class Form {
 					$this->file($id, $field);
 					break;
 				default:
-					$this->formData[$id] = $this->purified($this->field($id, $field, $field->required ?? true), $field->allowTags);
+					$this->formData[$id] = $this->field($id, $field, $field->required ?? true);
 			}
 		}
 		unset($this->formData['formid']);
@@ -113,7 +113,10 @@ class Form {
 			}
 			$this->purifers[$allowTags] = new HTMLPurifier($config);
 		}
-		return str_replace(['<div><br /></div>','div', '<p></p>'], ['','p', ''], $this->purifers[$allowTags]->purify('<p>'.$value.'</p>'));
+		if(in_array($allowTags,['full', 'default'])){
+			$value = '<p>'.$value.'</p>';
+		}
+		return str_replace(['<div><br /></div>','div', '<p></p>'], ['','p', ''], $this->purifers[$allowTags]->purify($value));
 	}
 	
 	private function table($id, $field){
@@ -457,7 +460,9 @@ class Form {
 		} elseif(is_array($this->value)){
 			$return = $this->value;
 			foreach($return as &$value){
-				$value = $this->purified($value, $field->allowTags);
+				if(!empty($value)){
+					$value = $this->purified($value, $field->allowTags);
+				}
 			}
 		} else {
 			if($this->filter === FILTER_DEFAULT){
