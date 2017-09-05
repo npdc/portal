@@ -6,7 +6,8 @@
 		"title": {
 			"type": "text",
 			"label": "Project title",
-			"placeholder": "Title"
+			"placeholder": "Title",
+			"allowTags": "italic"
 		},
 		"acronym": {
 			"type": "text",

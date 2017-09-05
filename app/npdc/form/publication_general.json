@@ -7,7 +7,8 @@
 		"title": {
 			"type": "text",
 			"label": "Title",
-			"placeholder": "Title"
+			"placeholder": "Title",
+			"allowTags": "italic"
 		},
 		"date": {
 			"type": "date",

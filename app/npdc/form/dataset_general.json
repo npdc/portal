@@ -15,7 +15,8 @@
 			"type": "text",
 			"max_length": 220,
 			"label": "Title",
-			"placeholder": "Title"
+			"placeholder": "Title",
+			"allowTags": "italic"
 		},
 		"summary": {
 			"type": "textarea",
