@@ -106,3 +106,22 @@ table {
 		}
 	}
 }
+
+.parent, .child {
+	margin-left: 15px;
+	font-style: italic;
+	&:before {
+		content: '\251C\00A0';
+		display: inline-block;
+		margin-left: -15px;
+	}
+	&:last-of-type:before {
+		content: '\2514\00A0';
+	}
+}
+.related {
+	display: none;
+	&:before {
+		content: '\00A0*';
+	}
+}

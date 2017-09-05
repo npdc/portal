@@ -221,6 +221,29 @@ table.files td:first-child {
   background-color: #3b6daa;
 }
 
+.parent, .child {
+  margin-left: 15px;
+  font-style: italic;
+}
+
+.parent:before, .child:before {
+  content: '\251C\00A0';
+  display: inline-block;
+  margin-left: -15px;
+}
+
+.parent:last-of-type:before, .child:last-of-type:before {
+  content: '\2514\00A0';
+}
+
+.related {
+  display: none;
+}
+
+.related:before {
+  content: '\00A0*';
+}
+
 #page {
   max-width: 1240px;
   margin: 0px auto;

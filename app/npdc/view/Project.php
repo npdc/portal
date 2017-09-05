@@ -65,7 +65,24 @@ class Project extends Base{
 				? $_SESSION[$this->controller->formId]['data'] 
 				: null
 			);
-		$this->mid = $this->displayTable('project', $list
+		foreach($list as $i=>&$item){
+			$add = '';
+			$parent = $this->model->getParents($item['project_id']);
+			if(count($parent) > 0){
+				$add .= '<div class="parent">Subproject of \''.$parent[0]['title'].'\'</div>';
+			}
+			$children = $this->model->getChildren($item['project_id']);
+			if(count($children) > 0){
+				foreach($children as $child){
+					$add .= '<div class="child">'.$child['title'].'</div>';
+				}
+			}
+			if(!empty($add)){
+				$item['title'] .= '<div class="related"></div>'.$add;
+			}
+		}
+		$this->mid = '<div class="related"><i>Projects with related projects</i> <a href="javascript:toggleRelated(false)">Show related projects</a></div><div class="noRelated"><a href="javascript:toggleRelated(true)">Hide related projects</a></div>'
+			.$this->displayTable('project', $list
 				, ['nwo_project_id'=>'Project id',
 					'title'=>'Title',
 					'date_start'=>'Start date',

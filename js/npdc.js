@@ -254,3 +254,14 @@ function closeOverlay(){
 function openUrl(url){
 	parent.window.location.href = url;
 }
+
+function toggleRelated(visible){
+	if(visible){
+		$('.parent, .child, .noRelated').hide();
+		$('.related').css('display', 'inline-block');
+	} else {
+
+		$('.parent, .child, .noRelated').show();
+		$('.related').css('display', 'none');
+	}
+}
