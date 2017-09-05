@@ -64,6 +64,9 @@ class Dataset extends Base{
 
 	//Display a single dataset
 	public function showItem($dataset){
+		if(strpos($dataset, '.') !== false){
+			list($dataset, $this->args[2]) = explode('.', $dataset);
+		}
 		if($dataset !== 'new'){
 			$this->canEdit = isset($this->session->userId) && ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId));
 			$this->versions = $this->model->getVersions($dataset);

@@ -98,11 +98,7 @@ if(CALLER === 'index'){
 			break;
 		default://show a item of a type
 			$controllerName = ucfirst($args[0]);
-			if(strpos($args[1], '.') === false){
-				$id = $args[1];
-			} else {
-				list($id, $args[2]) = explode('.', $args[1]);
-			}
+			$id = $args[1];
 	}
 
 	//get the view
