@@ -56,7 +56,7 @@ if(count($spatialCoverages) > 0){
 						$txt .= '<i>'.ucfirst($metric).':</i> '.$spatialCoverage[$metric.'_min'].' - '.$spatialCoverage[$metric.'_max'].' '.$spatialCoverage[$metric.'_unit'].'<br/>';
 					}
 				}
-				$txt = '<strong>'.['Point'=>'Point', 'LineString'=>'Transect', 'Area'=>'Bounding Box', 'Polygon'=>'Polygon'][$spatialCoverage['type']].'</strong><br/>'.(empty($txt) ? '<em>No additional info</em>' : $txt);
+				$txt = '<strong>'.(empty($spatialCoverage['label']) ? ['Point'=>'Point', 'LineString'=>'Transect', 'Area'=>'Bounding Box', 'Polygon'=>'Polygon'][$spatialCoverage['type']] : $spatialCoverage['label']).'</strong><br/>'.(empty($txt) ? '<em>No additional info</em>' : $txt);
 				?>
 				feature.txt = '<?=$txt?>';
 				source.addFeature(feature);
