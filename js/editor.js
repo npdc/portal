@@ -63,6 +63,10 @@ $().ready(function(){
 		}
 	};
 
+	if (window.navigator.userAgent.indexOf ( "MSIE " ) > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+		npdc.alert('We see you are using Internet Explorer. Due to some bugs specific to Internet Explorer we recommend using a different browser such as Edge, Google Chrome or Firefox');
+	}
+
 	//version chooser for editors
 	$('#versionSelect').change(function(){
 		window.location = $('#versionSelect').val();
@@ -259,7 +263,7 @@ $().ready(function(){
 					return;
 				}
 				var value = lookupfield.val();
-				if(value !== lookupfield.cur){
+				if(value !== lookupfield.cur || event.type === 'focus'){
 					$('#optionwrapper').remove();
 					if(value.length >= 2 || true){
 						var url = lookupfield.parents('table').attr('data-base-url')
@@ -302,7 +306,7 @@ $().ready(function(){
 										if(value.length > 2){
 											optionDisplay.attr('data-nextfield', value[2]);
 										}
-										$('#optionwrapper').append(optionDisplay);	
+										$('#optionwrapper').append(optionDisplay);
 									});
 								} else {
 									$('#optionwrapper').append($('<div>').html('<i>No results found</i>'));
@@ -313,7 +317,7 @@ $().ready(function(){
 												+($('#optionwrapper').parent('td').attr('data-freetext') === 'this' ? ' with details' : '')
 												+'</i>')
 											.attr('id', 'option_'+l)
-											.attr('value', 'new'));							
+											.attr('value', 'new'));
 									l += 1;
 								}
 								$('#optionwrapper div[value]').on('mouseenter', function(){
@@ -426,10 +430,7 @@ $().ready(function(){
 				lookup.timer = setTimeout(function(){lookup.doBlur();},10);
 			});
 			
-			lookupfield.focus(function(){
-				$('#optionwrapper').show();
-				lookup.positionOptionwrapper();
-			});			
+					
 		}
 	};
 	
