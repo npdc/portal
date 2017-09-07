@@ -410,7 +410,7 @@ class Form {
 		} else {
 			$input .= '<table class="multivalue'.(property_exists($field, 'additionalFields') ? ' noAdd':'').'"';
 		}
-		$input .= 'data-sortable="'. ($field->noSort ?? false ? 'false' : 'true').'" data-n-label="'.$field->nLabel.'" ><colgroup><col><col>';
+		$input .= ' data-sortable="'. ($field->noSort ?? false ? 'false' : 'true').'" data-n-label="'.$field->nLabel.'" ><colgroup><col><col>';
 		foreach($field->fields ?? $field->additionalFields as $subfield){
 			if($subfield->type !== 'hidden'){
 				$input .= '<col>';
