@@ -586,11 +586,12 @@ class Dataset extends Base{
 			if(substr($key, 0, strlen($loopId)) === $loopId && substr($key, -4) !== '_new'){
 				$fields = ['wkt', 'depth_min', 'depth_max', 'depth_unit', 'altitude_min', 'altitude_max', 'altitude_unit', 'type', 'label'];
 				$data = ['dataset_id'=> $this->id];
+				$nr = substr($key, strlen($loopId));
 				foreach($fields as $field){
 					$key = (substr($field, -5) === '_unit' 
 						? 'unit_spatial_coverage_'.substr($field, 0, -5).'_min' 
 						: 'spatial_coverage_'.$field)
-						.substr($key, strrpos($key, '_'));
+						. '_'.$nr;
 					$data[$field] = $field === 'type' 
 						? explode('_', $_SESSION[$this->formId]['data'][$key])[2] 
 						: $_SESSION[$this->formId]['data'][$key];
@@ -599,9 +600,7 @@ class Dataset extends Base{
 					$data['dataset_version_min'] = $this->version;
 					$coverages[] = $this->model->insertSpatialCoverage($data);
 				} else {
-					$nr = substr($key, strlen($loopId));
-					$record_id = $_SESSION[$this->formId]['data']['spatial_coverage_id'.$nr];
-					
+					$record_id = $_SESSION[$this->formId]['data']['spatial_coverage_id_'.$nr];
 					$return = $this->model->updateSpatialCoverage($record_id, $data, $this->version);
 					$coverages[] = !is_bool($return) ? $return : $record_id;	
 				}
