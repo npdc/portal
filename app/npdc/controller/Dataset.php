@@ -148,7 +148,7 @@ class Dataset extends Base{
 				break;
 			case 'coverage':
 				$_SESSION[$this->formId]['data']['period'] = [$baseData['date_start'], $baseData['date_end']];
-				$fields_spatial = ['wkt', 'depth_min', 'depth_max', 'depth_unit', 'altitude_min', 'altitude_max', 'altitude_unit', 'type', 'spatial_coverage_id'];
+				$fields_spatial = ['wkt', 'depth_min', 'depth_max', 'depth_unit', 'altitude_min', 'altitude_max', 'altitude_unit', 'type', 'label', 'spatial_coverage_id'];
 				foreach($this->model->getLocations($this->id, $this->version) as $row){
 					$_SESSION[$this->formId]['data']['location'][] = [
 							  'id'=>$row['location_id']
@@ -584,7 +584,7 @@ class Dataset extends Base{
 		$loopId = 'spatial_coverage_wkt_';
 		foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
 			if(substr($key, 0, strlen($loopId)) === $loopId && substr($key, -4) !== '_new'){
-				$fields = ['wkt', 'depth_min', 'depth_max', 'depth_unit', 'altitude_min', 'altitude_max', 'altitude_unit', 'type'];
+				$fields = ['wkt', 'depth_min', 'depth_max', 'depth_unit', 'altitude_min', 'altitude_max', 'altitude_unit', 'type', 'label'];
 				$data = ['dataset_id'=> $this->id];
 				foreach($fields as $field){
 					$key = (substr($field, -5) === '_unit' 

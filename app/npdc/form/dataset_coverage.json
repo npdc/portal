@@ -38,45 +38,23 @@
 				}
 			}
 		},
-		"location_old": {
-			"type": "fieldset",
-			"label": "Location",
-			"multi": true,
-			"disabled": true,
-			"hint": "The general area of the research",
-			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/location.html",
-			"fields": {
-				"id": {
-					"type": "hidden",
-					"required": false
-				},
-				"location": {
-					"type": "lookup",
-					"required": true,
-					"vocab": "location",
-					"placeholder": "Click here to load the option list or start typing to search for a location",
-					"hint": "If a new location needs to be added please <a href=\"mailto:$mail['contact']?subject=New location needed at $siteDomain\">contact the NPDC</a>. When the new location has been added we will update your record."
-				},
-				"detailed": {
-					"type": "text",
-					"label": "Detailed location",
-					"required": false,
-					"placeholder": "Further specification within the region selected above",
-					"max_length": 80
-				}
-			}
-		},
 		"spatial_coverage": {
 			"type": "map",
 			"label": "Spatial coverage",
 			"multi": true,
 			"required": true,
-			"hint": "Detailen location where samples were taken or which area was modelled",
+			"hint": "Detailed location where samples were taken or which area was modelled",
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/spatial_coverage.html",
 			"fields": {
 				"id": {
 					"type": "hidden",
 					"required": false
+				},
+				"label": {
+					"type": "text",
+					"label": "Location name",
+					"required": false,
+					"placeholder": "e.g. Station name or area name"
 				},
 				"type": {
 					"type": "options",
