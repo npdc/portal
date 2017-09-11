@@ -46,6 +46,17 @@
 			"asList": true,
 			"options": {}
 		},
+		"region": {
+			"type": "options",
+			"label": "Region",
+			"multiple": false,
+			"required": true,
+			"options": {
+				"Arctica": "Arctic",
+				"Antarctica": "Antarctic",
+				"Bipolar": "Bipolar"
+			}
+		},
 		"science_keywords": {
 			"hint": "Keyword has to be selected from the list, detailed keyword can be added to explain the keyword in more detail. Please confirm the keyword by either clicking it in the dropdown or selecting it with the arrow keys and pressing enter. If a new keyword needs to be added please <a href=\"mailto:$mail['contact']?subject=New keyword needed at $siteDomain\">contact the NPDC</a>. When the new keyword has been added we will update your record.",
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/parameters.html",
