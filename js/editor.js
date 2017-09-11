@@ -263,7 +263,7 @@ $().ready(function(){
 					return;
 				}
 				var value = lookupfield.val();
-				if(value !== lookupfield.cur || event.type === 'focus'){
+				if(value !== lookupfield.cur || (event.type === 'focus' && $(this).next('#optionwrapper').length === 0)){
 					$('#optionwrapper').remove();
 					if(value.length >= 2 || true){
 						var url = lookupfield.parents('table').attr('data-base-url')
@@ -314,7 +314,7 @@ $().ready(function(){
 								if($('#optionwrapper').parents('table').attr('data-new-url') !== undefined){
 									$('#optionwrapper').append($('<div>')
 											.html('<i>Add '+$('#optionwrapper').siblings('input').val()
-												+($('#optionwrapper').parent('td').attr('data-freetext') === 'this' ? ' with details' : '')
+												//+($('#optionwrapper').parent('td').attr('data-freetext') === 'this' ? ' with details' : '')
 												+'</i>')
 											.attr('id', 'option_'+l)
 											.attr('value', 'new'));
@@ -429,8 +429,10 @@ $().ready(function(){
 			lookupfield.blur(function(){
 				lookup.timer = setTimeout(function(){lookup.doBlur();},10);
 			});
-			
-					
+			lookupfield.focus(function(){
+				$('#optionwrapper').show();
+				lookup.positionOptionwrapper();
+			});
 		}
 	};
 	
