@@ -1,3 +1,6 @@
+<h4>Region</h4>
+<p><?=$this->data['region']?></p>
+
 <h4>Location</h4>
 <ul>
 <?php

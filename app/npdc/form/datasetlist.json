@@ -21,8 +21,7 @@
 				"Arctica": "Arctic",
 				"Antarctica": "Antarctic",
 				"Bipolar": "Bipolar"
-			},
-			"disabled": true
+			}
 		},
 		"period": {
 			"type": "date",
