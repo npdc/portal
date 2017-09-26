@@ -1573,11 +1573,6 @@ class Dataset{
 		return true;
 	}
 	
-	
-	
-	
-	
-	
 	public function insertFile($data){
 		$this->fpdo->insertInto('dataset_file', $data)->execute();
 	}

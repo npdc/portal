@@ -31,8 +31,6 @@
 			"hint": "Gives projects running anywhere in the specified timeframe",
 			"min": null,
 			"max": null,
-			"default": "1900-06-25",
-			"default2": "2000-02-20",
 			"fuzzy": true
 		},
 		"organization": {
