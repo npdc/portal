@@ -17,7 +17,8 @@
 			"required": true,
 			"hint": "Only year is shown in most cases",
 			"min": null,
-			"max": null
+			"max": null,
+			"format": "yyyy[-mm[-dd]]"
 		},
 		"journal": {
 			"type": "text",

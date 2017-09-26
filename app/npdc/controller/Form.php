@@ -409,12 +409,12 @@ class Form {
 					$this->value = '';
 					break;
 				case 'date':
-					$res = [$this->checkDate($this->formData[$id][0], 'down')];
+					$res = [$this->checkDate($this->formData[$id][0], $field->fuzzy ? 'down' : 'none')];
 					if(isset($field->range) && $field->range){
 						if($required && empty($res[0])){
 							$this->addError($id.' 1', 'The start date you provided is not valid', 'Invalid start date for '.$field->label);
 						}
-						$res[1] = $this->checkDate($this->formData[$id][1], 'up');
+						$res[1] = $this->checkDate($this->formData[$id][1], $field->fuzzy ? 'up' : 'none');
 						if(($field->endRequired ?? $required) && empty($res[1])){
 							$this->addError($id.' 2', 'The end date you provided is not valid', 'Invalid end date for '.$field->label);
 						}
@@ -489,6 +489,9 @@ class Form {
 			case 'down':
 				$month_default = 1;
 				$day_default = 1;
+			case 'none':
+				$month_default = 0;
+				$day_default = 0;
 		}
 		$dateParts = explode('-', $date);
 		$valid = false;
@@ -507,7 +510,7 @@ class Form {
 				$day = array_key_exists('day', $matches) 
 						? $matches['day'] 
 						: $day_default;
-				if(checkdate($month, $day, $year)){
+				if(checkdate($month, $day, $year) || $dir === 'none'){
 					$date = $year.'-'.$month.'-'.$day;
 				} else {
 					$date = null;

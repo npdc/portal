@@ -676,7 +676,7 @@ class Form {
 				. 'id="'.$id.'_start" '
 				. 'placeholder="'.$format.'" '
 				. 'data-inputmask="\'alias\': \''.($format === 'yyyy' ? 'y' : $format).'\', \'yearrange\': {\'minyear\': 0, \'maxyear\': 9999 }" '
-				. 'value="'.(isset($values[0]) ? $values[0] : '').'" '
+				. 'value="'.(isset($values[0]) ? str_replace('-00', '', $values[0]) : '').'" '
 				. ((array_key_exists($id, $_SESSION[$this->formId]['errors']) && !array_key_exists($id.' 2', $_SESSION[$this->formId]['errors'])) || array_key_exists($id.' 1', $_SESSION[$this->formId]['errors'])
 					? $this->style 
 					: '')
@@ -690,7 +690,7 @@ class Form {
 					. 'placeholder="'.$format.'" '
 					. 'data-inputmask="\'alias\': \''.($format === 'yyyy' ? 'y' : $format).'\'" '
 					. 'value="'.(isset($values[1]) 
-						? $values[1] 
+						? str_replace('-00', '', $values[1])
 						: '').'" '
 					. ((array_key_exists($id, $_SESSION[$this->formId]['errors']) && !array_key_exists($id.' 1', $_SESSION[$this->formId]['errors'])) || array_key_exists($id.' 2', $_SESSION[$this->formId]['errors']) 
 						? $this->style 

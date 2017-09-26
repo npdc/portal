@@ -23,11 +23,21 @@ $fields = ['date'=>'Date'
 
 foreach($fields as $id=>$label){
 	if(!empty($this->data[$id])){
-		$doi = substr($this->data[$id], strpos($this->data[$id], '10.'));
 		echo '<section class="inline">
 		<h4>'.$label.'</h4>
-		<p>'.($id === 'doi' ? '<a href="https://doi.org/'.$doi.'">' : '').$doi.($id === 'doi' ? '</a>' : '').'</p>
-		</section>';
+		<p>';
+		switch($id){
+			case 'doi':
+				$doi = substr($this->data[$id], strpos($this->data[$id], '10.'));
+				echo '<a href="https://doi.org/'.$doi.'">'.$doi.'</a></p>';
+				break;
+			case 'date':
+				echo str_replace('-00', '', $this->data[$id]);
+				break;
+			default:
+				echo $this->data[$id];
+		}
+		echo '</section>';
 	}
 }
 
