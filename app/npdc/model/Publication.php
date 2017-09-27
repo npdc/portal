@@ -137,7 +137,7 @@ class Publication{
 	public function getPersons($id, $version){
 		return $this->fpdo
 			->from('publication_person')
-			->join('person USING(person_id)')->select('name')
+			->leftJoin('person USING(person_id)')->select('CASE WHEN name IS NULL THEN free_person ELSE name END AS name')
 			->leftJoin('organization ON publication_person.organization_id=organization.organization_id')->select('organization_name')
 			->where('publication_id = ?', $id)
 			->where('publication_version_min <= ?', $version)
@@ -275,17 +275,14 @@ class Publication{
 	}
 	
 	public function insertPerson($data){
-		return $this->fpdo
-			->insertInto('publication_person', $data)
-			->execute();
+		var_dump($data);
+		return \npdc\lib\Db::insertReturnId('publication_person', $data);
 	}
 	
 	public function updatePerson($record, $data, $version){
 		$oldRecord = $this->fpdo
-			->from('publication_person')
-			->where($record)
+			->from('publication_person', $record)
 			->fetch();
-		
 		$createNew = false;
 		$updateEditor = false;
 		foreach($data as $key=>$val){
@@ -299,28 +296,21 @@ class Publication{
 		}
 		if($oldRecord['publication_version_min'] === $version && ($createNew || $updateEditor)){
 			$return = $this->fpdo
-				->update('publication_person')
-				->set($data)
-				->where($record)
-				->execute();
+				->update('publication_person', $data, $record)
+				->execute() === 1;
 		} elseif($createNew){
 			$this->fpdo
-				->update('publication_person')
-				->set('publication_version_max', $version-1)
-				->where($record)
+				->update('publication_person', ['publication_version_max'=>$version-1],$record)
 				->execute();
-			$this->insertPerson(array_merge($data, $record, ['publication_version_min'=>$version]));
-			$return = true;
+			$return = $this->insertPerson(array_merge($data, ['publication_version_min'=>$version]));
 		} elseif($updateEditor) {
 			$return = $this->fpdo
-				->update('publication_person')
-				->set('editor', $data['editor'])
-				->where($record)
+				->update('publication_person', ['editor'=>$data['editor']], $record)
 				->execute();
 		} else {
 			$return = true;
 		}
-		return $return;
+		return $return === true ? $record : $return;
 	}
 	
 	public function deletePerson($publication_id, $version, $currentPersons){
@@ -330,15 +320,16 @@ class Publication{
 			->where('publication_id', $publication_id)
 			->where('publication_version_max', null);
 		if(count($currentPersons) > 0){
+			var_dump($currentPersons);
 			foreach($currentPersons as $person){
 				if(!is_numeric($person)){
 					die('Hacking attempt!');
 				}
 			}
 			if(count($currentPersons) === 1){
-				$q->where('person_id <> ?',$currentPersons[0]);
+				$q->where('publication_person_id <> ?',$currentPersons[0]);
 			} else {
-				$q->where('person_id NOT IN ('.implode(',',$currentPersons).')');
+				$q->where('publication_person_id NOT IN ('.implode(',',$currentPersons).')');
 			}
 		}
 		$q->execute();

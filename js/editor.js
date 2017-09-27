@@ -78,6 +78,15 @@ $().ready(function(){
 	$('td').has('input[type=radio]').click(function(){
 		$(this).children('input').prop('checked', true);//TODO: Check right property and value
 	});
+
+	$('[data-freetext="this"]').each(function(){
+		input = $(this).siblings('input').last();
+		console.log(input);
+		if($(input).attr('name').split('_').pop() !== 'new' && $(input).val() == 'quickadd'){
+			$(this).children('input').removeAttr('readonly').removeClass('readonly');
+			$(this).siblings('[data-freetext="hide"]').text('');
+		}
+	});
 	
 	lookup = {
 		add: function(tbl){
@@ -123,27 +132,30 @@ $().ready(function(){
 		},
 		updateField: function(event){
 			tbl = $(event).parents('table');
-			if(l-1 === lookup.cur && $(event).parents('table').attr('data-new-url') !== undefined){
-				name = $(event).text().substring(4);
+			if($(event).attr('value') === 'new' && $(event).parents('table').attr('data-new-url') !== undefined){
+				name = $(event).text().replace(/^Add '|' with details$|'$/g, '');
 				$('#overlay .inner').html('<iframe src="'+$(event).parents('table').attr('data-new-url')+'/'+name+'?ref='+controller+'"></iframe>');
 				$('#overlay').show();
 				$("form :input").prop('disabled', true);
 				$('#overlay').data('element', tbl);
 				$('#overlay').data('type', 'lookupfield');
 			} else {
-				this.saveOption(tbl, $(event).attr('value'), $(event).text(), $(event).attr('data-nextfield'));
+				if($(event).attr('value') === 'quickadd'){
+					$(event).text($(event).text().replace(/^Quickly add '|' \(without details\)$/g, ''));
+					$(event).attr('value', 'quickadd');
+					$(event).parents('td').siblings('td[data-freetext="hide"]').text('');
+				}
+				this.saveOption(tbl, $(event).attr('value'), $(event).text(), $(event).attr('data-nextfield'), $(event).attr('value') == 'quickadd');
 			}
 		},
-		saveOption: function(tbl, id, value, nextfield){
+		saveOption: function(tbl, id, value, nextfield, keepEditable){
 			if(tbl.hasClass('single')){
-				$(tbl).data('lookupfield').val(value).attr('readonly', 'readonly').addClass('readonly')
-					.siblings('input[type=hidden]').val(id);
-				tbl.data('lookupfield').off('keyup keydown focus');
+				$(tbl).data('lookupfield').val(value).siblings('input[type=hidden]').val(id);
+				$(tbl).data('lookupfield').attr('readonly', 'readonly').addClass('readonly');
+				if(!keepEditable){tbl.data('lookupfield').off('keyup keydown focus')};
 			} else {
-				$('[name='+tbl.attr('data-source-field')+'_new]')
-						.val(value)
-						.attr('readonly', 'readonly')
-						.addClass('readonly');
+				$('[name='+tbl.attr('data-source-field')+'_new]').val(value);
+				if(!keepEditable){$('[name='+tbl.attr('data-source-field')+'_new]').attr('readonly', 'readonly').addClass('readonly');}
 				$('[name='+tbl.attr('data-target-field')+'_new]').val(id);
 				tbl.data('lookupfield').off('keyup keydown focus');
 				if($('[name='+tbl.attr('data-source-field')+'_new]').attr('data-onsubmit') !== undefined && nextfield !== undefined){
@@ -271,7 +283,7 @@ $().ready(function(){
 								+lookupfield.parents('table').attr('data-lookup-url')
 								+'?q='+value;
 						$('[name^='+lookupfield.parents('table').attr('data-target-field')+']').each(function(){
-							if($(this).val() !== ''){
+							if($(this).val() !== '' && $.isNumeric($(this).val())){
 								url += '&e[]='+$(this).val();
 							}
 						});
@@ -313,11 +325,19 @@ $().ready(function(){
 								}
 								if($('#optionwrapper').parents('table').attr('data-new-url') !== undefined){
 									$('#optionwrapper').append($('<div>')
-											.html('<i>Add '+$('#optionwrapper').siblings('input').val()
-												//+($('#optionwrapper').parent('td').attr('data-freetext') === 'this' ? ' with details' : '')
+											.html('<i>Add \''+$('#optionwrapper').siblings('input').val()+'\''
+												+($('#optionwrapper').parent('td').attr('data-freetext') === 'this' ? ' with details' : '')
 												+'</i>')
 											.attr('id', 'option_'+l)
 											.attr('value', 'new'));
+									l += 1;
+								}
+								if($('#optionwrapper').parent('td').attr('data-freetext') === 'this'){
+									$('#optionwrapper').append($('<div>')
+									.html('<i>Quickly add \''+$('#optionwrapper').siblings('input').val()+'\' (without details)'
+										+'</i>')
+									.attr('id', 'option_'+l)
+									.attr('value', 'quickadd'));
 									l += 1;
 								}
 								$('#optionwrapper div[value]').on('mouseenter', function(){
@@ -1248,7 +1268,7 @@ function closeOverlay(data){
 				$($('#overlay').data('element')).append(newState).trigger('change');
 				break;
 			case 'lookupfield':
-				lookup.saveOption($('#overlay').data('element'), data.id, decodeEntities(data.label), data.nextfield);
+				lookup.saveOption($('#overlay').data('element'), data.id, decodeEntities(data.label), data.nextfield, false);
 				break;
 		}
 	}

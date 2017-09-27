@@ -15,7 +15,7 @@
 			"label": "Publication date",
 			"range": false,
 			"required": true,
-			"hint": "Only year is shown in most cases",
+			"hint": "Only year is required, month and day are not required, but recommended if known",
 			"min": null,
 			"max": null,
 			"format": "yyyy[-mm[-dd]]"
@@ -74,6 +74,11 @@
 			},
 			"nLabel": 3,
 			"fields": {
+				"publication_person_id": {
+					"type": "hidden",
+					"value": "",
+					"required": false
+				}, 
 				"person_id": {
 					"type": "hidden",
 					"value": ""
@@ -89,19 +94,20 @@
 				"organization_id": {
 					"type": "options",
 					"label": "Organization",
-					"hint": "The affiliation of the person when writing this publication",
+					"hint": "The affiliation of the person when writing this publication (although not required we highly recommend using this field)",
 					"multiple": false,
+					"required": false,
 					"options": {},
 					"asList": true,
 					"newUrl": "organization",
 					"ajaxUrl": "lookup/organization",
-					"freeText": "hide"
+					"freeText": "allowed"
 				},
 				"editor":{
 					"type": "checkbox",
 					"label": "Editor",
 					"required": false,
-					"FreeText": "hide"
+					"freeText": "hide"
 				}
 			}
 		},

@@ -51,6 +51,12 @@ class Publication extends Base{
 			$_SESSION[$this->formId]['data']['keywords'] = $words;
 
 			$_SESSION[$this->formId]['data']['people'] = $this->model->getPersons($this->id, $this->version);
+			foreach($_SESSION[$this->formId]['data']['people'] as &$row){
+				if(empty($row['person_id'])){
+					$row['person_id'] = 'quickadd';
+				}
+				unset($row);
+			}
 			$_SESSION[$this->formId]['data']['date'] = [$baseData['date']];
 			if(!empty($baseData['file_id'])){
 				$fileModel = new \npdc\model\File();
@@ -178,20 +184,26 @@ class Publication extends Base{
 		$sort = 1;
 		foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
 			if(substr($key, 0, strlen($loopId)) === $loopId){
-				$persons[] = $_SESSION[$this->formId]['data'][$key];
-				$record = [
-					'publication_id'=>$this->id, 
-					'person_id'=>$_SESSION[$this->formId]['data'][$key]
-				];
-				$data = [];
-				$data['organization_id'] = $_SESSION[$this->formId]['data']['people_organization_id_'.substr($key, strlen($loopId))];
-				$data['editor'] = !empty($_SESSION[$this->formId]['data']['people_editor_'.substr($key, strlen($loopId))]) ? 1 : 0;
-				$data['sort'] = $sort;
-				if(strpos($key, '_new_') === false){
-					$saved = $this->model->updatePerson($record, $data, $this->version) === false ? false : $saved;
+				$serial = substr($key, strlen($loopId));
+				$id = $_SESSION[$this->formId]['data']['people_publication_person_id_'.$serial];
+				$person_id = $_SESSION[$this->formId]['data'][$key];
+				$data = ['publication_id'=>$this->id];
+				if(empty($person_id) || $person_id === 'quickadd'){
+					$data['free_person'] = $_SESSION[$this->formId]['data']['people_name_'.$serial];
+					if(empty($data['free_person'])){
+						continue;
+					}
 				} else {
-					$data = array_merge($data, $record, ['publication_version_min'=>$this->version]);
-					$this->model->insertPerson($data);
+					$data['person_id'] = $person_id;
+				}
+				$data['organization_id'] = $_SESSION[$this->formId]['data']['people_organization_id_'.$serial];
+				$data['editor'] = !empty($_SESSION[$this->formId]['data']['people_editor_'.$serial]) ? 1 : 0;
+				$data['sort'] = $sort;
+				if(empty($id)){
+					$data = array_merge($data, ['publication_version_min'=>$this->version]);
+					$persons[] = $this->model->insertPerson($data);
+				} else {
+					$persons[] = $this->model->updatePerson($id, $data, $this->version);
 				}
 				$sort++;
 			}
