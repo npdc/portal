@@ -1493,7 +1493,6 @@ class Dataset{
 			->where('dataset_id', $dataset_id)
 			->where('dataset_version_max', null);
 		if(count($currentLinks) > 0){
-			var_dump($currentLinks);
 			foreach($currentLinks as $dataset_link){
 				if(!is_numeric($dataset_link)){
 					die('Something went wrong! (e_deleteLink '.$dataset_link.')');
