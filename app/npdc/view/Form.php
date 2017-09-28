@@ -430,7 +430,7 @@ class Form {
 			}
 		}
 		$input .= '</tr></thead><tbody>';
-		if(!array_key_exists($id, $_SESSION[$this->formId]['data'])){
+		if(is_array($_SESSION[$this->formId]['data']) && !array_key_exists($id, $_SESSION[$this->formId]['data'])){
 			$loopId = $id.'_'.array_keys(get_object_vars($field->fields ?? $field->additionalFields))[0];
 			foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
 				if(substr($key, 0, strlen($loopId)) === $loopId){
