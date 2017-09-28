@@ -326,6 +326,22 @@
 		padding-left: 10px;
 		.add {
 			float: right;
+			text-align: right;
+			position:relative;
+			div {
+				width: 250px;
+				text-align: left;
+				display: none;
+				background: $bg-color;
+				position: absolute;
+				box-shadow: 2px 2px 10px black;
+				padding: 0 10px 5px;
+				border-radius: 5px;
+				right: 0px;
+			}
+			&:hover div{
+				display: block;
+			}
 		}
 	}
 	&.search #search {

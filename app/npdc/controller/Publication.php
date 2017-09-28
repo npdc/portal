@@ -32,13 +32,17 @@ class Publication extends Base{
 	protected function loadForm($baseData){
 		if($this->id === 'new'){
 			unset($_SESSION[$this->formId]);
-			$_SESSION[$this->formId]['data']['people'][] = [
-				'person_id'=>$this->session->userId, 
-				'name'=>$this->session->name, 
-				'organization_id'=>$this->session->organization_id, 
-				'editor'=>true, 
-				'contact'=>true
-			];
+			if(!empty($_GET['doi'])){
+				$this->loadFromDOI($_GET['doi']);
+			} else {
+				$_SESSION[$this->formId]['data']['people'][] = [
+					'person_id'=>$this->session->userId, 
+					'name'=>$this->session->name, 
+					'organization_id'=>$this->session->organization_id, 
+					'editor'=>true, 
+					'contact'=>true
+				];	
+			}
 		} else {
 			$_SESSION[$this->formId]['data'] = $baseData;
 
@@ -65,6 +69,33 @@ class Publication extends Base{
 			}
 			$_SESSION[$this->formId]['data']['projects'] = $this->model->getProjects($this->id, $this->version, false);
 			$_SESSION[$this->formId]['data']['datasets'] = $this->model->getDatasets($this->id, $this->version, false);
+		}
+	}
+
+	private function loadFromDOI($doi){
+		$doi = substr($doi, strpos($doi, '10.'));
+		$curl = new \npdc\lib\CurlWrapper(['Accept: application/vnd.citationstyles.csl+json']);
+		$data = json_decode($curl->get('http://dx.doi.org/'.$doi));
+		if(empty($data)){
+			$_SESSION['errors'] = 'No details found based in the DOI \''.$doi.'\'';
+		} else {
+			$_SESSION['notice'] = 'Found the details below based on your DOI ('.$doi.'), please check the details and update where needed';
+			foreach(['title', 'issue','volume'] as $field){
+				$_SESSION[$this->formId]['data'][$field] = $data->$field;
+			}
+			$_SESSION[$this->formId]['data']['pages'] = $data->page;
+			$_SESSION[$this->formId]['data']['doi'] = $doi;
+			$_SESSION[$this->formId]['data']['journal'] = $data->{'container-title'};
+			$_SESSION[$this->formId]['data']['location_url'] = $data->URL;
+			foreach($data->author as $author){
+				$_SESSION[$this->formId]['data']['people'][] = ['person_id'=>'quickadd', 'name'=>$author->given.' '.$author->family];
+			}
+			foreach(['published-print', 'published-online', 'issued'] as $date){
+				if(!empty($data->$date)){
+					$_SESSION[$this->formId]['data']['date'] = implode('-', $data->{$date}->{'date-parts'}[0]);
+					break;
+				}
+			}
 		}
 	}
 	

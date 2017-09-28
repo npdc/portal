@@ -64,7 +64,18 @@ class Base {
 	protected function displayTable($class, $data, $columns, $url, $showCount = true, $editTable = false){
 		$return = '';
 		if($this->session->userLevel >= $this->controller->userLevelAdd && in_array('list', explode(' ', $this->class))){
-			$return .= '<div class="add"><a href="'.$url[0].'/new">Add '.$url[0].'</a></div>';
+			$return .= '<div class="add"><a href="'.$url[0].'/new">Add '.$url[0].'</a>';
+			if($url[0] === 'publication'){
+				$return .= '<div>
+					<form action="'.BASE_URL.'/publication/new">
+					<h3>Add publication</h3>
+					<p>(optional) Provide a DOI to get most fields filled automatically</p>
+					<input type="text" name="doi" placeholder="DOI of new publication (optional)"/>
+					<input type="submit" value="Add publication" />
+					</form>
+					</div>';
+			}
+			$return .= '</div>';
 		}
 		if(count($data) === 0){
 			$return .= 'No results';

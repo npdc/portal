@@ -63,7 +63,7 @@
 					echo '<a href="'.BASE_URL.'/'.$view->baseUrl.'">&laquo; View</a>';
 				}
 				?>
-				<?=method_exists($view, 'listStatusChanges') && ($view->canEdit ?? false) && $args[1] !== 'new' ? $view->listStatusChanges() : ''?>
+				<?=method_exists($view, 'listStatusChanges') && ($view->canEdit ?? false) && !in_array($args[1], ['new', 'new_from_doi']) ? $view->listStatusChanges() : ''?>
 				<div class="cols">
 					<?=isset($view->left) ? '<div id="left">'.$view->left.'</div>' : ''?>
 					<div id="mid">
