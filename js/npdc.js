@@ -245,7 +245,7 @@ function openOverlay(url){
 
 function closeOverlay(){
 	if($('#overlay iframe').contents().find('body').hasClass('user')){
-		window.location = window.location.pathname;
+		window.location = window.location.href.replace(/overlay=[a-zA-Z0-9]*[&]?/g, '').replace(/&$/,'');
 	} else {
 		$('#overlay').fadeOut(250);
 	}
