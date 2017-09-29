@@ -86,7 +86,8 @@ class Publication extends Base{
 			$_SESSION[$this->formId]['data']['pages'] = $data->page;
 			$_SESSION[$this->formId]['data']['doi'] = $doi;
 			$_SESSION[$this->formId]['data']['journal'] = $data->{'container-title'};
-			$_SESSION[$this->formId]['data']['location_url'] = $data->URL;
+			$curl2 = new \npdc\lib\CurlWrapper();
+			$_SESSION[$this->formId]['data']['location_url'] = $curl2->getRedirect('http://dx.doi.org/'.$doi);
 			foreach($data->author as $author){
 				$_SESSION[$this->formId]['data']['people'][] = ['person_id'=>'quickadd', 'name'=>$author->given.' '.$author->family];
 			}
