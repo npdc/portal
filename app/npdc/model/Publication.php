@@ -93,7 +93,7 @@ class Publication{
 	public function getAuthors($publication_id, $publication_version, $names=2){
 		$res = $this->fpdo
 			->from('publication_person')
-			->join('person')->select('CASE WHEN surname IS NULL THEN name ELSE surname || \', \' || initials END AS name')
+			->leftJoin('person')->select('CASE WHEN free_person IS NOT NULL THEN free_person WHEN surname IS NULL THEN name ELSE surname || \', \' || initials END AS name')
 			->where('publication_id', $publication_id)
 			->where('publication_version_min <= ?', $publication_version)
 			->where('(publication_version_max IS NULL OR publication_version_max >= ?)', $publication_version)
@@ -112,7 +112,7 @@ class Publication{
 			for($i=0;$i<min($c-1, $names);$i++){
 				$return .= ($i>0 ? ', ' : '').$res[$i]['name'];
 			}
-			if($c <= $names){
+			if($c <= $names+1){
 				$return .= ', &amp; '.$res[$i]['name'];
 			} else {
 				$return .= ', et al.';
