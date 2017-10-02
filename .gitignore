@@ -16,3 +16,12 @@ nbproject
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+css/style.css
+css/style.min.css
+css/plain.css
+css/plain.min.css
+css/textarea.css
+css/textarea.min.css
+
+build
