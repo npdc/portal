@@ -245,7 +245,10 @@ function openOverlay(url){
 
 function closeOverlay(){
 	if($('#overlay iframe').contents().find('body').hasClass('user')){
-		window.location = window.location.href.replace(/overlay=[a-zA-Z0-9]*[&]?/g, '').replace(/&$/,'');
+		window.location = window.location.href
+			.replace(/#[a-zA-Z0-9]*$/, '') //remove anchor (otherwise nothing will happen)
+			.replace(/overlay=[a-zA-Z0-9]*[&]?/g, '') //remove overlay trigger (to prevent overlay from showing up again)
+			.replace(/&$/,''); //remove trailing ampersand (just to make urls look better)
 	} else {
 		$('#overlay').fadeOut(250);
 	}
