@@ -19,7 +19,7 @@ if(count($files) === 0){
 		. '<td>'
 			. '<input type="checkbox" name="files[]" value="'.$file['file_id'].'" id="file_'.$file['file_id'].'" '
 			. (in_array($file['file_id'], ($_POST['files'] ?? [])) ? 'checked' : '')
-			. '/><label for="file_'.$file['file_id'].'"> </label>'
+			. '/><label for="file_'.$file['file_id'].'"><div class="indicator"></div> </label>'
 		. '</td>'
 		. '<td>'.$file['title'].' ('.$file['name'].', '.$file['type'].', '.formatBytes($file['size']).')<br/><i>'.$file['description'].'</i></td></tr>';
 	}

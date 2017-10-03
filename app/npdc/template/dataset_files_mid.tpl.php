@@ -46,7 +46,7 @@ if(count($files) === 0){
 		}
 		echo '<tr>'
 		. '<td>'
-			. ($checkbox ? '<input type="checkbox" name="files[]" value="'.$file['file_id'].'" id="file_'.$file['file_id'].'" /><label for="file_'.$file['file_id'].'"> </label>' : '')
+			. ($checkbox ? '<input type="checkbox" name="files[]" value="'.$file['file_id'].'" id="file_'.$file['file_id'].'" /><label for="file_'.$file['file_id'].'"><div class="indicator"></div> </label>' : '')
 			. (!is_null($icon) ? '<span class="icon-'.$icon.'"></span>' : '')
 		. '</td>'
 		. '<td>'.$file['title'].' ('.$file['name'].', '.$file['type'].', '.formatBytes($file['size']).')<br/><i>'.$file['description'].'</i></td></tr>';

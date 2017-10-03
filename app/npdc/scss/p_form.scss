@@ -156,7 +156,7 @@
 					float: none;
 					padding-right: 5px;
 					padding-left: 10px;
-					color: $color-accent-2;
+					color: $color-error;
 					font-weight: bold;
 					cursor: pointer;
 				}
@@ -305,62 +305,65 @@ select:not([multiple]), .select2-selection--multiple{
 	padding-left: 1px;
 }
 
-input[type=checkbox]{
-	display: none;
+input[type=radio]{
 	&+label {
-		background: url('../img/checkbox.png') no-repeat left center;
-		padding-left: 20px;
-		cursor: pointer;
-		&:hover, td:hover & {
-			background-image: url('../img/checkbox-hover.png');
+		div.indicator {
+			border-radius: 50%;
 		}
 	}
-	&:not(:disabled):checked+label {
-		background-image: url('../img/checkbox-checked.png');
-		&:hover, td:hover & {
-			background-image: url('../img/checkbox-checked-hover.png');
-		}
+	&:checked+label div.indicator:after {
+		border-radius: 50%;
+		background: $color-accent-1;
 	}
-	&:disabled+label {
-		background-image: url('../img/checkbox-disabled.png');
-		&:hover, td:hover & {
-			background-image: url('../img/checkbox-disabled-hover.png');
-		}
-	}
-	&:disabled:checked+label {
-		background-image: url('../img/checkbox-checked-disabled.png');
-		&:hover, td:hover & {
-			background-image: url('../img/checkbox-checked-disabled-hover.png');
-		}
+	&:checked:disabled+label div.indicator:after{
+		background: mix($color-accent-1, $table-stripe-bg, 50%);
 	}
 }
 
+input[type=checkbox]{
+	&:checked+label div.indicator:after {
+		left: 4px;
+		top: 0px;
+		width: 3px;
+		height: 8px;
+		border: solid $color-accent-1;
+		border-width: 0 2px 2px 0;
+		transform: rotate(45deg);
+	}
+	&:disabled+label div.indicator:after {
+		border-color: mix($color-accent-1, $table-stripe-bg, 50%);
+	}
+}
+input[type=checkbox],
 input[type=radio]{
 	display: none;
 	&+label {
-		background: url('../img/radio.png') no-repeat left center;
-		padding-left: 20px;
-		&:hover, td:hover & {
-			background-image: url('../img/radio-hover.png');
+		cursor: pointer;
+		div.indicator {
+			display: inline-block;
+			border: solid 1px $color-accent-3;
+			width: 12px;
+			height: 12px;
+			background: white;
+			margin-bottom: -2px;
+			margin-right: 5px;
+			position: relative;
+			&:after {
+				display: block;
+				left: 2px;
+				top: 2px;
+				height: 8px;
+				width: 8px;
+				position: absolute;
+				content: ' ';
+			}
+		}
+		&:hover div.indicator{
+			border-color: $color-accent-1;
 		}
 	}
-	&:not(:disabled):checked+label {
-		background-image: url('../img/radio-checked.png');
-		&:hover, td:hover & {
-			background-image: url('../img/radio-checked-hover.png');
-		}
-	}
-	&:disabled+label {
-		background-image: url('../img/radio-disabled.png');
-		&:hover, td:hover & {
-			background-image: url('../img/radio-disabled-hover.png');
-		}
-	}
-	&:disabled:checked+label {
-		background-image: url('../img/radio-checked-disabled.png');
-		&:hover, td:hover & {
-			background-image: url('../img/radio-checked-disabled-hover.png');
-		}
+	&:disabled+label div.indicator{
+		background-color: $table-stripe-bg;
 	}
 }
 
@@ -396,9 +399,9 @@ fieldset {
 	border: solid 1px $color-accent-3;
 	border-radius: 3px;
 	&.error{
-		border-color: red;
+		border-color:$color-error;
 		& > legend {
-			color: red;
+			color:$color-error;
 		}
 	}
 	&.new {
@@ -453,13 +456,13 @@ fieldset {
 }
 
 #adminoverrule {
-	border: solid 1px mix($color-accent-2, $bg-color, 50%);
+	border: solid 1px mix($color-error, $bg-color, 50%);
 	padding: 5px 10px;
 }
 
 .errors {
-	border: solid 2px $color-accent-2;
-	color: $color-accent-2;
+	border: solid 2px $color-error;
+	color: $color-error;
 	padding: 2px;
 	margin-bottom: 5px;
 }
@@ -540,7 +543,7 @@ hr.afterbutton {
 }
 
 span.error {
-	color: red;
+	color:$color-error;
 	:not(.select2) &:not(.label){
 		font-style:italic;
 		font-weight: bold;
@@ -549,7 +552,7 @@ span.error {
 			font-size: 100%;
 			font-weight: normal;
 			font-style: normal;
-			border-color: red;
+			border-color:$color-error;
 			border-width: 2px;
 			& .select2-selection__placeholder{
 				font-weight: bold;
@@ -560,12 +563,12 @@ span.error {
 }
 
 div.error.head {
-	color: red;
+	color:$color-error;
 	font-weight: bold;
 	clear: left;
 }
 
 input.error, textarea.error, select.error {
-	border-color: red;
+	border-color:$color-error;
 	border-width: 2px;
 }

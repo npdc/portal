@@ -183,7 +183,7 @@ class Base {
 		$output = 'The following problems have been found in your record, please check and correct these.';
 		global $session;
 		if($session->userLevel >= NPDC_ADMIN){
-			$output .= '<div id="adminoverrule">As admin you can publish a record that contains errors, please do so with care!<form action="publish" method="get"><input type="checkbox" id="adminoverruleinput" name="adminoverrule" value="adminoverrule"><label for="adminoverruleinput">I am aware of the risks and wish to use the admin override when publishing this page.</label><br/><input type="submit" value="Do publish" /></form></div>';
+			$output .= '<div id="adminoverrule">As admin you can publish a record that contains errors, please do so with care!<form action="publish" method="get"><input type="checkbox" id="adminoverruleinput" name="adminoverrule" value="adminoverrule"><label for="adminoverruleinput"><div class="indicator"></div>I am aware of the risks and wish to use the admin override when publishing this page.</label><br/><input type="submit" value="Do publish" /></form></div>';
 		}
 		foreach($_SESSION['warnings'] as $section=>$data){
 			if(!empty($data[0])){
