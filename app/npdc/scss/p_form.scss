@@ -305,35 +305,6 @@ select:not([multiple]), .select2-selection--multiple{
 	padding-left: 1px;
 }
 
-input[type=radio]{
-	&+label {
-		div.indicator {
-			border-radius: 50%;
-		}
-	}
-	&:checked+label div.indicator:after {
-		border-radius: 50%;
-		background: $color-accent-1;
-	}
-	&:checked:disabled+label div.indicator:after{
-		background: mix($color-accent-1, $table-stripe-bg, 50%);
-	}
-}
-
-input[type=checkbox]{
-	&:checked+label div.indicator:after {
-		left: 4px;
-		top: 0px;
-		width: 3px;
-		height: 8px;
-		border: solid $color-accent-1;
-		border-width: 0 2px 2px 0;
-		transform: rotate(45deg);
-	}
-	&:disabled+label div.indicator:after {
-		border-color: mix($color-accent-1, $table-stripe-bg, 50%);
-	}
-}
 input[type=checkbox],
 input[type=radio]{
 	display: none;
@@ -350,10 +321,6 @@ input[type=radio]{
 			position: relative;
 			&:after {
 				display: block;
-				left: 2px;
-				top: 2px;
-				height: 8px;
-				width: 8px;
 				position: absolute;
 				content: ' ';
 			}
@@ -364,6 +331,38 @@ input[type=radio]{
 	}
 	&:disabled+label div.indicator{
 		background-color: $table-stripe-bg;
+	}
+}
+
+input[type=radio]{
+	&+label div.indicator {
+		border-radius: 50%;
+	}
+	&:checked+label div.indicator:after {
+		background: $color-accent-1;
+		left: 2px;
+		top: 2px;
+		height: 8px;
+		width: 8px;
+		border-radius: 50%;
+	}
+	&:checked:disabled+label div.indicator:after{
+		background: mix($color-accent-1, $table-stripe-bg, 50%);
+	}
+}
+
+input[type=checkbox]{
+	&:checked+label div.indicator:after {
+		left: 3px;
+		top: 0px;
+		width: 4px;
+		height: 8px;
+		border: solid $color-accent-1;
+		border-width: 0 2px 2px 0;
+		transform: rotate(45deg);
+	}
+	&:disabled+label div.indicator:after {
+		border-color: mix($color-accent-1, $table-stripe-bg, 50%);
 	}
 }
 
