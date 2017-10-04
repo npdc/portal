@@ -111,7 +111,7 @@ class Base {
 					} else {
 						$value = $item[$id];
 					}
-					$return .= '<td>'.(strpos($value, '</a>') === false ? '<a href="'.$link.'">'.$value.'</a>' : $value).'</td>';
+					$return .= '<td>'.(strpos($value, '</a>') === false && strpos($value, '</button>') === false ? '<a href="'.$link.'">'.$value.'</a>' : $value).'</td>';
 				}
 				if($editTable){
 					$return .= '<td>'.($item['editor'] ? '<button onclick="javascript:event.stopPropagation();location.href=\''.$link.'/edit\'">Edit'.($item['hasDraft'] ? ' *' : '').'</button>' : '').'</td>';

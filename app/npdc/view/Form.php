@@ -8,7 +8,7 @@ namespace npdc\view;
 
 class Form {
 	private $errorHead = '<div class="error head">There were errors when processing your submission</div>';
-	private $adminOverrule = '<div id="adminoverrule"><p><i>As admin you can overrule the checking of a record before it is being saved to the database using the checkbox below. Some fields are required on database level, if you left one of those fields empty your record will not be saved and the site will give a server error (you will not get a message telling what wnet wrong). Please use this function with care!</i></p><input type="checkbox" id="adminoverruleinput" name="adminoverrule" value="adminoverrule"><label for="adminoverruleinput"><div class="indicator"</div>I am aware of the risks and wish to use the admin override when submitting this page.</label></div>';
+	private $adminOverrule = '<div id="adminoverrule"><p><i>As admin you can overrule the checking of a record before it is being saved to the database using the checkbox below. Some fields are required on database level, if you left one of those fields empty your record will not be saved and the site will give a server error (you will not get a message telling what wnet wrong). Please use this function with care!</i></p><input type="checkbox" id="adminoverruleinput" name="adminoverrule" value="adminoverrule"><label for="adminoverruleinput"><div class="indicator"></div>I am aware of the risks and wish to use the admin override when submitting this page.</label></div>';
 	private $formId;
 	private $active = 0;
 	private $required;
