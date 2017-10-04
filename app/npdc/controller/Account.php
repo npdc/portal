@@ -39,6 +39,7 @@ class Account extends Base{
 						if($cur['person_id'] !== $this->session->userId){
 							$_SESSION[$this->formId]['errors']['mail'] = 'There is alreay an account with this mail address.';
 						} else {
+							unset($data['user_level']);
 							$this->model->updatePerson($data, $this->session->userId);
 							$_SESSION['notice'] = 'The changes have been saved';
 							header('Location: '.BASE_URL.'/account');

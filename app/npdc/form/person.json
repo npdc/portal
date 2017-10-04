@@ -48,7 +48,6 @@
 			"options": {},
 			"asList": true,
 			"newUrl": "organization",
-			"hint": "In case the details of your organization need to be updated, please send a mail to info@npdc.nl with the correct details.",
 			"ajaxUrl": "lookup/organization",
 			"required": false,
 			"hint": "The organization where this person is currently working."
@@ -132,6 +131,20 @@
 			"placeholder": "____-____-____-____",
 			"maskAlias": "orcid",
 			"required": false
+		},
+		"user_level": {
+			"type": "options",
+			"label": "User role",
+			"multiple": false,
+			"asList": true,
+			"hint": "Role is only used when an account is created with the mail address provided above",
+			"options": {
+				"user": "Logged in user",
+				"editor": "Editor",
+				"admin": "Administrator"
+			},
+			"default": "user",
+			"disabled": true
 		},
 		"submit": {
 			"type": "submit",

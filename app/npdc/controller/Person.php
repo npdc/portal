@@ -36,6 +36,7 @@ class Person extends Base {
 				$this->formController = new \npdc\controller\Form($this->formId);
 				$this->formController->getForm('person');
 				$this->formController->form->fields->organization_id->options = $this->getOrganizations();
+				$this->formController->form->fields->user_level->disabled = false;
 				$this->formController->form->action = $_SERVER['REQUEST_URI'];
 				$this->model = new \npdc\model\Person();
 				if(array_key_exists('formid', $_POST)){
