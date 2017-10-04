@@ -45,7 +45,10 @@ Getting started
 - Run app/npdc/sql/createDb.sql on database to create all tables
 - Create app/npdc/config.php from app/npdc/config.template.php and update details
 - Run cron to populate vocabs (recommended to run cron daily to keep vocabs updated)
-- Create first user account (TODO: INSTRUCTIONS TO BE WRITTEN)
+- Create first user account
+  - Register trough 'Create account'
+  - Go into database and change user_level of newly created user to admin
+  - After this you can use the interface to create/change other persons
 
 **Styling**
 - Change colors in app/npdc/scss/p_base_colors.scss to match your style and compile scss (in VS code with Easy Sass: f1 > Compile all SCSS/SASS files in the project)
