@@ -35,8 +35,7 @@ location / {
   - After this you can use the interface to create/change other accounts
 
 ## Cron
-Cron is used for synchronizing the local vocabularies with the ones of the GCMD.
-To prevent unauthorised cron runs you can set a cronkey in `config.php`, when a key has been set you have to run cron with `?key=<your key>`
+Cron is used for synchronizing the local vocabularies with the ones of the GCMD. To prevent unauthorised cron runs you can set a cronkey in `config.php`, when a key has been set you have to run cron with `?key=<your key>`
 
 Cron is in the main folder of the site, so run cron as `<domain>[/<path_to_portal>]/cron.php?key=<your key>` (where path_to_portal is only needed when you installed the portal in a subfolder of the webroot
 
@@ -46,6 +45,7 @@ We recommend to run cron daily (we suggest early morning local time) to work wit
 - Change colors in `app/npdc/scss/p_base_colors.scss` to match your style and compile scss (in VS code with Easy Sass: `F1 > Compile all SCSS/SASS files in the project`)
 - Place logo (200x200px) at `img/logo.png`
 - Place header image (at least 1240x120px) at `img/title_bg.jpg`
+- If you have one you can place your favicon.ico also in the img folder
 - TODO: release.php
 
 ## Linking with Twitter
