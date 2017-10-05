@@ -44,7 +44,7 @@
 				?></div>
 			</div>
 			<div id="title">
-				<a href="<?=BASE_URL?>/"><img src="<?=BASE_URL?>/img/logo200.png?nc"  /></a>
+				<a href="<?=BASE_URL?>/"><img src="<?=BASE_URL?>/img/logo.png"  /></a>
 				<h1><a href="<?=BASE_URL?>/">Netherlands Polar Data Center</a></h1>
 			</div>
 			<div id="menu">
