@@ -7,7 +7,7 @@
   - gd
   - xml
   - zip
-- mysql or mariadb (other systems require work on datamodel)
+- mysql >= 5.6 or mariadb >= 10.0 (other systems require work on datamodel)
 - composer
 - usage of https higly recommended for entire site, for instance with a certificate of letsencrypt, site doesn't do any checks for https
 
@@ -24,8 +24,8 @@ location / {
 
 ## Setting up datebase and config
 - Clone or unpack the script to a server either in webroot or subfolder
-- TODO: folder permissions
-- TODO: Composer for dependencies?
+- Create folder `data` in main folder (next to index.php and js and css folders) with `chmod 777`
+- Load dependencies using composer (`cd app`, `composer install`)
 - Create an empty database with username and password
 - Run `app/npdc/sql/createDb.sql` on database to create all tables
 - Copy `app/npdc/config.template.php` to `app/npdc/config.php` and update details
@@ -46,10 +46,11 @@ We recommend to run cron daily (we suggest early morning local time) to work wit
 - Place logo (200x200px) at `img/logo.png`
 - Place header image (at least 1240x120px) at `img/title_bg.jpg`
 - If you have one you can place your favicon.ico also in the img folder
-- TODO: release.php
+- When changing your css also edit build in the main directory (`touch build` or edit some content in the file) to force usage of new css for visitors
 
 ## Linking with Twitter
-- Create account at IFTTT (if you don't have one already TODO: iets over twitter koppeling)
+- Create account at IFTTT or use an existing one
+  - Since an IFTTT account can only be linked to one Twitter account you can only use your current account if it has been linked to the Twitter you want to use here or not linked to Twitter yet
 - Generate webhook key
   - Go to https://ifttt.com/maker_webhooks and click settings (or connect)
   - NEVER click edit connection after setup, this resets the token
