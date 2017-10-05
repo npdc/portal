@@ -42,7 +42,7 @@ if(CALLER === 'index' && array_key_exists('page', $_GET)){
 
 //get version
 define('APP_VERSION', trim(file_get_contents(__DIR__.'/version')));
-define('APP_BUILD', trim(file_get_contents(__DIR__.'/../../build/build')));
+define('APP_BUILD', filemtime(__DIR__.'/../../build'));
 
 //get first basic functions
 require_once 'lib/functions.php';

@@ -8,25 +8,34 @@
 	<link rel="shortcut icon" type="image/x-icon" href="<?=BASE_URL?>/img/logo200.png" />
 	<link rel="apple-touch-icon" href="<?=BASE_URL?>/img/logo200.png" />
 	<?php
+	$css = [
+		'ol',
+		['select2', '.min'],
+		['icomoon', '.min'],
+		['style', '.min']
+	];
+	$js = [
+		'external/jquery-2.2.3.min',
+		'external/jquery-ui.min',
+		'external/jquery.nicescroll.min',
+		'external/select2.full.min',
+		'external/jquery.inputmask.bundle.min',
+		'external/ol',
+		['npdc', '.min']
+	];
 	if(NPDC_DEV){
-		require 'css_js.php';
 		$css[] = 'debug';
-		foreach([
-			'css'=>['<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/', '.css" />'],
-			'js'=>['<script type="text/javascript" src="'.BASE_URL.'/js/', '.js"></script>']
-		] as $type=>$code){
-			foreach($$type as $file){
-				if(is_array($file)){
-					$file = $file[0];
-				}
-				echo $code[0].$file.$code[1];
+	}
+	foreach([
+		'css'=>['<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/', '.css?'.APP_BUILD.'" />'],
+		'js'=>['<script type="text/javascript" src="'.BASE_URL.'/js/', '.js?'.APP_BUILD.'"></script>']
+	] as $type=>$code){
+		foreach($$type as $file){
+			if(is_array($file)){
+				$file = NPDC_DEV ? $file[0] : implode('', $file);
 			}
+			echo $code[0].$file.$code[1];
 		}
-	} else {
-		?>
-		<link rel="stylesheet" type="text/css" href="<?=BASE_URL?>/build/css.css?v=<?=APP_BUILD?>" />
-		<script type="text/javascript" src="<?=BASE_URL?>/build/js.js?v=<?=APP_BUILD?>"></script>
-		<?php
 	}
 	?>
 	<script type="text/javascript">var baseUrl = "<?=BASE_URL?>";var controller = "<?=$controllerName?>";</script>
