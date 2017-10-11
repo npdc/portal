@@ -47,6 +47,7 @@ We recommend to run cron daily (we suggest early morning local time) to work wit
 - Place header image (at least 1240x120px) at `img/title_bg.jpg`
 - If you have one you can place your favicon.ico also in the img folder
 - When changing your css also edit build in the main directory (`touch build` or edit some content in the file) to force usage of new css for visitors
+- In `app/npdc/template` Copy `footer.example.php` to `footer.tpl.php` and edit to your liking
 
 ## Linking with Twitter
 - Create account at IFTTT or use an existing one
@@ -71,3 +72,9 @@ We recommend to run cron daily (we suggest early morning local time) to work wit
       - So message send to twitter will be '[New Content] Example content https://example.com/content/1' in this example
     - Click Create action
   - Click Finish
+
+## Front blocks
+The blocks on the front page are filled from different sources
+- The news table in the database (currently no interface to add news)
+- Recently changed content on the website
+- The twitter feed of the account given in config

@@ -19,7 +19,7 @@
 			<div id="top">
 				<div id="search"><form method="post" action="<?=BASE_URL?>/search"><input type="text" placeholder="search term" name="q" /><input type="submit" value="search"/></form></div>
 				<?php
-				if(\npdc\config::$social['twitter_in_head']){
+				if(\npdc\config::$social['twitter_in_head'] && !empty(\npdc\config::$social['twitter'])){
 					echo '<div id="social"> - <a href="https://twitter.com/'.\npdc\config::$social['twitter'].'"><span class="icon-twitter"></span></a></div>';
 				}
 				?>

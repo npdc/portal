@@ -13,6 +13,7 @@ build
 img/favicon.ico
 img/*.jpg
 img/*.png
+app/npdc/template/footer.tpl.php
 
 # editor files
 nbproject

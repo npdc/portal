@@ -93,8 +93,10 @@ class Front{
 		
 		$this->frontblocks['update'] = $block;
 		
-		$this->frontblocks['twitter'] = '<a class="twitter-timeline" data-height="calc(100% - 20px)" href="https://twitter.com/'.\npdc\config::$social['twitter'].'">Tweets by '.\npdc\config::$social['twitter'].'</a> '
+		if(!empty(\npdc\config::$social['twitter'])){
+			$this->frontblocks['twitter'] = '<a class="twitter-timeline" data-height="calc(100% - 20px)" href="https://twitter.com/'.\npdc\config::$social['twitter'].'">Tweets by '.\npdc\config::$social['twitter'].'</a> '
 			. '<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>'
 			;
+		}
 	}	
 }
