@@ -8,12 +8,12 @@
 
 **Dependencies:**
 - Apache or nginx
-- php 7.0
+- php >= 7.0
   - curl
   - gd
   - xml
   - zip
-- mysql of mariadb (other systems require work on datamodel)
+- mysql >= 5.6 or mariadb >= 10.0 (other systems require work on datamodel)
 - composer
 
 **For generating compressed js/css**
