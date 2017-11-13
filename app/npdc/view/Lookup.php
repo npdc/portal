@@ -31,7 +31,7 @@ class Lookup {
 	
 	private function person(){
 		$model = new \npdc\model\Person();
-		$data = $model->search($_GET['q'], $_GET['e'] ?? null);
+		$data = $model->search($_GET['q'], $_GET['e'] ?? null, array_key_exists('fuzzy', $_GET));
 		foreach($data as $row){
 			$this->data[] = [$row['person_id'], $row['name'], $row['organization_id']];
 		}

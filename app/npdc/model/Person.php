@@ -244,11 +244,25 @@ class Person{
 		return $q->fetchAll();
 	}
 	
-	public function search($string, $exclude){
+	public function search($string, $exclude, $fuzzy = false){
 		$query = $this->fpdo
 			->from('person');
 		if(strlen($string) > 0){
-			$query->where('name REGEXP ?', htmlentities($string));
+			if($fuzzy){
+				if(strpos($string, ',') !== false){
+					$string = implode(' ', array_reverse(explode(',', $string)));
+				}
+				if(strpos($string, '.') !== false){
+					$string = substr($string, strrpos($string, '.')+1);
+				} elseif(strpos($string, ' ' !== false)) {
+					$string = substr($string, strpos($string, ' '));
+				}
+				$string = trim($string);
+				$query->where('levenshtein_ratio(?, surname) >= 50', $string);
+				$query->orderBy('levenshtein_ratio(?, surname) DESC', $string);
+			} else {
+				$query->where('name REGEXP ?', htmlentities($string));
+			}
 		}
 		$query->orderBy('name');
 		if(is_array($exclude) && count($exclude) > 0){
