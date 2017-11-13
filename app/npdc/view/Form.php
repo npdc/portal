@@ -271,7 +271,7 @@ class Form {
 					. 'id="'.$id.'" '
 					. (substr($id, -4) === '_new' ? $field->default ?? null : $_SESSION[$this->formId]['data'][$id] ? 'checked ' : '')
 					. '>'
-					. '<label for="'.$id.'"></label>';
+					. '<label for="'.$id.'"><div class="indicator"></div></label>';
 				break;
 			
 			case 'file':
