@@ -254,7 +254,7 @@ class Person{
 				}
 				if(strpos($string, '.') !== false){
 					$string = substr($string, strrpos($string, '.')+1);
-				} elseif(strpos($string, ' ' !== false)) {
+				} elseif(strpos($string, ' ') !== false) {
 					$string = substr($string, strpos($string, ' '));
 				}
 				$string = trim($string);
