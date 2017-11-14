@@ -53,6 +53,8 @@ class config {
 	public static $passwordMinLength = 8;
 	
 	public static $showNew = 5;//number of new items to show on front page
+
+	public static $levenshtein_ratio_person = 51;//(int) precentage similarity to consider a person in the database the same as the search string
 	
 	//if a part doesn't contain data yet you can disabled the part, admins keep access to these parts
 	public static $partEnabled = [

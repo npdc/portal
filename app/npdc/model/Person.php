@@ -258,7 +258,7 @@ class Person{
 					$string = substr($string, strpos($string, ' '));
 				}
 				$string = trim($string);
-				$query->where('levenshtein_ratio(?, surname) >= 50', $string);
+				$query->where('levenshtein_ratio(?, surname) >= '.\npdc\config::$levenshtein_ratio_person, $string);
 				$query->orderBy('levenshtein_ratio(?, surname) DESC', $string);
 			} else {
 				$query->where('name REGEXP ?', htmlentities($string));
