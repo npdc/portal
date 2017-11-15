@@ -252,13 +252,12 @@ class Person{
 				if(strpos($string, ',') !== false){
 					$string = implode(' ', array_reverse(explode(',', $string)));
 				}
-				if(strpos($string, '.') !== false){
-					$string = substr($string, strrpos($string, '.')+1);
-				} elseif(strpos($string, ' ') !== false) {
-					$string = substr($string, strpos($string, ' '));
+				preg_match(\npdc\config::$surname_regex, $string, $parts);
+				$query->where('levenshtein_ratio(?, surname) >= '.\npdc\config::$levenshtein_ratio_person, $parts['f']);
+				if($parts['f'] !== $parts['l']){
+					$subs = substr($string, strrpos($string, ' ')+1);
+					$query->where('levenshtein_ratio(?, SUBSTRING_INDEX(surname, \' \', -1)) >= '.\npdc\config::$levenshtein_ratio_person, $parts['l']);
 				}
-				$string = trim($string);
-				$query->where('levenshtein_ratio(?, surname) >= '.\npdc\config::$levenshtein_ratio_person, $string);
 				$query->orderBy('levenshtein_ratio(?, surname) DESC', $string);
 			} else {
 				$query->where('name REGEXP ?', $string);
