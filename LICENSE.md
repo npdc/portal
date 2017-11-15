@@ -1,7 +1,8 @@
 MIT License
 
 Copyright (c) 2017, Marten Tacoma, 
-NIOZ Royal Netherlands Institute for Sea Research 
+NIOZ Royal Netherlands Institute for Sea Research  
+The development of the software was funded by the Netherlands Polar Program of NWO (grant number 866.14.001)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

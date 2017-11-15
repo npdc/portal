@@ -22,3 +22,7 @@
   - minify
 
 See documentation/install.md for installation instructions
+
+**Credits**
+
+The development of the software was funded by the Netherlands Polar Program of NWO (grant number 866.14.001)
