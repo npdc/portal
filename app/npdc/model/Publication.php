@@ -477,9 +477,6 @@ class Publication{
 		$values = [];
 		foreach($fields as $field){
 			switch($field){
-				case 'url':
-					$values['url'] = $data['location_url'] ?? $data['url'];
-					break;
 				case 'date':
 					if(is_array($data['date'])){
 						$values['date'] = $data['date'][0];
