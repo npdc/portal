@@ -51,7 +51,6 @@ class Publication extends Base{
 			foreach($keywords as $keyword){
 				$words[] = $keyword['keyword'];
 			}
-			$_SESSION[$this->formId]['data']['location_url'] = $baseData['url'];
 			$_SESSION[$this->formId]['data']['keywords'] = $words;
 
 			$_SESSION[$this->formId]['data']['people'] = $this->model->getPersons($this->id, $this->version);
@@ -62,11 +61,6 @@ class Publication extends Base{
 				unset($row);
 			}
 			$_SESSION[$this->formId]['data']['date'] = [$baseData['date']];
-			if(!empty($baseData['file_id'])){
-				$fileModel = new \npdc\model\File();
-				$fileData = $fileModel->getFile($baseData['file_id']);
-				$_SESSION[$this->formId]['data']['file'] = [$fileData['name'], $fileData['file_id']];
-			}
 			$_SESSION[$this->formId]['data']['projects'] = $this->model->getProjects($this->id, $this->version, false);
 			$_SESSION[$this->formId]['data']['datasets'] = $this->model->getDatasets($this->id, $this->version, false);
 		}
@@ -87,7 +81,7 @@ class Publication extends Base{
 			$_SESSION[$this->formId]['data']['doi'] = $doi;
 			$_SESSION[$this->formId]['data']['journal'] = $data->{'container-title'};
 			$curl2 = new \npdc\lib\CurlWrapper();
-			$_SESSION[$this->formId]['data']['location_url'] = $curl2->getRedirect('http://dx.doi.org/'.$doi);
+			$_SESSION[$this->formId]['data']['url'] = $curl2->getRedirect('http://dx.doi.org/'.$doi);
 			foreach($data->author as $author){
 				$_SESSION[$this->formId]['data']['people'][] = ['person_id'=>'quickadd', 'name'=>$author->given.' '.$author->family];
 			}

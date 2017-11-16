@@ -467,7 +467,7 @@ class Publication{
 	}
 	
 	private function parseData($data, $action){
-		$fields = ['title','abstract','journal','volume', 'issue','pages','isbn','doi','date','url','file_id','record_status', 'creator'];
+		$fields = ['title','abstract','journal','volume', 'issue','pages','isbn','doi','date','url','record_status', 'creator'];
 		if($action === 'insert'){
 			array_push($fields, 'publication_version');
 			if(is_numeric($data['publication_id'])){
@@ -477,13 +477,6 @@ class Publication{
 		$values = [];
 		foreach($fields as $field){
 			switch($field){
-				case 'file_id':
-					if(is_array($data['file'])){
-						$values['file_id'] = $data['file'][1];
-					} else {
-						$values['file_id'] = $data['file_id'];
-					}
-					break;
 				case 'url':
 					$values['url'] = $data['location_url'] ?? $data['url'];
 					break;

@@ -4,11 +4,6 @@
  * side bar of publication
  */
 
-if(!empty($this->data['file_id'])){
-	$fileModel = new \npdc\model\File();
-	$fileData = $fileModel->getFile($this->data['file_id']);
-	echo '<h4>Download</h4><p><a href="'.BASE_URL.'/file/'.$fileData['file_id'].'">'.$fileData['name'].'</a> ('.formatBytes($fileData['size']).')</p>';
-}
 if(!empty($this->data['url'])){
 	echo '<h4>External resource</h4><p><a href="'.$this->data['url'].'">Link</a></p>';
 }

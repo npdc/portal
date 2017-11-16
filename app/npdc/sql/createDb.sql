@@ -1064,7 +1064,6 @@ CREATE TABLE `publication` (
   `record_status` varchar(9) NOT NULL,
   `date` date DEFAULT NULL,
   `url` longtext,
-  `file_id` int(11) DEFAULT NULL,
   `insert_timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `creator` int(11) NOT NULL,
   `published` datetime DEFAULT NULL

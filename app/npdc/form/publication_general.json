@@ -171,27 +171,11 @@
 			"label": "Keywords",
 			"placeholder": "New keyword"
 		},
-		"location": {
-			"type": "fieldset",
-			"label": "Link",
-			"min": 0,
-			"max": 1,
-			"fields": {
-				"url": {
-					"type": "text",
-					"label": "Online link",
-					"placeholder": "http://...",
-					"required": false
-				},
-				"file": {
-					"type": "file",
-					"label": "File upload",
-					"required": false,
-					"format": "application/pdf",
-					"maxSize": "1MB",
-					"hint": "PDF file of publication. Only use if PDF is not available online and the rightsholder allows distribution of the PDF."
-				}
-			}
+		"url": {
+			"type": "text",
+			"label": "Online link",
+			"placeholder": "http://...",
+			"required": false
 		},
 		"submit": {
 			"type": "submit",
