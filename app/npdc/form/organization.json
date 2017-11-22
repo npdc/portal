@@ -66,6 +66,7 @@
 		"gcmd": {
 			"type": "fieldset",
 			"label": "GCMD",
+			"hint": "If you don't know this you can leave this empty",
 			"fields": {
 				"dif_code": {
 					"type": "text",

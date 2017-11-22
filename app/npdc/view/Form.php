@@ -441,6 +441,9 @@ class Form {
 					}
 
 					foreach($field->fields ?? $field->additionalFields as $subid=>$subfield){
+						if(property_exists($subfield, 'placeholder') && ($subfield->required || true)){
+							$subfield->placeholder .= '*';
+						}
 						if($subfield->type === 'hidden'){
 							$input .= $this->hidden($id.'_'.$subid.$rowid, $_SESSION[$this->formId]['data'][$id.'_'.$subid.$rowid]);
 						} else {
@@ -572,7 +575,7 @@ class Form {
 					. 'value="'.$option_id.'" '
 					. 'type="'.$type.'" '
 					. 'id="'.$fieldName.'_'.$option_id.'" '
-					.(in_array($option_id, $_SESSION[$this->formId]['data'][$id]) 
+					.(in_array($option_id, $_SESSION[$this->formId]['data'][$id] ?? []) 
 						? ' checked' 
 						:'')
 					.'><label for="'.$fieldName.'_'.$option_id.'"> <div class="indicator"></div>'.$label.'</label></div>';

@@ -63,7 +63,7 @@
 			"required": false,
 			"multi": true,
 			"collapsible": true,
-			"hint": "Links to external project websites or other external data sources. The record on this site is automaticaly linked in the GCMD",
+			"hint": "Links to external project websites or other external data sources (if any). The record on this site is automaticaly linked in the GCMD",
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/related_url.html",
 			"fields": {
 				"id": {

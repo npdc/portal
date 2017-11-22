@@ -49,7 +49,6 @@
 			"asList": true,
 			"newUrl": "organization",
 			"ajaxUrl": "lookup/organization",
-			"required": false,
 			"hint": "The organization where this person is currently working."
 		},
 		"mail":{

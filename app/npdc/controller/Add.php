@@ -45,6 +45,7 @@ class Add extends Base{
 						if($model->checkMail($_SESSION[$this->formId]['data']['mail'], 0)){
 							$id = $model->insertPerson($_SESSION[$this->formId]['data']);
 							$this->return = ['id'=>$id, 'label'=>$_SESSION[$this->formId]['data']['name'], 'nextfield'=>$_SESSION[$this->formId]['data']['organization_id']];
+							unset($_SESSION[$this->formId]);
 						} else {
 							$_SESSION[$this->formId]['errors']['mail'] = 'There is another person with this mail address';
 						}
@@ -53,14 +54,15 @@ class Add extends Base{
 						$model = new \npdc\model\Organization();
 						$id = $model->insertOrganization($_SESSION[$this->formId]['data']);
 						$this->return = ['id'=>$id, 'label'=>$_SESSION[$this->formId]['data']['organization_name']];
+						unset($_SESSION[$this->formId]);
 						break;
 					case 'publication':
 						$publicationController = new \npdc\controller\Publication($this->session, ['publication', 'new'], true);
 						$publicationController->formId = $this->formId;
 						$id = $publicationController->saveFromOverlay();
 						$this->return = ['id'=>$id, 'label'=>$_SESSION[$this->formId]['data']['title']];
+						unset($_SESSION[$this->formId]);
 				}
-				unset($_SESSION[$this->formId]);
 			}
 		} else {
 			switch($args[1]){

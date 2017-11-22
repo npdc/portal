@@ -219,7 +219,7 @@ class Base {
 					. ($url === $cur ? 'active' : '')
 					. ($isNew ? 'disabled' : '')
 				. '"'
-				. ($isNew ? ' onclick="alert(\'This menu is not available until you saved the first page\');return false;"' : '')
+				. ($isNew ? ' onclick="npdc.alert(\'This menu is not available until you saved the first page\');return false;"' : '')
 				. '>'.$page.'</a></li>';
 			
 		}
