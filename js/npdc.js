@@ -207,6 +207,12 @@ $().ready(function(){
 //		cursoropacitymin: 0.5,
 //		boxzoom: true
 //	});
+//version chooser for editors
+	$('#versionSelect').change(function(){
+		console.log($('#versionSelect').val());
+		window.location = $('#versionSelect').val();
+	});
+
 });
 
 function getParameterByName(name, url) {

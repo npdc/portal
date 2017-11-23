@@ -66,11 +66,6 @@ $().ready(function(){
 	if (window.navigator.userAgent.indexOf ( "MSIE " ) > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
 		npdc.alert('We see you are using Internet Explorer. Due to some bugs specific to Internet Explorer we recommend using a different browser such as Edge, Google Chrome or Firefox');
 	}
-
-	//version chooser for editors
-	$('#versionSelect').change(function(){
-		window.location = $('#versionSelect').val();
-	});
 	
 	$('td').has('input[type=checkbox]').click(function(){
 		$(this).children('input').prop('checked', !$(this).children('input').prop('checked'));
