@@ -37,7 +37,7 @@ class Vocab {
 	public function loopVocabs(){
 		$vocabs = $this->model->getUpdatable();
 		foreach($vocabs as $vocab){
-			echo 'Starting with '.$vocab['vocab_name'].' - '.$vocab['vocab_id']."\r\n";
+			echo 'Starting with '.$vocab['vocab_name'].' - '.$vocab['vocab_id'].'<br/>';
 			$url = 'https://gcmdservices.gsfc.nasa.gov/static/kms/'.$vocab['vocab_name'].'/'.$vocab['vocab_name'].'.csv';
 			$url = 'https://gcmdservices.gsfc.nasa.gov/kms/concepts/concept_scheme/'.$vocab['vocab_name'].'?format=csv';
 			$csv = str_getcsv($this->curl->get($url), "\n");
@@ -46,7 +46,8 @@ class Vocab {
 			$data = array_slice($csv, $comment_lines+1);
 			foreach($data as $row){
 				if(count($keys) !== count(str_getcsv($row))){
-					break;
+					echo 'Skipping '.$row.'<br/>';
+					continue;
 				}
 				$row = array_combine($keys, str_getcsv($row));
 				$uuid = $row['UUID'];

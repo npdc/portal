@@ -26,7 +26,6 @@ class Vocab {
 			->where('sync')
 			->where('last_update_local <= last_update_date')
 			->where('last_update_local < ?', date('Y-m-d'))
-			->limit(1)
 			->fetchAll();
 	}
 	
