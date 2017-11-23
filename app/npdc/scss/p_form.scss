@@ -95,6 +95,15 @@
 				&:first-child{
 					cursor: move;
 				}
+				&.fuzzy-name {
+					text-align: left;
+					input {
+						width: calc(100% - 25px);
+					}
+					span {
+						cursor: pointer;
+					}
+				}
 			}
 		}
 		td.lookupwrapper{

@@ -23,6 +23,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.icon-search:before {
+  content: "\e904";
+}
 .icon-eye-blocked:before {
   content: "\e903";
 }

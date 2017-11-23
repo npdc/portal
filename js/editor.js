@@ -81,12 +81,75 @@ $().ready(function(){
 
 	$('[data-freetext="this"]').each(function(){
 		input = $(this).siblings('input').last();
-		console.log(input);
 		if($(input).attr('name').split('_').pop() !== 'new' && $(input).val() == 'quickadd'){
 			$(this).children('input').removeAttr('readonly').removeClass('readonly');
-			$(this).siblings('[data-freetext="hide"]').text('');
+			$(this).siblings('[data-freetext="hide"]').data('oldHtml', $(this).siblings('[data-freetext="hide"]').html()).text('');
+			$(this).addClass('fuzzy-name');
+			$(this).append(' <span class="icon-search"></span>');
 		}
 	});
+
+	$('.fuzzy-name span').click(function(){
+		var url = $(this).parents('table').attr('data-base-url')
+			+'/lookup/'
+			+$(this).parents('table').attr('data-lookup-url')
+			+'?fuzzy&q='+$(this).siblings('input').val();
+		$('[name^='+$(this).parents('table').attr('data-target-field')+']').each(function(){
+			if($(this).val() !== '' && $.isNumeric($(this).val())){
+				url += '&e[]='+$(this).val();
+			}
+		});
+
+		fuzzyCaller = $(this).siblings('input').attr('name');
+
+		$.ajax(url).done(function(data){
+			l = data.length;
+			if(l > 0){
+				$('#overlay .inner').addClass('box').text('Please select an option below or click cancel');;
+				$.each(data, function(i, value) {
+					$('#overlay .inner').append('<button class="choice" style="width:100%" data-id="'+value[0]+'" data-name="'+value[1]+'" data-org="'+value[2]+'">'+value[1]+'</button><br/>');
+				});
+				$('#overlay .inner').append('<button onclick="npdc.close();">Cancel</button>');
+				$('#overlay .box button.choice').on('click', function(){
+					$('#overlay .box button.choice').off('click');
+					var element = $('input[name='+fuzzyCaller+']')
+					element.val($(this).attr('data-name')).addClass('readonly').attr('readonly', 'readonly')
+						.parent().removeClass('fuzzy-name')
+						.find('span').remove();
+					$('input[name='+fuzzyCaller.replace(element.parents('table').attr('data-source-field'), element.parents('table').attr('data-target-field'))+']').val($(this).attr('data-id'));
+					
+
+					if(element.attr('data-onsubmit') !== undefined){
+						var field = $('select[name='+fuzzyCaller.replace(element.parents('table').attr('data-source-field'), element.attr('data-onsubmit'))+']');
+						var value = $(this).attr('data-org');
+						if(field.attr('data-ajax-url') !== undefined){
+							field.addClass('ajax-target');
+							$.get(field.attr('data-ajax-url')+'/'+$(this).attr('data-org'), function(responseText){
+								$('.ajax-target')
+										.append($('<option>', { value : responseText[0][0] })
+										.text(responseText[0][1].replace('&amp;', '&')));
+								$('.ajax-target').val(value).trigger('change');
+								$('.ajax-target').removeClass('ajax-target');
+							});
+						}
+						element.parent().siblings('[data-freetext="hide"]').html(element.parent().siblings('[data-freetext="hide"]').data('oldHtml'));
+						npdc.close();
+					}
+				})
+				$('#overlay').fadeIn(100, function(){
+					$(window).on('keyup', function(event){
+						var code = event.keyCode || event.which;
+						if(code === 13 || code === 27){
+							npdc.close();
+						}
+					})
+				});
+				
+			} else {
+				npdc.alert('No match found');
+			}
+		});
+	})
 	
 	lookup = {
 		add: function(tbl){
@@ -222,11 +285,15 @@ $().ready(function(){
 		},
 		positionOptionwrapper: function(){
 			if($('#optionwrapper').length > 0){
-				if($('#optionwrapper').prev('input').offset().top-$('body').scrollTop() > ($(window).height() / 2)){
-					$('#optionwrapper').css('max-height', $('#optionwrapper').prev('input').offset().top-$('body').scrollTop()).css('bottom', $('#optionwrapper').parent().height());
+				var boxPos = $('#optionwrapper').prev('input').offset().top;
+				var scrollTop = document.documentElement.scrollTop;/*$('body').scrollTop()*/
+				var windowHeight = $(window).height();
+				
+				if(boxPos-scrollTop > (windowHeight / 2)){
+					$('#optionwrapper').css('max-height', boxPos-scrollTop).css('bottom', $('#optionwrapper').parent().height());
 					$('#optionwrapper').addClass('above');
 				} else {
-					$('#optionwrapper').css('max-height', $(window).height()-30-($('#optionwrapper').prev('input').offset().top-$('body').scrollTop())).css('bottom', 'auto');
+					$('#optionwrapper').css('max-height', windowHeight-30-(boxPos-scrollTop)).css('bottom', 'auto');
 					$('#optionwrapper').removeClass('above');
 				}
 			}
@@ -782,6 +849,7 @@ $().ready(function(){
 			toolbar: toolbar
 			});
 	});
+	
 });
 
 function createButton(element){
