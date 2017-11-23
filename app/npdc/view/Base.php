@@ -100,9 +100,9 @@ class Base {
 					$id = strtolower($item['content_type']).'_id';
 					$link = BASE_URL.'/'.strtolower($item['content_type']).'/'.$item[$id];
 				} else {
-					$link = BASE_URL.'/'.$url[0].'/'.$item[$url[1]];
+					$link = empty($item[$url[1]]) ? '' : BASE_URL.'/'.$url[0].'/'.$item[$url[1]];
 				}
-				$return .= '<tr onclick="javascript:location.href=\''.$link.'\'" class="link'.($item['record_status'] === 'draft' && $item[$class.'_version'] === 1 ? ' draft': '').'">';
+				$return .= '<tr '.(empty($link) ? 'class="' : 'onclick="javascript:location.href=\''.$link.'\'" class="link').($item['record_status'] === 'draft' && $item[$class.'_version'] === 1 ? ' draft': '').'">';
 				foreach($columns as $id=>$column){
 					if(is_array($column)){
 						if($column[1] === 'array'){
@@ -111,7 +111,7 @@ class Base {
 					} else {
 						$value = $item[$id];
 					}
-					$return .= '<td>'.(strpos($value, '</a>') === false && strpos($value, '</button>') === false ? '<a href="'.$link.'">'.$value.'</a>' : $value).'</td>';
+					$return .= '<td>'.(strpos($value, '</a>') === false && strpos($value, '</button>') === false && !empty($link) ? '<a href="'.$link.'">'.$value.'</a>' : $value).'</td>';
 				}
 				if($editTable){
 					$return .= '<td>'.($item['editor'] ? '<button onclick="javascript:event.stopPropagation();location.href=\''.$link.'/edit\'">Edit'.($item['hasDraft'] ? ' *' : '').'</button>' : '').'</td>';
