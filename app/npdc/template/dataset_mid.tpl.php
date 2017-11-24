@@ -10,14 +10,14 @@ include 'dataset/citation.php';
 
 <?php
 $parts = [
-	['Summary', 'field', 'summary'],
-	['Purpose', 'field', 'purpose'],
-	['Temporal coverage', 'file', 'time'],
-	['Platform &amp; Instruments', 'file', 'platform'],
-	['Data resolution', 'file', 'resolution'],
-	['Involved people and organizations', 'file', 'people'],
-	['Dataset progress and usage', 'file', 'usage'],
-	['Projects, publications and other links', 'file', 'references']
+	['Summary', 'field', 'summary', 'general'],
+	['Purpose', 'field', 'purpose', 'general'],
+	['Temporal coverage', 'file', 'time', 'coverage#temporal'],
+	['Platform &amp; Instruments', 'file', 'platform', 'methods'],
+	['Data resolution', 'file', 'resolution', 'coverage#resolution'],
+	['Involved people and organizations', 'file', 'people', 'people'],
+	['Dataset progress and usage', 'file', 'usage', 'usage'],
+	['Projects, publications and other links', 'file', 'references', 'references']
 ];
 
 foreach($parts as $part){
@@ -29,8 +29,8 @@ foreach($parts as $part){
 		include 'dataset/'.$part[2].'.php';
 		$content = ob_get_clean();
 	}
-	if(!empty($content)){
-		echo '<h3 class="collapsible hidden">'.$part[0].'</h3><div style="display:none" class="hiddenSubDiv">'
+	if(!empty($content) || $this->canEdit){
+		echo '<h3 class="collapsible hidden">'.$part[0].($this->data['record_status'] === 'draft' && $this->canEdit ? ' [<a href="'.BASE_URL.'/dataset/'.$this->data['dataset_id'].'/edit/'.$part[3].'">edit</a>]' : '').'</h3><div style="display:none" class="hiddenSubDiv">'
 			. $content
 			. '</div><hr/>';
 	}

@@ -598,7 +598,7 @@ class Form {
 	
 	private function fieldset($id, $fieldset){
 		if(property_exists($fieldset, 'multi') && $fieldset->multi === true){
-			$return = substr($id, -4) === '_new' || (!$this->collapsible && !$fieldset->collapsible) ? '' : '<h4 class="fieldset collapsible">'.$fieldset->label.((property_exists($fieldset, 'required') && $fieldset->required) ? '*' : '').'</h4>';
+			$return = (empty($fieldset->name) ? '' : '<a name="'.$fieldset->name.'"></a>').(substr($id, -4) === '_new' || (!$this->collapsible && !$fieldset->collapsible) ? '' : '<h4 class="fieldset collapsible">'.$fieldset->label.((property_exists($fieldset, 'required') && $fieldset->required) ? '*' : '').'</h4>');
 			$nrs = [];
 			$loopId = $id.'_';
 			foreach(array_keys($_SESSION[$this->formId]['data']) as $key){

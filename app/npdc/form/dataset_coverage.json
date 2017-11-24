@@ -41,6 +41,7 @@
 		"spatial_coverage": {
 			"type": "map",
 			"label": "Spatial coverage",
+			"name": "spatial",
 			"multi": true,
 			"required": true,
 			"hint": "Detailed location where samples were taken or which area was modelled",
@@ -179,6 +180,7 @@
 			"multi": true,
 			"label": "Temporal coverage",
 			"required": true,
+			"name": "temporal",
 			"min": 1,
 			"hint": "Description of the time period in which the data was collected.",
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/temporal_coverage.html",
@@ -313,6 +315,7 @@
 		"resolution": {
 			"type": "fieldset",
 			"label": "Data resolution",
+			"name": "resolution",
 			"multi": true,
 			"hint": "What is the distance between samplepoints.",
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/data_resolution.html",
