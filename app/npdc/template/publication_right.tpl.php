@@ -5,7 +5,7 @@
  */
 
 if(!empty($this->data['url'])){
-	echo '<h4>External resource</h4><p><a href="'.$this->data['url'].'">Link</a></p>';
+	echo '<h4>External resource</h4><p><a href="'.checkUrl($this->data['url']).'">Link</a></p>';
 }
 
 $fields = ['date'=>'Date'
