@@ -232,6 +232,12 @@ function openOverlay(url){
 		}
 		$(this).attr('tabindex', '-1');
 	});
+	$("iframe:not([src^='http'])").contents().find('a, button, input').each(function(){
+		if($(this).is('[tabindex]')){
+			$(this).attr('data-tabindex', $(this).attr('tabindex'));
+		}
+		$(this).attr('tabindex', '-1');
+	});
 	if(getParameterByName('referer') === null){
 		var u = encodeURIComponent(window.location);
 	} else {
