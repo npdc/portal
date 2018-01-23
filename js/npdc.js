@@ -195,8 +195,6 @@ $().ready(function(){
 	});
 	$('input[data-inputmask]').inputmask();
 	
-	$('input.error:first').focus();
-	
 	if($('body').hasClass('nomenu')){
 		//window.top.location === window.location && (window.top.location = baseUrl+'/');
 	} else {
@@ -229,12 +227,6 @@ function getParameterByName(name, url) {
 
 function openOverlay(url){
 	$('a, button, input').each(function(){
-		if($(this).is('[tabindex]')){
-			$(this).attr('data-tabindex', $(this).attr('tabindex'));
-		}
-		$(this).attr('tabindex', '-1');
-	});
-	$('iframe').contents().find('a, button, input').each(function(){
 		if($(this).is('[tabindex]')){
 			$(this).attr('data-tabindex', $(this).attr('tabindex'));
 		}
