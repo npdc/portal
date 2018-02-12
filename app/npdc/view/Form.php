@@ -271,7 +271,9 @@ class Form {
 					. 'id="'.$id.'" '
 					. (substr($id, -4) === '_new' ? $field->default ?? null : $_SESSION[$this->formId]['data'][$id] ? 'checked ' : '')
 					. '>'
-					. '<label for="'.$id.'"><div class="indicator"></div></label>';
+					. '<label for="'.$id.'"><div class="indicator"></div>'
+					. (isset($field->sideLabel) ? $field->sideLabel : '') 
+					. '</label>';
 				break;
 			
 			case 'file':
