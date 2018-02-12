@@ -16,6 +16,12 @@
 			"hint": "Name for use in url, only lower case letters and underscores",
 			"placeholder": "Alias"
 		},
+		"show_last_revision": {
+			"type": "checkbox",
+			"label": "Show date of last revision",
+			"sideLabel": "Show date of last revision (we advise to use this at least for sections like <i>Privacy</i> and <i>Terms of Use</i>)",
+			"required": false
+		},
 		"content": {
 			"label": "Content",
 			"type": "textarea",

@@ -71,9 +71,10 @@ class Page extends Base{
 								'url'=>$_SESSION[$this->formId]['data']['url'],
 								'title'=>$_SESSION[$this->formId]['data']['title'],
 								'content'=>  html_entity_decode($_SESSION[$this->formId]['data']['content']),
+								'show_last_revision' =>$_SESSION[$this->formId]['data']['show_last_revision'] === 'on' ? 1 : 0
 							]
 						);
-						
+
 						$this->savePeople();
 						$this->saveLinks();
 						

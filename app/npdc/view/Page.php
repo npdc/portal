@@ -65,7 +65,11 @@ class Page extends Base{
 			$this->title = $data['title'];
 			
 			if($this->controller->display === 'page'){
-				$this->mid = preg_replace('#\<(a href|img src)="((?!.*(:\/\/)).*)?"#', '<$1="'.BASE_URL.'/$2"', $data['content']);
+				$this->mid = '';
+				if($data['show_last_revision']){
+					$this->mid = '<i>Last revision: '.date('d M Y', strtotime($data['last_update'])).'</i>';
+				}
+				$this->mid .= preg_replace('#\<(a href|img src)="((?!.*(:\/\/)).*)?"#', '<$1="'.BASE_URL.'/$2"', $data['content']);
 
 				$persons = $model->getPersons($data['page_id']);
 

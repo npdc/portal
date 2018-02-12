@@ -54,6 +54,7 @@ class Page{
 	}
 	
 	public function updatePage($id, $values){
+		$values['last_update'] = date('Y-m-d h:i:s');
 		return $this->fpdo
 			->update('page', $values, $id)
 			->execute();
