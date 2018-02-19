@@ -67,7 +67,7 @@ class Page extends Base{
 			if($this->controller->display === 'page'){
 				$this->mid = '';
 				if($data['show_last_revision']){
-					$this->mid = '<i>Last revision: '.date('d M Y', strtotime($data['last_update'])).'</i>';
+					$this->mid = '<i>Last revision: '.date('d F Y', strtotime($data['last_update'])).'</i>';
 				}
 				$this->mid .= preg_replace('#\<(a href|img src)="((?!.*(:\/\/)).*)?"#', '<$1="'.BASE_URL.'/$2"', $data['content']);
 
