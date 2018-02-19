@@ -30,6 +30,12 @@
 			"placeholder": "Answer",
 			"hint": "This is to check if you are human or a bot"
 		},
+		"terms": {
+			"type": "checkbox",
+			"label": "Privacy policy and Terms of use",
+			"sideLabel": "I have read and accept the <a href=\"#\" onclick=\"openOverlay('overlay/privacy/accept');event.preventDefault()\">Privacy policy</a> and <a href=\"#\" onclick=\"openOverlay('overlay/terms/accept');event.preventDefault()\">Terms of use</a>",
+			"errorMsg": "Please read and accept the Privacy policy and Terms of use<br/>"
+		},
 		"submit": {
 			"type": "submit",
 			"value": "Register",

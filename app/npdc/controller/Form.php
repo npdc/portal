@@ -387,7 +387,7 @@ class Form {
 			){
 			//no validation needed
 		} elseif(!$hasValue){
-			$this->addError($id, 'Please provide a value', $field->label.' is required');
+			$this->addError($id, $field->errorMsg ?? 'Please provide a value', $field->label.' is required');
 		} elseif(property_exists($field, 'max_length') && strlen($this->value) > $field->max_length){
 			$this->addError($id, 'This answer is too long, maximum '.$field->max_length.' allowed', $field->label.' is too long, maximum '.$field->max_length.' allowed');
 		} else {

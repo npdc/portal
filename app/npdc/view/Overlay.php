@@ -4,13 +4,13 @@ namespace npdc\view;
 
 class Overlay{
 	public $template = 'plain';
-	public $bodyClass = 'overlay user';
+	public $bodyClass = 'overlay';
 	public $mid;
 	public $title;
 	public function __construct($session, $args){
 		$this->session = $session;
 		$this->args = $args;
-		if($session->userLevel < NPDC_EDITOR){
+		if($args[1] === 'editor' && $session->userLevel < NPDC_EDITOR){
 			header('Location: '.BASE_URL.'/login?view=overlay&referer='.$_SERVER['REQUEST_URI']);die();
 		}
 	}
@@ -20,6 +20,20 @@ class Overlay{
 	}
 	
 	public function showItem(){
+		if($this->args[1] === 'editor'){
+			$this->editorTools();
+		} else {
+			$model = new \npdc\model\Page();
+			$page = $model->getByUrl($this->args[1]);
+			$this->title = $page['title'];
+			$this->mid = ($page['show_last_revision'] ? '<p class="last-rev">Last revision: '.date('d F Y', strtotime($page['last_update'])).'</p>' : '').$page['content'];
+			if($this->args[2] === 'accept'){
+				$this->mid .= '<button onclick="window.parent.closeOverlay();" style="float:right">Close '.$page['title'].'</button>';
+			}
+		}
+	}
+
+	private function editorTools(){
 		$this->title = ucfirst($this->args[1]);
 		$editUrl = null;
 		
