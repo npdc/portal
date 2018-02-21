@@ -72,7 +72,8 @@ if(isset($_SESSION[$_GET['id']]['captcha'])){
 } else {
 	$font = 'fonts/'.$fonts[0].'.ttf';
 	
-	imagettftext($img, $fontsize, 0, 50, 25, $error, $font, 'No Captcha available');
+	imagettftext($img, $fontsize, 0, 20, 15, $error, $font, 'Please allow cookies to enable');
+	imagettftext($img, $fontsize, 0, 17, 35, $error, $font, 'captcha and processing of form');
 }
 
 header ('Content-type: image/png');
