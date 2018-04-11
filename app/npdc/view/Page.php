@@ -64,28 +64,31 @@ class Page extends Base{
 		} else {
 			$this->title = $data['title'];
 			
-			if($this->controller->display === 'page'){
-				$this->mid = '';
-				if($data['show_last_revision']){
-					$this->mid = '<p class="last-rev">Last revision: '.date('d F Y', strtotime($data['last_update'])).'</p>';
-				}
-				$this->mid .= preg_replace('#\<(a href|img src)="((?!.*(:\/\/)).*)?"#', '<$1="'.BASE_URL.'/$2"', $data['content']);
+			switch($this->controller->display){
+				case 'edit':
+					$this->loadEditPage();
+					break;
+				case 'not_allowed':
+					$this->title = 'No access';
+					$this->mid = 'You don\'t have access to this page';
+					break;
+				default:
+					$this->mid = '';
+					if($data['show_last_revision']){
+						$this->mid = '<p class="last-rev">Last revision: '.date('d F Y', strtotime($data['last_update'])).'</p>';
+					}
+					$this->mid .= preg_replace('#\<(a href|img src)="((?!.*(:\/\/)).*)?"#', '<$1="'.BASE_URL.'/$2"', $data['content']);
 
-				$persons = $model->getPersons($data['page_id']);
+					$persons = $model->getPersons($data['page_id']);
 
-				if(count($persons) > 0){
-					$this->displayPersons($persons);
+					if(count($persons) > 0){
+						$this->displayPersons($persons);
 
-				}
-				$urls = $model->getUrls($data['page_id']);
-				if(count($urls) > 0){
-					$this->displayUrls($urls);
-				}
-			} elseif($this->controller->display === 'not_allowed') {
-				$this->title = 'No access';
-				$this->mid = 'You have no access to this page';
-			} else {
-				$this->loadEditPage();
+					}
+					$urls = $model->getUrls($data['page_id']);
+					if(count($urls) > 0){
+						$this->displayUrls($urls);
+					}
 			}
 		}
 	}
