@@ -81,6 +81,9 @@ class Page extends Base{
 				if(count($urls) > 0){
 					$this->displayUrls($urls);
 				}
+			} elseif($this->controller->display === 'not_allowed') {
+				$this->title = 'No access';
+				$this->mid = 'You have no access to this page';
 			} else {
 				$this->loadEditPage();
 			}
