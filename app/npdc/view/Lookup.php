@@ -67,9 +67,23 @@ class Lookup {
 	
 	private function publication(){
 		$model = new \npdc\model\Publication();
-		$data = $model->search($_GET['q'], false, $_GET['e'] ?? null, true);
-		foreach($data as $row){
-			$this->data[] = [$row['publication_id'], $row['title']];
+		if(array_key_exists('doi', $_GET)){
+			$this->data = $model->getByDOI(substr($_GET['doi'], strpos($_GET['doi'], '10.')));
+		} elseif(array_key_exists('fuzzy', $_GET)) {
+			$this->data = [];
+			foreach($model->getList() as $publication){
+				if(levenshtein(strtolower($publication['title']), strtolower($_GET['q']))/strlen($_GET['q']) < 0.3){
+					$this->data[$publication['publication_id']] = $model->getAuthors($publication['publication_id'], $publication['publication_version'], INF).', '
+					. $publication['year'].'. '
+					. $publication['title'].(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
+					. $publication['journal'].'</i> '.$publication['volume'].' ('.$publication['issue'].'), '.$publication['pages'];
+				}
+			}
+		} else {
+			$data = $model->search($_GET['q'], false, $_GET['e'] ?? null, true);
+			foreach($data as $row){
+				$this->data[] = [$row['publication_id'], $row['title']];
+			}
 		}
 	}
 	

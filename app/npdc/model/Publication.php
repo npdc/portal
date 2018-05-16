@@ -134,6 +134,13 @@ class Publication{
 		return $return;
 	}
 	
+	public function getByDOI($doi){
+		return $this->fpdo
+			->from('publication')
+			->where('doi', $doi)
+			->fetch();
+	}
+	
 	public function getPersons($id, $version){
 		return $this->fpdo
 			->from('publication_person')

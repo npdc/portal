@@ -8,7 +8,8 @@
 			"type": "text",
 			"label": "Title",
 			"placeholder": "Title",
-			"allowTags": "italic"
+			"allowTags": "italic",
+			"trigger": "doubleTitle"
 		},
 		"date": {
 			"type": "date",
@@ -53,7 +54,8 @@
 			"type": "text",
 			"label": "DOI",
 			"placeholder": "Digital Object Identifier",
-			"required": false
+			"required": false,
+			"trigger": "doubleDOI"
 		},
 		"abstract": {
 			"type": "textarea",

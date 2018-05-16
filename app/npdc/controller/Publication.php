@@ -68,27 +68,32 @@ class Publication extends Base{
 
 	private function loadFromDOI($doi){
 		$doi = substr($doi, strpos($doi, '10.'));
-		$curl = new \npdc\lib\CurlWrapper(['Accept: application/vnd.citationstyles.csl+json']);
-		$data = json_decode($curl->get('http://dx.doi.org/'.$doi));
-		if(empty($data)){
-			$_SESSION['errors'] = 'No details found based in the DOI \''.$doi.'\'';
+		$existing = $this->model->getByDOI($doi);
+		if($existing != false){
+			$_SESSION['errors'] = 'This publication  with doi '.$doi.' is already in the database, you can find it <a href="'.BASE_URL.'/publication/'.$existing['publication_id'].'">here</a>. If this is a different publication, or access to this page is denied, please contact the NPDC.';
 		} else {
-			$_SESSION['notice'] = 'Found the details below based on your DOI ('.$doi.'), please check the details and update where needed';
-			foreach(['title', 'issue','volume'] as $field){
-				$_SESSION[$this->formId]['data'][$field] = $data->$field;
-			}
-			$_SESSION[$this->formId]['data']['pages'] = $data->page;
-			$_SESSION[$this->formId]['data']['doi'] = $doi;
-			$_SESSION[$this->formId]['data']['journal'] = $data->{'container-title'};
-			$curl2 = new \npdc\lib\CurlWrapper();
-			$_SESSION[$this->formId]['data']['url'] = $curl2->getRedirect('http://dx.doi.org/'.$doi);
-			foreach($data->author as $author){
-				$_SESSION[$this->formId]['data']['people'][] = ['person_id'=>'quickadd', 'name'=>$author->given.' '.$author->family];
-			}
-			foreach(['published-print', 'published-online', 'issued'] as $date){
-				if(!empty($data->$date)){
-					$_SESSION[$this->formId]['data']['date'] = implode('-', $data->{$date}->{'date-parts'}[0]);
-					break;
+			$curl = new \npdc\lib\CurlWrapper(['Accept: application/vnd.citationstyles.csl+json']);
+			$data = json_decode($curl->get('http://dx.doi.org/'.$doi));
+			if(empty($data)){
+				$_SESSION['errors'] = 'No details found based in the DOI \''.$doi.'\'';
+			} else {
+				$_SESSION['notice'] = 'Found the details below based on your DOI ('.$doi.'), please check the details and update where needed';
+				foreach(['title', 'issue','volume'] as $field){
+					$_SESSION[$this->formId]['data'][$field] = $data->$field;
+				}
+				$_SESSION[$this->formId]['data']['pages'] = $data->page;
+				$_SESSION[$this->formId]['data']['doi'] = $doi;
+				$_SESSION[$this->formId]['data']['journal'] = $data->{'container-title'};
+				$curl2 = new \npdc\lib\CurlWrapper();
+				$_SESSION[$this->formId]['data']['url'] = $curl2->getRedirect('http://dx.doi.org/'.$doi);
+				foreach($data->author as $author){
+					$_SESSION[$this->formId]['data']['people'][] = ['person_id'=>'quickadd', 'name'=>$author->given.' '.$author->family];
+				}
+				foreach(['published-print', 'published-online', 'issued'] as $date){
+					if(!empty($data->$date)){
+						$_SESSION[$this->formId]['data']['date'] = implode('-', $data->{$date}->{'date-parts'}[0]);
+						break;
+					}
 				}
 			}
 		}

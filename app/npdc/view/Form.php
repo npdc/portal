@@ -195,6 +195,7 @@ class Form {
 					. (property_exists($field, 'mask') ? 'data-inputmask="\'mask\': \''.$field->mask.'\'" ' : '')
 					. (property_exists($field, 'maskAlias') ? 'data-inputmask="\'alias\': \''.$field->maskAlias.'\'" ' : '')
 					. (property_exists($field, 'placeholder') ? 'placeholder="'.$field->placeholder.'" ' : '')
+					. (property_exists($field, 'trigger') ? 'onBlur="javascript:'.$field->trigger.'(\''.$id.'\')" ' : '')
 					. 'value="'.(isset($_SESSION[$this->formId]['data'][$id]) 
 						? $_SESSION[$this->formId]['data'][$id] 
 						: '').'" '
