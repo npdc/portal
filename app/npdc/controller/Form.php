@@ -116,7 +116,8 @@ class Form {
 		if(in_array($allowTags,['full', 'default'])){
 			$value = '<p>'.$value.'</p>';
 		}
-		return str_replace(['<div><br /></div>','div', '<p></p>'], ['','p', ''], $this->purifers[$allowTags]->purify($value));
+		//return str_replace(['<div><br /></div>','div', '<p></p>'], ['','p', ''], $this->purifers[$allowTags]->purify($value));
+		return str_replace(['<div><br /></div>','<p></p>'], ['', ''], $this->purifers[$allowTags]->purify($value));
 	}
 	
 	private function table($id, $field){
