@@ -647,7 +647,7 @@ $().ready(function(){
 							p = '^'+p;
 						}
 						regex = new RegExp('['+p+']', 'g');
-						var newVal = $(this).val().replace(regex, '');
+						var newVal = $(this).val().replace(regex, '_');
 						$(this).val(newVal);
 						cur = newVal.length;
 					}
