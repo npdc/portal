@@ -5,8 +5,8 @@
 	<meta name="author" content="Marten Tacoma, NIOZ, 2017" />
 	<meta name="application-name" content="NPDC" />
 	<meta name="page-version" content="<?=APP_VERSION?>" />
-	<link rel="shortcut icon" type="image/x-icon" href="<?=BASE_URL?>/img/logo200.png" />
-	<link rel="apple-touch-icon" href="<?=BASE_URL?>/img/logo200.png" />
+	<link rel="shortcut icon" type="image/x-icon" href="<?=BASE_URL?>/img/logo.png" />
+	<link rel="apple-touch-icon" href="<?=BASE_URL?>/img/logo.png" />
 	<?php
 	$css = [
 		'ol',
