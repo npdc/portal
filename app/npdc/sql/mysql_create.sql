@@ -1883,7 +1883,6 @@ ALTER TABLE `project_publication`
 --
 ALTER TABLE `publication`
   ADD PRIMARY KEY (`publication_id`,`publication_version`),
-  ADD KEY `fki_file_id` (`file_id`),
   ADD KEY `publication_record_status` (`record_status`),
   ADD KEY `publication_x_person_fk` (`creator`);
 
@@ -2718,7 +2717,6 @@ ALTER TABLE `project_publication`
 -- Constraints for table `publication`
 --
 ALTER TABLE `publication`
-  ADD CONSTRAINT `publication_x_file_fk` FOREIGN KEY (`file_id`) REFERENCES `file` (`file_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `publication_x_person_fk` FOREIGN KEY (`creator`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `publication_x_record_status_fk` FOREIGN KEY (`record_status`) REFERENCES `record_status` (`record_status`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
