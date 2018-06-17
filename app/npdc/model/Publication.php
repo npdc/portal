@@ -217,9 +217,9 @@ class Publication{
 			->orderBy('date DESC');
 		if(!empty($string)){
 			if($summary){
-				$q->where('(title REGEXP :search1 OR abstract REGEXP :search2)', [':search1'=>$string, ':search2'=>$string]);
+				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR abstract '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2)', [':search1'=>$string, ':search2'=>$string]);
 			} else {
-				$q->where('title REGEXP :search', $string);
+				$q->where('title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search', $string);
 			}
 		}
 		if(is_array($exclude) && count($exclude) > 0){

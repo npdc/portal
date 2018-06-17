@@ -407,9 +407,9 @@ class Dataset{
 			->orderBy('date DESC');
 		if(!empty($string)){
 			if($summary){
-				$q->where('(title REGEXP :search1 OR dif_id REGEXP :search2 OR summary REGEXP :search3)', [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string), ':search3'=>$string]);
+				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR dif_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2 OR summary '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search3)', [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string), ':search3'=>$string]);
 			} else {
-				$q->where('(title REGEXP :search1 OR dif_id REGEXP :search2)', [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string)]);
+				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR dif_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2)', [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string)]);
 			}
 		}
 		if(is_array($exclude) && count($exclude) > 0){

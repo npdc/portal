@@ -56,7 +56,7 @@ class Organization {
 			->from('organization')
 			->orderBy('organization_name');
 		if(!empty($string)){
-			$q->where('(organization_name REGEXP :search1 OR dif_code REGEXP :search2 OR dif_name REGEXP :search3)', [':search1'=>$string, ':search2'=>$string, ':search3'=>$string]);
+			$q->where('(organization_name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR dif_code '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2 OR dif_name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search3)', [':search1'=>$string, ':search2'=>$string, ':search3'=>$string]);
 		}
 		if(is_array($exclude) && count($exclude) > 0){
 			$q->where('organization_id NOT', $exclude);
