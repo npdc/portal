@@ -256,11 +256,14 @@ class Person{
 				$query->where('levenshtein_ratio(?, surname) >= '.\npdc\config::$levenshtein_ratio_person, $parts['f']);
 				if($parts['f'] !== $parts['l']){
 					$subs = substr($string, strrpos($string, ' ')+1);
-					$query->where('levenshtein_ratio(?, SUBSTRING_INDEX(surname, \' \', -1)) >= '.\npdc\config::$levenshtein_ratio_person, $parts['l']);
+					if(\npdc\config::$db['type'] === 'mysql'){
+						$query->where('levenshtein_ratio(?, SUBSTRING_INDEX(surname, \' \', -1)) >= '.\npdc\config::$levenshtein_ratio_person, $parts['l']);
+					}
+					//$query->where('levenshtein_ratio(?, regexp_replace(surname, \'^.*\', \'\')) >= '.\npdc\config::$levenshtein_ratio_person, $parts['l']);
 				}
 				$query->orderBy('levenshtein_ratio(?, surname) DESC', $string);
 			} else {
-				$query->where('name REGEXP ?', $string);
+				$query->where('name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' ?', $string);
 			}
 		}
 		$query->orderBy('name');

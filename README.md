@@ -13,7 +13,7 @@
   - gd
   - xml
   - zip
-- mysql >= 5.6 or mariadb >= 10.0 (other systems require work on datamodel)
+- mysql >= 5.6 or mariadb >= 10.0 or postgresql 10
 - composer
 
 **For generating compressed js/css**

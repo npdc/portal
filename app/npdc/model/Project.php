@@ -251,9 +251,9 @@ class Project{
 			->orderBy('date DESC');
 		if(!empty($string)){
 			if($summary){
-				$q->where('(title REGEXP :search1 OR summary REGEXP :search2 OR nwo_project_id REGEXP :search3 OR acronym REGEXP :search4)', [':search1'=>$string, ':search2'=>$string, ':search3'=>$idString, ':search4'=>$string]);
+				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR summary '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2 OR nwo_project_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search3 OR acronym '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search4)', [':search1'=>$string, ':search2'=>$string, ':search3'=>$idString, ':search4'=>$string]);
 			} else {
-				$q->where('(title REGEXP :search1 OR nwo_project_id REGEXP :search2 OR acronym REGEXP :search3)', [':search1'=>$string, ':search2'=>$idString, ':search3'=>$string]);
+				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR nwo_project_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2 OR acronym '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search3)', [':search1'=>$string, ':search2'=>$idString, ':search3'=>$string]);
 			}
 		}
 		if(is_array($exclude) && count($exclude) > 0){
