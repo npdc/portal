@@ -3,12 +3,16 @@
 include 'dataset/citation.php';
 ?>
 <button onclick="$('.hiddenSubDiv').slideDown();$('.collapsible').removeClass('hidden');">Expand all</button> <button onclick="$('.hiddenSubDiv').slideUp();$('.collapsible').addClass('hidden');">Collapse all</button>
+<?php
+if(!empty($this->data['dif_id'])){
+?>
 <section class="inline">
 	<h4>Dif id</h4>
 	<p><?=$this->data['dif_id']?></p>
 </section>
-
 <?php
+}
+
 $parts = [
 	['Summary', 'field', 'summary', 'general'],
 	['Purpose', 'field', 'purpose', 'general'],

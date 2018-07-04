@@ -9,7 +9,8 @@
 			"permittedChars": "\\w\\.\\-\\_",
 			"label": "Dataset ID",
 			"hint": "ID for the dataset. Letters (upper and lower case), numbers, underscore(_), hyphen (-) and period (.) allowed.",
-			"placeholder": "Descriptive id"
+			"placeholder": "Descriptive id",
+			"disabled": true
 		},
 		"title": {
 			"type": "text",
