@@ -33,7 +33,7 @@ class Dif {
 	}
 
 	private function parseValue($value){
-		return htmlspecialchars($value);
+		return htmlspecialchars(html_entity_decode($value));
 	}
 	
 	public function output(){
