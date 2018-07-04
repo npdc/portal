@@ -81,7 +81,9 @@ if(CALLER === 'index'){
 	$args = ($url === false || strlen($url)<1)
 			? [] 
 			: explode('/', trim($url, " \t\n\r\0\x0B/"));
-
+	if(strpos($args[0], '.') !== false){
+		list($args[0], $ext) = explode('.', $args[0]);
+	}
 	if($args[0] === 'home'){
 		unset($args[0]);
 	}
@@ -99,6 +101,9 @@ if(CALLER === 'index'){
 		default://show a item of a type
 			$controllerName = ucfirst($args[0]);
 			$id = $args[1];
+	}
+	if(isset($ext)){
+		$args[0] .= '.'.$ext;
 	}
 
 	//get the view

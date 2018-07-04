@@ -45,21 +45,47 @@ class Dataset extends Base{
 	}
 	
 	public function showList(){
-		$this->class = 'list dataset';
-		$this->title = 'Datasets';
-		$this->left = parent::showFilters($this->controller->formId);
 		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data']) 
 				? $_SESSION[$this->controller->formId]['data'] 
 				: null
-			);
-		$this->mid = $this->displayTable('dataset', $list
-				, ['title'=>'Title', 
-					'date_start'=>'Start date', 
-					'date_end'=>'End date']
-				, ['dataset', 'dataset_id']
-				, true
-				, true
-			);
+			, true);
+		if(strpos($this->args[0], '.xml') !== false){
+			$this->xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><datasets></datasets>');
+			$fields = ['dataset_id', 'dataset_version', 'title', 'publishtime', 'url'];
+			foreach($list as $dataset){
+				$em = $this->xml->addChild('dataset');
+				foreach($fields as $field){
+					switch($field){
+						case 'url':
+							$value = 'http'.(empty($_SERVER['HTTPS'])?'':'s').'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$dataset['dataset_id'].'.xml';
+							break;
+						default:
+							$value = $dataset[$field];
+
+					}
+					$em->addChild($field, html_entity_decode($value));
+				}
+			}
+			header('Content-Type: application/xml');
+			$dom = new \DOMDocument('1.0');
+			$dom->preserveWhiteSpace = false;
+			$dom->formatOutput = true;
+			$dom->loadXML($this->xml->asXML());
+			echo $dom->saveXML();
+			die();
+		} else {
+			$this->class = 'list dataset';
+			$this->title = 'Datasets';
+			$this->left = parent::showFilters($this->controller->formId);
+			$this->mid = $this->displayTable('dataset', $list
+					, ['title'=>'Title', 
+						'date_start'=>'Start date', 
+						'date_end'=>'End date']
+					, ['dataset', 'dataset_id']
+					, true
+					, true
+				);
+		}
 	}
 
 	//Display a single dataset
