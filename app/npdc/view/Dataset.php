@@ -49,7 +49,7 @@ class Dataset extends Base{
 				? $_SESSION[$this->controller->formId]['data'] 
 				: null
 			, true);
-		if(strpos($this->args[0], '.xml') !== false){
+		if(NPDC_OUTPUT === 'xml'){
 			$this->xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><datasets></datasets>');
 			$fields = ['dataset_id', 'dataset_version', 'title', 'publishtime', 'url'];
 			foreach($list as $dataset){
@@ -107,7 +107,7 @@ class Dataset extends Base{
 
 		if($this->data === false && $dataset !== 'new'){//dataset not found
 			$this->showError();
-		} elseif($this->args[2] === 'xml'){//show as xml
+		} elseif(NPDC_OUTPUT === 'xml'){//show as xml
 			$this->showXml();
 		} elseif ((!$this->canEdit || is_null($this->controller->display)) && $dataset !== 'new') {//display dataset
 			$this->showDataset();
