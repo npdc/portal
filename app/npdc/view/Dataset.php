@@ -45,6 +45,7 @@ class Dataset extends Base{
 	}
 	
 	public function showList(){
+		$this->left = parent::showFilters($this->controller->formId);
 		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data']) 
 				? $_SESSION[$this->controller->formId]['data'] 
 				: null
@@ -76,7 +77,6 @@ class Dataset extends Base{
 		} else {
 			$this->class = 'list dataset';
 			$this->title = 'Datasets';
-			$this->left = parent::showFilters($this->controller->formId);
 			$this->mid = $this->displayTable('dataset', $list
 					, ['title'=>'Title', 
 						'date_start'=>'Start date', 
