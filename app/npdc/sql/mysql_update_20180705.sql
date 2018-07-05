@@ -1,0 +1,3 @@
+ALTER TABLE c2_npdc.dataset ADD uuid VARCHARACTER(36) NULL;
+ALTER TABLE c2_npdc.project ADD uuid VARCHARACTER(36) NULL;
+ALTER TABLE c2_npdc.publication ADD uuid VARCHARACTER(36) NULL;

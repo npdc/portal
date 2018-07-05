@@ -305,6 +305,12 @@ class Project{
 			$this->fpdo->insertInto('project', $values)->execute();
 			$r = $this->fpdo->from('project')->where($values)->fetch();
 		}
+		$this->fpdo
+			->update('project')
+			->set(['uuid'=>generateUUID('project/'.$r['project_id'].'/'.$r['project_version'])])
+			->where('project_id', $r['project_id'])
+			->where('project_version', $r['project_version'])
+			->execute();
 		return $r['project_id'];
 	}
 	

@@ -268,6 +268,12 @@ class Publication{
 			$this->fpdo->insertInto('publication', $values)->execute();
 			$r = $this->fpdo->from('publication')->where($values)->fetch();
 		}
+		$this->fpdo
+			->update('publication')
+			->set(['uuid'=>generateUUID('publication/'.$r['publication_id'].'/'.$r['publication_version'])])
+			->where('publication_id', $r['publication_id'])
+			->where('publication_version', $r['publication_version'])
+			->execute();
 		return $r['publication_id'];
 	}
 	

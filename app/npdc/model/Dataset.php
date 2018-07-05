@@ -11,7 +11,7 @@ class Dataset{
 		$this->fpdo = \npdc\lib\Db::getFPDO();
 	}
 	
-	public function getList($filters=null, $publishtime = false){
+	public function getList($filters=null){
 		global $session;
 		$q = $this->fpdo->from('dataset')->where('record_status', 'published');
 		$q2 = $this->fpdo
@@ -430,7 +430,12 @@ class Dataset{
 			$this->fpdo->insertInto('dataset', $values)->execute();
 			$r = $this->fpdo->from('dataset')->where($values)->fetch();
 		}
-		//$this->updateGeneral(['uuid'=>generateUUID('dataset/'.$r['dataset_id'].'/'.$r['dataset_version'])], $r['dataset_id'], $r['dataset_version']);
+		$this->fpdo
+			->update('dataset')
+			->set(['uuid'=>generateUUID('dataset/'.$r['dataset_id'].'/'.$r['dataset_version'])])
+			->where('dataset_id', $r['dataset_id'])
+			->where('dataset_version', $r['dataset_version'])
+			->execute();
 		return $r['dataset_id'];
 	}
 	
