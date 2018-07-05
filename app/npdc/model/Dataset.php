@@ -14,9 +14,6 @@ class Dataset{
 	public function getList($filters=null, $publishtime = false){
 		global $session;
 		$q = $this->fpdo->from('dataset')->where('record_status', 'published');
-		if($publishtime){
-			$q->leftJoin('record_status_change ON dataset.dataset_id=record_status_change.dataset_id AND dataset_version=version')->select('datetime AS publishtime');
-		}
 		$q2 = $this->fpdo
 			->from('dataset')
 			->join('(SELECT dataset_id, MAX(dataset_version) AS dataset_version FROM dataset GROUP BY dataset_id) a USING (dataset_id, dataset_version)');
@@ -433,7 +430,7 @@ class Dataset{
 			$this->fpdo->insertInto('dataset', $values)->execute();
 			$r = $this->fpdo->from('dataset')->where($values)->fetch();
 		}
-		$this->updateGeneral(['uuid'=>generateUUID('dataset/'.$r['dataset_id'].'/'.$r['dataset_version'])], $r['dataset_id'], $r['dataset_version']);
+		//$this->updateGeneral(['uuid'=>generateUUID('dataset/'.$r['dataset_id'].'/'.$r['dataset_version'])], $r['dataset_id'], $r['dataset_version']);
 		return $r['dataset_id'];
 	}
 	

@@ -51,7 +51,7 @@ class Dataset extends Base{
 			, true);
 		if(NPDC_OUTPUT === 'xml'){
 			$this->xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><datasets></datasets>');
-			$fields = ['dataset_id', 'dataset_version', 'title', 'publishtime', 'url'];
+			$fields = ['dataset_id', 'dataset_version', 'title', 'published', 'url'];
 			foreach($list as $dataset){
 				$em = $this->xml->addChild('dataset');
 				foreach($fields as $field){
