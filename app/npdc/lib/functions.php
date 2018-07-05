@@ -129,3 +129,25 @@ function parseLon($lon){
 	}
 	return $lon;
 }
+
+function getBestSupportedMimeType($mimeTypes = null) {
+	$acceptTypes = [];
+
+	$accept = explode(',', strtolower(str_replace(' ', '', $_SERVER['HTTP_ACCEPT'])));
+	foreach ($accept as $a) {
+		$q = 1;
+		if (strpos($a, ';q=')) {
+			list($a, $q) = explode(';q=', $a);
+		}
+		$AcceptTypes[$a] = $q;
+	}
+	arsort($AcceptTypes);
+
+	if (!$mimeTypes) return $AcceptTypes;
+	
+	foreach ($AcceptTypes as $mime => $q) {
+		if ($q > 0 && array_key_exists($mime, $mimeTypes)) return $mimeTypes[$mime];
+	}
+	// no mime-type found
+	return null;
+}

@@ -70,23 +70,26 @@ if(CALLER === 'index'){
 		filter_input(INPUT_SERVER, 'REQUEST_URI'),
 		strlen(BASE_URL)+1
 	);
+	//remove index.php
 	$url = (strpos($url, 'index.php') !== false) 
 			? substr($url, 10) 
 			: $url;
+	//remove query string
 	$url = (strpos($url, '?') !== false) 
 			? substr($url, 0, strpos($url, '?')) 
 			: $url;
+	//remove dot if present and store part after dot in ext
 	if(strpos($url, '.') !== false){
 		list($url, $ext) = explode('.', $url);
 	}
-			
+
+	define('NPDC_OUTPUT', $ext ?? getBestSupportedMimeType(['text/html'=>'html', 'application/xhtml+xml'=>'html', 'text/xml'=>'xml', 'application/xml'=>'xml']) ?? 'html');
+	
 	#explode $url if substr above exists
 	$args = ($url === false || strlen($url)<1)
 			? [] 
 			: explode('/', trim($url, " \t\n\r\0\x0B/"));
 	
-	define('NPDC_OUTPUT', $ext ?? 'html');
-
 	if($args[0] === 'home'){
 		unset($args[0]);
 	}
