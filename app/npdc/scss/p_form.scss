@@ -437,6 +437,7 @@ fieldset {
 	display: block;
 	margin-top: 5px;
 	clear: both;
+	color: $h-color;
 	&:after {
 		content: ':';
 	}

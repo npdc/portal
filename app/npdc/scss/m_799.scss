@@ -60,8 +60,11 @@ ul.collapsable{
 
 .detail, .contact {
 	#mid {
-		padding-right: 0px;
+		padding: 0px;
 		min-height: 0px;
+		div.technical {
+			display: none;
+		}
 	}
 	#right{
 		border: none;

@@ -211,6 +211,15 @@ $().ready(function(){
 		window.location = $('#versionSelect').val();
 	});
 
+	$('div.overflow').each(function(){
+		if($(this).height() > 150){
+			$(this).addClass('overheight').append('<div class="bottombar"></div>');
+		}
+		
+	});
+	$('.bottombar').click(function(){
+		$(this).parent().toggleClass('expanded');
+	});
 });
 
 function getParameterByName(name, url) {
