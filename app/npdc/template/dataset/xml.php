@@ -330,6 +330,11 @@ foreach($links as $i=>$link){
 	}
 }
 
+$data['Extended_Metadata']['Metadata'][0] = [
+	'Group'=>implode('.', array_reverse(explode('.', $_SERVER['HTTP_HOST']))),
+	'Name'=>'metadata.uuid',
+	'Value'=>$this->data['uuid']
+];
 $xml = new \npdc\lib\Dif();
 $xml->parseArray($data);
 $xml->output();

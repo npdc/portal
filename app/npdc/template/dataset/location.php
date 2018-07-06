@@ -1,5 +1,5 @@
-<h4>Region</h4>
-<p><?=$this->data['region']?></p>
+<section class="inline"><h4>Region</h4>
+<p><?=$this->data['region']?></p></section>
 
 <h4>Location</h4>
 <ul>
