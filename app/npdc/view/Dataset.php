@@ -96,12 +96,17 @@ class Dataset extends Base{
 		if($dataset !== 'new'){
 			$this->canEdit = isset($this->session->userId) && ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId));
 			$this->versions = $this->model->getVersions($dataset);
-			$this->data = count($this->args) > 2
-				? (in_array($this->args[2], ['edit', 'files', 'xml', 'warnings'])
-					? $this->model->getById($dataset, $this->versions[0]['dataset_version'])
-					: $this->model->getById($dataset, $this->args[2])
-				)
+
+			if(in_array($this->args[2], ['edit', 'submit', 'warnings'])){
+				$v = $this->versions[0]['dataset_version'];
+			} elseif (count($this->args) > 2 && (is_numeric($this->args[2]))){
+				$v = $this->args[2];
+			}
+
+			$this->data = isset($v) 
+				? $this->model->getById($dataset, $v)
 				: $this->model->getById($dataset);
+			
 			if(!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])){
 				$this->data = false;
 			}
