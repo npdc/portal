@@ -5,7 +5,7 @@ $h-color: darken($color-accent-1, 20%);
 $color-accent-3: lighten($color-accent-1, 40%);
 $border: solid 1px $color-accent-3;
 $border-radius: 5px;
-$table-head-bg: $color-accent-1;
+$table-head-bg: lighten($color-accent-1, 30%);
 $table-head-fg-color: white;
 $table-stripe-bg: mix($color-accent-3,$bg-color, 50%);
 $border-menu: solid 1px transparentize($color-accent-1,0.5);
