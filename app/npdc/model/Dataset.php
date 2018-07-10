@@ -432,7 +432,7 @@ class Dataset{
 		}
 		$this->fpdo
 			->update('dataset')
-			->set(['uuid'=>generateUUID('dataset/'.$r['dataset_id'].'/'.$r['dataset_version'])])
+			->set(['uuid'=>\Lootils\Uuid\Uuid::createV5(\npdc\config::$UUIDNamespace ?? \Lootils\Uuid\Uuid::createV4(), 'dataset/'.$r['dataset_id'].'/'.$r['dataset_version'])->toString()])
 			->where('dataset_id', $r['dataset_id'])
 			->where('dataset_version', $r['dataset_version'])
 			->execute();

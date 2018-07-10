@@ -270,7 +270,7 @@ class Publication{
 		}
 		$this->fpdo
 			->update('publication')
-			->set(['uuid'=>generateUUID('publication/'.$r['publication_id'].'/'.$r['publication_version'])])
+			->set(['uuid'=>\Lootils\Uuid\Uuid::createV5(\npdc\config::$UUIDNamespace ?? \Lootils\Uuid\Uuid::createV4(),'publication/'.$r['publication_id'].'/'.$r['publication_version'])])
 			->where('publication_id', $r['publication_id'])
 			->where('publication_version', $r['publication_version'])
 			->execute();
