@@ -64,6 +64,17 @@ class Search extends Base{
 			$this->mid = 'Please provide a search term';
 		} else {
 			$list = [];
+			if(\Lootils\Uuid\Uuid::isValid($this->search)){
+				foreach(count($this->type) === 0 ? array_keys($this->types) : $this->type as $type){
+					$modelName = 'npdc\\model\\'.ucfirst($type);
+					$model = new $modelName();
+					$res = $model->getByUUID($this->search);
+					if($res !== false){
+						header('Location: '.BASE_URL.'/'.$res['uuid']);
+						die();
+					}
+				}
+			}
 			foreach(count($this->type) === 0 ? array_keys($this->types) : $this->type as $type){
 				$modelName = 'npdc\\model\\'.ucfirst($type);
 				$model = new $modelName();
