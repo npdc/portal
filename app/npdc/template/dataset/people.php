@@ -14,7 +14,7 @@
 
 $people = $this->model->getPersons($this->data['dataset_id'], $this->data['dataset_version']);
 if(count($people) === 0){
-	echo 'No persons linked to this dataset';
+	echo 'No persons linked to this dataset yet';
 } else {
 	echo $this->displayTable('person', $people, ['name'=>'Name', 'organization_name'=>'Organization', 'role'=>['Role', 'array']], ['contact', 'person_id']);
 }

@@ -2,7 +2,7 @@
 echo '<h4>Projects</h4>';
 $projects = $this->model->getProjects($this->data['dataset_id'], $this->data['dataset_version'], !$this->canEdit);
 if(count($projects) === 0){
-	echo 'No projects linked to this dataset';
+	echo 'No projects linked to this dataset yet';
 } else {
 	echo $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'period'=>'Period'], ['project', 'project_id']);
 }
@@ -10,7 +10,7 @@ if(count($projects) === 0){
 echo '<h4>Publications</h4>';
 $publications = $this->model->getPublications($this->data['dataset_id'], $this->data['dataset_version'], !$this->canEdit);
 if(count($publications) === 0){
-	echo 'No publications linked to this dataset';
+	echo 'No publications linked to this dataset yet';
 } else {
 	$publicationModel = new \npdc\model\Publication();
 	foreach($publications as $publication){

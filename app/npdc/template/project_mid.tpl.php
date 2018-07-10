@@ -11,7 +11,7 @@
 
 $people = $this->model->getPersons($this->data['project_id'], $this->data['project_version']);
 if(count($people) === 0){
-	echo 'No persons linked to this project';
+	echo 'No persons linked to this project yet';
 } else {
 	echo $this->displayTable('person', $people, ['name'=>'Name', 'organization_name'=>'Organization', 'role'=>'Role'], ['contact', 'person_id']);
 }
@@ -38,7 +38,7 @@ if(\npdc\config::$partEnabled['dataset']){
 	<?php
 	$datasets = $this->model->getDatasets($this->data['project_id'], $this->data['project_version'], !$this->canEdit);
 	if(count($datasets) === 0){
-		echo 'No datasets linked to this project';
+		echo 'No datasets linked to this project yet';
 	} else {
 		echo $this->displayTable('dataset', $datasets, ['title'=>'Title', 'date_start'=>'Start date', 'date_end'=>'End date'], ['dataset', 'dataset_id']);
 	}
@@ -50,7 +50,7 @@ if(\npdc\config::$partEnabled['publication'] || $this->session->userLevel >= NPD
 	<?php
 	$publications = $this->model->getPublications($this->data['project_id'], $this->data['project_version'], !$this->canEdit);
 	if(count($publications) === 0){
-		echo 'No publications linked to this project';
+		echo 'No publications linked to this project yet';
 	} else {
 		$publicationModel = new \npdc\model\Publication();
 		foreach($publications as $publication){
