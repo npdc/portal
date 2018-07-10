@@ -307,7 +307,7 @@ class Project{
 		}
 		$this->fpdo
 			->update('project')
-			->set(['uuid'=>\Lootils\Uuid\Uuid::createV5(\npdc\config::$UUIDNamespace ?? \Lootils\Uuid\Uuid::createV4(), 'project/'.$r['project_id'].'/'.$r['project_version'])])
+			->set(['uuid'=>\Lootils\Uuid\Uuid::createV5(\npdc\config::$UUIDNamespace ?? \Lootils\Uuid\Uuid::createV4(), 'project/'.$r['project_id'].'/'.$r['project_version'])->getUUID()])
 			->where('project_id', $r['project_id'])
 			->where('project_version', $r['project_version'])
 			->execute();
