@@ -46,3 +46,5 @@ if(\npdc\config::$partEnabled['project']){
 	}
 }
 ?>
+<hr/>
+<div class="technical"><nobr><strong>UUID:</strong> <?=$this->data['uuid']?></nobr> | <nobr><strong>Version:</strong> <?=$this->data['publication_version']?></nobr></div>

@@ -118,6 +118,11 @@ class Project{
 		}
 		return $return;
 	}
+
+	public function getByUUID($uuid){
+		return $this->fpdo->from('project')->where('uuid', $uuid)->fetch();
+	}
+	
 	
 	public function getParents($id){
 		return $this->fpdo

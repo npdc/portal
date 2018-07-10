@@ -133,6 +133,10 @@ class Publication{
 		}
 		return $return;
 	}
+
+	public function getByUUID($uuid){
+		return $this->fpdo->from('publication')->where('uuid', $uuid)->fetch();
+	}
 	
 	public function getByDOI($doi){
 		return $this->fpdo

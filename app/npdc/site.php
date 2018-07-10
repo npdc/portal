@@ -50,7 +50,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 //make classes autoloading
 spl_autoload_register(
-    function($className){
+	function($className){
 		$file = get_class_file($className);
 		if(file_exists($file)){
 			require_once $file;
@@ -92,6 +92,17 @@ if(CALLER === 'index'){
 	
 	if($args[0] === 'home'){
 		unset($args[0]);
+	}
+	if(\Lootils\Uuid\Uuid::isValid($args[0])){
+		foreach(['dataset', 'project', 'publication'] as $cType){
+			$mName = 'npdc\\model\\'.ucfirst($cType);
+			$m = new $mName();
+			$r = $m->getByUUID($args[0]);
+			if($r !== false){
+				$args = [$cType, $r[$cType.'_id'], $r[$cType.'_version']];
+				break;
+			}
+		}
 	}
 	#get controller & id
 	switch(count($args)){

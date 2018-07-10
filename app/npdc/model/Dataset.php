@@ -102,6 +102,10 @@ class Dataset{
 		}
 		return $return;
 	}
+
+	public function getByUUID($uuid){
+		return $this->fpdo->from('dataset')->where('uuid', $uuid)->fetch();
+	}
 	
 	public function getPublications($id, $version, $published = true){
 		$q = $this->fpdo

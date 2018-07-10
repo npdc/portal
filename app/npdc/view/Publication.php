@@ -73,8 +73,11 @@ class Publication extends Base{
 	public function showItem($publication){
 		$this->canEdit = isset($this->session->userId) 
 			&& ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($publication, $this->session->userId));
-		if($this->canEdit && count($this->args) > 2 && $this->args[2] !== 'edit'){
+		if(count($this->args) > 2 && $this->args[2] !== 'edit'){
 			$this->data = $this->model->getById($publication, $this->args[2]);
+			if(!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])){
+				$this->data = false;
+			}
 		} else {
 			$this->data = $this->model->getById($publication);
 		}
@@ -140,6 +143,10 @@ class Publication extends Base{
 						$_SESSION['notice'] = $this->controller->publishForm;
 					}
 					$_SESSION['notice'] .= ' You are looking at a '.$this->data['record_status'].' version of this page'.($this->data['record_status'] === 'draft' ? $this->controller->draftMsg : '');
+					if(!$this->canEdit){
+						$cur = $this->model->getById($this->data['publication_id']);
+						$_SESSION['notice'] .= ', the current can version can be found <a href="'.BASE_URL.'/'.$cur['uuid'].'">here</a>';
+					}
 				} 
 				$this->title = 'Publication - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');
 				$this->class = 'detail';
