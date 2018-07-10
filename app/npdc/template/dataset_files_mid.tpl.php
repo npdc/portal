@@ -91,3 +91,9 @@ if(count($links) === 0){
 		}
 	}
 }
+echo '<hr><div class="technical">';
+if(!empty($this->data['dif_id'])){
+	echo '<strong>Dif id:</strong> '.$this->data['dif_id'].' | ';
+}
+?>
+<nobr><strong>UUID:</strong> <?=$this->data['uuid']?></nobr> | <nobr><strong>Version:</strong> <?=$this->data['dataset_version']?></nobr></div>

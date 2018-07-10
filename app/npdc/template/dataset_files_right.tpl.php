@@ -10,4 +10,4 @@
 <h4>Use constraints</h4>
 <p><?=$this->data['use_constraints']?></p>
 
-<a href="<?=BASE_URL.'/'.implode('/', array_slice($this->args, 0, -1))?>">Full dataset description</a>
+<a href="<?=BASE_URL.'/'.$this->data['uuid']?>">Full dataset description</a>
