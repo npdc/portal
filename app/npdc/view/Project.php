@@ -83,8 +83,8 @@ class Project extends Base{
 		}
 		$this->mid = '<div class="related"><i>Projects with related projects</i> <a href="javascript:toggleRelated(false)">Show related projects</a></div><div class="noRelated"><a href="javascript:toggleRelated(true)">Hide related projects</a></div>'
 			.$this->displayTable('project', $list
-				, ['nwo_project_id'=>'Project id',
-					'title'=>'Title',
+				, ['title'=>'Title',
+					'nwo_project_id'=>'Funding id',
 					'date_start'=>'Start date',
 					'date_end'=>'End date']
 				, ['project', 'project_id']

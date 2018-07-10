@@ -42,7 +42,7 @@ if(\npdc\config::$partEnabled['project']){
 	if(count($projects) === 0){
 		echo 'No projects linked to this publication';
 	} else {
-		echo $this->displayTable('project', $projects, ['nwo_project_id'=>'Project ID', 'title'=>'Title', 'period'=>'Period'], ['project', 'project_id']);
+		echo $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'period'=>'Period'], ['project', 'project_id']);
 	}
 }
 ?>

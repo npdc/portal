@@ -20,14 +20,14 @@
 					"value": "",
 					"edit": false,
 					"label": "Project id",
-					"Hint": "Project ID as given by NWO"
+					"Hint": "Project ID"
 				}, 
 				"title": {
 					"type": "lookup",
 					"label": "Project title",
 					"placeholder": "Start typing a name, suggestions will appear",
 					"edit": true,
-					"hint": "Here you can also type in a NWO project number"
+					"hint": "Here you can also type in a funding id"
 				}
 			}
 		},

@@ -21,7 +21,7 @@ if(count($parents) > 0){
 	?>
 	<h4>Main project<?=count($parents)>1 ? 's' : '' ?></h4>
 	<?php
-	echo $this->displayTable('project', $parents, ['nwo_project_id'=>'ID', 'title'=>'Title', 'period'=>'Period'], ['project', 'project_id']);
+	echo $this->displayTable('project', $parents, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'period'=>'Period'], ['project', 'project_id']);
 }
 
 $children = $this->model->getChildren($this->data['project_id']);
@@ -29,7 +29,7 @@ if(count($children) > 0){
 	?>
 	<h4>Daughter project<?=count($children)>1 ? 's' : '' ?></h4>
 	<?php
-	echo $this->displayTable('project', $children, ['nwo_project_id'=>'ID', 'title'=>'Title', 'period'=>'Period'], ['project', 'project_id']);
+	echo $this->displayTable('project', $children, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'period'=>'Period'], ['project', 'project_id']);
 }
 
 if(\npdc\config::$partEnabled['dataset']){
@@ -52,13 +52,17 @@ if(\npdc\config::$partEnabled['publication'] || $this->session->userLevel >= NPD
 	if(count($publications) === 0){
 		echo 'No publications linked to this project';
 	} else {
-		$list2 = [];
-		$pubModel = new \npdc\model\Publication();
-		foreach($publications as $item){
-			$item['authors'] = $pubModel->getAuthors($item['publication_id'], $item['publication_version']);
-			$list2[] = $item;
+		$publicationModel = new \npdc\model\Publication();
+		foreach($publications as $publication){
+			echo '<p>'.$publicationModel->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
+			. $publication['year'].'. '
+			. '<a href="'.BASE_URL.'/publication/'.$publication['publication_id'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
+			. $publication['journal'].'</i> '.$publication['volume']
+			. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
+			. (empty($publication['pages']) ? '' :', '.$publication['pages'])
+			. '</p>';
+
 		}
-		echo $this->displayTable('publication', $list2, ['authors'=>'Authors', 'title'=>'Title', 'year'=>'year'], ['publication', 'publication_id']);
 	}
 }
 ?>

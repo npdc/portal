@@ -4,7 +4,7 @@ $projects = $this->model->getProjects($this->data['dataset_id'], $this->data['da
 if(count($projects) === 0){
 	echo 'No projects linked to this dataset';
 } else {
-	echo $this->displayTable('project', $projects, ['nwo_project_id'=>'ID', 'title'=>'Title', 'period'=>'Period'], ['project', 'project_id']);
+	echo $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'period'=>'Period'], ['project', 'project_id']);
 }
 
 echo '<h4>Publications</h4>';
@@ -12,13 +12,17 @@ $publications = $this->model->getPublications($this->data['dataset_id'], $this->
 if(count($publications) === 0){
 	echo 'No publications linked to this dataset';
 } else {
-	$list2 = [];
-	$pubModel = new \npdc\model\Publication();
-	foreach($publications as $item){
-		$item['authors'] = $pubModel->getAuthors($item['publication_id'], $item['publication_version']);
-		$list2[] = $item;
+	$publicationModel = new \npdc\model\Publication();
+	foreach($publications as $publication){
+		echo '<p>'.$publicationModel->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
+		. $publication['year'].'. '
+		. '<a href="'.BASE_URL.'/publication/'.$publication['publication_id'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
+		. $publication['journal'].'</i> '.$publication['volume']
+		. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
+		. (empty($publication['pages']) ? '' :', '.$publication['pages'])
+		. '</p>';
+
 	}
-	echo $this->displayTable('publication', $list2, ['title'=>'Title', 'authors'=>'Authors', 'year'=>'Year'], ['publication', 'publication_id']);
 }
 
 echo '<h4>Links</h4>';

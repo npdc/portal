@@ -85,19 +85,22 @@ class Contact extends Base{
 				$this->mid .= $this->displayTable('dataset', $datasets, ['title'=>'Title', 'date_start'=>'Start date', 'date_end'=>'End date'], ['dataset', 'dataset_id']);
 			}
 			if(count($publications) > 0){
-				$publicationModel = new \npdc\model\Publication();
-				foreach($publications as $id=>$publication){
-					$publications[$id]['authors'] = $publicationModel->getAuthors($publication['publication_id'], $publication['publication_version']);
-				}
 				$this->mid .= '<h3>Publications</h3>';
-				$this->mid .= $this->displayTable('publication', $publications, ['authors'=>'Authors',
-					'title'=>'Title', 
-					'year'=>'Year', 
-					'journal'=>'Source'], ['publication', 'publication_id']);
+				$publicationModel = new \npdc\model\Publication();
+				foreach($publications as $publication){
+					$this->mid .= '<p>'.$publicationModel->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
+					. $publication['year'].'. '
+					. '<a href="'.BASE_URL.'/publication/'.$publication['publication_id'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
+					. $publication['journal'].'</i> '.$publication['volume']
+					. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
+					. (empty($publication['pages']) ? '' :', '.$publication['pages'])
+					. '</p>';
+
+				}
 			}
 			if(count($projects) > 0){
 				$this->mid .= '<h3>Projects</h3>';
-				$this->mid .= $this->displayTable('project', $projects, ['nwo_project_id'=>'Project id', 'title'=>'Title', 'date_start'=>'Start date', 'date_end'=>'End date'], ['project', 'project_id']);
+				$this->mid .= $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'date_start'=>'Start date', 'date_end'=>'End date'], ['project', 'project_id']);
 			}
 		}
 	}

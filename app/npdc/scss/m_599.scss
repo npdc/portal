@@ -82,8 +82,7 @@ body:not(.edit) {
 #footer {
 	text-align:center;
 }
-.search, .project {
-	td:not(:nth-child(2)){
-		display: none;
-	}	
+.search td:not(:nth-child(2)),
+.project td:not(:nth-child(1)) {
+	display: none;
 }

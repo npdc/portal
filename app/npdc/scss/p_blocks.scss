@@ -389,10 +389,9 @@
 		}
 	}
 }
-.project, .search {
-	td:not(:nth-child(2)){
-		white-space: nowrap;
-	}
+.search td:not(:nth-child(2)),
+.project td:not(:nth-child(1)){
+	white-space: nowrap;
 }
 .dataset td:not(:first-child){
 	white-space: nowrap;
