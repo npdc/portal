@@ -130,7 +130,8 @@ class Base {
 									$this->model->setStatus($this->args[1], 'published', 'archived');
 									$this->model->setStatus($this->args[1], $prevState, 'published', $_GET['comment']);
 									$_SESSION['notice'] = 'The record has been published';
-									\npdc\lib\Push::send('['.($data[$this->name.'_version'] === 1 ? 'New': 'Updated').' '.$this->name.'] '.$data['title'], $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args[1]);
+									$r = $this->model->getById($this->args[1]);
+									\npdc\lib\Push::send('['.($data[$this->name.'_version'] === 1 ? 'New': 'Updated').' '.$this->name.'] '.$data['title'], $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$r['uuid']);
 									if(\npdc\config::$reviewBeforePublish){
 										$this->sendSubmitterMail($data, 'published');
 									} else {
