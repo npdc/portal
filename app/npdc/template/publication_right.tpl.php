@@ -39,10 +39,9 @@ foreach($fields as $id=>$label){
 
 $keywords = $this->model->getKeywords($this->data['publication_id'], $this->data['publication_version']);
 if(count($keywords) > 0){
-	echo '<h4>Keywords</h4>';
-	$n = 0;
+	echo '<h4>Keywords</h4><ul>';
 	foreach($keywords as $word){
-		echo ($n > 0 ? ' / ' : '').$word['keyword'];
-		$n++;
+		echo '<li>'.$word['keyword'].'</li>';
 	}
+	echo '</ul>';
 }

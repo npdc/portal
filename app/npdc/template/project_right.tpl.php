@@ -52,12 +52,11 @@ if(!is_null($this->data['date_start'])){
 }
 $keywords = $this->model->getKeywords($this->data['project_id'], $this->data['project_version']);
 if(count($keywords) > 0){
-	echo '<h4>Keywords</h4>';
-	$n = 0;
+	echo '<h4>Keywords</h4><ul>';
 	foreach($keywords as $word){
-		echo ($n > 0 ? ' / ' : '').$word['keyword'];
-		$n++;
+		echo '<li>'.$word['keyword'].'</li>';
 	}
+	echo '</ul>';
 }
 
 $links = $this->model->getLinks($this->data['project_id'], $this->data['project_version']);
