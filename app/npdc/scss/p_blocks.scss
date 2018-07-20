@@ -441,6 +441,13 @@
 		div.technical {
 			color: #777;
 			font-size: 80%;
+			a {
+				color: #777;
+				text-decoration: none;
+				&:hover {
+					text-decoration: underline;
+				}
+			}
 		}
 	}
 	#right{
