@@ -179,9 +179,10 @@ class Form {
 					$_SESSION[$this->formId]['captcha'] = true;
 					return;
 				}
-				
-				$_SESSION[$this->formId]['captcha'] = generateRandomString(5);
-				$input = '<div><img src="'.BASE_URL.'/img/captcha.php?id='.$this->formId.'" /></div>';
+				global $extraJS;
+				$extraJS .= '<script src="https://www.google.com/recaptcha/api.js"></script>';
+				$input .= '<div class="g-recaptcha" data-sitekey="'.\npdc\config::$reCaptcha['siteKey'].'"></div>';
+				break;
 			case 'text':
 			case 'mail':
 			case 'number':

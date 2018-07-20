@@ -80,4 +80,9 @@ class config {
 	public static $dataCenter = [];//default datacenter(s) for dif record if no other datacenter provided as <organization_id>=>[<person_id(s)>]
 
 	public static $UUIDNamespace = '00000000-0000-0000-000000000000';//namespace UUID to use for UUID generation. Use a v1 or v4 UUID for this.
+
+	public static $reCaptcha = [
+		'siteKey'=>'',
+		'secretKey'=>''
+	];
 }

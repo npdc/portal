@@ -82,6 +82,9 @@ class Form {
 				case 'file':
 					$this->file($id, $field);
 					break;
+				case 'captcha':
+					$this->captcha($id, $field);
+					break;
 				default:
 					$this->formData[$id] = $this->field($id, $field, $field->required ?? true);
 			}
@@ -268,6 +271,35 @@ class Form {
 			}
 		}
 	}
+
+	private function captcha($id, $field){
+		if($_SESSION[$this->formId]['captcha']){
+
+		} elseif(empty($this->formData['g-recaptcha-response'])){
+			$this->addError('captcha', 'Please complete the captcha', null);
+		} else {
+			$url = 'https://www.google.com/recaptcha/api/siteverify';
+			$data = [
+				'secret'=>\npdc\config::$reCaptcha['secretKey'], 
+				'response'=>$this->formData['g-recaptcha-response'], 
+				'remoteip'=>$_SERVER['REMOTE_ADDR']
+			];
+			$options = [
+				'http' => [
+					'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+					'method'  => 'POST',
+					'content' => http_build_query($data) 
+				]
+			];
+			$context = stream_context_create($options);
+			$result = file_get_contents($url, false, $context);
+			if(json_decode($result)->success){
+				$_SESSION[$this->formId]['captcha'] = true;
+			} else {
+				$this->addError('captcha', 'Captcha verification failed', null);
+			}
+		}
+	}
 	
 	private function file($id, $field){
 		$this->value = [];
@@ -400,14 +432,6 @@ class Form {
 					} else {
 						$this->value = strtolower($this->value);
 					}
-					break;
-				case 'captcha':
-					if($this->value === $_SESSION[$this->formId]['captcha']){
-						$_SESSION[$this->formId]['captcha'] = true;
-					} else {
-						$this->addError('captcha', 'The answer is not correct', null);
-					}
-					$this->value = '';
 					break;
 				case 'date':
 					$res = [$this->checkDate($this->formData[$id][0], $field->fuzzy ? 'down' : 'none')];

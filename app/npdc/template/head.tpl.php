@@ -40,5 +40,6 @@
 	?>
 	<script type="text/javascript">var baseUrl = "<?=BASE_URL?>";var controller = "<?=$controllerName?>";</script>
 	<?=$extraJS?>
+	<?=$view->js?>
 	<?=$extraCSS?>
 </head>
