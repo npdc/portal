@@ -546,39 +546,6 @@ class Dataset extends Base{
 		$this->model->deleteLocation($this->id, $v, $locations);
 	}
 	
-	private function OLDsaveLocations() {
-		$locations = [];
-		$loopId = 'location_';
-		$serials = [];
-		foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
-			if(substr($key, 0, strlen($loopId)) === $loopId){
-				$serials[] = substr($key
-						, strlen($loopId)
-						, strpos($key, '_', strlen($loopId))-strlen($loopId)
-					);
-			}
-		}
-		foreach(array_unique($serials) as $serial){
-			$data = [
-				'dataset_id'=> $this->id,
-				'vocab_location_id' =>  $_SESSION[$this->formId]['data']['location_'.$serial.'_location_id'],
-				'detailed' =>  $_SESSION[$this->formId]['data']['location_'.$serial.'_detailed']
-			];
-			
-			if(strpos($serial, 'new') !== false){
-				$data['dataset_version_min'] = $this->version;
-				$locations[] = $this->model->insertLocation($data);
-			} else {
-				$record_id = $_SESSION[$this->formId]['data']['location_'.$serial.'_id'];
-
-				$return = $this->model->updateLocation($record_id, $data, $this->version);
-				$locations[] = !is_bool($return) ? $return : $record_id;	
-			}
-		}
-		$v = $this->version-1;
-		$this->model->deleteLocation($this->id, $v, $locations);
-	}
-
 	private function saveSpatialCoverage(){
 		$coverages = [];
 		$loopId = 'spatial_coverage_wkt_';
@@ -1234,10 +1201,10 @@ class Dataset extends Base{
 			foreach($files as $file){
 				$zip->addFile($file);
 			}
-			header('Location: '.BASE_URL.'/download/'.$zip->filename);
+			header('Location: '.BASE_URL.'/'.\npdc\config::$fileDir.'/download/'.$zip->filename);
 			die();
 		}
 		header('Location: '.BASE_URL.'/'.implode('/', $this->args));
-		die();			
+		die();
 	}
 }
