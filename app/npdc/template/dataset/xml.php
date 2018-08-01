@@ -3,42 +3,21 @@
 $data = [
 	'Entry_ID'=>[
 		'Short_Name'=>$this->data['dif_id'],
-		'version'=>$this->data['dataset_version']
+		'Version'=>$this->data['dataset_version']
 	],
-	'Summary'=>[
-		'Abstract'=>$this->data['summary'],
-		'Purpose'=>$this->data['purpose']
-	],
-	'Metadata_Dates'=>[
-		'Metadata_Creation'=>str_replace(' ', 'T', $this->model->getById($this->data['dataset_id'], 1)['published']),
-		'Metadata_Last_Revision'=>str_replace(' ', 'T', $this->data['published']),
-		'Data_Creation'=>$this->data['date_end'],
-		'Data_Last_Revision'=>'unknown'
-	]
+	'Entry_Title'=>$this->data['title']
 ];
-foreach([
-	'title'=>'Entry_Title',
-	'dataset_progress'=>'Dataset_Progress',
-	'quality'=>'Quality',
-	'access_constraints'=>'Access_Constraints',
-	'use_constraints'=>'Use_Constraints'
-] as $source=>$target){
-	if(!empty($this->data[$source])){
-		$data[$target] = $this->data[$source];
-	}
-}
-
 foreach($this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$citation){
 	foreach([
 		'creator'=>'Dataset_Creator', 
 		'editor'=>'Dataset_Editor', 
 		'title'=>'Dataset_Title',
-		'series_name'=>'Dataset_Series_name', 
+		'series_name'=>'Dataset_Series_Name', 
 		'release_date'=>'Dataset_Release_Date', 
 		'release_place'=>'Dataset_Release_Place',
 		'publisher'=>'Dataset_Publisher', 
 		'issue_identification'=>'Issue_Identification', 
-		'presentation_form'=>'Presentation_Form', 
+		'presentation_form'=>'Data_Presentation_Form', 
 		'other'=>'Other', 
 		'persistent_identifier_type'=>'Persistent_Identifier_Type', 
 		'persistent_identifier_identifier'=>'Persistent_Identifier_Identifier', 
@@ -51,32 +30,31 @@ foreach($this->model->getCitations($this->data['dataset_id'], $this->data['datas
 }
 
 foreach($this->model->getPersons($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$person){
-	$data['Personnel'][$i]['role'] = json_decode($person['role']);
+	$data['Personnel'][$i]['Role'] = json_decode(strtoupper($person['role']));
 	
 	$personDetails = $this->personModel->getById($person['person_id']);
 	foreach([
 		'given_name'=>'First_Name',
-		'surname'=>'Last_Name',
-		'mail'=>'Email'
+		'surname'=>'Last_Name'
 	] as $source=>$target){
 		$data['Personnel'][$i]['Contact_Person'][$target] = $personDetails[$source];
 	}
 	
 	$organizationDetail = $this->organizationModel->getById($person['organization_id']);
 	foreach([
-		'organization_address'=>'Address',
-		'organization_zip'=>'Postal_Code',
+		'organization_address'=>'Street_Address',
 		'organization_city'=>'City',
+		'organization_zip'=>'Postal_Code',
 		'country_name'=>'Country'
 	] as $source=>$target){
-		$data['Personnel'][$i]['Contact_Person']['Contact_Address'][$target] = $organizationDetail[$source];
+		$data['Personnel'][$i]['Contact_Person']['Address'][$target] = $organizationDetail[$source];
 	}
-
-	foreach(['personal'=>'Direct Line', 'secretariat'=>'General Line', 'mobile'=>'Mobile Phone'] as $phoneType=>$label){
+	foreach(['personal'=>'Direct Line', 'secretariat'=>'Telephone', 'mobile'=>'Mobile'] as $phoneType=>$label){
 		if($personDetails['phone_'.$phoneType.'_public'] === 'yes' && !empty($personDetails['phone_'.$phoneType])){
-			$data['Personnel'][$i]['Contact_Person']['Phone'][] = ['Type'=>$label, 'Number'=>$personDetails['phone_'.$phoneType]];
+			$data['Personnel'][$i]['Contact_Person']['Phone'][] = ['Number'=>str_replace(['(0)', ' '], '', $personDetails['phone_'.$phoneType]), 'Type'=>$label];
 		}
 	}
+	$data['Personnel'][$i]['Contact_Person']['Email'] = $personDetails['mail'];
 }
 
 foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword){
@@ -95,12 +73,13 @@ foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['datase
 	}
 }
 
+
 foreach($this->model->getTopics($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$topic){
 	$data['ISO_Topic_Category'][$i] = substr($topic['description'], 0, strpos($topic['description'], ':'));
 }
 
 foreach($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword){
-	$data['Keyword'][$i] = $keyword['keyword'];
+	$data['Ancillary_Keyword'][$i] = $keyword['keyword'];
 }
 
 foreach($this->model->getPlatform($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$platform){
@@ -189,7 +168,10 @@ foreach($this->model->getTemporalCoverages($this->data['dataset_id'], $this->dat
 	}
 }
 
+$data['Dataset_Progress'] = strtoupper($this->data['dataset_progress']);
+
 foreach($this->model->getSpatialCoverages($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$sc){
+	$data['Spatial_Coverage'][$i]['Granule_Spatial_Representation'] = 'GEODETIC';
 	$wkt = substr($sc['wkt'], strrpos($sc['wkt'], '(')+1, strpos($sc['wkt'], ')')-strlen($sc['wkt']));
 	$points = explode(',', $wkt);
 	if(in_array($sc['type'], ['Area', 'Polygon'])){
@@ -198,7 +180,7 @@ foreach($this->model->getSpatialCoverages($this->data['dataset_id'], $this->data
 	foreach($points as &$point){
 		$point = array_combine(['Point_Longitude','Point_Latitude'], explode(' ', $point));
 	}
-	$data['Spatial_Coverage'][$i]['Geometry']['Coordinate_System'] = 'CARTESIAN';
+	$data['Spatial_Coverage'][$i]['Geometry']['Coordinate_System'] = 'GEODETIC';
 	switch($sc['type']){
 		case 'Point':
 			$data['Spatial_Coverage'][$i]['Geometry']['Point'] = $point;
@@ -211,8 +193,8 @@ foreach($this->model->getSpatialCoverages($this->data['dataset_id'], $this->data
 			$data['Spatial_Coverage'][$i]['Geometry']['Bounding_Rectangle'] = [
 				'Southernmost_Latitude'=>$latMin,
 				'Northernmost_Latitude'=>$latMax,
-				'Westhernmost_Longitude'=>parseLon($lonMin),
-				'Easthernmost_Longitude'=>parseLon($lonMax)
+				'Westernmost_Longitude'=>parseLon($lonMin),
+				'Easternmost_Longitude'=>parseLon($lonMax)
 			];
 			break;
 
@@ -277,7 +259,7 @@ foreach($this->model->getResolution($this->data['dataset_id'], $this->data['data
 }
 
 foreach($this->model->getProjects($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$project){
-	$data['project'][$i] = [
+	$data['Project'][$i] = [
 		'Short_Name'=>$project['acronym'] ?? $project['title'],
 		'Long_Name'=>$project['title'],
 		'Start_Date'=>$project['date_start'],
@@ -285,7 +267,34 @@ foreach($this->model->getProjects($this->data['dataset_id'], $this->data['datase
 	];
 }
 
+foreach([
+	'quality'=>'Quality',
+	'access_constraints'=>'Access_Constraints',
+	'use_constraints'=>'Use_Constraints'
+] as $source=>$target){
+	if(!empty($this->data[$source])){
+		$data[$target] = $this->data[$source];
+	}
+}
+
 $data['Originating_Center'] = $this->organizationModel->getById($this->data['originating_center'])['organization_name'];
+
+$datacenters = $this->model->getDataCenter($this->data['dataset_id'], $this->data['dataset_version']);
+if(count($datacenters) === 0){
+	foreach(\npdc\config::$dataCenter as $organization_id=>$persons){
+		$data['Organization'][$organization_id] = $this->displayDataCenter($organization_id);
+		foreach($persons as $person){
+			$data['Organization'][$organization_id]['Personnel'][$person] = ['Role'=>'DATA CENTER CONTACT', 'Contact_Person'=>$this->displayDataCenterPersonnel($person)];
+		}
+	}
+} else {
+	foreach($datacenters as $i=>$datacenter){
+		$data['Organization'][$i] = $this->displayDataCenter($datacenter['organization_id']);
+		foreach($this->model->getDataCenterPerson($datacenter['dataset_data_center_id'], $this->data['dataset_version']) as $person){
+			$data['Organization'][$i]['Personnel'][$person['person_id']] = ['Role'=>'DATA CENTER CONTACT', 'Contact_Person'=>$this->displayDataCenterPersonnel($person['person_id'])];
+		}
+	}
+}
 
 $publicationModel = new \npdc\model\Publication();
 foreach($this->model->getPublications($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$publication){
@@ -295,32 +304,16 @@ foreach($this->model->getPublications($this->data['dataset_id'], $this->data['da
 		. $publication['journal'].' '.$publication['volume'].' ('.$publication['issue'].'), '.$publication['pages'];
 }
 
-$datacenters = $this->model->getDataCenter($this->data['dataset_id'], $this->data['dataset_version']);
-if(count($datacenters) === 0){
-	foreach(\npdc\config::$dataCenter as $organization_id=>$persons){
-		$data['Data_Center'][$organization_id] = $this->displayDataCenter($organization_id);
-		foreach($persons as $person){
-			$data['Data_Center'][$organization_id]['Personnel'][$person] = $this->displayDataCenterPersonnel($person);
-		}
-	}
-} else {
-	foreach($datacenters as $i=>$datacenter){
-		$data['Data_Center'][$i] = $this->displayDataCenter($datacenter['organization_id']);
-		foreach($this->model->getDataCenterPerson($datacenter['dataset_data_center_id'], $this->data['dataset_version']) as $person){
-			$data['Data_Center'][$i]['Personnel'][$person['person_id']] = $this->displayDataCenterPersonnel($person['person_id']);
-		}
-	}
-}
+$data['Summary'] = [
+	'Abstract'=>$this->data['summary'],
+	'Purpose'=>$this->data['purpose']
+];
 
 $links = array_merge(
 	$this->model->getLinks($this->data['dataset_id'], $this->data['dataset_version']),
 	$this->model->getLinks($this->data['dataset_id'], $this->data['dataset_version'], true)
 );
 foreach($links as $i=>$link){
-	$data['Related_URL'][$i] = [
-		'Title'=>$link['title'],
-		'Description'=>$link['description']
-	];
 	$data['Related_URL'][$i]['URL_Content_Type']['Type'] = $link['type'];
 	if(!empty($link['subtype'])){
 		$data['Related_URL'][$i]['URL_Content_Type']['Subtype'] = $link['subtype'];
@@ -328,13 +321,39 @@ foreach($links as $i=>$link){
 	foreach($this->model->getLinkUrls($link['dataset_link_id'], $this->data['dataset_version']) as $j=>$url){
 		$data['Related_URL'][$i]['URL'] = $url['url'];
 	}
+	$data['Related_URL'][$i]['Title'] = $link['title'];
+	$data['Related_URL'][$i]['Description'] =$link['description'];
 }
+
+$nodes = [];
+if(in_array($this->data['region'], ['Arctica', 'Bipolar'])){
+	$nodes = ['ARCTIC/NL', 'ARCTIC'];
+}
+if(in_array($this->data['region'], ['Antarctica', 'Bipolar'])){
+	$nodes[] = 'AMD';
+	$nodes[] = 'AMD/NL';
+}
+foreach($nodes as $i=>$node){
+	$data['IDN_Node'][$i]['Short_Name'] = $node;
+}
+
+$data['Originating_Metadata_Node'] = 'NL/NPDC';
+$data['Metadata_Name'] = 'CEOS IDN DIF';
+$data['Metadata_Version'] = 'VERSION 10.2';
+
+$data['Metadata_Dates'] = [
+	'Metadata_Creation'=>str_replace(' ', 'T', $this->model->getById($this->data['dataset_id'], 1)['published']),
+	'Metadata_Last_Revision'=>str_replace(' ', 'T', $this->data['published']),
+	'Data_Creation'=>$this->data['date_end'],
+	'Data_Last_Revision'=>'unknown'
+];
 
 $data['Extended_Metadata']['Metadata'][0] = [
 	'Group'=>implode('.', array_reverse(explode('.', $_SERVER['HTTP_HOST']))),
 	'Name'=>'metadata.uuid',
 	'Value'=>$this->data['uuid']
 ];
+
 $xml = new \npdc\lib\Dif();
 $xml->parseArray($data);
 $xml->output();

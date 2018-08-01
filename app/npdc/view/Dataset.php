@@ -145,7 +145,7 @@ class Dataset extends Base{
 				'Short_Name'=>$organization['dif_code'],
 				'Long_Name'=>$organization['organization_name']
 			],
-			'Organization_Url'=>$organization['website']
+			'Organization_URL'=>$organization['website']
 		];
 		return $return;
 	}
@@ -153,26 +153,25 @@ class Dataset extends Base{
 	private function displayDataCenterPersonnel($person_id){
 		$person = $this->personModel->getById($person_id);
 		$return = [
-			'Role'=>'DATA CENTER CONTACT',
 			'First_Name'=>$person['given_name'] ?? $person['initials'],
-			'Last_Name'=>$person['surname'],
-			'Email'=>$person['mail']
+			'Last_Name'=>$person['surname']
 		];
 		$organizationDetail = $this->organizationModel->getById($person['organization_id']);
 		foreach([
 			'organization_address'=>'Street_Address',
-			'organization_zip'=>'Postal_Code',
 			'organization_city'=>'City',
+			'organization_zip'=>'Postal_Code',
 			'country_name'=>'Country'
 		] as $source=>$target){
 			$return['Address'][$target] = $organizationDetail[$source];
 		}
 
-		foreach(['personal'=>'Direct Line', 'secretariat'=>'General Line', 'mobile'=>'Mobile Phone'] as $phoneType=>$label){
+		foreach(['personal'=>'Direct Line', 'secretariat'=>'Telephone', 'mobile'=>'Mobile'] as $phoneType=>$label){
 			if($person['phone_'.$phoneType.'_public'] === 'yes' && !empty($person['phone_'.$phoneType])){
-				$return['Phone'][] = ['Type'=>$label, 'Number'=>$person['phone_'.$phoneType]];
+				$return['Phone'][] = ['Number'=>str_replace(['(0)', ' '], '', $person['phone_'.$phoneType]), 'Type'=>$label];
 			}
 		}
+		$return['Email'] = $person['mail'];
 		return $return;
 	}
 
