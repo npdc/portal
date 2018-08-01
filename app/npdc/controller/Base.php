@@ -243,8 +243,7 @@ class Base {
 			$this->formController->doCheck();
 			if($this->formController->ok){
 				$this->id = $_POST[$this->name.'_id'] ?? $this->args[1] ?? 'new';
-				if($this->id !== 'new' && !($this->session->userLevel >= NPDC_ADMIN && $_SESSION[$this->formId]['data']['rev'] === 'minor')){
-					$baseData = $this->model->getById($this->id);
+				if($this->id !== 'new' && $baseData['record_status'] === 'published' && !($this->session->userLevel >= NPDC_ADMIN && $_SESSION[$this->formId]['data']['rev'] === 'minor')){
 					$baseData[$this->name.'_version']++;
 					$baseData['record_status'] = 'draft';
 					$baseData['creator'] = $this->session->userId;

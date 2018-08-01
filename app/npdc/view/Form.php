@@ -714,7 +714,7 @@ class Form {
 	private function submit($field){
 		global $session;
 		$return = '<h4 class="label empty"></h4>'
-				. ($session->userLevel >= NPDC_ADMIN ? '<input type="checkbox" name="rev" value="minor" id="minorRev"> <label for="minorRev"><div class="indicator"></div>This is a minor revision, don\'t create a new version</label><br/>' : '')
+				. ($session->userLevel >= NPDC_ADMIN && $_SESSION[$this->formId]['data']['record_status'] === 'published' ? '<input type="checkbox" name="rev" value="minor" id="minorRev"> <label for="minorRev"><div class="indicator"></div>This is a minor revision, don\'t create a new version</label><br/>' : '')
 				. '<input type="submit" value="'.$field->value.'"'
 				. ($field->includeNext ?? false ? 'class="hasGotoNext" ' : '')
 				. '>';
