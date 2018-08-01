@@ -102,11 +102,8 @@ if(CALLER === 'index'){
 			$m = new $mName();
 			$r = $m->getByUUID($args[0]);
 			if($r !== false){
-				if($cType === 'dataset' && $args[1] === 'files'){
-					$args = [$cType, $r[$cType.'_id'], $r[$cType.'_version'], 'files'];	
-				} else {
-					$args = [$cType, $r[$cType.'_id'], $r[$cType.'_version']];
-				}
+				unset($args[0]);
+				$args = array_merge([$cType, $r[$cType.'_id'], $r[$cType.'_version']], $args);
 				break;
 			}
 		}
