@@ -349,6 +349,9 @@ class Form {
 			if(isset($field->hint)){
 				$return .= $this->hint($field->hint, $field->gcmd_url);
 			}
+			if(($field->allowTags ?? false) && $field->type !== 'textarea'){
+				$return .= $this->hint('You can use italics by putting the text you want to be italics between &lt;i&gt; and &lt;/i&gt; (e.g. for scientific names)');
+			}
 		}
 		$return .= $input;
 		return $return;
