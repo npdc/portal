@@ -235,10 +235,6 @@ class Base {
 			}
 			if($baseData === false){
 				$baseData = $this->model->getById($this->id);
-				$baseData[$this->name.'_version']++;
-				$baseData['record_status'] = 'draft';
-				$baseData['creator'] = $this->session->userId;
-				$this->model->insertGeneral($baseData);
 			}
 			$this->version = $baseData[$this->name.'_version'];
 		}
@@ -247,6 +243,17 @@ class Base {
 			$this->formController->doCheck();
 			if($this->formController->ok){
 				$this->id = $_POST[$this->name.'_id'] ?? $this->args[1] ?? 'new';
+				if($this->id !== 'new' && !($this->session->userLevel >= NPDC_ADMIN && $_SESSION[$this->formId]['data']['rev'] === 'minor')){
+					$baseData = $this->model->getById($this->id);
+					$baseData[$this->name.'_version']++;
+					$baseData['record_status'] = 'draft';
+					$baseData['creator'] = $this->session->userId;
+					$this->model->insertGeneral($baseData);	
+					$this->version = $baseData[$this->name.'_version'];
+					$_SESSION[$this->formId]['data']['record_status'] = 'draft';
+					$_SESSION[$this->formId]['data'][$this->name.'_version'] = $baseData[$this->name.'_version'];
+					$_SESSION[$this->formId]['data']['creator'] = $this->session->userId;
+				}
 				$this->doSave();
 			}
 		} else {
