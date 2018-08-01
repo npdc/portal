@@ -1,5 +1,5 @@
 <head>
-	<title><?=isset($view->title) && strlen($view->title) > 0 ? $view->title.' |' : '';?> <?=\npdc\config::$siteName?></title>
+	<title><?=isset($view->title) && strlen($view->title) > 0 ? str_replace(['<i>', '</i>'], '', $view->title).' |' : '';?> <?=\npdc\config::$siteName?></title>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0,maximum-scale=1.0" />
 	<meta name="author" content="Marten Tacoma, NIOZ, 2017" />
