@@ -1678,7 +1678,7 @@ class Dataset{
 		$meta .= "\r\n*Use Constraints*\r\n".$data['use_constraints']."\r\n\r\n";
 		$meta .= "*Quality*\r\n".$data['quality']."\r\n\r\n";
 
-		$meta .= "*Full metadata*\r\n".getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$data['dataset_id'];
+		$meta .= "*Full metadata*\r\n".getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/'.$data['uuid'];
 		return $meta;
 	}
 }
