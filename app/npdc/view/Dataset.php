@@ -102,7 +102,6 @@ class Dataset extends Base{
 			} elseif (count($this->args) > 2 && (is_numeric($this->args[2]))){
 				$v = $this->args[2];
 			}
-
 			$this->data = isset($v) 
 				? $this->model->getById($dataset, $v)
 				: $this->model->getById($dataset);
@@ -111,12 +110,9 @@ class Dataset extends Base{
 				$this->data = false;
 			}
 
-			/*$this->data = !$this->canEdit 
-				? $this->model->getById($dataset) 
-				: (count($this->args) > 2 && !in_array($this->args[2], ['edit', 'files', 'xml', 'warnings'])
-					? $this->model->getById($dataset, $this->args[2])
-					: $this->model->getById($dataset, $this->versions[0]['dataset_version'])
-				);*/
+			if($this->data === false && $this->canEdit){
+				$this->data = $this->model->getById($dataset, 1);
+			}
 			$this->version = $this->data['dataset_version'];
 		}
 
