@@ -17,7 +17,7 @@ class ZipFile {
 		$this->dir = $_SERVER['DOCUMENT_ROOT']
 			.'/'.\npdc\config::$fileDir
 			.'/';
-		if($this->zip->open($this->dir.'download/'.$this->filename, \ZipArchive::CREATE) !== true){
+		if($this->zip->open($_SERVER['DOCUMENT_ROOT'].'/'.\npdc\config::$downloadDir.'/'.$this->filename, \ZipArchive::CREATE) !== true){
 			die('Could not create zip file');
 		} else {
 			$this->zipModel = new \npdc\model\Zip();

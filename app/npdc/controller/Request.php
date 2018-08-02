@@ -50,7 +50,7 @@ class Request extends Base {
 		}
 		$mailText .= "\r\n";
 		if($_POST['allow'] === 'yes'){
-			$mailText .= 'You can download the files at '.getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/download/'.$zip->filename."\r\n\r\n";
+			$mailText .= 'You can download the files at '.getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/'.\npdc\config::$downloadDir.'/'.$zip->filename."\r\n\r\n";
 		}
 		$mailText .= "\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 		$mail = new \npdc\lib\Mailer();

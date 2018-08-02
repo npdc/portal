@@ -41,6 +41,7 @@ class config {
 		'twitter_in_head'=>true //display link to twitter in top of each page
 	];
 	public static $fileDir = 'data';//no leading or trailing slash needed
+	public static $downloadDir = 'download';//no leading or trailing slash needed
 	
 	//the ip('s) from which debugging is allow without logging in, netmask allowed
 	public static $debugFrom = [];

@@ -1201,7 +1201,7 @@ class Dataset extends Base{
 			foreach($files as $file){
 				$zip->addFile($file);
 			}
-			header('Location: '.BASE_URL.'/'.\npdc\config::$fileDir.'/download/'.$zip->filename);
+			header('Location: '.BASE_URL.'/'.\npdc\config::$downloadDir.'/'.$zip->filename);
 			die();
 		}
 		header('Location: '.BASE_URL.'/'.implode('/', $this->args));
