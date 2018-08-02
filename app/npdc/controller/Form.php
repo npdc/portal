@@ -317,7 +317,9 @@ class Form {
 						$this->addError($id, 'The file '.$_FILES[$id]['name'][$key].' is too large');
 						break;
 					case 0:
-						if(property_exists($field, 'format') && !in_array(mime_content_type($_FILES[$id]['tmp_name'][$key]), explode(',', $field->format))){
+						if(substr($_FILES[$id]['name'][$key], -4) === '.php'){
+							$this->addError($id, 'php files are not allowed');
+						} elseif(property_exists($field, 'format') && !in_array(mime_content_type($_FILES[$id]['tmp_name'][$key]), explode(',', $field->format))){
 							$this->addError($id, 'The filetype '.mime_content_type($_FILES[$id]['tmp_name'][$key]).' of '.$_FILES[$id]['name'][$key].' is not allowed');
 						} elseif(property_exists($field, 'maxSize') && filesize($_FILES[$id]['tmp_name'][$key]) > convertToBytes($field->maxSize)) {
 							$this->addError($id, 'The file '.$_FILES[$id]['name'][$key].' is too large, it is '.\formatBytes(filesize($_FILES[$id]['tmp_name'][$key])).' where only '.$field->maxSize.' is allowed');
@@ -559,7 +561,7 @@ class Form {
 	 * @param string $id field id
 	 * @param string $error the error to record
 	 */
-	private function addError($id, $error, $error2){
+	private function addError($id, $error, $error2 = null){
 		$this->errors[$id] = $this->dataType === 'global' ? $error : $error2;
 		$this->ok = false;
 	}
