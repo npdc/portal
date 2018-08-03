@@ -7,7 +7,7 @@
 $start = microtime(true);
 
 //base url and DOCUMENT_ROOT setting
-define('BASE_URL', str_replace('/index.php', '', filter_input(INPUT_SERVER, 'SCRIPT_NAME')));
+define('BASE_URL', str_replace(['/cron.php', '/index.php'], '', filter_input(INPUT_SERVER, 'SCRIPT_NAME')));
 $_SERVER['DOCUMENT_ROOT'] .= BASE_URL;
 set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__.'/');
 
