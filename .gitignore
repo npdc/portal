@@ -14,6 +14,9 @@ img/favicon.ico
 img/*.jpg
 img/*.png
 app/npdc/template/footer.tpl.php
+data
+download
+test.php
 
 # editor files
 nbproject
