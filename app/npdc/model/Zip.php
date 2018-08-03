@@ -27,4 +27,8 @@ class Zip {
 			->insertInto('zip_files', $data)
 			->execute();
 	}
+
+	public function getByName($name){
+		return $this->fpdo->from('zip')->where('filename', $name)->fetch();
+	}
 }

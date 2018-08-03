@@ -9,16 +9,19 @@ class ZipFile {
 	public $zipId;
 	private $fileModel;
 	private $zipModel;
-	private $dir;
+	private $dataDir;
+	private $downloadDir;
+	public $redirect;
 	
-	public function __construct($user) {
-		$this->zip = new \ZipArchive();
-		$this->filename = date('Ymd_His').'_'.(empty($user) ? 'guest' : $user).'_'. generateRandomString(8).'.zip';
-		$this->dir = $_SERVER['DOCUMENT_ROOT']
-			.'/'.\npdc\config::$fileDir
-			.'/';
-		if($this->zip->open($_SERVER['DOCUMENT_ROOT'].'/'.\npdc\config::$downloadDir.'/'.$this->filename, \ZipArchive::CREATE) !== true){
-			die('Could not create zip file');
+	public function __construct(){}
+		
+	public function create($user) {
+		$this->filename = date('Ymd_His').'_'.(empty($user) ? 'guest' : $user).'_'. generateRandomString(8);
+		$this->dataDir = $_SERVER['DOCUMENT_ROOT'].'/'.\npdc\config::$fileDir.'/';
+		$this->downloadDir = $_SERVER['DOCUMENT_ROOT'].'/'.\npdc\config::$downloadDir.'/';
+		$this->redirect = BASE_URL.'/checkDownload/'.$this->filename;
+		if(!mkdir($this->downloadDir.$this->filename)){
+			die('Could not initiate zip');
 		} else {
 			$this->zipModel = new \npdc\model\Zip();
 			$this->zipId = $this->zipModel->insertZip(['filename'=> $this->filename]);
@@ -27,7 +30,7 @@ class ZipFile {
 	}
 	
 	public function __destruct(){
-		$this->zip->close();
+		$this->generate();
 	}
 	
 	public function setUser($id){
@@ -43,12 +46,15 @@ class ZipFile {
 	
 	public function addFile($id){
 		$file = $this->fileModel->getFile($id);
-		if($this->zip->addFile($this->dir.$file['location'], $file['name'])){
-			$this->zipModel->insertFile(['zip_id'=> $this->zipId, 'file_id'=>$id]);
-		}
+		symlink($this->dataDir.$file['location'], $this->downloadDir.$this->filename.'/'.$file['name']);
+		$this->zipModel->insertFile(['zip_id'=> $this->zipId, 'file_id'=>$id]);
 	}
 	
 	public function addMeta($meta){
-		$this->zip->addFromString('metadata.txt', $meta);
+		file_put_contents($this->downloadDir.$this->filename.'/metadata.txt', $meta);
+	}
+
+	public function generate(){
+		exec('cd '.$this->downloadDir.$this->filename.';zip ../'.$this->filename.'.zip * > ../'.$this->filename.'.log &');
 	}
 }

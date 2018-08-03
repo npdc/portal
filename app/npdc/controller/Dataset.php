@@ -1165,12 +1165,13 @@ class Dataset extends Base{
 						$this->error = 'Please provide information on why you want access';
 					} else {
 						$requestModel = new \npdc\model\Request();
-						$requestId = $requestModel->insertRequest(['person_id'=>$this->session->userId, 'reason'=>$_POST['request'], 'dataset_id'=>$this->data['dataset_id']]);
+						$requestId = $requestModel->insertRequest(['person_id'=>$this->session->userId, 'reason'=>$_POST['request'], 'dataset_id'=>$dataset]);
 						foreach($_POST['files'] as $file){
 							$requestModel->insertFile(['access_request_id'=>$requestId, 'file_id'=>$file]);
 						}
 						$_SESSION['notice'] = 'Your request has been saved with number '.$requestId;
 						header('Location: '.BASE_URL.'/request/'.$requestId);
+						die();
 					}
 				}
 				return;
@@ -1189,19 +1190,20 @@ class Dataset extends Base{
 				break;
 		}
 		if(!empty($files)){
-			$zip = new \npdc\model\ZipFile(preg_replace('/[^A-Za-z0-9\-_]/', '', str_replace(' ', '_', $this->session->name ?? 'guest')));
+			$zip = new \npdc\model\ZipFile();
+			$zip->create(preg_replace('/[^A-Za-z0-9\-_]/', '', str_replace(' ', '_', $this->session->name ?? 'guest')));
 			$zip->setDataset($this->data['dataset_id']);
 			if(!empty($this->session->userId)){
 				$zip->setUser($this->session->userId);
 			}
-			if(!empty($_GET['contact'])){
-				$zip->setGuestName($_GET['contact']);
+			if(!empty($_POST['contact'])){
+				$zip->setGuestName($_POST['contact']);
 			}
 			$zip->addMeta($this->model->generateMeta($this->data['dataset_id']));
 			foreach($files as $file){
 				$zip->addFile($file);
 			}
-			header('Location: '.BASE_URL.'/'.\npdc\config::$downloadDir.'/'.$zip->filename);
+			header('Location: '.$zip->redirect);
 			die();
 		}
 		header('Location: '.BASE_URL.'/'.implode('/', $this->args));

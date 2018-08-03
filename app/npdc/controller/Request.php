@@ -29,7 +29,8 @@ class Request extends Base {
 		$person = $personModel->getById($request['person_id']);
 			
 		if($_POST['allow']==='yes'){
-			$zip = new \npdc\model\ZipFile(preg_replace('/[^A-Za-z0-9\-_]/', '', str_replace(' ', '_', $person['name'])));
+			$zip = new \npdc\model\ZipFile();
+			$zip->create(preg_replace('/[^A-Za-z0-9\-_]/', '', str_replace(' ', '_', $person['name'])));
 			$zip->setDataset($request['dataset_id']);
 			if(!empty($request['person_id'])){
 				$zip->setUser($request['person_id']);
@@ -50,7 +51,7 @@ class Request extends Base {
 		}
 		$mailText .= "\r\n";
 		if($_POST['allow'] === 'yes'){
-			$mailText .= 'You can download the files at '.getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/'.\npdc\config::$downloadDir.'/'.$zip->filename."\r\n\r\n";
+			$mailText .= 'You can download the files at '.getProtocol().$_SERVER['HTTP_HOST'].$zip->redirect."\r\n\r\n";
 		}
 		$mailText .= "\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 		$mail = new \npdc\lib\Mailer();

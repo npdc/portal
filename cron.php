@@ -1,5 +1,5 @@
 <?php
-//ini_set('display_errors', 'on');
+ini_set('display_errors', 'on');
 define('CALLER', 'cron');
 require dirname(__FILE__).'/app/npdc/site.php';
 
@@ -12,6 +12,11 @@ if($_GET['key'] === \npdc\config::$cronKey){
 			$controller = new \npdc\controller\Vocab();
 			$controller->refreshList();
 			$controller->loopVocabs();
+			break;
+		case 'cleanup':
+			echo 'Cleanup<br/>';
+			$controller = new \npdc\controller\CheckDownload($session, $args);
+			$controller->cleanup();
 			break;
 	}
 	echo 'CRON COMPLETE';
