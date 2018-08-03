@@ -39,7 +39,7 @@ class Request extends Base{
 	protected function parsePermitted($value){
 		return $value === null 
 			? 'Waiting for review' 
-			: ($value === true 
+			: ($value == true 
 				? 'Permitted' 
 				: 'Denied'
 		);
