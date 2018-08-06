@@ -23,7 +23,7 @@ class Request extends Base {
 	}
 	
 	private function saveAccess(){
-		$this->model->updateRequest($this->args[1], ['permitted'=>($_POST['allow']==='yes' ? 1 : 0),'response'=>$_POST['reason'],'response_timestamp'=>'now()', 'responder_id'=>$this->session->userId]);
+		//$this->model->updateRequest($this->args[1], ['permitted'=>($_POST['allow']==='yes' ? 1 : 0),'response'=>$_POST['reason'],'response_timestamp'=>date('Y-m-d h:i:s'), 'responder_id'=>$this->session->userId]);
 		$request = $this->model->getById($this->args[1]);
 		$personModel = new \npdc\model\Person();
 		$person = $personModel->getById($request['person_id']);
@@ -51,13 +51,13 @@ class Request extends Base {
 		}
 		$mailText .= "\r\n";
 		if($_POST['allow'] === 'yes'){
-			$mailText .= 'You can download the files at '.getProtocol().$_SERVER['HTTP_HOST'].$zip->redirect."\r\n\r\n";
+			$mailText .= 'You can download the files at '.getProtocol().$_SERVER['HTTP_HOST'].$zip->redirect.".zip\r\n\r\n";
 		}
 		$mailText .= "\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 		$mail = new \npdc\lib\Mailer();
 		$mail->to($person['mail'], $person['name']);
 		$mail->subject('Data request '.($_POST['allow'] === 'yes' ? 'accepted' : 'rejected'));
-		$mail->text = $mailText;
+		$mail->text($mailText);
 		$mail->send();
 		
 		$this->notice = 'Your reply has been saved';
