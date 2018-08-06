@@ -22,6 +22,7 @@
 		<p>(link to) a publication</p>
 		<p>You can provide a DOI to get most fields filled automatically</p>
 		<input type="text" name="doi" id="doi" placeholder="DOI of new publication (optional)"/>
+		<br/>
 		<button onclick="openUrl('<?=BASE_URL?>/publication/new?doi='+$('#doi').val())" class="add">Add new publication</button>
 		<button onclick="openUrl('<?=BASE_URL?>/publication?formid=publicationlist&editorOptions[]=edit')" class="edit">Edit my publications</button>
 	</div>
