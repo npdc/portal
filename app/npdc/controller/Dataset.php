@@ -1170,6 +1170,13 @@ class Dataset extends Base{
 							$requestModel->insertFile(['access_request_id'=>$requestId, 'file_id'=>$file]);
 						}
 						$_SESSION['notice'] = 'Your request has been saved with number '.$requestId;
+						$mail = new \npdc\lib\Mailer();
+						$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
+						$mail->subject('New data request');
+						$text = 'Dear admin'.",\r\n\r"
+							. 'There is a new data request at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease mak sure the request is processed.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+						$mail->text($text);
+						$mail->send();
 						header('Location: '.BASE_URL.'/request/'.$requestId);
 						die();
 					}
