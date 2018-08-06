@@ -41,7 +41,7 @@ class Page extends Base{
 						case 'edit':
 							if($session->userLevel >= NPDC_ADMIN){
 								$this->editPage($id);//load edit form
-								$this->display = 'form';
+								$this->display = 'edit';
 							} else {
 								$this->display = 'not_allowed';
 							}
