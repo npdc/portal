@@ -86,4 +86,6 @@ class config {
 		'siteKey'=>'',
 		'secretKey'=>''
 	];
+
+	public static $extraHeader = '';//extra code for in head section of page, for example usage trackers
 }
