@@ -75,7 +75,7 @@ class Page extends Base{
 				default:
 					$this->mid = '';
 					if($data['show_last_revision']){
-						$this->mid = '<p class="last-rev">Last revision: '.date('d F Y', strtotime($data['last_update'])).'</p>';
+						$this->mid = '<p class="last-rev">Last revision: '.date('j F Y', strtotime($data['last_update'])).'</p>';
 					}
 					$this->mid .= preg_replace('#\<(a href|img src)="((?!.*(:\/\/)).*)?"#', '<$1="'.BASE_URL.'/$2"', $data['content']);
 
