@@ -46,6 +46,7 @@ class config {
 	//the ip('s) from which debugging is allow without logging in, netmask allowed
 	public static $debugFrom = [];
 	
+	public static $sessionExpire = 1;//number of minutes of inactivity after which session expires
 	public static $allowRegister = true;//can a visitor create an account
 	
 	public static $resetExpiryHours = 24;//how long should a reset link remain valid

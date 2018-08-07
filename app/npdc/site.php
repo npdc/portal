@@ -63,6 +63,11 @@ spl_autoload_register(
 
 //start session
 session_start();
+if(($_SESSION['last_act'] ?? time()) < (time()-\npdc\config::$sessionExpire*60)){
+	session_destroy();
+	session_start();
+}
+$_SESSION['last_act'] = time();
 if(CALLER === 'index'){
 	$session = new \npdc\lib\Login();
 	#cut off the base url from the request_uri, remove index.php and remove any query_string
