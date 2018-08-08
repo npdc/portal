@@ -9,10 +9,12 @@ $files = $this->model->getFiles($this->data['dataset_id'], $this->data['dataset_
 if(count($files) === 0){
 	echo 'No files';
 } else {
+	$fileModel = new \npdc\model\File();
 	echo '<form method="post"><table class="files">';
 	$downloadable = 0;
 	$public = 0;
 	$login = 0;
+	$ask = 0;
 	foreach($files as $file){
 		$checkbox = false;
 		$icon = null;
@@ -40,6 +42,7 @@ if(count($files) === 0){
 			case 'restricted':
 			default:
 				$icon = 'lock';
+				$ask++;
 		}
 		if($checkbox){
 			$downloadable++;
@@ -49,16 +52,16 @@ if(count($files) === 0){
 			. ($checkbox ? '<input type="checkbox" name="files[]" value="'.$file['file_id'].'" id="file_'.$file['file_id'].'" /><label for="file_'.$file['file_id'].'"><div class="indicator"></div> </label>' : '')
 			. (!is_null($icon) ? '<span class="icon-'.$icon.'"></span>' : '')
 		. '</td>'
-		. '<td>'.$file['title'].' ('.$file['name'].', '.$file['type'].', '.formatBytes($file['size']).')<br/><i>'.$file['description'].'</i></td></tr>';
+		. '<td><b>'.$file['title'].'</b><br/>'.$file['description'].'<br/><span style="font-size: 80%;font-style:italic">'.$file['name'].', '.$file['type'].', '.formatBytes($file['size']).', downloaded '.$fileModel->getDownloadCount($file['file_id']).' times</td></tr>';
 	}
 	echo '</table>'
 	. '<div class="cols" style="font-size:80%;font-style:italic">'
-		. ($this->session->userLevel < 1 || $this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId) ? '<div><span class="icon-key"></span> File can be downloaded when logged in</div>' : '')
-		. '<div><span class="icon-lock"></span> Permission has to be given by the owner of the file</div>'
+		. ($login > 0 && ($this->session->userLevel < 1 || $this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId)) ? '<div><span class="icon-key"></span> File can be downloaded when logged in</div>' : '')
+		. ($restricted > 0 ? '<div><span class="icon-lock"></span> Permission has to be given by the owner of the file</div>' : '')
 		. ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId) ? '<div><span class="icon-eye-blocked"></span> File is hidden for all users except editors and admins</div>' : '')
 	. '</div>'
 	. ($downloadable > 0 
-		? ($this->session->userLevel === 0 ? '<input type="text" name="contact" placeholder="Contact details" /><span class="hint">If you wish you can leave your name and mail address here so we can contact you when a new version of a file becomes available<br/>' : '')
+		? ($this->session->userLevel === 0 ? '<br/><input type="text" name="contact" placeholder="Contact details" /><span class="hint">If you wish you can leave your name and mail address here so we can contact you when a new version of a file becomes available<br/>' : '')
 			. '<button type="submit" formaction="files/selected">Download selected files</button> '
 			. ($public > 0 ? '<button type="submit" formaction="files/public">Download all public files</button> ' : '')
 			. ($this->session->userLevel > NPDC_PUBLIC && $login > 0 ? '<button type="submit" formaction="files/all">Download all available files</button> ' : '') 

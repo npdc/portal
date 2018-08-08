@@ -42,4 +42,11 @@ class File {
 	public function getDrafts($form_id){
 		return $this->fpdo->from('file')->where('record_state', 'draft')->where('form_id', $form_id)->fetchAll();
 	}
+
+	public function getDownloadCount($file_id){
+		return count($this->fpdo
+			->from('zip_files')
+			->where('file_id', $file_id)
+			->fetchAll());
+	}
 }
