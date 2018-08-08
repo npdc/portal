@@ -17,6 +17,7 @@ app/npdc/template/footer.tpl.php
 data
 download
 test.php
+stats
 
 # editor files
 nbproject
