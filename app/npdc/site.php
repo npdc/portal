@@ -55,10 +55,10 @@ spl_autoload_register(
 		if(file_exists($file)){
 			require_once $file;
 		} else {
-		   echo 'A required file was not found '.$file;
-		   die();
-	   }
-    }
+			echo 'A required file was not found '.$file;
+			die();
+		}
+	}
 );
 
 //start session
