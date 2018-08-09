@@ -50,41 +50,43 @@ class Dataset extends Base{
 				? $_SESSION[$this->controller->formId]['data'] 
 				: null
 			, true);
-		if(NPDC_OUTPUT === 'xml'){
-			$this->xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><datasets></datasets>');
-			$fields = ['uuid','dataset_id', 'dataset_version', 'title', 'published', 'url'];
-			foreach($list as $dataset){
-				$em = $this->xml->addChild('dataset');
-				foreach($fields as $field){
-					switch($field){
-						case 'url':
-							$value = 'http'.(empty($_SERVER['HTTPS'])?'':'s').'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$dataset['dataset_id'].'.xml';
-							break;
-						default:
-							$value = $dataset[$field];
-
+		switch(NPDC_OUTPUT){
+			case 'xml':
+				$this->xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><datasets></datasets>');
+				$fields = ['uuid','dataset_id', 'dataset_version', 'title', 'published', 'url'];
+				foreach($list as $dataset){
+					$em = $this->xml->addChild('dataset');
+					foreach($fields as $field){
+						switch($field){
+							case 'url':
+								$value = 'http'.(empty($_SERVER['HTTPS'])?'':'s').'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$dataset['dataset_id'].'.xml';
+								break;
+							default:
+								$value = $dataset[$field];
+	
+						}
+						$em->addChild($field, html_entity_decode($value));
 					}
-					$em->addChild($field, html_entity_decode($value));
 				}
-			}
-			header('Content-Type: application/xml');
-			$dom = new \DOMDocument('1.0');
-			$dom->preserveWhiteSpace = false;
-			$dom->formatOutput = true;
-			$dom->loadXML($this->xml->asXML());
-			echo $dom->saveXML();
-			die();
-		} else {
-			$this->class = 'list dataset';
-			$this->title = 'Datasets';
-			$this->mid = $this->displayTable('dataset', $list
-					, ['title'=>'Title', 
-						'date_start'=>'Start date', 
-						'date_end'=>'End date']
-					, ['dataset', 'dataset_id']
-					, true
-					, true
-				);
+				header('Content-Type: application/xml');
+				$dom = new \DOMDocument('1.0');
+				$dom->preserveWhiteSpace = false;
+				$dom->formatOutput = true;
+				$dom->loadXML($this->xml->asXML());
+				echo $dom->saveXML();
+				die();
+				break;
+			default:
+				$this->class = 'list dataset';
+				$this->title = 'Datasets';
+				$this->mid = $this->displayTable('dataset', $list
+						, ['title'=>'Title', 
+							'date_start'=>'Start date', 
+							'date_end'=>'End date']
+						, ['dataset', 'dataset_id']
+						, true
+						, true
+					);
 		}
 	}
 
@@ -120,6 +122,8 @@ class Dataset extends Base{
 			$this->showError();
 		} elseif(NPDC_OUTPUT === 'xml'){//show as xml
 			$this->showXml();
+		} elseif(in_array(NPDC_OUTPUT, ['ris', 'bib'])){
+			$this->showCitation();
 		} elseif ((!$this->canEdit || is_null($this->controller->display)) && $dataset !== 'new') {//display dataset
 			$this->showDataset();
 		} elseif($this->args[2] === 'warnings') {
@@ -131,7 +135,6 @@ class Dataset extends Base{
 			$this->loadEditPage($this->controller->pages);
 		}
 	}
-
 
 	private function displayDataCenter($organization_id){
 		$organization = $this->organizationModel->getById($organization_id);
@@ -175,6 +178,29 @@ class Dataset extends Base{
 		$this->personModel = new \npdc\model\Person();
 		$this->organizationModel = new \npdc\model\Organization();
 		include('template/dataset/xml.php');
+		die();
+	}
+
+	private function showCitation(){
+		$citation = $this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version'], 'this')[0];
+		$url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'];
+
+		$authors = explode('; ', $citation['creator']);
+		foreach($authors as $author){
+			list($last, $first) = explode(', ', $author);
+			if(empty($str)){
+				$aut = $last;
+			} else {
+				$str .= ' and ';
+			}
+			$str .= str_replace('  ', ' ', str_replace('.', ' ', $first).' {'.$last.'}');
+		}
+		
+		$id = str_replace(' ', '', $aut.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).substr($citation['title'] ?? $this->data['title'], 0,5));		
+		include('template/dataset/'.NPDC_OUTPUT.'.php');
+		header('Content-type: '.$content_type);
+		header("Content-Disposition: attachment; filename=\"" . $this->data['uuid'].'.'.NPDC_OUTPUT . "\""); 
+		echo strip_tags($output);
 		die();
 	}
 

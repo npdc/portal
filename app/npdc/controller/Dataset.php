@@ -222,11 +222,14 @@ class Dataset extends Base{
 				break;
 			case 'usage':
 				$fields = ['creator', 'editor', 'title', 'series_name', 'release_date', 'release_place', 'publisher', 'version', 'issue_identification', 'presentation_form', 'other', 'persistent_identifier_type', 'persistent_identifier_identifier', 'online_resource', 'type'];
-				foreach($this->model->getCitations($this->id, $this->version) as $rowid=>$row){
-					$_SESSION[$this->formId]['data']['citation_'.$rowid.'_id'] = $row['dataset_citation_id'];
+				$citation = $this->model->getCitations($this->id, $this->version, 'this')[0];
+				if(is_null($citation)){
+					$_SESSION[$this->formId]['data']['citation_this_creator'] = $this->model->getAuthors($this->id, $this->version);
+				} else {
+					$_SESSION[$this->formId]['data']['citation_this_id'] = $citation['dataset_citation_id'];
 					foreach($fields as $field){
-						$_SESSION[$this->formId]['data']['citation_'.$rowid.'_'.$field] = $field === 'release_date' ? [$row[$field]] : $row[$field];
-					}
+						$_SESSION[$this->formId]['data']['citation_this_'.$field] = $field === 'release_date' ? [$citation[$field]] : $citation[$field];
+					}	
 				}
 				break;
 			case 'references':
@@ -255,6 +258,13 @@ class Dataset extends Base{
 				}
 				$_SESSION[$this->formId]['data']['publications'] = $this->model->getPublications($this->id, $this->version, false);
 				$_SESSION[$this->formId]['data']['projects'] = $this->model->getProjects($this->id, $this->version, false);
+				foreach($this->model->getCitations($this->id, $this->version, 'other') as $rowid=>$row){
+					$_SESSION[$this->formId]['data']['citation_'.$rowid.'_id'] = $row['dataset_citation_id'];
+					foreach($fields as $field){
+						$_SESSION[$this->formId]['data']['citation_'.$rowid.'_'.$field] = $field === 'release_date' ? [$row[$field]] : $row[$field];
+					}
+				}
+
 				break;
 			case 'files':
 				$fields = ['id', 'type', 'title', 'description', 'mime', 'protocol'];
@@ -375,7 +385,7 @@ class Dataset extends Base{
 							'use_constraints'=>$_SESSION[$this->formId]['data']['use_constraints']
 						
 						], $this->id, $this->version) !== false;
-					$this->saveCitation();
+					$this->saveCitation('this');
 					break;
 				case 'methods':
 					$this->savePlatform();
@@ -385,6 +395,7 @@ class Dataset extends Base{
 					$this->saveLink();
 					$this->saveProjects();
 					$this->savePublications();
+					$this->saveCitation('other');
 					$saved = true;
 					break;
 				case 'files':
@@ -840,7 +851,7 @@ class Dataset extends Base{
 		$this->model->deleteDataCenter($this->id, $this->version-1, $current);
 	}
 	
-	private function saveCitation(){
+	private function saveCitation($type = null){
 		$citations = [];
 		$loopId = 'citation_';
 		$serials = [];
@@ -863,7 +874,8 @@ class Dataset extends Base{
 					$data[$field] = $_SESSION[$this->formId]['data'][$key];
 				}
 			}
-			if(strpos($serial, 'new') !== false){
+			if(empty($_SESSION[$this->formId]['data']['citation_'.$serial.'_id'])){
+			//if(strpos($serial, 'new') !== false){
 				$data['dataset_id'] = $this->id;
 				$data['dataset_version_min'] = $this->version;
 				$citations[] = $this->model->insertCitation($data);
@@ -874,7 +886,7 @@ class Dataset extends Base{
 			}
 		}
 		$v = $this->version-1;
-		$this->model->deleteCitation($this->id, $v, $citations);
+		$this->model->deleteCitation($this->id, $v, $citations, $type);
 	}
 	
 	private function savePlatform(){

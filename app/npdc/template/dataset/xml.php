@@ -7,6 +7,8 @@ $data = [
 	],
 	'Entry_Title'=>$this->data['title']
 ];
+
+$specialFields = ['title'=>'title', 'version'=>'dataset_version'];
 foreach($this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$citation){
 	foreach([
 		'creator'=>'Dataset_Creator', 
@@ -15,7 +17,8 @@ foreach($this->model->getCitations($this->data['dataset_id'], $this->data['datas
 		'series_name'=>'Dataset_Series_Name', 
 		'release_date'=>'Dataset_Release_Date', 
 		'release_place'=>'Dataset_Release_Place',
-		'publisher'=>'Dataset_Publisher', 
+		'publisher'=>'Dataset_Publisher',
+		'version'=>'Version',
 		'issue_identification'=>'Issue_Identification', 
 		'presentation_form'=>'Data_Presentation_Form', 
 		'other'=>'Other', 
@@ -23,8 +26,15 @@ foreach($this->model->getCitations($this->data['dataset_id'], $this->data['datas
 		'persistent_identifier_identifier'=>'Persistent_Identifier_Identifier', 
 		'online_resource'=>'Online_Resource'
 	] as $source=>$target){
-		if(!empty($citation[$source])){
+		if(array_key_exists($source, $specialFields)){
+			$value = $citation[$source] ?? $this->data[$specialFields[$source]];
+			if(!empty($value)){
+				$data['Dataset_Citation'][$i][$target] = $value;
+			}
+		} elseif(!empty($citation[$source])){
 			$data['Dataset_Citation'][$i][$target] = $citation[$source];
+		} elseif($source === 'online_resource'){
+			$data['Dataset_Citation'][$i][$target] = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'];
 		}
 	}
 }

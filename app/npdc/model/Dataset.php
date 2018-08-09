@@ -273,7 +273,38 @@ class Dataset{
 			->orderBy('sort')
 			->fetchAll();
 	}
-	
+
+	public function getAuthors($dataset_id, $dataset_version, $names=2){
+		$res = $this->fpdo
+			->from('dataset_person')
+			->leftJoin('person')->select('surname || \', \' || initials AS name')
+			->where('dataset_id', $dataset_id)
+			->where('dataset_version_min <= ?', $dataset_version)
+			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $dataset_version)
+			->orderBy('sort')
+			->fetchAll();
+		$c = count($res);
+		if($c === 1){
+			$return = $res[0]['name'];
+		} elseif ($c === 2){
+			$return = $res[0]['name'].' &amp; '.$res[1]['name'];
+		} else {
+			$return = '';
+			if(!is_numeric($names) || $names < 1 || is_nan($names)){
+				$names = 1;
+			}
+			for($i=0;$i<min($c-1, $names);$i++){
+				$return .= ($i>0 ? ', ' : '').$res[$i]['name'];
+			}
+			if($c <= $names+1){
+				$return .= ', &amp; '.$res[$i]['name'];
+			} else {
+				$return .= ', et al.';
+			}
+		}
+		return $return;
+	}
+
 	public function getDataCenter($id, $version, $join = true){
 		$q = $this->fpdo
 			->from('dataset_data_center');
@@ -1163,7 +1194,7 @@ class Dataset{
 		return $return;
 	}
 	
-	public function deleteCitation($dataset_id, $version, $currentCitations){
+	public function deleteCitation($dataset_id, $version, $currentCitations, $type = null){
 		$q = $this->fpdo
 			->update('dataset_citation')
 			->set('dataset_version_max', $version)
@@ -1180,6 +1211,9 @@ class Dataset{
 			} else {
 				$q->where('dataset_citation_id NOT IN ('.implode(',',$currentCitations).')');
 			}
+		}
+		if(!is_null($type)){
+			$q->where('type = ?', $type);
 		}
 		$q->execute();
 		$this->fpdo

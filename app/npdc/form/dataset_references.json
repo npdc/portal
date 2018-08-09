@@ -109,6 +109,128 @@
 				}
 			}
 		},
+		"citation": {
+			"type": "fieldset",
+			"label": "Dataset reference",
+			"multi": true,
+			"required": false,
+			"hint": "Reference to dataset (if any) used to compile this dataset. For referencing publications and other resources you can use the fields above",
+			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/data_set_citation.html",
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"type": {
+					"type": "hidden",
+					"label": "Type of dataset citation",
+					"value": "other"
+				},
+				"title": {
+					"type": "text",
+					"label": "Dataset title",
+					"placeholder": "Dataset title"
+				},
+				"creator": {
+					"type": "text",
+					"label": "Dataset creator",
+					"hint": "Who collected/generated the data, can of course be more than one person. In format '[Last name], [First name and/or initials]', separated with ';', eg 'Jones, Karen A;Adams, James X'",
+					"required": true,
+					"placeholder": "Creator (Jones, Karen A;Adams, James X)"
+				},
+				"editor": {
+					"type": "text",
+					"label": "Dataset editor",
+					"hint": "Who processed the dataset",
+					"required": false,
+					"placeholder": "Editor"
+				},
+				"series_name": {
+					"type": "text",
+					"label": "Series name",
+					"hint": "Name of a larger data series if this dataset is part of one",
+					"required": false
+				},
+				"release_date": {
+					"type": "date",
+					"label": "Release date",
+					"hint": "When is the dataset made first available",
+					"placeholder": "yyyy-mm-dd",
+					"required": true,
+					"range": false
+				},
+				"release_place": {
+					"type": "text",
+					"label": "Release place",
+					"hint": "City + Country at least",
+					"required": false,
+					"placeholder": "City, the Netherlands"
+				},
+				"publisher": {
+					"type": "text",
+					"label": "Dataset publisher",
+					"hint": "Who made the dataset available",
+					"placeholder": "Publisher",
+					"required": false
+				},
+				"version": {
+					"type": "text",
+					"label": "Dataset version",
+					"required": false,
+					"placeholder": "version"
+				},
+				"issue_identification": {
+					"type": "text",
+					"label": " The volume or issue number of the publication",
+					"required": false,
+					"placeholder": "volume/issue"
+				},
+				"presentation_form": {
+					"type": "text",
+					"label": "Presentation form",
+					"hint": "Paper/digital, which format",
+					"required": false,
+					"placeholder": "image, text, excel, atlas, ..."
+				},
+				"other": {
+					"type": "text",
+					"label": "Other citation details",
+					"hint": "Anything that doesn't fit in the other fields but you want to be here",
+					"required": false,
+					"placeholder": "comment"
+				},
+				"persistent_identifier": {
+					"type": "fieldset",
+					"label": "Persistent identifier",
+					"required": false,
+					"fields": {
+						"type": {
+							"type": "options",
+							"label": "Type",
+							"options": {"doi": "Digital Object Identifer (DOI)", "ark":"Archival Resource Key (ARK)", "na": "<em>Clear selection</em>"},
+							"asList": false,
+							"multiple": false,
+							"required": true
+						},
+						"identifier": {
+							"type": "text",
+							"label": "Identifier",
+							"hint": "In case of DOI start with doi:10.",
+							"required": true,
+							"placeholder": "DOI or ARK"
+						}
+					}
+				},
+				"online_resource": {
+					"type": "text",
+					"label": "Link to the dataset description",
+					"hint": "If left blank this will link back to this website",
+					"required": false,
+					"placeholder": "https://"
+				}
+			}
+		},
+		
 		"submit": {
 			"type": "submit",
 			"value": "Save and preview",

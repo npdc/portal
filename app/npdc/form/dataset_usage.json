@@ -43,13 +43,12 @@
 			"rows":3,
 			"hasSuggestions": true
 		},
-		
-		"citation": {
+		"citation_this": {
 			"type": "fieldset",
 			"label": "Dataset citation",
-			"multi": true,
-			"required": true,
-			"hint": "You can use dataset citatation for 2 functions: <ol><li>How should this dataset be cited in literature</li><li>Citation of datasets (if any) used to compile this dataset</li></ol> For referencing publications and other resources you can use the references tab",
+			"multi": false,
+			"required": false,
+			"hint": "Fields needed to provide a proper citation to this dataset.",
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/data_set_citation.html",
 			"fields": {
 				"id": {
@@ -57,25 +56,16 @@
 					"required": false
 				},
 				"type": {
-					"type": "options",
+					"type": "hidden",
 					"label": "Type of dataset citation",
-					"options": {
-						"this": "1. How to cite this dataset",
-						"other": "2. Citation of a dataset used to compile this dataset"
-					},
-					"multiple": false
-				},
-				"title": {
-					"type": "text",
-					"label": "Dataset title",
-					"placeholder": "Dataset title"
+					"value": "this"
 				},
 				"creator": {
 					"type": "text",
 					"label": "Dataset creator",
-					"hint": "Who collected/generated the data",
+					"hint": "Who collected/generated the data, can of course be more than one person. In format '[Last name], [First name and/or initials]', separated with ';', eg 'Jones, Karen A;Adams, James X'",
 					"required": true,
-					"placeholder": "Creator"
+					"placeholder": "Creator (Jones, Karen A;Adams, James X)"
 				},
 				"editor": {
 					"type": "text",
@@ -93,8 +83,9 @@
 				"release_date": {
 					"type": "date",
 					"label": "Release date",
-					"hint": "When is the dataset made first available",
-					"required": true,
+					"hint": "When is the dataset made first available (if left empty, date of creation of this record is used",
+					"placeholder": "yyyy-mm-dd",
+					"required": false,
 					"range": false
 				},
 				"release_place": {
@@ -111,18 +102,6 @@
 					"placeholder": "Publisher",
 					"required": false
 				},
-				"version": {
-					"type": "text",
-					"label": "Dataset version",
-					"required": false,
-					"placeholder": "version"
-				},
-				"issue_identification": {
-					"type": "text",
-					"label": " The volume or issue number of the publication",
-					"required": false,
-					"placeholder": "volume/issue"
-				},
 				"presentation_form": {
 					"type": "text",
 					"label": "Presentation form",
@@ -136,35 +115,6 @@
 					"hint": "Anything that doesn't fit in the other fields but you want to be here",
 					"required": false,
 					"placeholder": "comment"
-				},
-				"persistent_identifier": {
-					"type": "fieldset",
-					"label": "Persistent identifier",
-					"required": false,
-					"fields": {
-						"type": {
-							"type": "options",
-							"label": "Type",
-							"options": {"doi": "Digital Object Identifer (DOI)", "ark":"Archival Resource Key (ARK)", "na": "<em>Clear selection</em>"},
-							"asList": false,
-							"multiple": false,
-							"required": true
-						},
-						"identifier": {
-							"type": "text",
-							"label": "Identifier",
-							"hint": "In case of DOI start with doi:10.",
-							"required": true,
-							"placeholder": "DOI or ARK"
-						}
-					}
-				},
-				"online_resource": {
-					"type": "text",
-					"label": "Link to the dataset description",
-					"hint": "If left blank this will link back to this website",
-					"required": false,
-					"placeholder": "https://"
 				}
 			}
 		},
