@@ -294,12 +294,12 @@ class Dataset{
 				$names = 1;
 			}
 			for($i=0;$i<min($c-1, $names);$i++){
-				$return .= ($i>0 ? ', ' : '').$res[$i]['name'];
+				$return .= ($i>0 ? '; ' : '').$res[$i]['name'];
 			}
 			if($c <= $names+1){
-				$return .= ', &amp; '.$res[$i]['name'];
+				$return .= ' &amp; '.$res[$i]['name'];
 			} else {
-				$return .= ', et al.';
+				$return .= '; et al.';
 			}
 		}
 		return $return;

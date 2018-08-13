@@ -59,13 +59,13 @@ class Dataset extends Base{
 					foreach($fields as $field){
 						switch($field){
 							case 'url':
-								$value = 'http'.(empty($_SERVER['HTTPS'])?'':'s').'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$dataset['dataset_id'].'.xml';
+								$value = 'http'.(empty($_SERVER['HTTPS'])?'':'s').'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$dataset['uuid'].'.xml';
 								break;
 							default:
 								$value = $dataset[$field];
 	
 						}
-						$em->addChild($field, html_entity_decode($value));
+						$em->addChild($field, str_replace('&', '&amp;', strip_tags(html_entity_decode($value))));
 					}
 				}
 				header('Content-Type: application/xml');
@@ -185,7 +185,7 @@ class Dataset extends Base{
 		$citation = $this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version'], 'this')[0];
 		$url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'];
 
-		$authors = explode('; ', $citation['creator']);
+		$authors = explode('; ', str_replace(' &amp;', ';', $citation['creator'] ?? $this->model->getAuthors($this->data['dataset_id'], $this->data['dataset_version'])));
 		foreach($authors as $author){
 			list($last, $first) = explode(', ', $author);
 			if(empty($str)){

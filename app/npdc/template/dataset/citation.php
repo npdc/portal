@@ -2,7 +2,7 @@
 $citation = $this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version'], 'this')[0];
 $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'];
 echo '<div id="citation"><span style="font-weight:bold">&ldquo;</span>'
-	. $citation['creator']
+	. ($citation['creator'] ?? $this->model->getAuthors($this->data['dataset_id'], $this->data['dataset_version']))
 	. ' ('.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).').'
 	. ' <em>'.($citation['title'] ?? $this->data['title']).'.</em>'
 	. ' (v'.($citation['version'] ?? $this->data['dataset_version']).')'
