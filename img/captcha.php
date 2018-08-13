@@ -76,7 +76,7 @@ if(isset($_SESSION[$_GET['id']]['captcha'])){
 	imagettftext($img, $fontsize, 0, 17, 35, $error, $font, 'captcha and processing of form');
 }
 
-header ('Content-type: image/png');
+header('Content-type: image/png');
 header('Expires: Mon, 26 Jul 1990 05:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Cache-Control: no-store, no-cache, must-revalidate');
