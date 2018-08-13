@@ -28,7 +28,7 @@ foreach($parts as $part){
 		include 'dataset/'.$part[2].'.php';
 		$content = ob_get_clean();
 	}
-	if(!empty($content) || $this->canEdit){
+	if(!empty($content) || ($this->data['record_status'] === 'draft' && $this->canEdit)){
 		echo '<div><h4>'.$part[0].($this->data['record_status'] === 'draft' && $this->canEdit ? ' [<a href="'.BASE_URL.'/dataset/'.$this->data['dataset_id'].'/edit/'.$part[3].'">edit</a>]' : '').'</h4>'
 		//echo '<h3 class="collapsible hidden">'.$part[0].($this->data['record_status'] === 'draft' && $this->canEdit ? ' [<a href="'.BASE_URL.'/dataset/'.$this->data['dataset_id'].'/edit/'.$part[3].'">edit</a>]' : '').'</h3><div style="display:none" class="hiddenSubDiv">'
 			. $content
