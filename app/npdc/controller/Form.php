@@ -83,8 +83,10 @@ class Form {
 					$this->file($id, $field);
 					break;
 				case 'captcha':
-					$this->captcha($id, $field);
-					break;
+					if(\npdc\config::$useReCaptcha){
+						$this->reCaptcha($id, $field);
+						break;
+					}
 				default:
 					$this->formData[$id] = $this->field($id, $field, $field->required ?? true);
 			}
@@ -272,7 +274,7 @@ class Form {
 		}
 	}
 
-	private function captcha($id, $field){
+	private function reCaptcha($id, $field){
 		if($_SESSION[$this->formId]['captcha']){
 
 		} elseif(empty($this->formData['g-recaptcha-response'])){
@@ -434,6 +436,14 @@ class Form {
 					} else {
 						$this->value = strtolower($this->value);
 					}
+					break;
+				case 'captcha':
+					if(strtolower($this->value) === strtolower($_SESSION[$this->formId]['captcha'])){
+						$_SESSION[$this->formId]['captcha'] = true;
+					} else {
+						$this->addError('captcha', 'The answer is not correct', null);
+					}
+					$this->value = '';
 					break;
 				case 'date':
 					$res = [$this->checkDate($this->formData[$id][0], $field->fuzzy ? 'down' : 'none')];

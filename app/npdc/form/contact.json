@@ -27,9 +27,7 @@
 		},
 		"captcha": {
 			"type": "captcha",
-			"label": "Captcha",
-			"placeholder": "Answer",
-			"hint": "This is to check if you are human or a bot"
+			"label": "Captcha"
 		},
 		"submit": {
 			"type": "submit",

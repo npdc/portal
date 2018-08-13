@@ -179,10 +179,17 @@ class Form {
 					$_SESSION[$this->formId]['captcha'] = true;
 					return;
 				}
-				global $extraJS;
-				$extraJS .= '<script src="https://www.google.com/recaptcha/api.js"></script>';
-				$input .= '<div class="g-recaptcha" data-sitekey="'.\npdc\config::$reCaptcha['siteKey'].'"></div>';
-				break;
+				if(\npdc\config::$useReCaptcha){
+					global $extraJS;
+					$extraJS .= '<script src="https://www.google.com/recaptcha/api.js"></script>';
+					$input .= '<div class="g-recaptcha" data-sitekey="'.\npdc\config::$reCaptcha['siteKey'].'"></div>';
+					break;	
+				} else {
+					$field->hint = 'This is to check if you are human or a bot. <nobr>Case insensitive, only the dark characters</nobr>';
+					$field->placeholder = 'Answer';
+					$_SESSION[$this->formId]['captcha'] = generateRandomString(5);
+					$input = '<div><img src="'.BASE_URL.'/img/captcha.php?id='.$this->formId.'" /></div>';
+				}
 			case 'text':
 			case 'mail':
 			case 'number':
