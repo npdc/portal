@@ -59,15 +59,17 @@ class Person{
 			->from('person', $id)
 			->leftJoin('organization')->select('organization.*')
 			->fetch();
-		if(!empty($data['orcid'])){
-			$data['orcid'] = implode('-', str_split($data['orcid'], 4));
-		}
-		foreach($data as $key=>&$value){
-			if(preg_match('/^phone_[a-z]{1,}_public$/', $key)){
-				$value = $value === 1 ? 'yes' : 'no';
+		if($data !== false){
+			if(!empty($data['orcid'])){
+				$data['orcid'] = implode('-', str_split($data['orcid'], 4));
 			}
+			foreach($data as $key=>&$value){
+				if(preg_match('/^phone_[a-z]{1,}_public$/', $key)){
+					$value = $value === 1 ? 'yes' : 'no';
+				}
+			}
+			unset($value);
 		}
-		unset($value);
 		return $data;
 	}
 	

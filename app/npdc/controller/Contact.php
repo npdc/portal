@@ -23,9 +23,11 @@ class Contact {
 		if(count($args) > 1){
 			$this->model = new \npdc\model\Person;
 			$this->person = $this->model->getById($args[1]);
-			$this->name = $this->person['name'];
-			$this->to = $this->person['mail'];
-			$this->formId = str_replace('/', '_', $_SERVER['REQUEST_URI']);
+			if($this->person !== false) {
+				$this->name = $this->person['name'];
+				$this->to = $this->person['mail'];
+				$this->formId = str_replace('/', '_', $_SERVER['REQUEST_URI']);	
+			}
 		} else {
 			$this->name = 'General mailbox of '. \npdc\config::$siteName;
 			$this->to = \npdc\config::$mail['contact'];

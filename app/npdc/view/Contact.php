@@ -62,45 +62,49 @@ class Contact extends Base{
 	 * a contact form for a specific person
 	 */
 	public function showItem(){
-		$personView = new \npdc\lib\Person();
-		//$this->canEdit = isset($this->session->userId) && ($this->session->userLevel === NPDC_ADMIN);
-		if(empty($this->controller->person['mail'])) {
-			$this->mid = 'No mail address available for '.$this->controller->person['name'];
+		if($this->controller->person === false){
+			$this->mid = 'Person not found';
 		} else {
-			$this->showForm('Send a message', 'Through this form you can send a message to '.$this->controller->person['name']);
-		}
-		$this->right = $personView->showPerson($this->controller->person, false).$personView->showAddress($this->controller->person).(empty($this->controller->person['orcid']) ? '' : '<section class="inline"><h4>ORCID</h4><p>'.$this->controller->person['orcid'].'</p></section>');
-		
-		$projects = $this->controller->model->getProjects($this->controller->person['person_id']);
-		$publications = $this->controller->model->getPublications($this->controller->person['person_id']);
-		$datasets = $this->controller->model->getDatasets($this->controller->person['person_id']);
-		$this->title = 'Contact - '.$this->controller->person['name'];
-		if(count($projects) + count($publications) + count($datasets) > 0){
-			$this->class .= ' single-col';
-			$this->form = '<div class="contactwrapper"><h3>Contact form</h3><div class="contactform">'.$this->mid.'</div></div>';
-			$this->right .= $this->form;
-			$this->mid = '';
-			if(count($datasets) > 0){
-				$this->mid .= '<h3>Datasets</h3>';
-				$this->mid .= $this->displayTable('dataset', $datasets, ['title'=>'Title', 'date_start'=>'Start date', 'date_end'=>'End date'], ['dataset', 'dataset_id']);
+			$personView = new \npdc\lib\Person();
+			//$this->canEdit = isset($this->session->userId) && ($this->session->userLevel === NPDC_ADMIN);
+			if(empty($this->controller->person['mail'])) {
+				$this->mid = 'No mail address available for '.$this->controller->person['name'];
+			} else {
+				$this->showForm('Send a message', 'Through this form you can send a message to '.$this->controller->person['name']);
 			}
-			if(count($publications) > 0){
-				$this->mid .= '<h3>Publications</h3>';
-				$publicationModel = new \npdc\model\Publication();
-				foreach($publications as $publication){
-					$this->mid .= '<p>'.$publicationModel->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
-					. $publication['year'].'. '
-					. '<a href="'.BASE_URL.'/publication/'.$publication['publication_id'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
-					. $publication['journal'].'</i> '.$publication['volume']
-					. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
-					. (empty($publication['pages']) ? '' :', '.$publication['pages'])
-					. '</p>';
-
+			$this->right = $personView->showPerson($this->controller->person, false).$personView->showAddress($this->controller->person).(empty($this->controller->person['orcid']) ? '' : '<section class="inline"><h4>ORCID</h4><p>'.$this->controller->person['orcid'].'</p></section>');
+			
+			$projects = $this->controller->model->getProjects($this->controller->person['person_id']);
+			$publications = $this->controller->model->getPublications($this->controller->person['person_id']);
+			$datasets = $this->controller->model->getDatasets($this->controller->person['person_id']);
+			$this->title = 'Contact - '.$this->controller->person['name'];
+			if(count($projects) + count($publications) + count($datasets) > 0){
+				$this->class .= ' single-col';
+				$this->form = '<div class="contactwrapper"><h3>Contact form</h3><div class="contactform">'.$this->mid.'</div></div>';
+				$this->right .= $this->form;
+				$this->mid = '';
+				if(count($datasets) > 0){
+					$this->mid .= '<h3>Datasets</h3>';
+					$this->mid .= $this->displayTable('dataset', $datasets, ['title'=>'Title', 'date_start'=>'Start date', 'date_end'=>'End date'], ['dataset', 'dataset_id']);
 				}
-			}
-			if(count($projects) > 0){
-				$this->mid .= '<h3>Projects</h3>';
-				$this->mid .= $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'date_start'=>'Start date', 'date_end'=>'End date'], ['project', 'project_id']);
+				if(count($publications) > 0){
+					$this->mid .= '<h3>Publications</h3>';
+					$publicationModel = new \npdc\model\Publication();
+					foreach($publications as $publication){
+						$this->mid .= '<p>'.$publicationModel->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
+						. $publication['year'].'. '
+						. '<a href="'.BASE_URL.'/publication/'.$publication['publication_id'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
+						. $publication['journal'].'</i> '.$publication['volume']
+						. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
+						. (empty($publication['pages']) ? '' :', '.$publication['pages'])
+						. '</p>';
+
+					}
+				}
+				if(count($projects) > 0){
+					$this->mid .= '<h3>Projects</h3>';
+					$this->mid .= $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'date_start'=>'Start date', 'date_end'=>'End date'], ['project', 'project_id']);
+				}
 			}
 		}
 	}
