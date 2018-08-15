@@ -8,9 +8,16 @@ class Mailer {
 		$this->mail = new \PHPMailer();
 		$this->mail->setFrom(\npdc\config::$mail['from'], is_null($fromName) ? \npdc\config::$siteName : $fromName .' through '. \npdc\config::$siteDomain);
 		$this->mail->addReplyTo(is_null($replyMail) ? \npdc\config::$mail['contact'] : $replyMail);
-		if(property_exists('\npdc\config','mail')){
+		if(!empty(\npdc\config::$mail['host'])){
 			$this->mail->isSMTP();
 			$this->mail->Host = \npdc\config::$mail['host'];
+			$this->mail->Port = \npdc\config::$mail['port'];
+			$this->mail->SMTPSecure = \npdc\config::$mail['SMTPSecure'];
+			if(\npdc\config::$mail['user'] ?? false){
+				$this->mail->SMTPAuth = true;
+				$this->mail->Username = \npdc\config::$mail['user'];
+				$this->mail->Password = \npdc\config::$mail['pass'];
+			}
 		}
 	}
 	

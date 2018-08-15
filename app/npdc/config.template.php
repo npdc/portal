@@ -24,9 +24,13 @@ class config {
 	
 	
 	public static $mail = [
-		'host' => 'mail.example.com',//SMTP host
+		'contact' => 'info@example.com',//mail adress where main contact form is sent to
 		'from' => 'noreply@example.com',
-		'contact' => 'info@example.com'
+		'host' => '',//SMTP host
+		'port' => '25',
+		'SMTPSecure' => '',
+		'user' => '',//smtp user
+		'pass' =>'' //smtp pass
 	];
 	
 	//GCMD login, needed for sync of vocabularies and records
