@@ -122,7 +122,7 @@ if($session->userLevel > NPDC_PUBLIC && $view->class==="edit"){
 	$extraJS = '<script type="text/javascript" src="'.BASE_URL.'/js/external/jHtmlArea/jHtmlArea-0.8.min.js?v='.APP_BUILD.'"></script><script type="text/javascript" src="'.BASE_URL.'/js/editor'.(NPDC_DEV ? '' : '.min').'.js?v='.APP_BUILD.'"></script>';
 	$extraCSS = '<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/jHtmlArea/jHtmlArea.css?v='.APP_BUILD.'" />';
 }
-require dirname(__FILE__).'/template/'.$template.'.tpl.php';
+require dirname(__FILE__).'/app/npdc/template/'.$template.'.tpl.php';
 
 //remove errors from the session
 unset($_SESSION['errors']);
