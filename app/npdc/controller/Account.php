@@ -2,10 +2,23 @@
 
 namespace npdc\controller;
 
+/**
+ * Account (works based on person table)
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 class Account extends Base{
 	public $formId = 'account';
 	private $person;
 	
+	/**
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
+	 */
 	public function __construct($session, $args) {
 		if($session->userLevel < NPDC_USER){
 			header('Location: '.BASE_URL);

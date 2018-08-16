@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Project controller
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 namespace npdc\controller;
 
 class Project extends Base{
@@ -7,6 +14,12 @@ class Project extends Base{
 	public $name = 'project';
 	public $userLevelAdd = NPDC_EDITOR;//minimum user level required to add a new dataset
 	
+	/**
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
+	 */
 	public function __construct($session, $args){
 		$this->session = $session;
 		$this->args = $args;
@@ -14,6 +27,13 @@ class Project extends Base{
 		parent::__construct();
 	}
 
+	/**
+	 * Check if draft is different from published version
+	 *
+	 * @param integer $id record id
+	 * @param integer $version version number of draft
+	 * @return boolean did record change
+	 */
 	public function recordChanged($id, $version){
 		$changed = $this->generalHasChanged($id, $version);
 		$tables = ['project_keyword', 'project_link', 'project_person', 'project_publication', 'dataset_project'];
@@ -22,11 +42,23 @@ class Project extends Base{
 		}
 		return $changed;
 	}
+
+	/**
+	 * Populate program and organization fields
+	 *
+	 * @return void
+	 */
 	protected function alterFields() {
 		$this->formController->form->fields->program_id->options = $this->getPrograms();
 		$this->formController->form->fields->people->fields->organization_id->options = $this->getOrganizations();
 	}
 	
+	/**
+	 * Populate form with record data
+	 *
+	 * @param array $baseData
+	 * @return void
+	 */
 	protected function loadForm($baseData){
 		if($this->id === 'new'){
 			unset($_SESSION[$this->formId]);
@@ -63,7 +95,9 @@ class Project extends Base{
 	}
 
 	/**
-	 * 
+	 * Save record to database
+	 *
+	 * @return void
 	 */
 	protected function doSave(){
 		if($this->args[1] === 'new'){
@@ -97,7 +131,9 @@ class Project extends Base{
 	}
 	
 	/**
+	 * Save keywords
 	 * 
+	 * @return void
 	 */
 	private function saveKeywords(){
 		$currentKeywords = $this->model->getKeywords($this->id, $this->version);
@@ -120,7 +156,9 @@ class Project extends Base{
 	}
 	
 	/**
+	 * Save links
 	 * 
+	 * @return void
 	 */
 	private function saveLinks(){
 		$loopId = 'links_id_';
@@ -151,6 +189,11 @@ class Project extends Base{
 		}
 	}
 	
+	/**
+	 * Link (bi-directional) to data set
+	 *
+	 * @return void
+	 */
 	private function saveDatasets(){
 		$current = [];
 		$loopId = 'datasets_dataset_id_';
@@ -174,6 +217,11 @@ class Project extends Base{
 		$this->model->deleteDataset($this->id, $v, $current);
 	}
 
+	/**
+	 * Link (bi-directional) to publication
+	 *
+	 * @return void
+	 */
 	private function savePublications(){
 		$current = [];
 		$loopId = 'publications_publication_id_';
@@ -198,7 +246,9 @@ class Project extends Base{
 	}
 
 	/**
-	 * 
+	 * Link to people
+	 *
+	 * @return void
 	 */
 	private function savePeople(){
 		$persons = [];

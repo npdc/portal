@@ -3,6 +3,9 @@
 /**
  * search controller 
  * takes post data and converts it into clean url, then redirects to that clean url
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\controller;
@@ -12,12 +15,12 @@ class Search {
 	public $form;
 	private $formController;
 	public $userLevelAdd = NPDC_NOBODY;
-
-
+	
 	/**
-	 * 
-	 * @param object $session
-	 * @param array $args
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
 	 */
 	public function __construct($session, $args){
 		$this->formController = new \npdc\controller\Form($this->formId);

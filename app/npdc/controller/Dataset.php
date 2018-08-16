@@ -1,4 +1,10 @@
 <?php
+/**
+ * Dataset controller
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
 
 namespace npdc\controller;
 
@@ -7,6 +13,7 @@ class Dataset extends Base{
 	public $name = 'dataset';
 	public $userLevelAdd = NPDC_EDITOR;//minimum user level required to add a new dataset
 	
+	//list of pages in edit form
 	public $pages = [
 			'general'=>'General',
 			'people'=>'Involved people',
@@ -17,6 +24,12 @@ class Dataset extends Base{
 			'files'=>'Files',
 		];
 	
+	/**
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
+	 */
 	public function __construct($session, $args){
 		$this->session = $session;
 		$this->args = $args;
@@ -24,11 +37,18 @@ class Dataset extends Base{
 		parent::__construct();
 		if(in_array('files', $this->args)){
 			if(array_slice($this->args, -1)[0] !== 'files'){
-				$this->files();
+				$this->listFiles();
 			}
 		}
 	}
 	
+	/**
+	 * Check if dataset draft is different from published version
+	 *
+	 * @param integer $id dataset id
+	 * @param integer $version new version number
+	 * @return boolean
+	 */
 	public function recordChanged($id, $version){
 		$changed = $this->generalHasChanged($id, $version);
 		$tables = ['dataset_citation', 'dataset_keyword', 'dataset_link', 'dataset_person', 'dataset_project', 'dataset_publication', 'dataset_topic', 'dataset_file', 'dataset_data_center'];
@@ -38,6 +58,11 @@ class Dataset extends Base{
 		return $changed;
 	}
 
+	/**
+	 * Changing fields in forms with values from database or based on user rights
+	 *
+	 * @return void
+	 */
 	protected function alterFields() {
 		$vocab = new \npdc\lib\Vocab();
 		switch($this->screen){
@@ -76,6 +101,12 @@ class Dataset extends Base{
 		}
 	}
 	
+	/**
+	 * Populate the form fields with record information
+	 *
+	 * @param array $baseData
+	 * @return void
+	 */
 	protected function loadForm($baseData){
 		$_SESSION[$this->formId]['data'] = $baseData;
 		$vocab = new \npdc\lib\Vocab();
@@ -331,6 +362,11 @@ class Dataset extends Base{
 		}
 	}
 	
+	/**
+	 * insert record or save updated version of record
+	 *
+	 * @return void
+	 */
 	protected function doSave(){
 		if($this->id === 'new'){
 			$_SESSION[$this->formId]['data']['dataset_version'] = 1;
@@ -421,6 +457,11 @@ class Dataset extends Base{
 		}
 	}
 	
+	/**
+	 * Save keywords
+	 *
+	 * @return void
+	 */
 	private function saveKeywords(){
 		$keyword = [];
 		$loopId = 'science_keywords_keyword_id_';
@@ -466,6 +507,11 @@ class Dataset extends Base{
 		}
 	}
 	
+	/**
+	 * Save iso topics
+	 *
+	 * @return void
+	 */
 	private function saveTopics(){
 		$currentTopics = $this->model->getTopics($this->id, $this->version);
 		$topics = [];
@@ -486,6 +532,11 @@ class Dataset extends Base{
 		}
 	}
 	
+	/**
+	 * Save (bi-directional) link to projects
+	 *
+	 * @return void
+	 */
 	private function saveProjects(){
 		$projects = [];
 		$loopId = 'projects_project_id_';
@@ -509,6 +560,11 @@ class Dataset extends Base{
 		$this->model->deleteProject($this->id, $v, $projects);
 	}
 
+	/**
+	 * Save (bi-directional) link to publications
+	 *
+	 * @return void
+	 */
 	private function savePublications(){
 		$publications = [];
 		$loopId = 'publications_publication_id_';
@@ -533,6 +589,11 @@ class Dataset extends Base{
 		$this->model->deletePublication($this->id, $v, $publications);
 	}
 	
+	/**
+	 * Save locations
+	 *
+	 * @return void
+	 */
 	private function saveLocations() {
 		$locations = [];
 		$loopId = 'location_location_id_';
@@ -557,6 +618,11 @@ class Dataset extends Base{
 		$this->model->deleteLocation($this->id, $v, $locations);
 	}
 	
+	/**
+	 * Save spatial coverage
+	 *
+	 * @return void
+	 */
 	private function saveSpatialCoverage(){
 		$coverages = [];
 		$loopId = 'spatial_coverage_wkt_';
@@ -588,6 +654,11 @@ class Dataset extends Base{
 		$this->model->deleteSpatialCoverage($this->id, $v, $coverages);
 	}
 	
+	/**
+	 * Save temporal coverage
+	 *
+	 * @return void
+	 */
 	private function saveTemporalCoverage(){
 		$loopId = 'temporal_coverage_';
 		$serials = [];
@@ -647,6 +718,15 @@ class Dataset extends Base{
 		$this->model->deleteTemporalCoverage($this->id, $v, $current);
 	}
 	
+	/**
+	 * Save subgroup of a temporal coverage
+	 *
+	 * @param string $group type of group
+	 * @param integer $temporalCoverageId id of the parent temporal coverage
+	 * @param string $baseId prefix with which to get the data from the session
+	 * @param string $serial sequence number of the group
+	 * @return void
+	 */
 	private function saveTemporalCoverageGroup($group, $temporalCoverageId, $baseId, $serial){
 		switch ($group){
 			case 'dates':
@@ -730,6 +810,11 @@ class Dataset extends Base{
 		}
 	}
 	
+	/**
+	 * Save the data resolution
+	 *
+	 * @return void
+	 */
 	private function saveResolution(){
 		$resolutions = [];
 		$loopId = 'resolution_';
@@ -765,6 +850,11 @@ class Dataset extends Base{
 		$this->model->deleteResolution($this->id, $v, $resolutions);
 	}
 
+	/**
+	 * Link people to dataset
+	 *
+	 * @return void
+	 */
 	private function savePeople(){
 		$persons = [];
 		$loopId = 'people_person_id_';
@@ -794,6 +884,11 @@ class Dataset extends Base{
 		return $this->model->deletePerson($this->id, $v, $persons) !== false;	
 	}
 	
+	/**
+	 * Save data center
+	 *
+	 * @return void
+	 */
 	private function saveDataCenter(){
 		$current = [];
 		$loopId = 'data_center_';
@@ -851,6 +946,12 @@ class Dataset extends Base{
 		$this->model->deleteDataCenter($this->id, $this->version-1, $current);
 	}
 	
+	/**
+	 * Save citation
+	 *
+	 * @param string $type either this or other
+	 * @return void
+	 */
 	private function saveCitation($type = null){
 		$citations = [];
 		$loopId = 'citation_';
@@ -875,7 +976,6 @@ class Dataset extends Base{
 				}
 			}
 			if(empty($_SESSION[$this->formId]['data']['citation_'.$serial.'_id'])){
-			//if(strpos($serial, 'new') !== false){
 				$data['dataset_id'] = $this->id;
 				$data['dataset_version_min'] = $this->version;
 				$citations[] = $this->model->insertCitation($data);
@@ -889,6 +989,11 @@ class Dataset extends Base{
 		$this->model->deleteCitation($this->id, $v, $citations, $type);
 	}
 	
+	/**
+	 * Save the platform
+	 *
+	 * @return void
+	 */
 	private function savePlatform(){
 		$current = [];
 		$loopId = 'platform_';
@@ -923,6 +1028,13 @@ class Dataset extends Base{
 		$this->model->deletePlatform($this->id, $this->version-1, $current);
 	}
 	
+	/**
+	 * Save the instruments
+	 *
+	 * @param string $base_id prefix with which data is retreived from the session
+	 * @param integer $platform_id id of the platform
+	 * @return void
+	 */
 	private function saveInstrument($base_id, $platform_id){
 		$loopId = $base_id.'_instrument_';
 		$serials = [];
@@ -961,6 +1073,13 @@ class Dataset extends Base{
 		$this->model->deleteInstrument($platform_id, $this->version-1, $current);
 	}
 	
+	/**
+	 * Save sensor
+	 *
+	 * @param string $base_id prefix with which data is retreived from the session
+	 * @param integer $instrument_id instrument to which sensor belongs
+	 * @return void
+	 */
 	private function saveSensor($base_id, $instrument_id){
 		$loopId = $base_id.'_sensor_';
 		$serials = [];
@@ -996,24 +1115,13 @@ class Dataset extends Base{
 		$this->model->deleteSensor($instrument_id, $this->version-1, $current);
 	}
 	
-	private function loadCharacteristics($type, $record_id, $base_id){
-		if(!in_array($type, ['platform', 'instrument', 'sensor'])){
-			die('wrong type in loadCharacteristics');
-		}
-		$base_id .= '_characteristics_';
-		foreach($this->model->getCharacteristics($type, $record_id, $this->version) as $rowid=>$row){
-			$_SESSION[$this->formId]['data'][$base_id.'id_'.$rowid] = $row['characteristics_id'];
-			$_SESSION[$this->formId]['data'][$base_id.'name_'.$rowid] = $row['name'];
-			$_SESSION[$this->formId]['data'][$base_id.'description_'.$rowid] = $row['description'];
-			$_SESSION[$this->formId]['data'][$base_id.'unit_'.$rowid] = $row['unit'];
-			$_SESSION[$this->formId]['data'][$base_id.'value_'.$rowid] = $row['value'];
-			$_SESSION[$this->formId]['data'][$base_id.'datatype_'.$rowid] = $row['data_type'];
-		}
-		
-	}
-	/* type IN (platform, instrument, sensor) 
-	 * record_id is record number of type in db
-	 * base_id is start of id in $_POST/$_SESSION
+	/**
+	 * Save characteristics of platform, instrument or sensor
+	 *
+	 * @param string $type platform, instrument or sensor
+	 * @param integer $record_id id of $type
+	 * @param string $base_id prefix with which data is retreived from the session
+	 * @return void
 	 */
 	private function saveCharacteristics($type, $record_id, $base_id){
 		if(!in_array($type, ['platform', 'instrument', 'sensor'])){
@@ -1048,7 +1156,12 @@ class Dataset extends Base{
 		$this->model->deleteCharacteristics([$type, $record_id], $this->version-1, $current);
 	}
 
-
+	/**
+	 * Save link to external site
+	 *
+	 * @param boolean $getData are we saving getData links or other links?
+	 * @return void
+	 */
 	private function saveLink($getData = false){
 		$links = [];
 		foreach ($this->model->getLinks($this->id, $this->version, !$getData) as $link) {
@@ -1125,6 +1238,11 @@ class Dataset extends Base{
 		$this->model->deleteLink($this->id, $v, $links);
 	}
 	
+	/**
+	 * Save files to be attached to dataset
+	 *
+	 * @return void
+	 */
 	private function saveFiles(){
 		$loopId = 'file_id_';
 		$serials = [];
@@ -1156,7 +1274,12 @@ class Dataset extends Base{
 		$fileModel->cancelDrafts('dataset:'. $this->id);
 	}
 	
-	private function files(){
+	/**
+	 * list the available files and request/get access
+	 *
+	 * @return void
+	 */
+	private function listFiles(){
 		$dataset = $this->args[1];
 		if($this->canEdit && count($this->args) > 2 && !in_array($this->args[2], ['edit', 'files'])){
 			$this->data = $this->model->getById($dataset, $this->args[2]);

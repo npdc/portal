@@ -2,6 +2,9 @@
 
 /**
  * contact controller
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\controller;
@@ -15,9 +18,10 @@ class Contact {
 	private $formController;
 	
 	/**
-	 * 
-	 * @param object $session
-	 * @param array $args
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
 	 */
 	public function __construct($session, $args){
 		if(count($args) > 1){

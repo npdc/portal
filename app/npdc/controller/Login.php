@@ -1,8 +1,11 @@
 <?php
 
 /**
- * contact controller
+ * login controller
  * form processing is done in \npdc\lib\Login
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\controller;
@@ -14,11 +17,9 @@ class Login {
 	public $record;
 	
 	/**
-	 * 
-	 * @param object $session
-	 * @param array $args
+	 * Constructor
 	 */
-	public function __construct($session, $args){
+	public function __construct(){
 		$this->model = new \npdc\model\Person();
 		switch($args[1]){
 			case 'reset':
@@ -126,6 +127,13 @@ class Login {
 		}
 	}
 	
+	/**
+	 * Send password reset link
+	 *
+	 * @param array $person person record
+	 * @param boolean $newAccount request came in via create account or now
+	 * @return void
+	 */
 	protected function sendPasswordResetLink($person, $newAccount = false){
 		
 		$code = $this->model->requestPasswordReset(['person_id'=>$person['person_id']]);

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Publication controller
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 namespace npdc\controller;
 
 class Publication extends Base{
@@ -7,6 +14,12 @@ class Publication extends Base{
 	public $name = 'publication';
 	public $userLevelAdd = NPDC_EDITOR;//minimum user level required to add a new dataset
 	
+	/**
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
+	 */
 	public function __construct($session, $args, $limited = false){
 		$this->session = $session;
 		$this->args = $args;
@@ -16,6 +29,13 @@ class Publication extends Base{
 		}
 	}
 	
+	/**
+	 * Check if draft is different from published version
+	 *
+	 * @param integer $id id of record
+	 * @param integer $version version number of draft
+	 * @return boolean did record change
+	 */
 	public function recordChanged($id, $version){
 		$changed = $this->generalHasChanged($id, $version);
 		$tables = ['publication_keyword', 'publication_person', 'project_publication', 'dataset_publication'];
@@ -25,10 +45,21 @@ class Publication extends Base{
 		return $changed;
 	}
 
+	/**
+	 * Populate fields
+	 *
+	 * @return void
+	 */
 	protected function alterFields(){
 		$this->formController->form->fields->people->fields->organization_id->options = $this->getOrganizations();
 	}
 	
+	/**
+	 * Populate fields with record data
+	 *
+	 * @param array $baseData
+	 * @return void
+	 */
 	protected function loadForm($baseData){
 		if($this->id === 'new'){
 			unset($_SESSION[$this->formId]);
@@ -66,6 +97,16 @@ class Publication extends Base{
 		}
 	}
 
+	/**
+	 * Load metadata of publication based on DOI
+	 * 
+	 * First database is checked to see if we have the DOI already.
+	 * - If so, give warning
+	 * - If not, load data from dx.doi.org and provide form to add publication
+	 *
+	 * @param string $doi the DOI of the publication the user wants to add
+	 * @return void
+	 */
 	private function loadFromDOI($doi){
 		$doi = substr($doi, strpos($doi, '10.'));
 		$existing = $this->model->getByDOI($doi);
@@ -99,6 +140,11 @@ class Publication extends Base{
 		}
 	}
 	
+	/**
+	 * Save new publication from edit box over add dataset or add project
+	 *
+	 * @return void
+	 */
 	public function saveFromOverlay(){
 		$this->version = 1;
 		$_SESSION[$this->formId]['data']['publication_version'] = 1;
@@ -112,7 +158,11 @@ class Publication extends Base{
 		return $this->id;
 	}
 
-
+	/**
+	 * Save new or update publication
+	 *
+	 * @return void
+	 */
 	protected function doSave(){
 		if($this->args[1] === 'new'){
 			$this->version = 1;
@@ -143,6 +193,11 @@ class Publication extends Base{
 		}
 	}
 	
+	/**
+	 * Save keywords
+	 *
+	 * @return void
+	 */
 	private function saveKeywords(){
 		$currentKeywords = $this->model->getKeywords($this->id, $this->version);
 		$words = [];
@@ -163,6 +218,11 @@ class Publication extends Base{
 		}
 	}
 	
+	/**
+	 * Link (bi-directional) to project
+	 *
+	 * @return void
+	 */
 	private function saveProjects(){
 		$projects = [];
 		$loopId = 'projects_project_id_';
@@ -186,6 +246,11 @@ class Publication extends Base{
 		$this->model->deleteProject($this->id, $v, $projects);
 	}
 
+	/**
+	 * Link (bi-directional) to datasets
+	 *
+	 * @return void
+	 */
 	private function saveDatasets(){
 		$datasets = [];
 		$loopId = 'datasets_dataset_id_';
@@ -209,6 +274,11 @@ class Publication extends Base{
 		$this->model->deleteDataset($this->id, $v, $datasets);
 	}
 
+	/**
+	 * Link people
+	 *
+	 * @return void
+	 */
 	private function savePeople(){
 		$persons = [];
 		$loopId = 'people_person_id_';

@@ -1,11 +1,25 @@
 <?php
 
+/**
+ * Check if zip file with data is available, and if not, why not
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 namespace npdc\controller;
 
 class CheckDownload {
 	public $status;
 	public $file;
 	private $model;
+
+	/**
+	 * Constructor
+	 *
+	 * @param [type] $session
+	 * @param [type] $args
+	 */
 	public function __construct($session, $args){
 		if(CALLER === 'index'){
 			$this->model = new \npdc\model\Zip();

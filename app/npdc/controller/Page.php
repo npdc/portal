@@ -2,6 +2,9 @@
 
 /**
  * page controller
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\controller;
@@ -10,6 +13,12 @@ class Page extends Base{
 	public $display = 'page';
 	public $id;
 	
+	/**
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
+	 */
 	public function __construct($session, $args) {
 		$this->session = $session;
 		$this->args = $args;
@@ -50,6 +59,12 @@ class Page extends Base{
 		}
 	}
 	
+	/**
+	 * Load form for edition page
+	 *
+	 * @param string $id url of page
+	 * @return void
+	 */
 	private function editPage($id){
 		$this->model = new \npdc\model\Page();
 		$data = $this->model->getByUrl($id);
@@ -105,6 +120,11 @@ class Page extends Base{
 		}
 	}
 	
+	/**
+	 * Save people linked to page
+	 *
+	 * @return void
+	 */
 	private function savePeople(){
 		$persons = [];
 		$loopId = 'people_person_id_';
@@ -133,6 +153,11 @@ class Page extends Base{
 		$this->model->deletePerson($this->id, $persons);
 	}
 	
+	/**
+	 * Save links for page
+	 *
+	 * @return void
+	 */
 	private function saveLinks(){
 		$loopId = 'links_id_';
 		$keep = [];

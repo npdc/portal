@@ -1,10 +1,23 @@
 <?php
 
+/**
+ * Data request controller
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 namespace npdc\controller;
 
 class Request extends Base {
 	public $userLevelAdd = NPDC_NOBODY;//minimum user level required to add a new dataset
 	
+	/**
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
+	 */
 	public function __construct($session, $args) {
 		$this->model = new \npdc\model\Request();
 		$this->session = $session;
@@ -22,8 +35,13 @@ class Request extends Base {
 		}
 	}
 	
+	/**
+	 * Save response of researcher on request and notify requester
+	 *
+	 * @return void
+	 */
 	private function saveAccess(){
-		//$this->model->updateRequest($this->args[1], ['permitted'=>($_POST['allow']==='yes' ? 1 : 0),'response'=>$_POST['reason'],'response_timestamp'=>date('Y-m-d h:i:s'), 'responder_id'=>$this->session->userId]);
+		$this->model->updateRequest($this->args[1], ['permitted'=>($_POST['allow']==='yes' ? 1 : 0),'response'=>$_POST['reason'],'response_timestamp'=>date('Y-m-d h:i:s'), 'responder_id'=>$this->session->userId]);
 		$request = $this->model->getById($this->args[1]);
 		$personModel = new \npdc\model\Person();
 		$person = $personModel->getById($request['person_id']);

@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * cron script
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
 ini_set('display_errors', 'on');
 define('CALLER', 'cron');
 require dirname(__FILE__).'/app/npdc/site.php';

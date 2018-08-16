@@ -2,8 +2,20 @@
 
 namespace npdc\controller;
 
+/**
+ * Add new entries of several types
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
 class Add extends Base{
 	
+	/**
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
+	 */
 	public function __construct($session, $args) {
 		$this->session = $session;
 		$this->args = $args;

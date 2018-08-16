@@ -4,6 +4,9 @@
  * base controller
  * 
  * helpers for project, dataset and publication
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\controller;
@@ -20,6 +23,9 @@ class Base {
 	protected $model;
 	protected $version;
 	
+	/**
+	 * constructor
+	 */
 	public function __construct() {
 		if(\npdc\config::$reviewBeforePublish){
 			$this->draftMsg = ', please remember to submit the record for review when you are done. After clicking the button you can add comments to the reviewer.<br/><button onclick="openUrl(\''.BASE_URL.'/'.$this->args[0].'/'.$this->args[1].'/submit\')">Submit</button>';
@@ -180,6 +186,11 @@ class Base {
 		}
 	}
 	
+	/**
+	 * display of $_SESSION['warnings']
+	 *
+	 * @return string Formatted warnings
+	 */
 	public function showWarnings(){
 		$output = 'The following problems have been found in your record, please check and correct these.';
 		global $session;
@@ -199,6 +210,13 @@ class Base {
 		return $output;
 	}
 	
+	/**
+	 * Send review result to person who submitted entry
+	 *
+	 * @param array $data The record that is reviewed
+	 * @param string $status New status of the record
+	 * @return void
+	 */
 	private function sendSubmitterMail($data, $status){
 		$submitter = $this->model->getLastStatusChange($this->args[1], $data[$this->name.'_version'], 'submitted');
 		$mail = new \npdc\lib\Mailer();
@@ -219,6 +237,11 @@ class Base {
 		$mail->send();
 	}
 	
+	/**
+	 * Load and/or process form
+	 *
+	 * @return void
+	 */
 	protected function page(){
 		$this->formController = new \npdc\controller\Form($this->formId);
 		$this->formController->getForm($this->name.'_'.$this->screen);
@@ -259,8 +282,20 @@ class Base {
 			$this->loadForm($baseData);
 		}
 	}
+
+	/**
+	 * Change fields, overwritten in child classes
+	 *
+	 * @return void
+	 */
 	protected function alterFields(){}
 
+	/**
+	 * Get list of people
+	 *
+	 * @param array $filter Filter for name
+	 * @return array list of people
+	 */
 	public function getPersons($filter = null){
 		$model = new \npdc\model\Person();
 			$options = [];
@@ -270,10 +305,12 @@ class Base {
 			return $options;
 	}
 
-	/**
-	 * add organizations from database to form
-	 * @param string $field The field in which the organizations are stored (default: organization)
-	 */
+	 /**
+	  * Search for organization
+	  *
+	  * @param string $filter Filter for name
+	  * @return array list of organisations
+	  */
 	public function getOrganizations($filter = null){
 		$model = new \npdc\model\Organization();
 		$options = [];
@@ -287,6 +324,13 @@ class Base {
 	 * add programs from database to form
 	 * @param string $field The field in which the programs are stored (default: program)
 	 */
+
+	 /**
+	  * Search for programs
+	  *
+	  * @param string $filter Filter for name
+	  * @return array list of programs
+	  */
 	public function getPrograms($filter = null){
 		$model = new \npdc\model\Program();
 		$options = [];
@@ -296,6 +340,11 @@ class Base {
 		return $options;
 	}
 
+	/**
+	 * Get countries
+	 *
+	 * @return array list of countries
+	 */
 	public function getCountries(){
 		$model = new \npdc\model\Country();
 		$options = [];
@@ -309,7 +358,10 @@ class Base {
 		}
 		return $options;
 	}
-	
+
+	/**
+	 * Check if draft of record differs from published version
+	 */
 	protected function generalHasChanged($id){
 		$published = $this->model->getById($id);
 		$draft = $this->model->getById($id, 'draft');
@@ -332,6 +384,14 @@ class Base {
 		return $changed;
 	}
 	
+	/**
+	 * check if data in a table changed between published version and draft version
+	 *
+	 * @param string $tbl table to check
+	 * @param string $id record id to check
+	 * @param string $version version number of draft
+	 * @return boolean Indicates if record is changed
+	 */
 	protected function tblHasChanged($tbl, $id, $version){
 		$res = \npdc\lib\Db::getFPDO()
 				->from($tbl)

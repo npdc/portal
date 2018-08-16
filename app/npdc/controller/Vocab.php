@@ -1,20 +1,42 @@
 <?php
 
+/**
+ * Vocab controller
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 namespace npdc\controller;
 
 class Vocab {
 	private $model;
 	private $curl;
 	
+	/**
+	 * Contstructor
+	 */
 	public function __construct(){
 		$this->model = new \npdc\model\Vocab();
 		$this->curl = new \npdc\lib\CurlWrapper();
 		$this->curl->httpauth(\npdc\config::$gcmd['user'], \npdc\config::$gcmd['pass']);
 	}
+
+	/**
+	 * Provide value or null
+	 *
+	 * @param string $value
+	 * @return mixed either string or null
+	 */
 	private function setValue($value){
 		return empty($value) ? null : $value;
 	}
 	
+	/**
+	 * Refersh all vocabs to know which are updated
+	 *
+	 * @return void
+	 */
 	public function refreshList(){
 		echo 'refresh list <br/>';
 		if($this->model->getVocab(1)['last_update_local']<date('Y-m-d')){
@@ -34,6 +56,11 @@ class Vocab {
 		}
 	}
 	
+	/**
+	 * Loop trough vocabs that need updating
+	 *
+	 * @return void
+	 */
 	public function loopVocabs(){
 		$vocabs = $this->model->getUpdatable();
 		foreach($vocabs as $vocab){

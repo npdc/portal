@@ -2,6 +2,9 @@
 
 /**
  * Form controller
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\controller;
@@ -84,7 +87,7 @@ class Form {
 					break;
 				case 'captcha':
 					if(\npdc\config::$useReCaptcha){
-						$this->reCaptcha($id, $field);
+						$this->reCaptcha();
 						break;
 					}
 				default:
@@ -109,6 +112,13 @@ class Form {
 		}
 	}
 
+	/**
+	 * Purify string
+	 *
+	 * @param string $value string to be purified
+	 * @param string $allowTags comma separated list of allowed tags
+	 * @return string purified string
+	 */
 	private function purified($value, $allowTags = null){
 		$allowTags = $allowTags ?? 'none';
 		if(!array_key_exists($allowTags, $this->purifiers)){
@@ -121,10 +131,16 @@ class Form {
 		if(in_array($allowTags,['full', 'default'])){
 			$value = '<p>'.$value.'</p>';
 		}
-		//return str_replace(['<div><br /></div>','div', '<p></p>'], ['','p', ''], $this->purifers[$allowTags]->purify($value));
 		return str_replace(['<div><br /></div>','<p></p>'], ['', ''], $this->purifers[$allowTags]->purify($value));
 	}
 	
+	/**
+	 * Check input in table type field
+	 *
+	 * @param string $id table name
+	 * @param object $field table definition
+	 * @return integer number of errors
+	 */
 	private function table($id, $field){
 		$baseId = $id.'_'.array_keys(get_object_vars($field->fields))[0];
 		$c = 0;
@@ -172,12 +188,13 @@ class Form {
 		return $c;
 	}
 	
-	private function countActive($id){
-		if(!empty($this->formData[$id]) || !empty($_FILES[$id]['tmp_name'])){
-			$this->active++;
-		}
-	}
-	
+	/**
+	 * Check input in fieldset
+	 *
+	 * @param string $id fieldset name
+	 * @param object $field fieldset definition
+	 * @return void
+	 */
 	private function fieldset($id, $field){
 		$this->active = 0;
 		if($field->multi ?? false){
@@ -253,7 +270,9 @@ class Form {
 			foreach($field->fields as $subfieldId=>$subfield){
 				$baseId = ($field->use_main_id ?? true ? $id.'_' : '').$subfieldId;
 				$this->formData[$baseId] = $this->field($baseId, $subfield, $subfield->required ?? true);
-				$this->countActive($baseId);
+				if(!empty($this->formData[$baseId]) || !empty($_FILES[$baseId]['tmp_name'])){
+					$this->active++;
+				}
 			}
 		}
 		
@@ -274,9 +293,14 @@ class Form {
 		}
 	}
 
-	private function reCaptcha($id, $field){
+	/**
+	 * Check input of recaptcha
+	 *
+	 * @return void
+	 */
+	private function reCaptcha(){
 		if($_SESSION[$this->formId]['captcha']){
-
+			//captcha already passed, nothing to do
 		} elseif(empty($this->formData['g-recaptcha-response'])){
 			$this->addError('captcha', 'Please complete the captcha', null);
 		} else {
@@ -303,6 +327,13 @@ class Form {
 		}
 	}
 	
+	/**
+	 * Check file upload
+	 *
+	 * @param string $id name of field
+	 * @param object $field field definition
+	 * @return void
+	 */
 	private function file($id, $field){
 		$this->value = [];
 		$this->formData['newFiles'] = [];
@@ -326,7 +357,7 @@ class Form {
 						} elseif(property_exists($field, 'maxSize') && filesize($_FILES[$id]['tmp_name'][$key]) > convertToBytes($field->maxSize)) {
 							$this->addError($id, 'The file '.$_FILES[$id]['name'][$key].' is too large, it is '.\formatBytes(filesize($_FILES[$id]['tmp_name'][$key])).' where only '.$field->maxSize.' is allowed');
 						} else {
-							$this->saveFile($field, $id, $key);
+							$this->saveFile($id, $field, $key);
 						}
 						break;
 					default:
@@ -360,6 +391,13 @@ class Form {
 		}
 	}
 	
+	/**
+	 * Validate WKT
+	 *
+	 * @param string $id field name
+	 * @param object $field field definition
+	 * @return void
+	 */
 	private function map($id, $field){
 		$c = 0;
 		$loopId = $id.'_wkt';
@@ -394,10 +432,11 @@ class Form {
 
 	/**
 	 * check a field
-	 * @param type $id
-	 * @param type $field
-	 * @param type $required
-	 * @return type
+	 * 
+	 * @param string $id field name
+	 * @param object $field field definition
+	 * @param boolean $required is field required?
+	 * @return void
 	 */
 	private function field($id, $field, $required = true){
 		$this->value = isset($this->formData[$id]) 
@@ -512,6 +551,7 @@ class Form {
 	}
 	
 	/**
+	 * check and format date
 	 * 
 	 * @param string $date date in format yyyy[-[m]m[-[d]d]]
 	 * @param string $dir direction of rounding of the date, either up (default) or down
@@ -568,6 +608,7 @@ class Form {
 	
 	/**
 	 * record error
+	 * 
 	 * @param string $id field id
 	 * @param string $error the error to record
 	 */
@@ -576,7 +617,15 @@ class Form {
 		$this->ok = false;
 	}
 	
-	private function saveFile($field, $id, $key){
+	/**
+	 * Save file to disk
+	 *
+	 * @param object $field field definition
+	 * @param string $id field id
+	 * @param string $key identifier of individual file
+	 * @return void
+	 */
+	private function saveFile($id, $field, $key){
 		$location = uniqid().'_'.$_FILES[$id]['name'][$key];
 		$dest = $_SERVER['DOCUMENT_ROOT']
 			.'/'.\npdc\config::$fileDir

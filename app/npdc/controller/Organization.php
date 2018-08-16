@@ -1,9 +1,22 @@
 <?php
 
+/**
+ * Organization controller
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 namespace npdc\controller;
 
 class Organization extends Base {
 	
+	/**
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param array $args url parameters
+	 */
 	public function __construct($session, $args){
 		$this->session = $session;
 		$this->args = $args;

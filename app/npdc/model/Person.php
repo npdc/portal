@@ -1,11 +1,10 @@
 <?php
 
-/**
- * get person data
- */
 namespace npdc\model;
 
-
+/**
+ * Get person data
+ */
 class Person{
 	private $fpdo;
 
@@ -16,6 +15,12 @@ class Person{
 		$this->fpdo = \npdc\lib\Db::getFPDO();
 	}
 	
+	/**
+	 * Get list of persons, filtered by $filters
+	 *
+	 * @param array $filters
+	 * @return array
+	 */
 	public function getList($filters){
 		$q = $this->fpdo
 			->from('person')
@@ -73,10 +78,21 @@ class Person{
 		return $data;
 	}
 	
+	/**
+	 * Get all available user levels
+	 *
+	 * @return array
+	 */
 	public function getUserLevels(){
 		return $this->fpdo->from('user_level')->orderBY('user_level_id')->fetchAll();
 	}
 	
+	/**
+	 * Get details of user level
+	 *
+	 * @param string $level
+	 * @return array
+	 */
 	public function getUserLevelDetails($level){
 		$q = $this->fpdo
 			->from('user_level');
@@ -95,12 +111,19 @@ class Person{
 		return ['name'=>$row['name'], 'description'=>$description];
 	}
 	
+	/**
+	 * Get person(s) by mail address
+	 *
+	 * @param string $mail
+	 * @return array
+	 */
 	public function getByMail($mail){
 		return $this->fpdo
 			->from('person')
 			->where('mail', $mail)
 			->fetchAll();
 	}
+
 	/**
 	 * get a user by its mail address
 	 * @param string $mail mail address of user
@@ -115,6 +138,12 @@ class Person{
 			->fetch();
 	}
 	
+	/**
+	 * Create new account request
+	 *
+	 * @param array $data
+	 * @return array
+	 */
 	public function requestPassword($data){
 		$this->fpdo->update('account_new')->set(['expire_reason'=>'new link'])->where($data)->where('expire_reason IS NULL')->execute();
 		$code = bin2hex(random_bytes(16));
@@ -123,6 +152,12 @@ class Person{
 		return [$id, $code];
 	}
 
+	/**
+	 * Retreive new account  request
+	 *
+	 * @param integer $id
+	 * @return object request
+	 */
 	public function getPasswordNew($id){
 		return $this->fpdo
 			->from('account_new')
@@ -133,13 +168,25 @@ class Person{
 			->fetch();
 	}
 	
+	/**
+	 * Marks new account request as used
+	 *
+	 * @param integer $id
+	 * @return void
+	 */
 	public function usePasswordNew($id){
 		$this->fpdo->update('account_new')
 			->set(['used_time'=>date('Y-m-d h:i:s'), 'expire_reason'=>'Used'])
 			->where('account_new_id', $id)
 			->execute();
 	}
-	
+
+	/**
+	 * Store request password reset link
+	 *
+	 * @param array $data
+	 * @return string reset code
+	 */
 	public function requestPasswordReset($data){
 		$this->fpdo
 			->update('account_reset')
@@ -156,6 +203,12 @@ class Person{
 		}
 	}
 	
+	/**
+	 * Retreive password reset code
+	 *
+	 * @param integer $person_id
+	 * @return object person
+	 */
 	public function getPasswordReset($person_id){
 		return $this->fpdo
 			->from('account_reset')
@@ -166,6 +219,12 @@ class Person{
 			->fetch();
 	}
 	
+	/**
+	 * Mark password reset code as expired beacause of user login
+	 *
+	 * @param integer $person_id
+	 * @return void
+	 */
 	public function expirePasswordResetLogin($person_id){
 		$this->fpdo->update('account_reset')
 			->set(['expire_reason'=>'User logged in'])
@@ -175,6 +234,12 @@ class Person{
 			->execute();
 	}
 
+	/**
+	 * Mark password reset code as used
+	 *
+	 * @param integer $account_reset_id
+	 * @return void
+	 */
 	public function usePasswordReset($account_reset_id){
 		$this->fpdo->update('account_reset')
 			->set(['used_time'=>date('Y-m-d h:i:s'), 'expire_reason'=>'Used'])
@@ -184,6 +249,7 @@ class Person{
 
 	/**
 	 * get projects of person
+	 * 
 	 * @param integer $id person id
 	 * @return array list of projects
 	 */
@@ -206,6 +272,7 @@ class Person{
 	
 	/**
 	 * get publications of person
+	 * 
 	 * @param integer $id person id
 	 * @return array list of publications
 	 */
@@ -227,6 +294,7 @@ class Person{
 	
 	/**
 	 * get datasets of person
+	 * 
 	 * @param integer $id person id
 	 * @return array list of datasets
 	 */
@@ -246,6 +314,14 @@ class Person{
 		return $q->fetchAll();
 	}
 	
+	/**
+	 * Search person
+	 *
+	 * @param string $string string to search for
+	 * @param array $exclude id's of persons to exclude
+	 * @param boolean $fuzzy whether fuzzy search has to be used
+	 * @return array resulting people
+	 */
 	public function search($string, $exclude, $fuzzy = false){
 		$query = $this->fpdo
 			->from('person');
@@ -280,6 +356,13 @@ class Person{
 		return $query->fetchAll();
 	}
 	
+	/**
+	 * Check if there is no person yet with the specified mail address
+	 *
+	 * @param string $mail
+	 * @param integer $ownId id of person being changed
+	 * @return boolean
+	 */
 	public function checkMail($mail, $ownId){
 		return $this->fpdo
 			->from('person')
@@ -288,6 +371,12 @@ class Person{
 			->count() === 0;
 	}
 	
+	/**
+	 * Add a person to the database
+	 *
+	 * @param array $data
+	 * @return integer id of newly inserted person
+	 */
 	public function insertPerson($data){
 		$data = $this->parseData($data);
 		$this->fpdo
@@ -301,12 +390,25 @@ class Person{
 			->fetch()['person_id'];
 	}
 
-	public function updatePerson($data, $id){
+	/**
+	 * Update person record
+	 *
+	 * @param array $data new data of person
+	 * @param integer $person_id if of record to be updated
+	 * @return void
+	 */
+	public function updatePerson($data, $person_id){
 		return $this->fpdo
-			->update('person', $this->parseData($data), $id)
+			->update('person', $this->parseData($data), $person_id)
 			->execute();
 	}
 	
+	/**
+	 * Reformat person data for storage in database
+	 *
+	 * @param array $data
+	 * @return array
+	 */
 	private function parseData($data){
 		if(!empty($data['orcid'])){
 			$data['orcid'] = str_replace('-', '', $data['orcid']);
