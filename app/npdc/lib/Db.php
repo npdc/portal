@@ -2,6 +2,9 @@
 
 /**
  * database connection class 
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\lib;
@@ -24,6 +27,11 @@ class Db {
 	
 	private function __clone() {}
 	
+	/**
+	 * Create connection to database
+	 *
+	 * @return object database connection
+	 */
 	private static function getInstance(){
 		if(!isset(self::$instance)){
 			$db = \npdc\config::$db;
@@ -58,11 +66,21 @@ class Db {
 		return self::$instance;
 	}
 	
+	/**
+	 * Get PDO connection to database
+	 *
+	 * @return object PDO type connection
+	 */
 	public static function getPDO(){
 		$instance = self::getInstance();
 		return $instance;
 	}
 	
+	/**
+	 * Get FPDO connection to database
+	 *
+	 * @return object FPDO type connection
+	 */
 	public static function getFPDO(){
 		if(!isset(self::$fpdo)){
 			$instance = self::getInstance();
@@ -81,6 +99,13 @@ class Db {
 		return self::$fpdo;
 	}
 	
+	/**
+	 * Insert a record and return the id of the new record
+	 *
+	 * @param string $tbl the table to insert into
+	 * @param array $data the data to insert
+	 * @return integer the id of the new record
+	 */
 	public static function insertReturnId($tbl, $data){
 		switch(\npdc\config::$db['type']){
 			case 'pgsql':
@@ -111,6 +136,14 @@ class Db {
 		}
 	}
 	
+	/**
+	 * Execute arbitrary query
+	 * 
+	 * For queries that are hard or impossible to build using fpdo
+	 *
+	 * @param string $query
+	 * @return mixed
+	 */
 	public static function executeQuery($query){
 		$q = self::getInstance()->prepare($query);
 		return $q->execute();

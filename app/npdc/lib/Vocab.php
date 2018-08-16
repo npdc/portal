@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Helper for working with vocabs
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 namespace npdc\lib;
 
 class Vocab {
@@ -15,17 +22,34 @@ class Vocab {
 		'vocab_science_keyword'=>[/*'category',*/ 'topic', 'term', 'var_lvl_1', 'var_lvl_2', 'var_lvl_3', 'detailed_variable'],
 		'vocab_url_type'=>['type','subtype'],
 		'vocab_iso_topic_category'=>['description'],
-		'mime_type'=>['label', '	type']
+		'mime_type'=>['label', 'type']
 	];
 	
-	public static function getFields($vocab){
-		$x = new self();
-		return $x->fields['vocab_'.$vocab];
-	}
+	/**
+	 * Constructor
+	 */
 	public function __construct(){
 		$this->model = new \npdc\model\Vocab();
 	}
 	
+	/**
+	 * Get fields we use in a vocab
+	 *
+	 * @param string $vocab name of vocab
+	 * @return array fields in vocab
+	 */
+	public static function getFields($vocab){
+		$x = new self();
+		return $x->fields['vocab_'.$vocab];
+	}
+	
+	/**
+	 * Get (filtered) list of terms in vocab
+	 *
+	 * @param string $vocab name of vocab
+	 * @param string|null $filter string to filter by
+	 * @return array list of terms matching filter
+	 */
 	public function getList($vocab, $filter = null){
 		$data = $this->model->listTerms($vocab);
 		$return = [];
@@ -45,6 +69,15 @@ class Vocab {
 		return $return;
 	}
 	
+	/**
+	 * implode fields of term into single string
+	 *
+	 * @param string $vocab vocab where the term comes from
+	 * @param array $row array containing term from vocab
+	 * @param boolean $last show last field
+	 * @param boolean $shorten shorten the values of the fields in the output
+	 * @return string
+	 */
 	public function formatTerm($vocab, $row, $last = true, $shorten=false){
 		$fields = str_replace(['{', '}'], '', $this->fields[$vocab]);
 		$parts = [];
@@ -85,6 +118,12 @@ class Vocab {
 		return ucwords(strtolower(implode(' > ', $parts)));
 	}
 
+	/**
+	 * get IDN nodes for location from database
+	 *
+	 * @param string $location_id
+	 * @return array
+	 */
 	public function getIDNNodes($location_id){
 		return $this->model->getIDNNode($location_id);
 	}

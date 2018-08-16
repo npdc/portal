@@ -1,9 +1,23 @@
 <?php
 
+/**
+ * Mail lib, single place to send mail from
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 namespace npdc\lib;
 
 class Mailer {
 	private $mail;
+	
+	/**
+	 * Constructor
+	 *
+	 * @param string $fromName Name to be used as sender
+	 * @param string $replyMail Mailaddress where replies have to be sent
+	 */
 	public function __construct($fromName = null, $replyMail = null) {
 		$this->mail = new \PHPMailer();
 		$this->mail->setFrom(\npdc\config::$mail['from'], is_null($fromName) ? \npdc\config::$siteName : $fromName .' through '. \npdc\config::$siteDomain);
@@ -21,6 +35,13 @@ class Mailer {
 		}
 	}
 	
+	/**
+	 * Set receiver details
+	 *
+	 * @param string $mail Address to send message to
+	 * @param string|null $name Name of receiver (if known)
+	 * @return void
+	 */
 	public function to($mail, $name = null){
 		if(is_null($name)){
 			$this->mail->addAddress($mail);
@@ -29,14 +50,31 @@ class Mailer {
 		}
 	}
 	
+	/**
+	 * Set subject
+	 *
+	 * @param string $subject Mail subject
+	 * @return void
+	 */
 	public function subject($subject){
 		$this->mail->Subject = $subject;
 	}
 	
+	/**
+	 * Set body, plain text only
+	 *
+	 * @param string $text Message text
+	 * @return void
+	 */
 	public function text($text){
 		$this->mail->Body = $text;
 	}
 	
+	/**
+	 * Do send the mail
+	 *
+	 * @return void
+	 */
 	public function send(){
 		$this->mail->send();
 	}

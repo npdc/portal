@@ -1,7 +1,10 @@
 <?php
 
 /**
- * login class
+ * login class, handles login process
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\lib;
@@ -14,6 +17,7 @@ class Login {
 	private $model;
 	private $user;
 	
+	/** Constructor */
 	public function __construct(){
 		$this->model = new \npdc\model\Person();
 		

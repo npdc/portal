@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Generate main menu of site
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
+ */
+
 namespace npdc\lib;
 
 class Menu{
@@ -8,6 +15,12 @@ class Menu{
 	private $current;
 	private $session;
 	
+	/**
+	 * Constructor
+	 *
+	 * @param object $session login information
+	 * @param string $current current url
+	 */
 	private function __construct($session, $current){
 		$this->model = new \npdc\model\Menu();
 		$this->current = $current;
@@ -15,6 +28,12 @@ class Menu{
 		$this->session = $session;
 	}
 	
+	/**
+	 * Generate (sub)menu
+	 *
+	 * @param integer $parent id of parent menu item
+	 * @return array menu and indicator if active page is in the menu
+	 */
 	public function generate($parent = null){
 		$active = false;
 		$return = '<ul>';
@@ -33,6 +52,14 @@ class Menu{
 		$return .= '</ul>';
 		return [$return,$active];
 	}
+
+	/**
+	 * Generate the menu
+	 *
+	 * @param object $session login information
+	 * @param string $current current url
+	 * @return string the formatted menu
+	 */
 	public static function getMenu($session, $current){
 		$instance = new \npdc\lib\Menu($session, $current);
 		return $instance->generate()[0];

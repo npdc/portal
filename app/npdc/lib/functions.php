@@ -2,6 +2,9 @@
 
 /**
  * some basic functions in use throughout the site
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 /**
@@ -11,15 +14,15 @@
  */
 function get_class_file($className){
 	return substr(dirname(__FILE__),0,-4).'/'
-			.str_replace('\\', '/', substr($className,5))
-			.'.php';
+		.str_replace('\\', '/', substr($className,5))
+		.'.php';
 }
 
 /**
  * generate a random string for use in captcha's or passwords
  * @param integer $length the number of characters that should be in the string
  * @param boolean $special use specicial charactars (default: false)
- * @return strong
+ * @return string the random string
  */
 function generateRandomString($length, $special = false){
 	$characters = str_split('ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnprstuvwxyz2345689');
@@ -40,86 +43,129 @@ function generateRandomString($length, $special = false){
  * match ip with cidr
  * @param string $ip an ip adres
  * @param string $cidr a cidr
- * @return boolean
+ * @return boolean ip in cidr
  */
-function cidr_match($ip, $cidr)
-{
-    list($subnet, $mask) = explode('/', $cidr);
+function cidr_match($ip, $cidr){
+	list($subnet, $mask) = explode('/', $cidr);
 
-    if ((ip2long($ip) & ~((1 << (32 - $mask)) - 1) ) == ip2long($subnet))
-    { 
-        return true;
-    }
+	if ((ip2long($ip) & ~((1 << (32 - $mask)) - 1) ) == ip2long($subnet))
+	{ 
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
+/**
+ * format file size in bytes into logical larger unit
+ *
+ * @param integer $size filesize
+ * @param integer $precision number of decimals to give
+ * @return string formatted filesize including unit
+ */
 function formatBytes($size, $precision = 2) {
-    $base = log($size, 1024);
-    $suffixes = array('', 'K', 'M', 'G', 'T', 'P');   
+	$base = log($size, 1024);
+	$suffixes = array('', 'K', 'M', 'G', 'T', 'P');   
 
-    return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)].'B';
+	return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)].'B';
 }
 
+/**
+ * Convert filesize in larger unit to bytes
+ *
+ * @param string $from filesize
+ * @return integer filesize in bytes
+ */
 function convertToBytes($from){
-    $number=(int)$from;
-    switch(substr($from, strlen($number))){
-        case 'KB':
+	$number=(int)$from;
+	switch(substr($from, strlen($number))){
+		case 'KB':
 		case 'K':
-            return $number*1024;
-        case 'MB':
+			return $number*1024;
+		case 'MB':
 		case 'M':
-            return $number*pow(1024,2);
-        case 'GB':
+			return $number*pow(1024,2);
+		case 'GB':
 		case 'G':
-            return $number*pow(1024,3);
-        case 'TB':
+			return $number*pow(1024,3);
+		case 'TB':
 		case 'T':
-            return $number*pow(1024,4);
-        case 'PB':
+			return $number*pow(1024,4);
+		case 'PB':
 		case 'P':
-            return $number*pow(1024,5);
-        default:
-            return $from;
-    }
+			return $number*pow(1024,5);
+		default:
+			return $from;
+	}
 }
 
+/**
+ * recursive array_key_exists
+ *
+ * @param string $needle key to find
+ * @param array $haystack array to find the key in
+ * @return boolean was key found
+ */
 function array_key_exists_r($needle, $haystack){
-    $result = array_key_exists($needle, $haystack);
-    if (!$result){
+	$result = array_key_exists($needle, $haystack);
+	if (!$result){
 		foreach ($haystack as $v) {
-		    if (is_array($v)) {
-		        $result = array_key_exists_r($needle, $v);
+			if (is_array($v)) {
+				$result = array_key_exists_r($needle, $v);
 				if ($result){
 					break;
 				}
 			}
 		}
-    }
-    return $result;
+	}
+	return $result;
 }
 
-
+/**
+ * Get maximum file upload size based on the relevant parameters
+ * 
+ * Returns lowest of upload_max_filesize, post_max_size and memory_limit
+ *
+ * @return integer maximmum number of bytes to upload
+ */
 function maxFileUpload() {
-    //select maximum upload size
-    $max_upload = convertToBytes(ini_get('upload_max_filesize'));
-    //select post limit
-    $max_post = convertToBytes(ini_get('post_max_size'));
-    //select memory limit
-    $memory_limit = convertToBytes(ini_get('memory_limit'));
-    // return the smallest of them, this defines the real limit
-    return min($max_upload, $max_post, $memory_limit);
+	//select maximum upload size
+	$max_upload = convertToBytes(ini_get('upload_max_filesize'));
+	//select post limit
+	$max_post = convertToBytes(ini_get('post_max_size'));
+	//select memory limit
+	$memory_limit = convertToBytes(ini_get('memory_limit'));
+	// return the smallest of them, this defines the real limit
+	return min($max_upload, $max_post, $memory_limit);
 }
 
+/**
+ * determine if http or https is used
+ *
+ * @return string protocol
+ */
 function getProtocol(){
 	return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
 }
 
+/**
+ * Add protocol to url if no protocol is given
+ *
+ * @param string $url the url to check
+ * @param string $protocol the protocol to add if none is provided
+ * @return string The url with protocol
+ */
 function checkUrl($url, $protocol = 'http://'){
 	return parse_url($url, PHP_URL_SCHEME) === null ?
 		$protocol . $url : $url;
 }
 
+/**
+ * Make longitude between -180 and 180 (inclusive)
+ *
+ * @param float $lon the longitude
+ * @return float the corrected longitude
+ */
 function parseLon($lon){
 	while($lon > 180){
 		$lon -= 360;
@@ -130,6 +176,12 @@ function parseLon($lon){
 	return $lon;
 }
 
+/**
+ * Get the mime type the visitor wishes to have from available types
+ *
+ * @param array $mimeTypes list of available mime types
+ * @return mixed either array of accepted mime type, string of best mime type or null
+ */
 function getBestSupportedMimeType($mimeTypes = null) {
 	$acceptTypes = [];
 

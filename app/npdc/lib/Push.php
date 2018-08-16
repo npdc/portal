@@ -1,8 +1,20 @@
 <?php
 
+/**
+ * Function to push new content to external sources
+ */
+
 namespace npdc\lib;
 
 class Push {
+	/**
+	 * Send content to service
+	 *
+	 * @param string $title short message
+	 * @param string $url url of content
+	 * @param string|null $text long message text (if any)
+	 * @return void
+	 */
 	public static function send($title, $url, $text=null){
 		if(!NPDC_DEV){
 			$curl = 'https://maker.ifttt.com/trigger/'.\npdc\config::$ifttt['event'].'/with/key/'.\npdc\config::$ifttt['token'];

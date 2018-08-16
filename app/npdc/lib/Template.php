@@ -2,6 +2,9 @@
 
 /**
  * helper for parsing templates
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\lib;

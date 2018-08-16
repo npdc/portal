@@ -2,6 +2,9 @@
 
 /**
  * helpers for working with persons
+ * 
+ * @package NPDC
+ * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
 namespace npdc\lib;
@@ -11,7 +14,7 @@ class Person {
 	 * display a person
 	 * @param object $person person details
 	 * @param boolean $url link the name to the persons contact page (default: true)
-	 * @return string
+	 * @return string formatted person
 	 */
 	public function showPerson($person, $url = true){
 		$return = '<p>'
