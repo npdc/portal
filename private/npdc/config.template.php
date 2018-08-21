@@ -44,8 +44,10 @@ class config {
 		'twitter'=>'',//twitter name without @
 		'twitter_in_head'=>true //display link to twitter in top of each page
 	];
-	public static $fileDir = 'data';//no leading or trailing slash needed
-	public static $downloadDir = 'download';//no leading or trailing slash needed
+
+	//path to location for data files and download zips, recommend outside webroot, no trailing slash
+	public static $fileDir = DOCROOT_APP.'/../data';//dir to store data
+	public static $downloadDir = DOCROOT_APP.'/../download';//dir to store downloadable files
 	
 	//the ip('s) from which debugging is allow without logging in, netmask allowed
 	public static $debugFrom = [];
