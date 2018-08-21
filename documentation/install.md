@@ -24,11 +24,12 @@ location / {
 
 ## Setting up datebase and config
 - Clone or unpack the script to a server either in webroot or subfolder
-- Create folder `data` in main folder (next to index.php and js and css folders) with `chmod 777`
-- Load dependencies using composer (`cd app`, `composer install`)
+- Create folder `data` in private folder with `chmod 777`
+- Create folder `download` in private folder with `chmod 777`
+- Load dependencies using composer (`cd private`, `composer install`)
 - Create an empty database with username and password
-- Run `app/npdc/sql/createDb.sql` on database to create all tables
-- Copy `app/npdc/config.template.php` to `app/npdc/config.php` and update details
+- Run `private/npdc/sql/createDb.sql` on database to create all tables
+- Copy `private/npdc/config.template.php` to `private/npdc/config.php` and update details
 - Create first user account
   - Register through 'Create account'
   - Go into database and change `user_level` of newly created user to admin
@@ -42,12 +43,12 @@ Cron is in the main folder of the site, so run cron as `<domain>[/<path_to_porta
 We recommend to run cron daily (we suggest early morning local time) to work with the most recent vocabylaries
 
 ## Styling
-- Change colors in `app/npdc/scss/p_base_colors.scss` to match your style and compile scss (in VS code with Easy Sass: `F1 > Compile all SCSS/SASS files in the project`)
+- Change colors in `private/npdc/scss/p_base_colors.scss` to match your style and compile scss (in VS code with Easy Sass: `F1 > Compile all SCSS/SASS files in the project`)
 - Place logo (200x200px) at `img/logo.png`
 - Place header image (at least 1240x120px) at `img/title_bg.jpg`
 - If you have one you can place your favicon.ico also in the img folder
 - When changing your css also edit build in the main directory (`touch build` or edit some content in the file) to force usage of new css for visitors
-- In `app/npdc/template` Copy `footer.example.php` to `footer.tpl.php` and edit to your liking
+- In `private/npdc/template` Copy `footer.example.php` to `footer.tpl.php` and edit to your liking
 
 ## Linking with Twitter
 - Create account at IFTTT or use an existing one
