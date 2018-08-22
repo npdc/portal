@@ -1,4 +1,4 @@
-config.php
+private/config.php
 img/news
 vendor
 css/style.css
