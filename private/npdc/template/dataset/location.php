@@ -59,8 +59,9 @@ if(count($spatialCoverages) > 0){
 			<?php
 
 			foreach($spatialCoverages as $spatialCoverage){
+				$wkt = str_replace([' -90', ' 90'], [' -89.999999999', ' 89.999999999'], $spatialCoverage['wkt']);
 				?>
-				feature = wkt.readFeature("<?=$spatialCoverage['wkt']?>",{dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
+				feature = wkt.readFeature("<?=$wkt?>",{dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
 				<?php
 				$txt = '';
 				foreach(['altitude', 'depth'] as $metric){
@@ -78,7 +79,8 @@ if(count($spatialCoverages) > 0){
 			var view = new ol.View({
 				center: [0, 0],
 				zoom: 0,
-				projection: 'EPSG:3857'
+				projection: 'EPSG:3857',
+				extent: ol.proj.transform([-180,-87,180,87], 'EPSG:4326', 'EPSG:3857')
 			});
 			var map = new ol.Map({
 				layers: [raster, vector],
@@ -93,7 +95,11 @@ if(count($spatialCoverages) > 0){
 				])
 			});
 			view.fit(source.getExtent(), map.getSize(), {maxZoom: 5});
-			
+			var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
+			//Set view to max of 87 degrees North/South for better map rendering
+			if(Math.abs(center[1]) > 87){
+				view.setCenter(ol.proj.transform([center[0], Math.sign(center[1])*87], 'EPSG:4326', 'EPSG:3857'));
+			}
 			var element = $('#popup-content');
 			var closer = $('#popup-closer');
 			
