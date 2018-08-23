@@ -47,7 +47,7 @@
 			</div>
 			<div id="title">
 				<a href="<?=BASE_URL?>/"><img src="<?=BASE_URL?>/img/logo.png"  /></a>
-				<h1><a href="<?=BASE_URL?>/">Netherlands Polar Data Center</a></h1>
+				<h1><a href="<?=BASE_URL?>/"><?=\npdc\config::$siteName?></a></h1>
 			</div>
 			<div id="menu">
 				<h4>≡ Menu</h4>
