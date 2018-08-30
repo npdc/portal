@@ -50,5 +50,6 @@
 	<?=$extraJS?>
 	<?=\npdc\config::$extraHeader?>
 	<?=$view->js?>
+	<?=$view->extraHeader?>
 	<?=$extraCSS?>
 </head>

@@ -14,12 +14,16 @@ class Base {
 	protected $vocab;
 	protected $data;
 	protected $model;
-	
+	public $extraHeader;
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		$this->vocab = new \npdc\lib\Vocab();
+	}
+
+	protected function showCanonical(){
+		$this->extraHeader = ' <link rel="canonical" href="'.getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'].'" />';
 	}
 
 	/**

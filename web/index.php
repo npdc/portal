@@ -61,6 +61,7 @@ if(\Lootils\Uuid\Uuid::isValid($args[0])){
 	if(strpos('-', $args[0]) === false){
 		$args[0] = preg_replace("/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/i", "$1-$2-$3-$4-$5", $args[0]);
 	}
+	define('NPDC_UUID', $args[0]);
 	foreach(['dataset', 'project', 'publication'] as $cType){
 		$mName = 'npdc\\model\\'.ucfirst($cType);
 		$m = new $mName();

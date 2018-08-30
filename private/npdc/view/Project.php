@@ -188,6 +188,9 @@ class Project extends Base{
 				$this->class = 'detail';
 				$this->mid .= parent::parseTemplate('project_mid');
 				$this->right = parent::parseTemplate('project_right');
+				if(!defined('NPDC_UUID')){
+					$this->showCanonical();
+				}	
 			} elseif($this->args[2] === 'warnings') {
 				$this->title = 'Please check - '.$this->data['title'];
 				$this->mid = $this->controller->showWarnings();

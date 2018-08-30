@@ -181,6 +181,9 @@ class Publication extends Base{
 				$this->class = 'detail';
 				$this->mid .= parent::parseTemplate('publication_mid', $model, $this->data);
 				$this->right = parent::parseTemplate('publication_right', $model, $this->data);
+				if(!defined('NPDC_UUID')){
+					$this->showCanonical();
+				}	
 			} else {
 				$this->title = ($publication === 'new') ? 'New publication' : 'Edit publication - '.$this->data['title'];
 				$this->baseUrl .= '/'.$this->versions[0]['publication_version'];

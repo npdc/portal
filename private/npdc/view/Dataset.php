@@ -148,6 +148,9 @@ class Dataset extends Base{
 			$this->showCitation();
 		} elseif ((!$this->canEdit || is_null($this->controller->display)) && $dataset !== 'new') {//display dataset
 			$this->showDataset();
+			if(!defined('NPDC_UUID')){
+				$this->showCanonical();
+			}
 		} elseif($this->args[2] === 'warnings') {
 			$this->title = 'Please check - '.$this->data['title'];
 			$this->mid = $this->controller->showWarnings();
