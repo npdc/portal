@@ -182,7 +182,11 @@ class Publication{
 	public function getAuthors($publication_id, $publication_version, $names=2){
 		$res = $this->fpdo
 			->from('publication_person')
-			->leftJoin('person')->select('CASE WHEN free_person IS NOT NULL THEN free_person WHEN surname IS NULL THEN name ELSE surname || \', \' || initials END AS name')
+			->leftJoin('person')->select('CASE 
+				WHEN free_person IS NOT NULL THEN free_person 
+				WHEN surname IS NULL THEN name 
+				ELSE surname || \', \' || COALESCE(initials, given_name) 
+			END AS name')
 			->where('publication_id', $publication_id)
 			->where('publication_version_min <= ?', $publication_version)
 			->where('(publication_version_max IS NULL OR publication_version_max >= ?)', $publication_version)

@@ -408,7 +408,7 @@ class Dataset{
 	public function getAuthors($dataset_id, $dataset_version, $names=2){
 		$res = $this->fpdo
 			->from('dataset_person')
-			->leftJoin('person')->select('surname || \', \' || initials AS name')
+			->leftJoin('person')->select('COALESCE(surname || \', \' || COALESCE(initials, given_name), name) AS name')
 			->where('dataset_id', $dataset_id)
 			->where('dataset_version_min <= ?', $dataset_version)
 			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $dataset_version)
