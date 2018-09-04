@@ -50,6 +50,16 @@
 			"asList": true,
 			"disabled": true
 		},
+		"getData": {
+			"type": "options",
+			"label": "Data download available from",
+			"multiple": true,
+			"required": false,
+			"options": {
+				"direct": "This portal",
+				"external": "External site"
+			}
+		},
 		"editorOptions":{
 			"type": "options",
 			"label": "Show",

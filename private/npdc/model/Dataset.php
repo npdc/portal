@@ -68,6 +68,18 @@ class Dataset{
 						$q->where('dataset.dataset_id IN (SELECT DISTINCT(dataset_id) FROM dataset_person WHERE organization_id IN ('.implode(',', $values).'))');
 						$q2->where('dataset.dataset_id IN (SELECT DISTINCT(dataset_id) FROM dataset_person WHERE organization_id IN ('.implode(',', $values).'))');
 						break;
+					case 'getData':
+						$download = '';
+						if(in_array('direct', $values)){
+							$download = "(SELECT dataset_id, dataset_version_min, dataset_version_max FROM dataset_file INNER JOIN file USING (file_id) WHERE default_access <> 'hidden')";
+						}
+						if(in_array('external', $values)){
+							$download .= ($download === '' ? '' : ' UNION ALL ')
+							. "(SELECT dataset_id, dataset_version_min, dataset_version_max FROM dataset_link INNER JOIN vocab_url_type USING (vocab_url_type_id) WHERE type = 'GET DATA')";
+						}
+						$download = '(SELECT dataset_id, dataset_version_min, dataset_version_max FROM ('.$download.') download GROUP BY dataset_id, dataset_version_min, dataset_version_max) dres ON dres.dataset_id = dataset.dataset_id AND dataset_version_min<=dataset_version AND (dataset_version_max IS NULL OR dataset_version_max >= dataset_version)';
+						$q->join($download);
+						$q2->innerJoin($download);
 				}
 			}
 		}
