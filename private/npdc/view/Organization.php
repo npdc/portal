@@ -57,8 +57,7 @@ class Organization extends Base{
 		$this->left = parent::showFilters('organizationlist');
 		$this->mid = $this->displayTable('organization'.($this->session->userLevel >= NPDC_ADMIN ? ' searchbox' : ''), $organizations
 			, ['organization_name'=>'Name',
-				'organization_city'=>'City',
-				'country_name'=>'Country']
+				'organization_city'=>'City']
 			, ['organization', 'organization_id']);
 	}
 	
