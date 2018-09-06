@@ -87,7 +87,7 @@ class Person extends Base{
 		} else {
 			$this->data = $person;
 			$this->mid = parent::parseTemplate('person_mid');
-			$this->right = '<a href="'.BASE_URL.'/organization/'.$person['organization_id'].'">View organization</a>'.parent::parseTemplate('organization_mid');
+			$this->right = '<a href="'.BASE_URL.'/organization/'.$person['organization_id'].'">View organization</a>'.parent::parseTemplate('person_right');
 		}
 	}
 }
