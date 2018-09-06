@@ -13,6 +13,7 @@ use \PDO;
 
 class Db {
 	private static $fpdo = NULL;
+	private static $dsql = NULL;
 	private static $instance = NULL;
 	
 	private static $defaultPorts = ['pgsql'=>5432, 'mysql'=>'3306'];
@@ -98,6 +99,13 @@ class Db {
 		}
 		return self::$fpdo;
 	}
+
+	public static function getDSQLcon(){
+		if(!isset(self::$dsql)){
+			self::$dsql = \atk4\dsql\Connection::connect(self::getInstance());
+		}
+		return self::$dsql->dsql();
+	}
 	
 	/**
 	 * Insert a record and return the id of the new record
@@ -148,4 +156,22 @@ class Db {
 		$q = self::getInstance()->prepare($query);
 		return $q->execute();
 	}
+
+	/**
+	 * Provide on clause for joining extra tables to project, dataset or publication
+	 *
+	 * @param string $ctype content type (and main table)
+	 * @param string $joined other table in join
+	 * @return Query 
+	 */
+	public static function joinVersion($ctype, $joined){
+		return self::getDSQLcon()->andExpr()
+			->where($ctype.'.'.$ctype.'_id = '.$joined.'.'.$ctype.'_id')
+			->where($ctype.'.'.$ctype.'_version >= '.$ctype.'_version_min')
+			->where(self::getDSQLcon()->orExpr()
+				->where($ctype.'_version_max IS null')
+				->where($ctype.'_version_max >= '.$ctype.'.'.$ctype.'_version')
+		);
+	}
+	
 }
