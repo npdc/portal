@@ -10,12 +10,14 @@ namespace npdc\model;
 
 class Organization {
 	protected $fpdo;
+	protected $dsql;
 	
 	/**
 	 * Constructor
 	 */
 	public function __construct(){
 		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**
@@ -25,45 +27,59 @@ class Organization {
 	 * @return array list of organizations
 	 */
 	public function getList($filter = null){
-		$q = $this->fpdo
-			->from('organization')
-			->orderBy('organization_name');
-		if(!is_null($filter)){
-			$q2 = null;
-			switch ($filter){
-				case 'dataset':
-					$q2 = $this->fpdo
-						->from('dataset_person')
-						->join('dataset')
-						->where('record_status', 'published');
-					break;
-				case 'project':
-					$q2 = $this->fpdo
-						->from('project_person')
-						->join('project')
-						->where('record_status', 'published');
-					break;
-				case 'publication':
-					$q2 = $this->fpdo
-						->from('publication_person')
-						->join('publication')
-						->where('record_status', 'published');
-					break;
+		$org = $this->dsql->dsql()->table('organization')
+			->join('country.country_id', 'country_id', 'left')
+			->order('organization_name');
+		
+		if(!empty($filter)){
+			if(!is_array($filter)){
+				$filter = ['combine'=>'any', 'type'=>[$filter]];
 			}
-			$q->where('country_id', 'NL');
-			if(!is_null($q2)){
-				$q2->select('DISTINCT (organization_id)')
-					->where('organization_id IS NOT NULL')
-					->where('record_status', 'published');
-				$res = $q2->fetchAll('organization_id', 'organization_id');
-				if(count($res) > 0){
-					$q->where('organization_id', array_keys($res));
+			if(count($filter['type']) > 0){
+				if($filter['combine'] === 'all'){
+					$qf = $this->dsql->andExpr();
 				} else {
-					return null;
+					$qf = $this->dsql->orExpr();
+				}
+				if(in_array('project', $filter['type'])){
+					//Filter on having a project
+					$inPr = $this->dsql->dsql()->table('project_person')->field('organization_id')
+						->join('project', \npdc\lib\Db::joinVersion('project', 'project_person')
+						->where('record_status', 'published')
+					);
+					$qf->where('organization_id', $inPr);
+	
+				}
+				if(in_array('dataset', $filter['type'])){
+					//Filter on having a dataset
+					$inDa = $this->dsql->dsql()
+						->table('dataset_person')->field('organization_id')
+						->join('dataset', \npdc\lib\Db::joinVersion('dataset', 'dataset_person'))
+						->where('record_status', 'published');
+					$inOc = $this->dsql->dsql()
+						->table('dataset')->field('originating_center', 'organization_id')
+						->where('record_status', 'published');
+					$inDs = $this->dsql->table($this->dsql->expr("( [] union [] )", [$inDa, $inOc]), 'ds');
+					$qf->where('organization_id', $inDs);
+				}
+	
+				if(in_array('publication', $filter['type'])){
+					//Filter on having a publication
+					$inPu = $this->dsql->dsql()->table('publication_person')->field('organization_id')
+						->join('publication', \npdc\lib\Db::joinVersion('publication', 'publication_person'));
+					$qf->where('organization_id', $inPu);
+				}
+	
+				//apply filter and return
+				if(!empty($qf->render())){
+					$org->where($qf);
 				}
 			}
+			if(array_key_exists('country', $filter) && count($filter['country']) > 0){
+				$org->where('country.country_id', $filter['country']);
+			}
 		}
-		return $q->fetchAll();
+		return($org->get());
 	}
 	
 	/**
@@ -93,10 +109,40 @@ class Organization {
 	 * @return array organization details
 	 */
 	public function getById($id){
-		return $this->fpdo
-			->from('organization', $id)
-			->leftJoin('country')->select('country_name')
-			->fetch();
+		return $this->dsql->dsql()
+			->table('organization')->field('organization.*')
+			->where('organization_id', $id)
+			->join('country.country_id', 'country_id', 'left')->field('country_name')
+			->get()[0];
+	}
+
+	/**
+	 * Get persons of organization
+	 * 
+	 * @param integer $organization_id
+	 * @return array list of persons
+	 */
+	public function getPersons($organization_id){
+		$l = $this->dsql->dsql()->table('person')->order('name');
+		$l->where($this->dsql->orExpr()
+			->where('organization_id', $organization_id)
+			->where('person_id', 
+				$this->dsql->dsql()
+					->table('dataset_person')->field('person_id')
+					->where('organization_id', $organization_id)
+			)
+			->where('person_id', 
+				$this->dsql->dsql()
+					->table('project_person')->field('person_id')
+					->where('organization_id', $organization_id)
+			)
+			->where('person_id', 
+				$this->dsql->dsql()
+					->table('publication_person')->field('person_id')
+					->where('organization_id', $organization_id)
+			)
+		);
+		return $l->get();
 	}
 
 	/** 
@@ -132,5 +178,5 @@ class Organization {
 		return $this->fpdo
 			->update('organization', $data, $id)
 			->execute();
-	}
+	}	
 }

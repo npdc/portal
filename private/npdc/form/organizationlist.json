@@ -1,0 +1,45 @@
+{
+	"method": "get",
+	"action": "organization",
+	"fields": {
+		"hint":{
+			"type": "hint",
+			"hint": "If no option is selected for a filter that filter will not be used. To apply the filters click 'Apply' at the bottom."
+		},
+		"type": {
+			"type": "options",
+			"label": "Organizations with",
+			"required": false,
+			"multiple": true,
+			"hint": "",
+			"options": {
+				"project": "Projects",
+				"dataset": "Datasets",
+				"publication": "Publications"
+			}
+		},
+		"combine": {
+			"type": "options",
+			"label": "Show when organization has",
+			"multiple": false,
+			"required": false,
+			"options": {
+				"any": "<strong>any</strong> of the above",
+				"all": "<strong>all</strong> of the above"
+			}
+		},
+		"country": {
+			"type": "options",
+			"label": "Country",
+			"options": {
+			},
+			"required": false
+		},
+		"submit": {
+			"type": "submit",
+			"value": "Apply",
+			"resetLabel": "Reset filters",
+			"resetAction": "organization"
+		}
+	}
+}

@@ -50,8 +50,12 @@ class Organization extends Base{
 		$this->class = 'list';
 		$this->canEdit = false;
 		$this->title = 'Organizations';
-		$organizations = $this->model->getList();
-		$this->mid = $this->displayTable('organization searchbox', $organizations
+		$organizations = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
+			? $_SESSION[$this->controller->formId]['data'] 
+			: null
+		);
+		$this->left = parent::showFilters('organizationlist');
+		$this->mid = $this->displayTable('organization'.($this->session->userLevel >= NPDC_ADMIN ? ' searchbox' : ''), $organizations
 			, ['organization_name'=>'Name',
 				'organization_city'=>'City',
 				'country_name'=>'Country']
@@ -67,17 +71,18 @@ class Organization extends Base{
 	public function showItem($id){
 		$this->canEdit = isset($this->session->userId) 
 			&& ($this->session->userLevel === NPDC_ADMIN);
-		if($id === 'new'){
+		if($id === 'new' && $this->session->userLevel >= $this->controller->userLevelAdd){
 			$this->title = 'Add organization';
 		} else {
 			$organization = $this->model->getById($id);
-			$this->title = $organization['name'];
+			$this->title = $organization['organization_name'];
 		}
 		if(($this->canEdit && $this->args[2] === 'edit') || $id === 'new'){
 			$this->loadEditPage();
 		} else {
 			$this->data = $organization;
 			$this->mid = parent::parseTemplate('organization_mid');
+			$this->right = parent::parseTemplate('organization_right');
 		}
 	}
 }

@@ -5,29 +5,21 @@
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
-?>
 
-<h3>Organization details</h3>
+$datasetModel = new \npdc\model\Dataset();
+$datasets = $datasetModel->getList(['organization'=>[$this->data['organization_id']]]);
+echo '<h3>Datasets</h3>';
+echo $this->displayTable('dataset', $datasets, ['title'=>'Title', 'date_start'=>'Start date', 'date_end'=>'End date'], ['dataset', 'dataset_id']);
 
-<?php
-$fields = [
-	'organization_name'=>'Name',
-	'organization_address'=>'Address',
-	'organization_zip'=>'Zip code',
-	'organization_city'=>'City',
-	'country_name'=>'Country',
-	'visiting_address'=>'Visiting address',
-	'website'=>'Website',
-	'edmo'=>'EDMO',
-	'dif_code'=>'Code in diff',
-	'dif_name'=>'Name in diff'
-];
-
-foreach($fields as $id=>$label){
-	if(!empty($this->data[$id])){
-		echo '<div class="inline">
-		<h4>'.$label.'</h4>
-		<p>'.nl2br($this->data[$id]).'</p>
-		</div>';
-	}
+$pubModel = new \npdc\model\Publication();
+$publications = $pubModel->getList(['organization'=>[$this->data['organization_id']]]);
+echo '<h3>Publications</h3>';
+foreach ($publications as $publication) {
+	echo $pubModel->getCitation($publication);
 }
+
+$projectModel = new \npdc\model\Project();
+$projects = $projectModel->getList(['organization'=>[$this->data['organization_id']]]);
+echo '<h3>Projects</h3>';
+echo $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'period'=>'Period'], ['project', 'project_id']);
+?>
