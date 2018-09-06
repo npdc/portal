@@ -31,9 +31,9 @@ class Project{
 	 */
 	public function getList($filters=null){
 		global $session;
-		$q = $this->fpdo->from('project')->where('record_status', 'published');
+		$q = $this->fpdo->from('project')->where('record_status', 'published')->select('date_start || \' - \' || date_end period');
 		$q2 = $this->fpdo
-			->from('project')
+			->from('project')->select('date_start || \' - \' || date_end period')
 			->join('(SELECT project_id, MAX(project_version) AS project_version FROM project GROUP BY project_id) a USING (project_id, project_version)');
 		if($session->userLevel < NPDC_ADMIN){
 			$q2->leftJoin('(SELECT * FROM project_person WHERE person_id = '.$session->userId.' AND editor) b ON (project.project_id=b.project_id AND project_version_min<=project_version AND (project_version_max IS NULL OR project_version_max >= project_version))')
