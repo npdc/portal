@@ -96,5 +96,11 @@ class config {
 		'secretKey'=>''
 	];
 
+	public static $defaultOrganizationFilter = [
+		'combine'=>'any',//any or all
+		'type'=>['project'],//array with options project, publication and dataset
+		'country'=>['NL']//array of country codes
+	];
+
 	public static $extraHeader = '';//extra code for in head section of page, for example usage trackers
 }
