@@ -345,16 +345,23 @@ class Base {
 	 *
 	 * @return array list of countries
 	 */
-	public function getCountries(){
+	public function getCountries($showContinent = true){
 		$model = new \npdc\model\Country();
 		$options = [];
-		$continent = '';
-		foreach($model->getListByContinent() as $country){
-			if($country['continent_id'] !== $continent){
-				$options[$country['continent_name']] = [];
-				$continent = $country['continent_id'];
-			}
-			$options[$country['continent_name']][$country['country_id']] = $country['country_name'];
+		if($showContinent){
+			$continent = '';
+			foreach($model->getListByContinent() as $country){
+				if($country['continent_id'] !== $continent){
+					$options[$country['continent_name']] = [];
+					$continent = $country['continent_id'];
+				}
+				$options[$country['continent_name']][$country['country_id']] = $country['country_name'];
+			}	
+		} else {
+			foreach($model->getList() as $country){
+			$options[$country['country_id']] = $country['country_name'];
+		}
+		
 		}
 		return $options;
 	}
