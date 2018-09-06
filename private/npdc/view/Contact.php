@@ -104,14 +104,7 @@ class Contact extends Base{
 					$this->mid .= '<h3>Publications</h3>';
 					$publicationModel = new \npdc\model\Publication();
 					foreach($publications as $publication){
-						$this->mid .= '<p>'.$publicationModel->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
-						. $publication['year'].'. '
-						. '<a href="'.BASE_URL.'/publication/'.$publication['publication_id'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
-						. $publication['journal'].'</i> '.$publication['volume']
-						. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
-						. (empty($publication['pages']) ? '' :', '.$publication['pages'])
-						. '</p>';
-
+						$this->mid .= $publicationModel->getCitation($publication);
 					}
 				}
 				if(count($projects) > 0){

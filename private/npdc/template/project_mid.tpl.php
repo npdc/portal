@@ -57,14 +57,7 @@ if(\npdc\config::$partEnabled['publication'] || $this->session->userLevel >= NPD
 	} else {
 		$publicationModel = new \npdc\model\Publication();
 		foreach($publications as $publication){
-			echo '<p>'.$publicationModel->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
-			. $publication['year'].'. '
-			. '<a href="'.BASE_URL.'/publication/'.$publication['publication_id'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
-			. $publication['journal'].'</i> '.$publication['volume']
-			. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
-			. (empty($publication['pages']) ? '' :', '.$publication['pages'])
-			. '</p>';
-
+			echo $publicationModel->getCitation($publication);
 		}
 	}
 }

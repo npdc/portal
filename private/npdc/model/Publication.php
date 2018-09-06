@@ -400,6 +400,26 @@ class Publication{
 	}
 
 	/**
+	 * Return formatted citation
+	 *
+	 * @param integer|array $publication either id or full publication record
+	 * @param string|integer $version (optional) version number of type
+	 * @return string formatted citation
+	 */
+	public function getCitation($publication, $version = 'published'){
+		if(is_numeric($publication)){
+			$publication = $this->getById($publication, $version);
+		}
+		return '<p>'.$this->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
+		. $publication['year'].'. '
+		. '<a href="'.BASE_URL.'/publication/'.$publication['publication_id'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
+		. $publication['journal'].'</i> '.$publication['volume']
+		. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
+		. (empty($publication['pages'] && $publication['pages'] !== '-') ? '' :', '.$publication['pages'])
+		. '</p>';
+
+	}
+	/**
 	 * SETTERS
 	 */
 
