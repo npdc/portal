@@ -31,4 +31,8 @@ class Country {
 			->orderBy('continent_id, country_id')
 			->fetchAll();
 	}
+
+	public function getList(){
+		return $this->fpdo->from('country')->orderBy('country_name')->fetchAll();
+	}
 }
