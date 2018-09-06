@@ -65,8 +65,8 @@ class Dataset{
 						break;
 						
 					case 'organization':
-						$q->where('dataset.dataset_id IN (SELECT DISTINCT(dataset_id) FROM dataset_person WHERE organization_id IN ('.implode(',', $values).'))');
-						$q2->where('dataset.dataset_id IN (SELECT DISTINCT(dataset_id) FROM dataset_person WHERE organization_id IN ('.implode(',', $values).'))');
+						$q->where('(dataset.dataset_id IN (SELECT DISTINCT(dataset_id) FROM dataset_person WHERE organization_id IN ('.implode(',', $values).')) OR originating_center IN ('.implode(',', $values).'))');
+						$q2->where('(dataset.dataset_id IN (SELECT DISTINCT(dataset_id) FROM dataset_person WHERE organization_id IN ('.implode(',', $values).')) OR originating_center IN ('.implode(',', $values).'))');
 						break;
 					case 'getData':
 						$download = '';
