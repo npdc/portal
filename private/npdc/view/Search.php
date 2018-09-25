@@ -43,6 +43,7 @@ class Search extends Base{
 				$this->search = str_replace('+', ' ', $args[2]);
 				$this->type = explode('+', $args[1]);
 		}
+		$this->search = urldecode($this->search);
 		$_SESSION[$this->controller->formId]['data']['q'] = $this->search;
 		$_SESSION[$this->controller->formId]['data']['type'] = $this->type;
 	}

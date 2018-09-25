@@ -290,17 +290,19 @@ class Project{
 	 * @return array projects matching $string
 	 */
 	public function search($string, $summary = false, $exclude = null, $includeDraft = false){
-		$idString = implode('.?', str_split($string));
+		$idString = implode('.?', preg_replace("/[^. \-0-9a-zA-Z]/", " ", str_split($string)));
+		$string = '%'.$string.'%';
 		$q = $this->fpdo
 			->from('project')
 			->select('project_id, date_start || \' - \' || date_end AS date')
 			->select('\'Project\' AS content_type')
 			->orderBy('date DESC');
 		if(!empty($string)){
+			$operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
 			if($summary){
-				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR summary '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2 OR nwo_project_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search3 OR acronym '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search4)', [':search1'=>$string, ':search2'=>$string, ':search3'=>$idString, ':search4'=>$string]);
+				$q->where('(title '.$operator.' :search1 OR summary '.$operator.' :search2 OR nwo_project_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search3 OR acronym '.$operator.' :search4)', [':search1'=>$string, ':search2'=>$string, ':search3'=>$idString, ':search4'=>$string]);
 			} else {
-				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR nwo_project_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2 OR acronym '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search3)', [':search1'=>$string, ':search2'=>$idString, ':search3'=>$string]);
+				$q->where('(title '.$operator.' :search1 OR nwo_project_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2 OR acronym '.$operator.' :search3)', [':search1'=>$string, ':search2'=>$idString, ':search3'=>$string]);
 			}
 		}
 		if(is_array($exclude) && count($exclude) > 0){

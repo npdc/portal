@@ -302,10 +302,11 @@ class Publication{
 			->select('\'Publication\' AS content_type')
 			->orderBy('date DESC');
 		if(!empty($string)){
+			$operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
 			if($summary){
-				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR abstract '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2)', [':search1'=>$string, ':search2'=>$string]);
+				$q->where('(title '.$operator.' :search1 OR abstract '.$operator.' :search2)', [':search1'=>$string, ':search2'=>$string]);
 			} else {
-				$q->where('title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search', $string);
+				$q->where('title '.$operator.' :search', $string);
 			}
 		}
 		if(is_array($exclude) && count($exclude) > 0){

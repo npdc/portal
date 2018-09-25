@@ -667,16 +667,20 @@ class Dataset{
 	 * @return array list of datasets matching the filters
 	 */
 	public function search($string, $summary = false, $exclude = null, $includeDraft = false){
+		$string = '%'.$string.'%';
 		$q = $this->fpdo
 			->from('dataset')
 			->select('dataset_id, date_start || \' - \' || date_end AS date')
 			->select('\'Dataset\' AS content_type')
 			->orderBy('date DESC');
 		if(!empty($string)){
+			$operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
 			if($summary){
-				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR dif_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2 OR summary '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search3)', [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string), ':search3'=>$string]);
+				$q->where('(title '.$operator.' :search1 OR dif_id '.$operator.' :search2 OR summary '.$operator.' :search3)'
+					, [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string), ':search3'=>$string]);
 			} else {
-				$q->where('(title '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR dif_id '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2)', [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string)]);
+				$q->where('(title '.$operator.' :search1 OR dif_id '.$operator.' :search2)'
+					, [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string)]);
 			}
 		}
 		if(is_array($exclude) && count($exclude) > 0){

@@ -47,11 +47,11 @@ class Search {
 		if(array_key_exists('type', $_POST) && count($_POST['type']) > 0){
 			$url .= '/'.implode('+', $_POST['type']);
 		}
-		$qclean = preg_replace("/[^. \-0-9a-zA-Z]/", " ", strtolower(trim($_POST['q'])));
+		$qclean = trim($_POST['q']);
 		while (strstr($qclean, "  ")) {
-		   $qclean = trim(str_replace("  ", " ", $qclean));
+			$qclean = trim(str_replace("  ", " ", $qclean));
 		}
-		$url .= '/'.str_replace(" ", "+", $qclean);
+		$url .= '/'.str_replace([" ", '/'], "+", $qclean);
 		return $url;
 	}
 }
