@@ -78,6 +78,10 @@ class Organization {
 			if(array_key_exists('country', $filter) && count($filter['country']) > 0){
 				$org->where('country.country_id', $filter['country']);
 			}
+
+			if(isset($filter['search'])){
+				$org->where('organization_name', 'LIKE', '%'.$filter['search'].'%');
+			}
 		}
 		return($org->get());
 	}

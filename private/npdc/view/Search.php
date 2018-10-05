@@ -89,6 +89,21 @@ class Search extends Base{
 				}
 			} else {
 				//search organizations
+				$orgModel = new \npdc\model\Organization();
+				$orgFilter = [
+					'country'=>\npdc\config::$defaultOrganizationFilter['country'],
+					'type'=>['project','dataset','publication'],
+					'combine'=>'any',
+					'search'=>$this->search
+				];
+				$orgs = $orgModel->getList($orgFilter);
+				if(count($orgs) > 0){
+					$this->mid .= count($orgs).' Organization'.(count($orgs) > 1 ? 's' : '').' found<ul>';
+					foreach ($orgs as $org){
+						$this->mid .= '<li><a href='.BASE_URL.'/organization/'.$org['organization_id'].'>'.$org['organization_name'].'</a></li>';
+					}
+					$this->mid .= '</ul>';
+				}
 
 				//free text search trough dataset, project and publication
 				foreach(count($this->type) === 0 ? array_keys($this->types) : $this->type as $type){
@@ -115,7 +130,7 @@ class Search extends Base{
 				krsort($list);
 
 				//Display results
-				$this->mid = count($list).' result'.(count($list) === 1 ? '' : 's').' for \''.$this->search	.'\'';
+				$this->mid .= count($list).' result'.(count($list) === 1 ? '' : 's').' for \''.$this->search	.'\'';
 				$arr = count($this->type) > 0 ? $this->type : array_keys($this->types);
 				$this->mid .= ' in ';
 				foreach($arr as $i=>$type){
