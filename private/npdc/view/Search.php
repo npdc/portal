@@ -73,50 +73,62 @@ class Search extends Base{
 			$this->mid = 'Please provide a search term';
 		} else {
 			$list = [];
+
+			//first check if result is uuid and uuid exists
 			if(\Lootils\Uuid\Uuid::isValid($this->search)){
-				foreach(count($this->type) === 0 ? array_keys($this->types) : $this->type as $type){
+				foreach(array_keys($this->types) as $type){
 					$modelName = 'npdc\\model\\'.ucfirst($type);
 					$model = new $modelName();
 					$res = $model->getByUUID($this->search);
 					if($res !== false){
 						header('Location: '.BASE_URL.'/'.$res['uuid']);
 						die();
+					} else {
+						$this->mid = 'No result for uuid '.$this->search;
 					}
 				}
-			}
-			foreach(count($this->type) === 0 ? array_keys($this->types) : $this->type as $type){
-				$modelName = 'npdc\\model\\'.ucfirst($type);
-				$model = new $modelName();
-				$res = $model->search($this->search, true);
-				if(!is_null($res)){
-					$list = array_merge($list, $res);
+			} else {
+				//search organizations
+
+				//free text search trough dataset, project and publication
+				foreach(count($this->type) === 0 ? array_keys($this->types) : $this->type as $type){
+					$modelName = 'npdc\\model\\'.ucfirst($type);
+					$model = new $modelName();
+					$res = $model->search($this->search, true);
+					if(!is_null($res)){
+						$list = array_merge($list, $res);
+					}
 				}
-			}
-			$keys = [];
-			foreach($list as $data){
-				$key = $data['date'];
-				$i = 0;
-				while(in_array($key, $keys)){
-					$i++;
-					$key = $data['date'].' '.$i;
+
+				//make keys with date for ordering by date
+				$keys = [];
+				foreach($list as $data){
+					$key = $data['date'];
+					$i = 0;
+					while(in_array($key, $keys)){
+						$i++;
+						$key = $data['date'].' '.$i;
+					}
+					$keys[] = $key;
 				}
-				$keys[] = $key;
-			}
-			$list = array_combine($keys, $list);
-			krsort($list);
-			$this->mid = count($list).' result'.(count($list) === 1 ? '' : 's').' for \''.$this->search	.'\'';
-			$arr = count($this->type) > 0 ? $this->type : array_keys($this->types);
-			$this->mid .= ' in ';
-			foreach($arr as $i=>$type){
-				if($i>0 && $i<count($arr)-1){
-					$this->mid .= ', ';
-				} elseif ($i>0){
-					$this->mid .= ' and ';
+				$list = array_combine($keys, $list);
+				krsort($list);
+
+				//Display results
+				$this->mid = count($list).' result'.(count($list) === 1 ? '' : 's').' for \''.$this->search	.'\'';
+				$arr = count($this->type) > 0 ? $this->type : array_keys($this->types);
+				$this->mid .= ' in ';
+				foreach($arr as $i=>$type){
+					if($i>0 && $i<count($arr)-1){
+						$this->mid .= ', ';
+					} elseif ($i>0){
+						$this->mid .= ' and ';
+					}
+					$this->mid .= $this->types[$type];
 				}
-				$this->mid .= $this->types[$type];
-			}
-			if(count($list) > 0){
-				$this->mid .= $this->displayTable('search', $list, ['content_type'=>'Type', 'title'=>'Title', 'date'=>'Date'], ['content_type', 'content_type_id'], false);
+				if(count($list) > 0){
+					$this->mid .= $this->displayTable('search', $list, ['content_type'=>'Type', 'title'=>'Title', 'date'=>'Date'], ['content_type', 'content_type_id'], false);
+				}
 			}	
 		}
 	}
