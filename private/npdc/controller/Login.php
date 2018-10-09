@@ -19,7 +19,7 @@ class Login {
 	/**
 	 * Constructor
 	 */
-	public function __construct(){
+	public function __construct($session, $args){
 		$this->model = new \npdc\model\Person();
 		switch($args[1]){
 			case 'reset':
