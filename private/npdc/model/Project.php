@@ -290,7 +290,7 @@ class Project{
 	 * @return array projects matching $string
 	 */
 	public function search($string, $summary = false, $exclude = null, $includeDraft = false){
-		$idString = implode('.?', preg_replace("/[^. \-0-9a-zA-Z]/", " ", str_split($string)));
+		$idString = implode('[.]?', preg_replace("/[^. \-0-9a-zA-Z]/", " ", str_split($string)));
 		$string = '%'.$string.'%';
 		$q = $this->fpdo
 			->from('project')
