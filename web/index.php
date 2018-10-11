@@ -44,7 +44,10 @@ $url = (strpos($url, '?') !== false)
 		: $url;
 //remove dot if present and store part after dot in ext
 if(strpos($url, '.') !== false){
-	list($url, $ext) = explode('.', $url);
+	$parts = explode('.', $url);
+	if(count($parts) === 2 && !is_numeric($parts[1])){
+		list($url, $ext) = $parts;
+	}
 }
 
 define('NPDC_OUTPUT', $ext ?? getBestSupportedMimeType(['text/html'=>'html', 'application/xhtml+xml'=>'html', 'text/xml'=>'xml', 'application/xml'=>'xml']) ?? 'html');
