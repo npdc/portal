@@ -98,6 +98,9 @@ class Form {
 				case 'map':
 					return $this->map($id, $field);
 					break;
+				case 'antispam':
+					return $this->antispam($id, $field);
+					break;
 				default:
 					return $this->other($id, $field, $bare);
 			}
@@ -115,6 +118,16 @@ class Form {
 		return '<input type="hidden" name="'.$id.'" value="'.$value.'" />';
 	}
 
+	/**
+	 * make antispam field
+	 *
+	 * @param string $id field id
+	 * @param object $field field details
+	 * @return string formatted field
+	 */
+	private function antispam($id, $field){
+		return '<h4 class="label hidden">'.$field->label.'</h4><input type="text" name="'.$id.'" placeholder="'.$field->placeholder.'" value="" class="hidden">';
+	}
 	/**
 	 * format a hint
 	 * 

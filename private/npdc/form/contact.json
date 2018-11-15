@@ -3,6 +3,10 @@
 	"action": "contact",
 	"hint": "all",
 	"fields": {
+		"qc": {
+			"type": "hint",
+			"hint": "For checking reliability and fighting spam all information entered below and your ip-address, browser and operating system will be stored in our database."
+		},
 		"name": {
 			"type": "text",
 			"label": "Your name",
@@ -13,6 +17,12 @@
 			"label": "Your email address",
 			"placeholder": "Email address",
 			"hint": "We will only use this for responding to your message"
+		},
+		"country": {
+			"type": "antispam",
+			"label": "Country",
+			"placeholder": "Your country",
+			"required": false
 		},
 		"subject": {
 			"type": "text",

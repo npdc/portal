@@ -65,19 +65,27 @@ class Contact {
 	 * sends the mail
 	 */
 	private function doSend(){
+		$model = new \npdc\model\Contact();
+		$model->insert(array_merge($_POST, ['receiver'=>$this->to]));
+
 		$mail = new \npdc\lib\Mailer($_POST['name'], $_POST['mail']);
 		$mail->to($this->to, $this->name);
 		$mail->subject(empty($_POST['subject']) ? 'Message through '.\npdc\config::$siteDomain : $_POST['subject']);
 		$mail->text($_POST['message']."\r\n-----\r\n".'This message was sent by '.$_POST['name'].' ('.$_POST['mail'].') on '.date('Y-m-d G:i:s').' through '.\npdc\config::$siteDomain);
-		$mail->send();
-		
+		if(empty($_POST['country'])){
+			$mail->send();
+		}
+
 		$ccMail = new \npdc\lib\Mailer();
 		$ccMail->to($_POST['mail'], $_POST['name']);
 		$ccMail->subject(empty($_POST['subject']) ? 'Copy of your message through '.\npdc\config::$siteDomain : $_POST['subject'].' (copy of your message)');
 		$ccMail->text('The following message was sent on your behalf to '.$this->name.' on '.date('Y-m-d G:i:s').' through '.\npdc\config::$siteDomain.':'."\r\n".$_POST['message']);
-		$ccMail->send();
-		
-		$_SESSION['notice'] = 'Thank you for your message. A copy has just been sent to your mailbox.';
+		if(empty($_POST['country'])){
+			$ccMail->send();
+			$_SESSION['notice'] = 'Thank you for your message. A copy has just been sent to your mailbox.';
+		} else {
+			$_SESSION['notice'] = 'Thank you for your message.';
+		}
 		/* Set session var to sent, session will be cleared in the view */
 		$_SESSION[$this->formId]['state'] = 'sent';
 	}
