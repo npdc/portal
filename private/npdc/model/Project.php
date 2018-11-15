@@ -640,7 +640,7 @@ class Project{
 	 * @param string $action Either update or insert
 	 */
 	private function parseGeneral($data, $action){
-		$fields = ['nwo_project_id','title','acronym','region','summary','program_id','date_start','date_end','research_type','science_field','record_status', 'creator'];
+		$fields = ['nwo_project_id','title','acronym','region','summary','program_id','date_start','date_end','research_type','science_field','record_status', 'creator', 'npp_theme_id'];
 		if($action === 'insert'){
 			array_push($fields, 'project_version');
 			if(is_numeric($data['project_id'])){

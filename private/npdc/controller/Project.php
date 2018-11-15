@@ -49,6 +49,7 @@ class Project extends Base{
 	 * @return void
 	 */
 	protected function alterFields() {
+		$this->formController->form->fields->npp_theme_id->options = $this->getNppThemes();
 		$this->formController->form->fields->program_id->options = $this->getPrograms();
 		$this->formController->form->fields->people->fields->organization_id->options = $this->getOrganizations();
 	}
@@ -94,6 +95,14 @@ class Project extends Base{
 		}
 	}
 
+	private function getNppThemes(){
+		$model = new \npdc\model\Npp_theme();
+		$return = [];
+		foreach($model->getList() as $theme){
+			$return[$theme['npp_theme_id']] = $theme['npp_theme_id'].'. '.$theme['theme_en'];
+		}
+		return $return;
+	}
 	/**
 	 * Save record to database
 	 *

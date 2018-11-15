@@ -6,10 +6,27 @@
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
+ 
+if(!is_null($this->data['program_id'])){
+$progModel = new \npdc\model\Program();
+?><section class="inline">
+	<h4>Funding program</h4>
+	<p><?=$progModel->getById($this->data['program_id'])['name'];?></p>
+</section>
+<?php
+}
 if(!is_null($this->data['nwo_project_id'])){
 ?><section class="inline">
 	<h4>NWO project id</h4>
 	<p><?=$this->data['nwo_project_id']?></p>
+</section>
+<?php
+}
+if(!is_null($this->data['npp_theme_id'])){
+$themeModel = new \npdc\model\Npp_theme();
+?><section class="inline">
+	<h4>Theme</h4>
+	<p><?=$themeModel->getById($this->data['npp_theme_id'])['theme_en']?></p>
 </section>
 <?php
 }

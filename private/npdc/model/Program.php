@@ -28,7 +28,7 @@ class Program {
 	public function getList($filter = null){
 		$q = $this->fpdo
 			->from('program')
-			->orderBy('program_start');
+			->orderBy('sort');
 		if(!is_null($filter)){
 			$q2 = null;
 			switch($filter){

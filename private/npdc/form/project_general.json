@@ -15,13 +15,28 @@
 			"required": false,
 			"placeholder": "Acronym"
 		},
+		"program_id": {
+			"type": "options",
+			"label": "Funding program",
+			"multiple": false,
+			"options": {},
+			"asList": true,
+			"required": false
+		},
 		"nwo_project_id": {
 			"type": "text",
 			"label": "NWO project ID",
 			"hint": "",
 			"placeholder": "866.xx.xxx",
-			"mask": "999.99.999",
 			"required": false
+		},
+		"npp_theme_id": {
+			"type": "options",
+			"label": "NPP Theme",
+			"options": {},
+			"required": false,
+			"asList": true,
+			"multiple":false
 		},
 		"period": {
 			"type": "date",
@@ -43,15 +58,6 @@
 				"Antarctica": "Antarctic",
 				"Bipolar": "Bipolar"
 			}
-		},
-		"program_id": {
-			"type": "options",
-			"label": "Funding program",
-			"multiple": false,
-			"options": {},
-			"asList": true,
-			"required": false,
-			"disabled": true
 		},
 		"science_field": {
 			"type": "text",
