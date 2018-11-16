@@ -131,6 +131,17 @@
 			"maskAlias": "orcid",
 			"required": false
 		},
+		"sex":{
+			"type": "options",
+			"label": "Gender",
+			"hint": "Only used for statistical purposes, not shown on the portal",
+			"options": {
+				"m": "Male",
+				"f": "Female"
+			},
+			"required": false,
+			"multiple": false
+		},
 		"user_level": {
 			"type": "options",
 			"label": "User role",
