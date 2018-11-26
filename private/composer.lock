@@ -4,7 +4,6 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9c5a9395ca3070b0bd58ef3bcc5d5cb7",
     "content-hash": "fd00bdf30da8ec175b3c2691de3a874c",
     "packages": [
         {
@@ -55,7 +54,7 @@
                 "php",
                 "trains"
             ],
-            "time": "2018-04-03 16:35:52"
+            "time": "2018-04-03T16:35:52+00:00"
         },
         {
             "name": "atk4/dsql",
@@ -109,20 +108,20 @@
                 "orm",
                 "sql"
             ],
-            "time": "2018-08-16 07:47:00"
+            "time": "2018-08-16T07:47:00+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
-            "version": "v4.9.3",
+            "version": "v4.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ezyang/htmlpurifier.git",
-                "reference": "95e1bae3182efc0f3422896a3236e991049dac69"
+                "reference": "d85d39da4576a6934b72480be6978fb10c860021"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/95e1bae3182efc0f3422896a3236e991049dac69",
-                "reference": "95e1bae3182efc0f3422896a3236e991049dac69",
+                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/d85d39da4576a6934b72480be6978fb10c860021",
+                "reference": "d85d39da4576a6934b72480be6978fb10c860021",
                 "shasum": ""
             },
             "require": {
@@ -156,20 +155,20 @@
             "keywords": [
                 "html"
             ],
-            "time": "2017-06-03 02:28:16"
+            "time": "2018-02-23T01:58:20+00:00"
         },
         {
             "name": "fpdo/fluentpdo",
-            "version": "v1.1.0",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fpdo/fluentpdo.git",
-                "reference": "fa0df68d098a1ebb1b0461e4750ef2749869219c"
+                "url": "https://github.com/envms/fluentpdo.git",
+                "reference": "7d31e9b9028466ec41b0a0760b1491b091bcf8e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fpdo/fluentpdo/zipball/fa0df68d098a1ebb1b0461e4750ef2749869219c",
-                "reference": "fa0df68d098a1ebb1b0461e4750ef2749869219c",
+                "url": "https://api.github.com/repos/envms/fluentpdo/zipball/7d31e9b9028466ec41b0a0760b1491b091bcf8e8",
+                "reference": "7d31e9b9028466ec41b0a0760b1491b091bcf8e8",
                 "shasum": ""
             },
             "type": "library",
@@ -185,18 +184,24 @@
             ],
             "authors": [
                 {
-                    "name": "Marek Lichtner",
-                    "homepage": "http://licht.sk/"
+                    "name": "envms",
+                    "homepage": "http://env.ms"
                 }
             ],
-            "description": "FluentPDO is small PHP library for rapid query building. Killer feature is smart join builder which generates joins automatically.",
-            "homepage": "https://github.com/fpdo/fluentpdo",
+            "description": "FluentPDO is a quick and light PHP library for rapid query building. It features a smart join builder, which automatically creates table joins.",
+            "homepage": "https://github.com/envms/fluentpdo",
             "keywords": [
+                "builder",
                 "database",
+                "db",
                 "dbal",
-                "pdo"
+                "fluent",
+                "mysql",
+                "oracle",
+                "pdo",
+                "query"
             ],
-            "time": "2016-07-08 13:40:45"
+            "time": "2018-04-27T19:01:30+00:00"
         },
         {
             "name": "lootils/uuid",
@@ -241,26 +246,26 @@
             "keywords": [
                 "uuid"
             ],
-            "time": "2013-11-15 13:39:44"
+            "time": "2013-11-15T13:39:44+00:00"
         },
         {
             "name": "moxiecode/plupload",
-            "version": "v2.3.1",
+            "version": "v2.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moxiecode/plupload.git",
-                "reference": "d7150ca0a192e3a07ac7468f661edeca767a7163"
+                "reference": "0f37b16e6cecdc0cda1c1ba470aaeef1dc01f26a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moxiecode/plupload/zipball/d7150ca0a192e3a07ac7468f661edeca767a7163",
-                "reference": "d7150ca0a192e3a07ac7468f661edeca767a7163",
+                "url": "https://api.github.com/repos/moxiecode/plupload/zipball/0f37b16e6cecdc0cda1c1ba470aaeef1dc01f26a",
+                "reference": "0f37b16e6cecdc0cda1c1ba470aaeef1dc01f26a",
                 "shasum": ""
             },
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "(GPL-2.0 or OEM)"
+                "(AGPLv3 or OEM)"
             ],
             "authors": [
                 {
@@ -277,28 +282,45 @@
                 "multi-runtime",
                 "plupload"
             ],
-            "time": "2017-02-06 14:01:52"
+            "time": "2017-11-03T06:46:59+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.22",
+            "version": "v5.2.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "b18cb98131bd83103ccb26a888fdfe3177b8a663"
+                "reference": "dde1db116511aa4956389d75546c5be4c2beb2a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/b18cb98131bd83103ccb26a888fdfe3177b8a663",
-                "reference": "b18cb98131bd83103ccb26a888fdfe3177b8a663",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/dde1db116511aa4956389d75546c5be4c2beb2a6",
+                "reference": "dde1db116511aa4956389d75546c5be4c2beb2a6",
                 "shasum": ""
             },
             "require": {
+                "ext-ctype": "*",
                 "php": ">=5.0.0"
             },
             "require-dev": {
-                "phpdocumentor/phpdocumentor": "*",
-                "phpunit/phpunit": "4.7.*"
+                "doctrine/annotations": "1.2.*",
+                "jms/serializer": "0.16.*",
+                "phpdocumentor/phpdocumentor": "2.*",
+                "phpunit/phpunit": "4.8.*",
+                "symfony/debug": "2.8.*",
+                "symfony/filesystem": "2.8.*",
+                "symfony/translation": "2.8.*",
+                "symfony/yaml": "2.8.*",
+                "zendframework/zend-cache": "2.5.1",
+                "zendframework/zend-config": "2.5.1",
+                "zendframework/zend-eventmanager": "2.5.1",
+                "zendframework/zend-filter": "2.5.1",
+                "zendframework/zend-i18n": "2.5.1",
+                "zendframework/zend-json": "2.5.1",
+                "zendframework/zend-math": "2.5.1",
+                "zendframework/zend-serializer": "2.5.*",
+                "zendframework/zend-servicemanager": "2.5.*",
+                "zendframework/zend-stdlib": "2.5.1"
             },
             "suggest": {
                 "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
@@ -337,20 +359,20 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2017-01-09 09:33:47"
+            "time": "2018-11-15T22:32:31+00:00"
         },
         {
             "name": "psr/log",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
                 "shasum": ""
             },
             "require": {
@@ -384,7 +406,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2018-11-20T15:27:04+00:00"
         },
         {
             "name": "symm/gisconverter",
@@ -422,7 +444,7 @@
                 "BSD"
             ],
             "description": "A php library to convert vector geometries between different formats",
-            "time": "2014-08-07 13:50:52"
+            "time": "2014-08-07T13:50:52+00:00"
         }
     ],
     "packages-dev": [],
