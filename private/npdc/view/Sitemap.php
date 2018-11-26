@@ -98,6 +98,11 @@ class Sitemap {
 		return ($include_domain ? $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'] : '').BASE_URL.'/'.$url;
 	}
 
+	/**
+	 * Get list of pages
+	 *
+	 * @return void
+	 */
 	private function getPages(){
 		$model = new \npdc\model\Page();
 		foreach($model->getList() as $page){
@@ -108,6 +113,11 @@ class Sitemap {
 		}
 	}
 
+	/**
+	 * Get list of projects
+	 *
+	 * @return void
+	 */
 	private function getProjects(){
 		$model = new \npdc\model\Project();
 		foreach($model->getList() as $project){
@@ -116,6 +126,11 @@ class Sitemap {
 		}
 	}
 
+	/**
+	 * Get list of datasets
+	 *
+	 * @return void
+	 */
 	private function getDatasets(){
 		$model = new \npdc\model\Dataset();
 		foreach($model->getList() as $dataset){
@@ -124,6 +139,11 @@ class Sitemap {
 		}
 	}
 
+	/**
+	 * Get list of publications
+	 *
+	 * @return void
+	 */
 	private function getPublications(){
 		$model = new \npdc\model\Publication();
 		foreach($model->getList() as $publication){
