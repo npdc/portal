@@ -63,6 +63,10 @@ class Page{
 			->orderBy('sort')
 			->fetchAll();
 	}
+
+	public function getList(){
+		return $this->fpdo->from('page')->orderBy('title')->fetchAll();
+	}
 	
 	/**
 	 * SETTERS
