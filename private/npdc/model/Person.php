@@ -91,7 +91,7 @@ class Person{
 	 * @return array levels
 	 */
 	public function getUserLevels(){
-		return $this->fpdo->from('user_level')->orderBY('user_level_id')->fetchAll();
+		return $this->fpdo->from('user_level')->orderBy('user_level_id')->fetchAll();
 	}
 	
 	/**
