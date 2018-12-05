@@ -123,11 +123,15 @@ class Base {
 			}
 			$return .= '</tr></thead>';
 			foreach($data as $item){
-				if($url[0] === 'content_type'){
-					$id = strtolower($item['content_type']).'_id';
-					$link = BASE_URL.'/'.strtolower($item['content_type']).'/'.$item[$id];
+				if(is_array($url)){
+					if($url[0] === 'content_type'){
+						$id = strtolower($item['content_type']).'_id';
+						$link = BASE_URL.'/'.strtolower($item['content_type']).'/'.$item[$id];
+					} else {
+						$link = empty($item[$url[1]]) ? '' : BASE_URL.'/'.$url[0].'/'.$item[$url[1]];
+					}	
 				} else {
-					$link = empty($item[$url[1]]) ? '' : BASE_URL.'/'.$url[0].'/'.$item[$url[1]];
+					$link = $item[$url];
 				}
 				$return .= '<tr '.(empty($link) ? 'class="' : 'onclick="javascript:location.href=\''.$link.'\'" class="link').($item['record_status'] === 'draft' && $item[$class.'_version'] === 1 ? ' draft': '').'">';
 				foreach($columns as $id=>$column){
