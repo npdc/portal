@@ -5,6 +5,8 @@
 - Publication descriptions
 - Responsive
 
+More documentation about the functionality is available at the [Wiki](https://github.com/npdc/portal/wiki)
+
 ![Screenshot](documentation/screenshot.png)
 
 **Dependencies:**
