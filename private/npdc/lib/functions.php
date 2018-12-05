@@ -14,7 +14,7 @@
  */
 function get_class_file($className){
 	return substr(dirname(__FILE__),0,-4).'/'
-		.str_replace('\\', '/', substr($className,5))
+		.str_replace('\\', '/', (substr($className,0,5) === 'npdc\\' ? substr($className,5) : $className))
 		.'.php';
 }
 
