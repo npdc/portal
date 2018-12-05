@@ -7,6 +7,7 @@ class Dataset extends Base{
 	public $left;
 	public $mid;
 	public $right;
+	public $json;
 	public $class;
 	public $accessLevel;
 	protected $session;
@@ -100,10 +101,22 @@ class Dataset extends Base{
 						, ['title'=>'Title', 
 							'date_start'=>'Start date', 
 							'date_end'=>'End date']
-						, ['dataset', 'dataset_id']
+						, 'uuid'//['dataset', 'dataset_id']
 						, true
 						, true
 					);
+					$this->json = array_merge([
+						'@context' => ['@vocab'=>'http://schema.org/'],
+						'@type' => ['Service', 'ResearchProject'],
+						'legalName' => \npdc\config::$siteName,
+						'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL,
+						'category' => ['Polar science'],
+						'logo' => [
+							'@type' => 'ImageObject',
+							'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/img/logo.png'
+						],
+					], \npdc\config::$providerSchemaOrg);
+					$this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</script>';
 		}
 	}
 
@@ -280,7 +293,7 @@ class Dataset extends Base{
 	}
 
 	/**
-	 * Display a single dataset
+	 * Display a single dataset as html
 	 *
 	 * @return void
 	 */
@@ -331,8 +344,25 @@ class Dataset extends Base{
 				$this->right = parent::parseTemplate('dataset_files_right');
 			}
 		} else {
+			$this->json = [
+				'@context' => ['@vocab'=>'http://schema.org/'],
+				'@type' => 'Dataset',
+				'name' => $this->data['title'],
+				'description' => strip_tags($this->data['summary']),
+				'version' => $this->data['dataset_version'],
+				'identifier' => 'urn:uuid:'.$this->data['uuid'],
+				'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'],
+				'includedInDataCatalog' => [
+					'@type' => 'DataCatalog',
+					'name' => \npdc\config::$siteName,
+					'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL
+				]
+			];
 			$this->mid .= parent::parseTemplate('dataset_mid');
 			$this->right = parent::parseTemplate('dataset_right');
+			if(defined('NPDC_UUID')){
+				echo('<pre>'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</pre>');
+			}
 		}
 	}
 	

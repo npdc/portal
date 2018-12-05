@@ -20,3 +20,6 @@ include 'files.php';
 
 <h4>Use constraints</h4>
 <p><?=$this->data['use_constraints']?></p>
+
+<?php
+$this->json['license'] = 'Access: '.($this->data['acces_constraints'] ?? 'No known constraints').'; Use: '.($this->data['use_constraints'] ?? 'No known constraints');

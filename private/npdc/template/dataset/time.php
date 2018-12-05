@@ -6,10 +6,13 @@
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
+$this->json['temporalCoverage'] = [];
+
 foreach($this->model->getTemporalCoverages($this->data['dataset_id'], $this->data['dataset_version']) as $tc){
 	echo '<fieldset><legend>Temporal coverage</legend>';
 	foreach($this->model->getTemporalCoveragesGroup('period', $tc['temporal_coverage_id'], $this->data['dataset_version']) as $group){
 		echo '<section class="inline"><h4>Period</h4><p>'.date('j F Y', strtotime($group['date_start'])).' to '.date('j F Y', strtotime($group['date_end'])).'</p></section>';
+		$this->json['temporalCoverage'][] = date('Y-m-d', strtotime($group['date_start'])).'/'.date('Y-m-d', strtotime($group['date_end']));
 	}
 	$units = [
 		's'=>'seconds',
@@ -36,6 +39,7 @@ foreach($this->model->getTemporalCoverages($this->data['dataset_id'], $this->dat
 			echo '<h4>Chronostratigraphic unit</h4><ul>';
 			foreach($chronounits as $unit){
 				echo '<li>'.$this->vocab->formatTerm('vocab_chronounit', $unit).'</li>';
+				$this->json['temporalCoverage'][] = $this->vocab->formatTerm('vocab_chronounit', $unit);
 			}
 			echo '</ul>';
 		}

@@ -5,6 +5,7 @@
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
+$keywords = [];
 ?>
 
 <h4>ISO topic</h4>
@@ -13,6 +14,7 @@
 foreach ($this->model->getTopics($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$topic){
 	$cut = ':'; //':' or 'For example'
 	echo '<li>'.(strpos($topic['description'], $cut) === false ? $topic['description'] : trim(substr($topic['description'],0,strpos($topic['description'], $cut)))).'</li>';
+	$keywords[] = strpos($topic['description'], $cut) === false ? $topic['description'] : trim(substr($topic['description'],0,strpos($topic['description'], $cut)));
 }
 ?>
 </ul>
@@ -22,16 +24,20 @@ foreach ($this->model->getTopics($this->data['dataset_id'], $this->data['dataset
 <?php
 foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword){
 	echo '<li>'.$this->vocab->formatTerm('vocab_science_keyword', $keyword).'</li>';
+	$keywords[] = $this->vocab->formatTerm('vocab_science_keyword', $keyword);
 }
 ?>
 </ul>
 
 <h4>Ancillary keywords</h4>
 <ul>
-	<?php
-	$keywords = $this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']);
-	foreach($keywords as $word){
-		echo '<li>'.$word['keyword'].'</li>';
-	}
-	?>
+<?php
+foreach($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $word){
+	echo '<li>'.$word['keyword'].'</li>';
+	$keywords[] = $word['keyword'];
+}
+?>
 </ul>
+
+<?php
+$this->json['keywords'] = $keywords;

@@ -11,6 +11,23 @@ class config {
 	public static $siteName = 'National Polar Data Center';
 	public static $siteDomain = 'example.com';
 	
+	public static $providerSchemaOrg = [//details of the data center for use in schema.org description of the data center
+		'description' => '',//description for data center description in schema.org
+		'sameAs' => [''],//alternative urls (if any) for schema.org description (e.g., link to twitter account or data center description on other sites)
+		'provider' => [//can be repeated and is NOT required (so can be removed)
+			[
+				'@type'=>'ResearchProject',
+				'name'=>'Organization name 1',
+				'description' => 'Host to the Netherlands Polar Data Center'
+			],
+			[
+				'@type'=>'ResearchProject',
+				'name'=>'Organization name 2',
+				'description' => 'Funder of the Netherlands Polar Data Center'
+			]
+		]
+	];
+	
 	//db connection
 	public static $db = [
 		'type' => 'mysql',//currently permitted: pgsql, mysql

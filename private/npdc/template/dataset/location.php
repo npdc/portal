@@ -58,6 +58,14 @@ if(count($spatialCoverages) > 0){
 			});
 			<?php
 
+			$this->json['spatialCoverage'] = [
+				'@type'=>'Place',
+				'geo'=>[],
+				'additionalProperty' => [
+					'@type' => ["PropertyValue", "dbpedia:Coordinate_reference_system"],
+					'@id' => "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+				]
+			];
 			foreach($spatialCoverages as $spatialCoverage){
 				$wkt = str_replace([' -90', ' 90'], [' -89.999999999', ' 89.999999999'], $spatialCoverage['wkt']);
 				?>
@@ -74,6 +82,46 @@ if(count($spatialCoverages) > 0){
 				feature.txt = '<?=$txt?>';
 				source.addFeature(feature);
 				<?php
+				$points = explode(',', substr($spatialCoverage['wkt'], strrpos($spatialCoverage['wkt'], '(')+1, strpos($spatialCoverage['wkt'], ')')-strrpos($spatialCoverage['wkt'], '(')-1));
+				$lats = [];
+				$lons = [];
+				foreach($points as &$point){
+					$point = explode(' ', $point);
+					foreach($point as &$coord){
+						$coord = round($coord, 4);
+					}
+					$lats[] = $point[1];
+					$lons[] = $point[0];
+					$point = implode(',', array_reverse($point));
+				}
+				switch($spatialCoverage['type']){
+					case 'Point':
+					$point = explode(',', $points[0]);
+						$this->json['spatialCoverage']['geo'][] = [
+							'@type'=>'GeoCoordinates',
+							'latitude'=>$point[0],
+							'longitude'=>$point[1]
+						];
+						break;
+					case 'LineString':
+						$this->json['spatialCoverage']['geo'][] = [
+							'@type'=>'GeoShape',
+							'line'=>implode(' ', $points)
+						];
+						break;
+					case 'Area':
+						$this->json['spatialCoverage']['geo'][] = [
+							'@type'=>'GeoShape',
+							'box'=>min($lats).' '.min($lons).' '.max($lats).' '.max($lons)
+						];
+						break;
+					case 'Polygon':
+						$this->json['spatialCoverage']['geo'][] = [
+							'@type'=>'GeoShape',
+							'polygon'=>implode(' ', $points)
+						];
+						break;
+				}
 			}
 			?>
 			var view = new ol.View({
