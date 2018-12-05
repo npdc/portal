@@ -361,7 +361,7 @@ class Dataset extends Base{
 			$this->mid .= parent::parseTemplate('dataset_mid');
 			$this->right = parent::parseTemplate('dataset_right');
 			if(defined('NPDC_UUID')){
-				echo('<pre>'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</pre>');
+				$this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</script>';
 			}
 		}
 	}
