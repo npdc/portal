@@ -1,6 +1,7 @@
 **Features:**
 - Project descriptions
 - Dataset descriptions according to DIF10 format (GCMD standard)
+  - Datasets available in json-ld (schema.org / Google dataset search)
 - Publication descriptions
 - Responsive
 
