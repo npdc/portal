@@ -42,7 +42,7 @@
 			if(is_array($file)){
 				$file = NPDC_DEV ? $file[0] : implode('', $file);
 			}
-			echo $code[0].$file.$code[1];
+			echo $code[0].$file.$code[1]."\r\n";
 		}
 	}
 	?>

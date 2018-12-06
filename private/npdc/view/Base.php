@@ -23,7 +23,8 @@ class Base {
 	}
 
 	protected function showCanonical(){
-		$this->extraHeader = ' <link rel="canonical" href="'.getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'].'" />';
+		$this->extraHeader = ' <link rel="canonical" href="'.getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'].'" />
+		<meta name="robots" content="noindex">';
 	}
 
 	/**
@@ -121,7 +122,7 @@ class Base {
 			if($editTable){
 				$return .= '<td></td>';
 			}
-			$return .= '</tr></thead>';
+			$return .= '</tr></thead>'."\r\n";
 			foreach($data as $item){
 				if(is_array($url)){
 					if($url[0] === 'content_type'){
@@ -147,7 +148,7 @@ class Base {
 				if($editTable){
 					$return .= '<td>'.($item['editor'] ? '<button onclick="javascript:event.stopPropagation();location.href=\''.$link.'/edit\'">Edit'.($item['hasDraft'] ? ' *' : '').'</button>' : '').'</td>';
 				}
-				$return .= '</tr>';
+				$return .= '</tr>'."\r\n";
 			}
 			$return .= '<tfoot><tr>';
 			foreach($columns as $column){
