@@ -27,6 +27,11 @@ class config {
 			]
 		]
 	];
+
+	public static $organizationSchemaOrg = [
+		'description' => '', //description for data center description in schema.org
+		'sameAs' => ['']//alternative urls (if any) for schema.org description (e.g., link to twitter account or data center description on other sites)
+	];
 	
 	//db connection
 	public static $db = [

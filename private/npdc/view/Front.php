@@ -18,6 +18,7 @@ class Front{
 	public $frontblocks = [];
 	private $session;
 	private $args;
+	public $extraHeader;
 	
 	/**
 	 * Constructor
@@ -98,5 +99,13 @@ class Front{
 		
 		//$this->frontblocks['update'] = $block;
 		$this->right = $block;
+		$this->json = array_merge([
+			'@context' => ['@vocab'=>'http://schema.org/'],
+			'@type' => ['Organization'],
+			'legalName' => \npdc\config::$siteName,
+			'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL,
+			'logo' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/img/logo.png'
+		], \npdc\config::$organizationSchemaOrg);
+		$this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</script>';
 	}	
 }
