@@ -32,6 +32,7 @@ class Login extends Base{
 		$this->session = $session;
 		$this->args = $args;
 		$this->controller = $controller;
+		$this->extraHeader = '<meta name="robots" content="noindex">';
 	}
 	
 	/**

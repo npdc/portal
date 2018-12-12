@@ -28,6 +28,7 @@ class Request extends Base{
 		$this->controller = $controller;
 		$this->model = new \npdc\model\Request();
 		parent::__construct();
+		$this->extraHeader = '<meta name="robots" content="noindex">';
 	}
 
 	/**

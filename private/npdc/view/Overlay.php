@@ -14,6 +14,7 @@ class Overlay{
 	public $bodyClass = 'overlay';
 	public $mid;
 	public $title;
+	public $extraHeader;
 
 	/**
 	 * Constructor
@@ -27,6 +28,7 @@ class Overlay{
 		if($args[1] === 'editor' && $session->userLevel < NPDC_EDITOR){
 			header('Location: '.BASE_URL.'/login?view=overlay&referer='.$_SERVER['REQUEST_URI']);die();
 		}
+		$this->extraHeader = '<meta name="robots" content="noindex">';
 	}
 	
 	/**
