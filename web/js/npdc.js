@@ -9,12 +9,12 @@ $().ready(function(){
 			} else {
 				items = $(this).nextUntil('hr').not('[id$=_new]');
 			}
-			if($(this).hasClass('hidden')){
+			if($(this).hasClass('collapsed')){
 				items.slideDown();
-				$(this).removeClass('hidden');
+				$(this).removeClass('collapsed');
 			} else {
 				items.slideUp();
-				$(this).addClass('hidden');
+				$(this).addClass('collapsed');
 			}
 		});
 	});

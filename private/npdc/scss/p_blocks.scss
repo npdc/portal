@@ -295,7 +295,7 @@
 	&:before {
 		content: '\25B2\0020';
 	}
-	&.hidden:before {
+	&.collapsed:before {
 		content: '\25BC\0020';
 	}
 	&:hover {
