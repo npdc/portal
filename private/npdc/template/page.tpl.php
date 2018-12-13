@@ -14,7 +14,7 @@
 		}
 		include 'head.tpl.php';
 	?>
-	<body class="<?=$view->class?> <?=(empty($session->userLevel) || $session->userLevel === NPDC_GUEST ? 'guest' : 'user')?>">
+	<body class="<?=$view->class?> <?=(empty($session->userLevel) || $session->userLevel === NPDC_PUBLIC ? 'guest' : 'user')?>">
 		<div id="overlay"><div class="inner"></div></div>
 		<?=NPDC_DEV ? '<div class="debug top">Running in debug mode</div>' : ''?>
 		<div id="page">
