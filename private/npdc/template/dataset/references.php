@@ -62,3 +62,29 @@ if(count($citations) > 0){
 			. '</p>';
 	}
 }
+
+$related = $this->model->getRelatedDatasets($this->data['dataset_id'], $this->data['dataset_version']);
+if(count($related) > 0){
+	echo '<h4>Related datasets</h4><ul>';
+	foreach($related as $set){
+		if(!empty($set['doi'])){
+			$l = '<a href="https://dx.doi.org/'.$set['doi'].'">https://dx.doi.org/'.$set['doi'].'</a>';
+		} elseif(!empty($set['internal_related_dataset_id'])){
+			$ds = $this->model->getById($set['internal_related_dataset_id']);
+			if(empty($ds) && $this->canEdit){
+				$ds = $this->model->getById($set['internal_related_dataset_id'], 'draft');
+			}
+			if(empty($ds)){
+				continue;
+			}
+			$l = '<a href="'.BASE_URL.'/'.$ds['uuid'].'">'.$ds['title'].'</a>';
+		} else {
+			$l = '<a href="'.$set['url'].'">'.$set['url'].'</a>';
+		}
+		echo '<li>'.$l.' - <em>'
+			. ($set['same'] ? 'The same dataset' : 'A related dataset')
+			. (empty($set['relation']) ? '' : '<span style="font-size:80%"><br/>Relation: '.$set['relation'].'</a>')
+			. '</em></li>';
+	}
+	echo '</ul>';
+}

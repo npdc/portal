@@ -114,6 +114,7 @@
 			"label": "Dataset reference",
 			"multi": true,
 			"required": false,
+			"collapsible": true,
 			"hint": "Reference to dataset (if any) used to compile this dataset. For referencing publications and other resources you can use the fields above",
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/data_set_citation.html",
 			"fields": {
@@ -230,7 +231,67 @@
 				}
 			}
 		},
-		
+		"related_dataset" :{
+			"type": "fieldset",
+			"label": "Related dataset",
+			"multi": true,
+			"required": false,
+			"collapsible": true,
+			"fields": {
+				"id": {
+					"type": "hidden",
+					"required": false
+				},
+				"dataset": {
+					"label": "Dataset",
+					"hint": "Please fill in one of the fields below",
+					"type": "fieldset",
+					"required": true,
+					"fields": {
+						"dataset_id": {
+							"type": "options",
+							"label": "Dataset",
+							"multiple": false,
+							"options": {},
+							"asList": true,
+							"ajaxUrl": "lookup/dataset",
+							"required": false
+						},
+						"doi": {
+							"type": "text",
+							"label": "Doi",
+							"placeholder": "10.",
+							"hint": "Prefered for externale datasets",
+							"required": false
+						},
+						"url": {
+							"type": "text",
+							"label": "Url",
+							"hint": "Please only use if above options not usable",
+							"placeholder": "https://",
+							"required": false
+						}
+						
+					}
+				},
+				"same":{
+					"type": "options",
+					"label": "This is",
+					"multiple": false,
+					"options": {
+						"true": "the same dataset in a different location",
+						"false": "a related dataset"
+					}
+				},
+				"relation": {
+					"type": "text",
+					"label": "Details about relation",
+					"required": false,
+					"max_length": 255,
+					"placeholder": "Optional"
+				}
+			}
+		},
 		"submit": {
 			"type": "submit",
 			"value": "Save and preview",

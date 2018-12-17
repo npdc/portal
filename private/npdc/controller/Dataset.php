@@ -97,8 +97,18 @@ class Dataset extends Base{
 				$this->formController->form->fields
 					->links->fields
 					->type->options = $vocab->getList('vocab_url_type');
+				$this->formController->form->fields->related_dataset->fields->dataset->fields->dataset_id->options = $this->getDatasets();
 				break;
 		}
+	}
+
+	private function getDatasets(){
+		$model = new \npdc\model\Dataset();
+		$options = [];
+		foreach($model->getList() as $ds){
+			$options[$ds['dataset_id']] = $ds['title'];
+		}
+		return $options;
 	}
 	
 	/**
@@ -295,7 +305,15 @@ class Dataset extends Base{
 						$_SESSION[$this->formId]['data']['citation_'.$rowid.'_'.$field] = $field === 'release_date' ? [$row[$field]] : $row[$field];
 					}
 				}
-
+				foreach($this->model->getRelatedDatasets($this->id, $this->version) as $setId=>$set){
+					$key = 'related_dataset_'.$key.'_';
+					$_SESSION[$this->formId]['data'][$key.'id'] = $set['related_dataset_id'];
+					$_SESSION[$this->formId]['data'][$key.'same'] = $set['same'] ? 'true' : 'false';
+					$_SESSION[$this->formId]['data'][$key.'relation'] = $set['relation'];
+					$_SESSION[$this->formId]['data'][$key.'dataset_url'] = $set['url'];
+					$_SESSION[$this->formId]['data'][$key.'dataset_doi'] = $set['doi'];
+					$_SESSION[$this->formId]['data'][$key.'dataset_dataset_id'] = $set['internal_related_dataset_id'];
+				}
 				break;
 			case 'files':
 				$fields = ['id', 'type', 'title', 'description', 'mime', 'protocol'];
@@ -432,6 +450,7 @@ class Dataset extends Base{
 					$this->saveProjects();
 					$this->savePublications();
 					$this->saveCitation('other');
+					$this->saveRelatedDatasets();
 					$saved = true;
 					break;
 				case 'files':
@@ -587,6 +606,40 @@ class Dataset extends Base{
 		$v = $this->version-1;
 
 		$this->model->deletePublication($this->id, $v, $publications);
+	}
+
+	private function saveRelatedDatasets(){
+		$related = [];
+		$loopId = 'related_dataset_';
+		$serials = [];
+		foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
+			if(substr($key, 0, strlen($loopId)) === $loopId){
+				$serials[] = substr($key
+						, strlen($loopId)
+						, strpos($key, '_', strlen($loopId))-strlen($loopId)
+					);
+			}
+		}
+		foreach(array_unique($serials) as $serial){
+			$data = [
+				'same'=>$_SESSION[$this->formId]['data'][$loopId.$serial.'_same'] == 'true' ? 1 : 0,
+				'relation'=>$_SESSION[$this->formId]['data'][$loopId.$serial.'_relation'],
+				'url'=>$_SESSION[$this->formId]['data'][$loopId.$serial.'_dataset_url'],
+				'doi'=>$_SESSION[$this->formId]['data'][$loopId.$serial.'_dataset_doi'],
+				'internal_related_dataset_id'=>$_SESSION[$this->formId]['data'][$loopId.$serial.'_dataset_dataset_id']
+			];
+			if(empty($_SESSION[$this->formId]['data']['related_dataset_'.$serial.'_id'])){
+				$data['dataset_id'] = $this->id;
+				$data['dataset_version_min'] = $this->version;
+				$related[] = $this->model->insertRelatedDataset($data);
+			} else {
+				$record_id = $_SESSION[$this->formId]['data']['related_dataset_'.$serial.'_id'];
+				$return = $this->model->updateRelatedDataset($record_id, $data, $this->version);
+				$related[] = !is_bool($return) ? $return : $record_id;	
+			}
+		}
+		$v = $this->version-1;
+		$this->model->deleteRelatedDataset($this->id, $v, $related, $type);
 	}
 	
 	/**

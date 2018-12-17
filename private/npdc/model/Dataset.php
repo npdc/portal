@@ -19,6 +19,7 @@ class Dataset{
 	 */
 	public function __construct(){
 		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 
 	/**
@@ -508,6 +509,21 @@ class Dataset{
 		return $q->fetchAll();
 	}
 	
+	/**
+	 * Get related datasets
+	 *
+	 * @param integer $id dataset id
+	 * @param integer $version dataset version
+	 * @return array list of related datasets
+	 */
+	public function getRelatedDatasets($id, $version){
+		return $this->fpdo
+			->from('related_dataset')
+			->where('dataset_id = ?', $id)
+			->where('dataset_version_min <= ?', $version)
+			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
+			->fetchAll();
+	}
 	/**
 	 * Get science keywords
 	 *
@@ -1551,6 +1567,64 @@ class Dataset{
 		$q->execute();
 		$this->fpdo
 			->deleteFrom('dataset_citation')
+			->where('dataset_version_max < dataset_version_min')
+			->execute();
+		return true;
+	}
+
+	public function insertRelatedDataset($data){
+		return $this->fpdo
+			->insertInto('related_dataset', $data)
+			->execute();
+	}
+	
+	public function updateRelatedDataset($record, $data, $version){
+		$oldRecord = $this->fpdo
+			->from('related_dataset', $record)
+			->fetch();
+		
+		$createNew = false;
+		foreach($data as $key=>$val){
+			if($val != $oldRecord[$key]){
+				$createNew = true;
+			}
+		}
+		if($oldRecord['dataset_version_min'] === $version && $createNew){
+			$return = $this->fpdo
+				->update('related_dataset', $data, $record)
+				->execute() === 1;
+		} elseif($createNew){
+			$this->fpdo
+				->update('related_dataset', ['dataset_version_max'=>$version-1], $record)
+				->execute();
+			$return = $this->insertRelatedDataset(array_merge($data, ['dataset_version_min'=>$version, 'dataset_id'=>$oldRecord['dataset_id']]));
+		} else {
+			$return = true;
+		}
+		return $return;
+	}
+	
+	public function deleteRelatedDataset($dataset_id, $version, $currentRelatedDatasets){
+		$q = $this->fpdo
+			->update('related_dataset')
+			->set('dataset_version_max', $version)
+			->where('dataset_id', $dataset_id)
+			->where('dataset_version_max', null);
+		if(count($currentRelatedDatasets) > 0){
+			foreach($currentRelatedDatasets as $related_dataset){
+				if(!is_numeric($related_dataset)){
+					die('Something went wrong! (e_deleteRelatedDataset '.$related_dataset.')');
+				}
+			}
+			if(count($currentRelatedDatasets) === 1){
+				$q->where('related_dataset_id <> ?',$currentRelatedDatasets[0]);
+			} else {
+				$q->where('related_dataset_id NOT IN ('.implode(',',$currentRelatedDatasets).')');
+			}
+		}
+		$q->execute();
+		$this->fpdo
+			->deleteFrom('related_dataset')
 			->where('dataset_version_max < dataset_version_min')
 			->execute();
 		return true;
