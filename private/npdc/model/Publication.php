@@ -302,6 +302,7 @@ class Publication{
 			->select('\'Publication\' AS content_type')
 			->orderBy('date DESC');
 		if(!empty($string)){
+			$string = '%'.$string.'%';
 			$operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
 			if($summary){
 				$q->where('(title '.$operator.' :search1 OR abstract '.$operator.' :search2)', [':search1'=>$string, ':search2'=>$string]);
