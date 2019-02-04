@@ -23,7 +23,7 @@ class Base {
 	}
 
 	protected function showCanonical(){
-		$this->extraHeader = ' <link rel="canonical" href="'.getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'].'" />
+		$this->extraHeader = ' <link rel="canonical" href="'.getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->controller->name.'/'.$this->data['uuid'].'" />
 		<meta name="robots" content="noindex">';
 	}
 
@@ -126,11 +126,17 @@ class Base {
 			foreach($data as $item){
 				if(is_array($url)){
 					if($url[0] === 'content_type'){
-						$id = strtolower($item['content_type']).'_id';
+						$id = (array_key_exists('uuid', $item) 
+							? 'uuid'
+							: ($url[1] === 'content_type_id' 
+								? strtolower($item['content_type']).'_id' 
+								: $url[1]
+							)
+						);
 						$link = BASE_URL.'/'.strtolower($item['content_type']).'/'.$item[$id];
 					} else {
-						$link = empty($item[$url[1]]) ? '' : BASE_URL.'/'.$url[0].'/'.$item[$url[1]];
-					}	
+						$link = empty($item[$url[1]]) ? '' : BASE_URL.'/'.$url[0].'/'.(array_key_exists('uuid', $item) ? $item['uuid'] : $item[$url[1]]);
+					}
 				} else {
 					$link = $item[$url];
 				}

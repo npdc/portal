@@ -40,7 +40,7 @@ foreach($this->model->getCitations($this->data['dataset_id'], $this->data['datas
 		} elseif(!empty($citation[$source])){
 			$data['Dataset_Citation'][$i][$target] = $citation[$source];
 		} elseif($source === 'online_resource'){
-			$data['Dataset_Citation'][$i][$target] = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'];
+			$data['Dataset_Citation'][$i][$target] = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'];
 		}
 	}
 }

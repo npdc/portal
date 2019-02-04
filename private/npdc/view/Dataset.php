@@ -101,7 +101,7 @@ class Dataset extends Base{
 						, ['title'=>'Title', 
 							'date_start'=>'Start date', 
 							'date_end'=>'End date']
-						, 'uuid'//['dataset', 'dataset_id']
+						, ['dataset', 'dataset_id']
 						, true
 						, true
 					);
@@ -161,7 +161,7 @@ class Dataset extends Base{
 			$this->showCitation();
 		} elseif ((!$this->canEdit || is_null($this->controller->display)) && $dataset !== 'new') {//display dataset
 			$this->showDataset();
-			if(!defined('NPDC_UUID')){
+			if(!defined('NPDC_UUID') || NPDC_UUID_POSITION !== 1){
 				$this->showCanonical();
 			}
 		} elseif($this->args[2] === 'warnings') {
@@ -245,7 +245,7 @@ class Dataset extends Base{
 	 */
 	private function showCitation(){
 		$citation = $this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version'], 'this')[0];
-		$url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'];
+		$url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'];
 
 		$authors = explode('; ', str_replace(' &amp;', ';', $citation['creator'] ?? $this->model->getAuthors($this->data['dataset_id'], $this->data['dataset_version'])));
 		foreach($authors as $author){
@@ -344,23 +344,23 @@ class Dataset extends Base{
 				$this->right = parent::parseTemplate('dataset_files_right');
 			}
 		} else {
-			$this->json = [
-				'@context' => ['@vocab'=>'http://schema.org/'],
-				'@type' => 'Dataset',
-				'name' => $this->data['title'],
-				'description' => strip_tags($this->data['summary']),
-				'version' => $this->data['dataset_version'],
-				'identifier' => 'urn:uuid:'.$this->data['uuid'],
-				'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->data['uuid'],
-				'includedInDataCatalog' => [
-					'@type' => 'DataCatalog',
-					'name' => \npdc\config::$siteName,
-					'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL
-				]
-			];
 			$this->mid .= parent::parseTemplate('dataset_mid');
 			$this->right = parent::parseTemplate('dataset_right');
-			if(defined('NPDC_UUID')){
+			if(defined('NPDC_UUID') && NPDC_UUID_POSITION === 1){
+				$this->json = [
+					'@context' => ['@vocab'=>'http://schema.org/'],
+					'@type' => 'Dataset',
+					'name' => $this->data['title'],
+					'description' => strip_tags($this->data['summary']),
+					'version' => $this->data['dataset_version'],
+					'identifier' => 'urn:uuid:'.$this->data['uuid'],
+					'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'],
+					'includedInDataCatalog' => [
+						'@type' => 'DataCatalog',
+						'name' => \npdc\config::$siteName,
+						'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL
+					]
+				];
 				$this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</script>';
 			}
 		}

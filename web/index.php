@@ -60,22 +60,26 @@ $args = ($url === false || strlen($url)<1)
 if($args[0] === 'home'){
 	unset($args[0]);
 }
-if(\Lootils\Uuid\Uuid::isValid($args[0])){
-	if(strpos('-', $args[0]) === false){
-		$args[0] = preg_replace("/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/i", "$1-$2-$3-$4-$5", $args[0]);
-	}
-	define('NPDC_UUID', $args[0]);
-	foreach(['dataset', 'project', 'publication'] as $cType){
-		$mName = 'npdc\\model\\'.ucfirst($cType);
-		$m = new $mName();
-		$r = $m->getByUUID($args[0]);
-		if($r !== false){
-			unset($args[0]);
-			$args = array_merge([$cType, $r[$cType.'_id'], $r[$cType.'_version']], $args);
-			break;
+for($i=0;$i<=1;$i++){
+	if(\Lootils\Uuid\Uuid::isValid($args[$i])){
+		if(strpos('-', $args[$i]) === false){
+			$args[$i] = preg_replace("/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/i", "$1-$2-$3-$4-$5", $args[$i]);
+		}
+		define('NPDC_UUID', $args[$i]);
+		define('NPDC_UUID_POSITION', $i);
+		foreach($i==0 ? ['dataset', 'project', 'publication'] : [$args[0]] as $cType){
+			$mName = 'npdc\\model\\'.ucfirst($cType);
+			$m = new $mName();
+			$r = $m->getByUUID($args[$i]);
+			if($r !== false){
+				for($n=0;$n<=$i;$n++){unset($args[$n]);}
+				$args = array_merge([$cType, $r[$cType.'_id'], $r[$cType.'_version']], $args);
+				break 2;
+			}
 		}
 	}
 }
+
 #get controller & id
 switch(count($args)){
 	case 0://load homepage

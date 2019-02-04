@@ -121,7 +121,7 @@ class Sitemap {
 	private function getProjects(){
 		$model = new \npdc\model\Project();
 		foreach($model->getList() as $project){
-			$this->projects[$project['uuid']] = [$project['title'], $project['published']];
+			$this->projects['project/'.$project['uuid']] = [$project['title'], $project['published']];
 			$this->project_last = $project['published'] > $this->project_last ? $project['published'] : $this->project_last;
 		}
 	}
@@ -134,7 +134,7 @@ class Sitemap {
 	private function getDatasets(){
 		$model = new \npdc\model\Dataset();
 		foreach($model->getList() as $dataset){
-			$this->datasets[$dataset['uuid']] = [$dataset['title'], $dataset['published']];
+			$this->datasets['dataset/'.$dataset['uuid']] = [$dataset['title'], $dataset['published']];
 			$this->dataset_last = $dataset['published'] > $this->dataset_last ? $dataset['published'] : $this->dataset_last;
 		}
 	}
@@ -147,7 +147,7 @@ class Sitemap {
 	private function getPublications(){
 		$model = new \npdc\model\Publication();
 		foreach($model->getList() as $publication){
-			$this->publications[$publication['uuid']] = [$publication['title'], $publication['published']];
+			$this->publications['publication/'.$publication['uuid']] = [$publication['title'], $publication['published']];
 			$this->publication_last = $publication['published'] > $this->publication_last ? $publication['published'] : $this->publication_last;
 		}
 	}

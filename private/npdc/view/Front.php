@@ -94,7 +94,7 @@ class Front{
 			} elseif(array_key_exists('publication_id', $item)){
 				$type = 'Publication';
 			}
-			$block .= '<a href="'.BASE_URL.'/'.$item['uuid'].'">'.trim($item['title']).'</a> <span class="info"><span class="type">'.$type.'</span> <span class="time">'.date('j F Y H:i', strtotime($item['published'])).'</span></span>';
+			$block .= '<a href="'.BASE_URL.'/'.strtolower($type).'/'.$item['uuid'].'">'.trim($item['title']).'</a> <span class="info"><span class="type">'.$type.'</span> <span class="time">'.date('j F Y H:i', strtotime($item['published'])).'</span></span>';
 		}
 		
 		//$this->frontblocks['update'] = $block;
