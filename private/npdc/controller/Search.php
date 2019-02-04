@@ -51,7 +51,7 @@ class Search {
 		while (strstr($qclean, "  ")) {
 			$qclean = trim(str_replace("  ", " ", $qclean));
 		}
-		$url .= '/'.str_replace([" ", '/'], "+", $qclean);
+		$url .= '/'.str_replace([" "], "+", $qclean);
 		return $url;
 	}
 }

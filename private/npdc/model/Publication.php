@@ -305,9 +305,9 @@ class Publication{
 			$string = '%'.$string.'%';
 			$operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
 			if($summary){
-				$q->where('(title '.$operator.' :search1 OR abstract '.$operator.' :search2)', [':search1'=>$string, ':search2'=>$string]);
+				$q->where('(title '.$operator.' :search1 OR abstract '.$operator.' :search2 OR doi '.$operator.' :search3)', [':search1'=>$string, ':search2'=>$string, ':search3'=>$string]);
 			} else {
-				$q->where('title '.$operator.' :search', $string);
+				$q->where('(title '.$operator.' :search OR doi '.$operator.' :search2', [':search'=>$string, ':search2'=>$string]);
 			}
 		}
 		if(is_array($exclude) && count($exclude) > 0){

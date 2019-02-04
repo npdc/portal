@@ -45,7 +45,7 @@ $url = (strpos($url, '?') !== false)
 //remove dot if present and store part after dot in ext
 if(strpos($url, '.') !== false){
 	$parts = explode('.', $url);
-	if(count($parts) === 2 && !is_numeric($parts[1])){
+	if(count($parts) === 2 && !is_numeric($parts[1]) && strlen($parts[1]) <= 4){
 		list($url, $ext) = $parts;
 	}
 }
