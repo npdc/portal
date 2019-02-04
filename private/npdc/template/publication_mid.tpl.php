@@ -7,6 +7,7 @@
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
+echo $this->model->getCitation($this->data);
 ?><h4>Abstract</h4>
 <p><?=$this->data['abstract']?></p>
 
