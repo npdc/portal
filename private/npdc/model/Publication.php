@@ -357,7 +357,7 @@ class Publication{
 	public function getVersions($publication_id){
 		return $this->fpdo
 			->from('publication', $publication_id)->select(null)
-			->select('publication_version, record_status')
+			->select('publication_version, record_status, uuid')
 			->orderBy('publication_version DESC')
 			->fetchAll();
 	}

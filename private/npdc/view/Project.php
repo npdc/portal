@@ -181,7 +181,7 @@ class Project extends Base{
 					$_SESSION['notice'] .= ' You are looking at a '.$this->data['record_status'].' version of this page'.($this->data['record_status'] === 'draft' ? $this->controller->draftMsg : '');
 					if(!$this->canEdit){
 						$cur = $this->model->getById($this->data['project_id']);
-						$_SESSION['notice'] .= ', the current can version can be found <a href="'.BASE_URL.'/'.$cur['uuid'].'">here</a>';
+						$_SESSION['notice'] .= ', the current can version can be found <a href="'.BASE_URL.'/project/'.$cur['uuid'].'">here</a>';
 					}
 				} 
 				$this->title = 'Project - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');

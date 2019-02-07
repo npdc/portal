@@ -35,10 +35,4 @@ foreach($parts as $part){
 			. '</div><hr/>';
 	}
 }
-
-echo '<div class="technical">';
-if(!empty($this->data['dif_id'])){
-	echo '<strong>Dif id:</strong> '.$this->data['dif_id'].' | ';
-}
-?>
-<nobr><strong>UUID:</strong> <a href="<?=BASE_URL.'/'.$this->data['uuid']?>"><?=$this->data['uuid']?></a></nobr> | <nobr><strong>Version:</strong> <?=$this->data['dataset_version']?></nobr></div>
+include 'foot_technical.php';

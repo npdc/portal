@@ -353,7 +353,7 @@ class Project{
 	public function getVersions($project_id){
 		return $this->fpdo
 			->from('project', $project_id)->select(null)
-			->select('project_version, record_status')
+			->select('project_version, record_status, uuid')
 			->orderBy('project_version DESC')
 			->fetchAll();
 	}

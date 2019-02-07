@@ -326,7 +326,7 @@ class Dataset extends Base{
 			$_SESSION['notice'] .= ' You are looking at a '.$this->data['record_status'].' version of this page'.($this->data['record_status'] === 'draft' ? $this->controller->draftMsg : '');
 			if(!$this->canEdit){
 				$cur = $this->model->getById($this->data['dataset_id']);
-				$_SESSION['notice'] .= ', the current can version can be found <a href="'.BASE_URL.'/'.$cur['uuid'].'">here</a>';
+				$_SESSION['notice'] .= ', the current can version can be found <a href="'.BASE_URL.'/dataset/'.$cur['uuid'].'">here</a>';
 			}
 		} 
 		$this->title = 'Dataset - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');

@@ -49,6 +49,4 @@ if(\npdc\config::$partEnabled['project']){
 		echo $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'period'=>'Period'], ['project', 'project_id']);
 	}
 }
-?>
-<hr/>
-<div class="technical"><nobr><strong>UUID:</strong> <a href="<?=BASE_URL.'/'.$this->data['uuid']?>"><?=$this->data['uuid']?></a></nobr> | <nobr><strong>Version:</strong> <?=$this->data['publication_version']?></nobr></div>
+include 'foot_technical.php';

@@ -668,7 +668,7 @@ class Dataset{
 	public function getVersions($dataset_id){
 		return $this->fpdo
 			->from('dataset', $dataset_id)->select(null)
-			->select('dataset_version, record_status')
+			->select('dataset_version, record_status, uuid')
 			->orderBy('dataset_version DESC')
 			->fetchAll();
 	}
