@@ -1,0 +1,39 @@
+@import "p_colors";
+
+.debug {
+	text-align: center;
+	color: white;
+	font-style: italic;
+	font-size: 80%;
+	&.top {
+		margin-top: -20px;
+		margin-bottom: 20px;
+	}
+	&.bottom {
+		margin-top: 20px;
+		margin-bottom: -20px;
+		div {
+			font-style: normal;
+			text-align: left;
+			display: none;
+			font-family: monospace;
+			white-space: pre;
+			border-top: dashed $color-accent-1 1px;
+		}
+		&.expanded div{
+			display: block;
+		}
+	}
+}
+
+body {
+	background-color: #ff6666;
+}
+#page:before {
+	position: absolute;
+	top: 0px;
+	left: 5px;
+	content: 'Development';
+	opacity: 0.5;
+	z-index: -999;
+}

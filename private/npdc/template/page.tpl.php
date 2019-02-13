@@ -16,7 +16,6 @@
 	?>
 	<body class="<?=$view->class?> <?=(empty($session->userLevel) || $session->userLevel === NPDC_PUBLIC ? 'guest' : 'user')?>">
 		<div id="overlay"><div class="inner"></div></div>
-		<?=NPDC_DEV ? '<div class="debug top">Running in debug mode</div>' : ''?>
 		<div id="page">
 			<div id="top">
 				<div id="search"><form method="post" action="<?=BASE_URL?>/search"><input type="text" placeholder="search term" name="q" /><input type="submit" value="search"/></form></div>

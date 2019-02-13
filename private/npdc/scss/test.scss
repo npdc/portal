@@ -1,0 +1,11 @@
+body {
+	background: #00bb00;
+}
+#page:before {
+	position: absolute;
+	top: 0px;
+	left: 5px;
+	content: 'Test';
+	opacity: 0.5;
+	z-index: -999;
+}

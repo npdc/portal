@@ -16,7 +16,12 @@ define('DOCROOT_APP', __DIR__);
 set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__.'/');
 
 //debugging settings
+error_reporting(E_ALL & ~E_NOTICE);
 define('NPDC_DB_DEBUG', false);
+define('NPDC_ENVIRONMENT', $_SERVER['ENVIRONMENT'] ?? 'production');
+define('NPDC_DEV', NPDC_ENVIRONMENT=='dev');
+ini_set('display_errors', NPDC_DEV ? 'on' : 'off');
+
 if(BASE_URL === '/npdc_dev'){
 	ini_set('display_errors', 'on');
 	define('NPDC_DEV', true);

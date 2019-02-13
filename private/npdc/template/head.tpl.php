@@ -31,8 +31,8 @@
 		'external/ol',
 		['npdc', '.min']
 	];
-	if(NPDC_DEV){
-		$css[] = 'debug';
+	if(NPDC_ENVIRONMENT !== 'production'){
+		$css[] = NPDC_ENVIRONMENT;
 	}
 	foreach([
 		'css'=>['<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/', '.css?'.APP_BUILD.'" />'],

@@ -6,8 +6,10 @@ web/css/plain.css
 web/css/plain.min.css
 web/css/textarea.css
 web/css/textarea.min.css
-web/css/debug.css
-web/css/debug.min.css
+web/css/test.min.css
+web/css/dev.css
+web/css/dev.min.css
+web/css/test.css
 web/img/news
 web/img/favicon.ico
 web/img/*.jpg
