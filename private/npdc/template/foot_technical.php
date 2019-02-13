@@ -20,4 +20,4 @@ if(count($versions) === 1){
 } else {
 	echo ''.$this->data[$this->controller->name.'_version'].'<div>'.implode('', $versions).'</div>';
 }
-?></span></nobr></div>
+?></span></nobr> | <nobr><strong>Added on:</strong> <?=date('j F Y H:i', strtotime($this->data['published']))?></nobr></div>
