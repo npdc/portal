@@ -16,6 +16,7 @@ class Dataset extends Base{
 	public $canEdit = false;
 	public $baseUrl;
 	public $versions;
+	public $allowDuplicate = true;
 	
 	/**
 	 * Constructor
@@ -151,6 +152,9 @@ class Dataset extends Base{
 				$this->data = $this->model->getById($dataset, 1);
 			}
 			$this->version = $this->data['dataset_version'];
+			if($this->args[2] === 'duplicate'){
+				echo 'DUP';die();
+			}
 		}
 
 		if($this->data === false && $dataset !== 'new'){//dataset not found
@@ -161,7 +165,7 @@ class Dataset extends Base{
 			$this->showCitation();
 		} elseif ((!$this->canEdit || is_null($this->controller->display)) && $dataset !== 'new') {//display dataset
 			$this->showDataset();
-			if(!defined('NPDC_UUID') || NPDC_UUID_POSITION !== 1){
+			if(!array_key_exists('uuid', $this->args) || !array_key_exists('uuidtype', $this->args)){
 				$this->showCanonical();
 			}
 		} elseif($this->args[2] === 'warnings') {
@@ -346,7 +350,7 @@ class Dataset extends Base{
 		} else {
 			$this->mid .= parent::parseTemplate('dataset_mid');
 			$this->right = parent::parseTemplate('dataset_right');
-			if(defined('NPDC_UUID') && NPDC_UUID_POSITION === 1){
+			if(array_key_exists('uuid', $this->args) && array_key_exists('uuidtype', $this->args)){
 				$this->json = [
 					'@context' => ['@vocab'=>'http://schema.org/'],
 					'@type' => 'Dataset',

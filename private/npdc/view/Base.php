@@ -15,6 +15,7 @@ class Base {
 	protected $data;
 	protected $model;
 	public $extraHeader;
+	public $allowDuplicate = false;
 	/**
 	 * Constructor
 	 */

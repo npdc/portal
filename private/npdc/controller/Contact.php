@@ -26,7 +26,7 @@ class Contact {
 	public function __construct($session, $args){
 		if(count($args) > 1){
 			$this->model = new \npdc\model\Person;
-			$this->person = $this->model->getById($args[1]);
+			$this->person = $this->model->getById($args['id']);
 			if($this->person !== false) {
 				$this->name = $this->person['name'];
 				$this->to = $this->person['mail'];

@@ -69,8 +69,12 @@
 					<?=isset($view->left) ? '<div id="left">'.$view->left.'</div>' : ''?>
 					<div id="mid">
 						<?php
-						if(property_exists($view, 'canEdit') && $view->canEdit && strpos($url, '/new') === false && strpos($url, '/edit') === false){
-							echo '<div id="tools"><button onclick="openUrl(\''.BASE_URL.'/'.$view->baseUrl.'/edit\')">Edit this page</button></div>';
+						if(property_exists($view, 'canEdit') && $view->canEdit && strpos($url, '/new') === false && strpos($url, '/edit') === false && strpos($url, '/warnings') === false){
+							echo '<div id="tools">';
+							if(property_exists($view, 'allowDuplicate') && $view->allowDuplicate){
+								echo '<button onclick="openUrl(\''.BASE_URL.'/'.(defined('NPDC_UUID') ? NPDC_UUID : $view->baseUrl).'/duplicate\')">Duplicate this page</button> ';
+							}
+							echo '<button onclick="openUrl(\''.BASE_URL.'/'.$view->baseUrl.'/edit\')">Edit this page</button></div>';
 						}
 						?>
 						<?=isset($_SESSION['errors']) ? '<div class="errors">'.$_SESSION['errors'].'</div>': '' ?>
