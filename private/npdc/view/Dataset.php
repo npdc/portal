@@ -41,21 +41,12 @@ class Dataset extends Base{
 	 */
 	public function listStatusChanges(){
 		$version = $this->version;
-		if(count($this->args) > 2){
-			if(in_array($this->args[2], ['edit', 'submit'])){
-				$version = $this->versions[0]['dataset_version'];
-			} elseif(is_numeric($this->args[2])){
-				$version = $this->args[2];
-			} else {
-				foreach($this->versions as $version){
-					if($version['record_status'] === $this->args[2]){
-						$version = $version['dataset_version'];
-						break;
-					}
-				}
-			}
+		if(array_key_exists('action', $this->args) && in_array($this->args['action'], ['edit', 'submit'])){
+			$version = $this->versions[0]['dataset_version']; 
+		} elseif (array_key_exists('version', $this->args)){
+			$version = $this->args['version'];
 		}
-		return $this->doListStatusChanges($this->args[1], $version);
+		return $this->doListStatusChanges($this->args['id'], $version);
 	}
 	
 	/**
@@ -128,17 +119,14 @@ class Dataset extends Base{
 	 * @return void
 	 */
 	public function showItem($dataset){
-		if(strpos($dataset, '.') !== false){
-			list($dataset, $this->args[2]) = explode('.', $dataset);
-		}
-		if($dataset !== 'new'){
+		if($this->args['action'] !== 'new'){
 			$this->canEdit = isset($this->session->userId) && ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId));
 			$this->versions = $this->model->getVersions($dataset);
 
-			if(in_array($this->args[2], ['edit', 'submit', 'warnings'])){
+			if(in_array($this->args['action'], ['edit', 'submit', 'warnings'])){
 				$v = $this->versions[0]['dataset_version'];
-			} elseif (count($this->args) > 2 && (is_numeric($this->args[2]))){
-				$v = $this->args[2];
+			} elseif (array_key_exists('version', $this->args)){
+				$v = $this->args['version'];
 			}
 			$this->data = isset($v) 
 				? $this->model->getById($dataset, $v)
@@ -152,27 +140,27 @@ class Dataset extends Base{
 				$this->data = $this->model->getById($dataset, 1);
 			}
 			$this->version = $this->data['dataset_version'];
-			if($this->args[2] === 'duplicate'){
+			if($this->args['action'] === 'duplicate'){
 				echo 'DUP';die();
 			}
 		}
 
-		if($this->data === false && $dataset !== 'new'){//dataset not found
+		if($this->data === false && $this->args['action'] !== 'new'){//dataset not found
 			$this->showError();
 		} elseif(NPDC_OUTPUT === 'xml'){//show as xml
 			$this->showXml();
 		} elseif(in_array(NPDC_OUTPUT, ['ris', 'bib'])){
 			$this->showCitation();
-		} elseif ((!$this->canEdit || is_null($this->controller->display)) && $dataset !== 'new') {//display dataset
+		} elseif ((!$this->canEdit || is_null($this->controller->display)) && $this->args['action'] !== 'new') {//display dataset
 			$this->showDataset();
 			if(!array_key_exists('uuid', $this->args) || !array_key_exists('uuidtype', $this->args)){
 				$this->showCanonical();
 			}
-		} elseif($this->args[2] === 'warnings') {
+		} elseif($this->args['action'] === 'warnings') {
 			$this->title = 'Please check - '.$this->data['title'];
 			$this->mid = $this->controller->showWarnings();
 		} else {
-			$this->title = ($dataset === 'new') ? 'New dataset' : 'Edit dataset - '.$this->data['title'];
+			$this->title = ($this->args['action'] !== 'new') ? 'New dataset' : 'Edit dataset - '.$this->data['title'];
 			$this->baseUrl .= '/'.$this->versions[0]['dataset_version'];
 			$this->loadEditPage($this->controller->pages);
 		}
@@ -287,12 +275,9 @@ class Dataset extends Base{
 				$this->title = 'No access';
 				$this->mid .= 'No access';
 			}
-		} elseif(is_numeric($this->args[2])) {
-			$this->title = 'No version '.$this->args[2].' found';
-			$this->mid .= 'There is no version '.$this->args[2].' of this dataset.';
-		} else {
-			$this->title = 'No '.$this->args[2].' version found';
-			$this->mid .= 'There is no '.$this->args[2].' version of this dataset.';
+		} elseif(array_key_exists('version', $this->args)) {
+			$this->title = 'No version '.$this->args['version'].' found';
+			$this->mid .= 'There is no version '.$this->args['version'].' of this dataset.';
 		}
 	}
 
@@ -317,12 +302,12 @@ class Dataset extends Base{
 			if($this->data['record_status'] === 'draft'){
 				$_SESSION['notice'] .= ' Publishing this draft is not possible since it doesn\'t appear to be different than the published record.';
 			}
-		} elseif($this->args[2] === 'submit' && $this->data['record_status'] === 'draft'){
+		} elseif($this->args['action'] === 'submit' && $this->data['record_status'] === 'draft'){
 			$_SESSION['notice'] = $this->controller->submitForm;
 		} elseif($this->data['record_status'] !== 'published'){
 			if($this->session->userLevel === NPDC_ADMIN && $this->data['record_status'] === 'submitted'){
-				if($this->args[2] !== 'submitted'){
-					header('Location: '.BASE_URL.'/dataset/'.$this->args[1].'/submitted');
+				if($this->args['action'] !== 'submitted'){
+					header('Location: '.BASE_URL.'/dataset/'.$this->args['id'].'/submitted');
 					die();
 				}
 				$_SESSION['notice'] = $this->controller->publishForm;
@@ -335,6 +320,7 @@ class Dataset extends Base{
 		} 
 		$this->title = 'Dataset - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');
 		$this->class = 'detail';
+		var_dump($this->args);
 		if(in_array('files', $this->args)){
 			if(in_array('request', $this->args)){
 				if($this->session->userLevel === NPDC_PUBLIC){

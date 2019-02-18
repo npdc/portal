@@ -35,17 +35,11 @@ class Search extends Base{
 		$this->session = $session;
 		$this->args = $args;
 		$this->controller = $controller;
-		$searchStart = 1;
-		if(count($args) > 2){
-			foreach(explode('+', $args[1]) as $type){
-				if(in_array($type, ['project', 'dataset', 'publication'])){
-					$this->type = explode('+', $args[1]);
-					$searchStart = 2;
-					break;
-				}
-			}
+		if(array_key_exists('types', $args)){
+			$this->type = explode('+', $args['types']);
 		}
-		$this->search = urldecode(implode('/', array_slice($args, $searchStart)));
+		
+		$this->search = str_replace('+', ' ', $this->args['subject']);
 		$_SESSION[$this->controller->formId]['data']['q'] = $this->search;
 		$_SESSION[$this->controller->formId]['data']['type'] = $this->type;
 	}

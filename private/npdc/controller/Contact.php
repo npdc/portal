@@ -24,7 +24,7 @@ class Contact {
 	 * @param array $args url parameters
 	 */
 	public function __construct($session, $args){
-		if(count($args) > 1){
+		if(array_key_exists('id', $this->args)){
 			$this->model = new \npdc\model\Person;
 			$this->person = $this->model->getById($args['id']);
 			if($this->person !== false) {

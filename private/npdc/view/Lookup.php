@@ -37,7 +37,7 @@ class Lookup {
 //			header('HTTP/1.0 401 Unauthorized');
 //			die('No access');
 		}
-		$this->{$this->args[1]}();
+		$this->{$this->args['action']}();
 		header('Content-type:application/json;charset=utf-8');
 		if($_GET['output'] === 'object'){
 			foreach($this->data as &$row){
@@ -69,8 +69,8 @@ class Lookup {
 	 */
 	private function organization(){
 		$model = new \npdc\model\Organization();
-		if(count($this->args) > 2){
-			$data = [$model->getById($this->args[2])];
+		if(array_key_exists('subaction', $this->args)){
+			$data = [$model->getById($this->args['subaction'])];
 		} else {
 			$data = $model->search($_GET['q'], $_GET['e'] ?? null);
 		}

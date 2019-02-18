@@ -21,13 +21,13 @@ class Login {
 	 */
 	public function __construct($session, $args){
 		$this->model = new \npdc\model\Person();
-		switch($args[1]){
+		switch($args['loginaction']){
 			case 'reset':
-				if(count($args) === 2){
+				if(!array_key_exists('loginkey', $args)){
 					$this->formId = 'login_reset_password';
 				} else {
-					$key = $this->model->getPasswordReset($args[2]);
-					if(count($key) === 0 || !password_verify($args[3], $key['code'])){
+					$key = $this->model->getPasswordReset($args['loginid']);
+					if($key === false || !password_verify($args['loginkey'], $key['code'])){
 						return;
 					}
 					$this->formId = 'login_new_password';
@@ -102,7 +102,7 @@ class Login {
 						if(strlen($_POST['password']) < \npdc\config::$passwordMinLength) {
 							$_SESSION[$this->formId]['errors']['password'] = 'The new password is too short';
 						} else {
-							$this->model->updatePerson(['password'=>password_hash($_POST['password'], PASSWORD_DEFAULT)], $args[2]);
+							$this->model->updatePerson(['password'=>password_hash($_POST['password'], PASSWORD_DEFAULT)], $args['loginid']);
 							$this->model->usePasswordReset($key['account_reset_id']);
 							$_SESSION['notice'] = 'Your new password has been saved';
 							unset($_SESSION[$this->formId]);
@@ -118,7 +118,7 @@ class Login {
 		switch($this->formId){
 			case 'login_new_password':
 				$this->form->action = $_SERVER['REQUEST_URI'];
-				$person = $this->model->getById($args[2]);
+				$person = $this->model->getById($args['loginid']);
 				$this->form->fields->head->hint = 'Hi '.$person['name'].', please enter a new password below.';
 				$this->form->fields->password->hint = 'The password has to be '. \npdc\config::$passwordMinLength.' characters or longer';
 				break;

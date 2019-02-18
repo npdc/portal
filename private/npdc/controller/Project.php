@@ -109,7 +109,7 @@ class Project extends Base{
 	 * @return void
 	 */
 	protected function doSave(){
-		if($this->args[1] === 'new'){
+		if($this->args['action'] === 'new'){
 			$this->version = 1;
 		}
 			

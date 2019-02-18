@@ -50,7 +50,7 @@
 			</div>
 			<div id="menu">
 				<h4>≡ Menu</h4>
-				<?=\npdc\lib\Menu::getMenu($session, $args[0]);?>	
+				<?=\npdc\lib\Menu::getMenu($session, $args['type']);?>	
 			</div>
 			<div id="main">
 				<?=isset($view->title) && strlen($view->title) > 0 ? '<h2>'.$view->title.'</h2>' : '';?>
@@ -64,7 +64,7 @@
 					echo '<a href="'.BASE_URL.'/'.$view->baseUrl.'">&laquo; View</a>';
 				}
 				?>
-				<?=method_exists($view, 'listStatusChanges') && ($view->canEdit ?? false) && !in_array($args[1], ['new', 'new_from_doi']) ? $view->listStatusChanges() : ''?>
+				<?=method_exists($view, 'listStatusChanges') && ($view->canEdit ?? false) && !in_array($args['action'], ['new', 'new_from_doi']) ? $view->listStatusChanges() : ''?>
 				<div class="cols">
 					<?=isset($view->left) ? '<div id="left">'.$view->left.'</div>' : ''?>
 					<div id="mid">

@@ -1333,9 +1333,9 @@ class Dataset extends Base{
 	 * @return void
 	 */
 	private function listFiles(){
-		$dataset = $this->args[1];
-		if($this->canEdit && count($this->args) > 2 && !in_array($this->args[2], ['edit', 'files'])){
-			$this->data = $this->model->getById($dataset, $this->args[2]);
+		$dataset = $this->args['id'];
+		if(array_key_exists('version', $this->args) && $this->canEdit){
+			$this->data = $this->model->getById($dataset, $this->args['version']);
 		} else {
 			$this->data = $this->model->getById($dataset);
 		}
@@ -1343,8 +1343,7 @@ class Dataset extends Base{
 		$files = [];
 		$tmpFiles = [];
 		$access = ['public'];
-		$action = array_pop($this->args);
-		switch ($action){
+		switch ($this->args['subaction']){
 			case 'request':
 				if(isset($_POST['request'])){
 					if(count($_POST['files']) === 0){
@@ -1362,7 +1361,7 @@ class Dataset extends Base{
 						$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 						$mail->subject('New data request');
 						$text = 'Dear admin'.",\r\n\r"
-							. 'There is a new data request at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease mak sure the request is processed.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+							. 'There is a new data request at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease make sure the request is processed.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 						$mail->text($text);
 						$mail->send();
 						header('Location: '.BASE_URL.'/request/'.$requestId);
@@ -1401,7 +1400,7 @@ class Dataset extends Base{
 			header('Location: '.$zip->redirect);
 			die();
 		}
-		header('Location: '.BASE_URL.'/'.implode('/', $this->args));
-		die();
+		//header('Location: '.BASE_URL.'/'.implode('/', $this->args));
+		//die();
 	}
 }

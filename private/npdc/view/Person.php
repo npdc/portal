@@ -78,9 +78,9 @@ class Person extends Base{
 			$person = $this->model->getById($id);
 			$this->title = $person['name'];
 		}
-		if(($this->canEdit && $this->args[2] === 'edit') || $id === 'new'){
+		if(($this->canEdit && $this->args['action'] === 'edit') || $this->args['action'] === 'new'){
 			$this->loadEditPage();
-		} elseif($this->args[2] === 'report') {
+		} elseif($this->args['action'] === 'report') {
 			$this->data = $person;
 			$this->mid = parent::parseTemplate('person_report');
 			$this->class .= ' report';

@@ -14,18 +14,7 @@ require dirname(__FILE__).'/../private/npdc/site.php';
 
 $session = new \npdc\lib\Login();
 
-/**
- * TODO: make all the stuff below work with a single regular expression and parsing of it
- * regexp should contain
- * - type (for controller and view)
- * - id
- * - version
- * - action
- * - subaction
- * - uuid
- */
-
-#cut off the base url from the request_uri, remove index.php and remove any query_string
+#cut off the base url from the request_uri and feed to regexp
 $url = substr(
 	filter_input(INPUT_SERVER, 'REQUEST_URI'),
 	strlen(BASE_URL)+1
@@ -33,28 +22,44 @@ $url = substr(
 $pattern = '^' //start at beginning of string
 	. '(index.php[\/\?])?' //trim index.php
 	. '('
-		. '('
+		. '('//search
 			. '(?P<search>search)\/((?P<types>[a-z+]{1,})\/)?(?P<subject>(.*))'
-		. ')|('
-			. '((?P<uuidtype>[a-z]{1,})\/)?(?P<uuid>[a-f0-9]{8}(-)?(?:[a-f0-9]{4}(-)?){3}[a-f0-9]{12})'
-		. ')|('
-			. '(?P<type>[a-z]{1,})' //get type (controller/view)
+		. ')|('//login or register
+			. '(?P<logintype>login|register)'
 			. '(\/'
-				. '(?P<id>[0-9]{1,})'
+				. '(?P<loginaction>[a-z]{1,})'
+			.')?'
+			. '(\/'
+				. '(?P<loginid>[0-9]{1,})'
 				. '(\/'
-					. '(?P<version>[0-9]{1,})'
+					. '(?P<loginkey>[a-z0-9]{1,})'
 				. ')?'
 			. ')?'
-			. '(\/'
+		. ')|('//all others
+			. '('
+				. '('//uuid (with or without type)
+					. '((?P<uuidtype>[a-z]{1,})\/)?(?P<uuid>[a-f0-9]{8}(-)?(?:[a-f0-9]{4}(-)?){3}[a-f0-9]{12})'
+				. ')|('//type with optional id and optional version
+					. '(?P<type>[a-z]{1,})'
+					. '(\/'
+						. '(?P<id>[0-9]{1,})'
+						. '(\/'
+							. '(?P<version>[0-9]{1,})'
+						. ')?'
+					. ')?'
+				. ')'
+			.')'
+			. '(\/'//action for page
 				. '(?P<action>[a-z]{1,})'
 				. '(\/'
-					. '(?P<subaction>[a-z]{1,})'
+					. '(?P<subaction>[a-z\ +]{1,})'
 				.')?'
-			. ')?'
+			. ')?'//get extention
 			. '(\.(?P<ext>[a-z0-9]{1,}))?'
 		. ')'
 	.')?';
-preg_match('/'.$pattern.'/i',$url, $args);
+
+preg_match('/'.$pattern.'/i',str_replace('%20', ' ', $url), $args);
 foreach($args as $key=>$val){
 	if(is_numeric($key) || $val === ''){
 		unset($args[$key]);
@@ -63,6 +68,11 @@ foreach($args as $key=>$val){
 if(array_key_exists('search',$args)){
 	$args['type'] = 'search';
 	unset($args['search']);
+}
+
+if(array_key_exists('logintype', $args)){
+	$args['type'] = $args['logintype'];
+	if(array_key_exists('loginid', $args)){$args['id'] = $args['loginid'];}
 }
 
 define('NPDC_OUTPUT', $args['ext'] ?? getBestSupportedMimeType(['text/html'=>'html', 'application/xhtml+xml'=>'html', 'text/xml'=>'xml', 'application/xml'=>'xml']) ?? 'html');
@@ -90,9 +100,8 @@ if(array_key_exists('uuid', $args)){
 if(empty($args['type'])){
 	$args['type'] = 'front';
 }
-var_dump($args);
 $controllerName = ucfirst($args['type']);
-$action = array_key_exists('id', $args) ? 'showItem' : 'showList';
+$action = array_key_exists('id', $args) || array_key_exists('action', $args) ? 'showItem' : 'showList';
 
 //get the view
 $controllerClass = 'npdc\\controller\\'.$controllerName;
@@ -116,7 +125,7 @@ $controller = (file_exists(get_class_file($controllerClass)))
 $view = new $viewClass($session, $args, $controller);
 
 //execute the view
-$view->$action($args['id']);
+$view->$action($args['id'] ?? null);
 
 //now give the view to the page template
 $template = $view->template ?? 'page';

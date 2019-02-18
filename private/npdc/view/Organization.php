@@ -76,7 +76,7 @@ class Organization extends Base{
 			$organization = $this->model->getById($id);
 			$this->title = $organization['organization_name'];
 		}
-		if(($this->canEdit && $this->args[2] === 'edit') || $id === 'new'){
+		if(($this->canEdit && $this->args['action'] === 'edit') || $this->args['action'] === 'new'){
 			$this->loadEditPage();
 		} else {
 			$this->data = $organization;

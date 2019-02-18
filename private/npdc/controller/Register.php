@@ -24,11 +24,11 @@ class Register extends Login{
 	public function __construct($session, $args){
 		$this->session = $session;
 		$this->model = new \npdc\model\Person();
-		if(count($args) === 1){
+		if(!array_key_exists('loginkey', $args)){
 			$this->formId = 'register';
 		} else {
-			$this->record = $this->model->getPasswordNew($args[1]);
-			if(count($this->record) === 0 || !password_verify($args[2], $this->record['code'])){
+			$this->record = $this->model->getPasswordNew($args['loginid']);
+			if(count($this->record) === 0 || !password_verify($args['loginkey'], $this->record['code'])){
 				return;
 			}
 			$this->formId = 'register_create';
@@ -98,7 +98,7 @@ class Register extends Login{
 									'password'=>password_hash($_POST['password'], PASSWORD_DEFAULT)
 								]);
 							}
-							$this->model->usePasswordNew($args[1]);
+							$this->model->usePasswordNew($args['loginid']);
 							$_SESSION['notice'] = 'Your account has been created';
 							$perms = $this->model->getUserLevelDetails($this->model->getById($person_id)['user_level']);
 							$_SESSION['notice'] .= '<section class="inline">Your user level is '.$perms['name'].$perms['description'];

@@ -23,9 +23,9 @@ class Add extends Base{
 			header('Location: '.BASE_URL.'/');
 			die();
 		}
-		$this->formId = $args[1].'_new';
+		$this->formId = $args['action'].'_new';
 		$this->formController = new \npdc\controller\Form($this->formId);
-		switch($args[1]){
+		switch($args['action']){
 			case 'person':
 				$this->formController->getForm('person');
 				$this->formController->form->fields->organization_id->options = $this->getOrganizations();
@@ -51,7 +51,7 @@ class Add extends Base{
 		if(isset($_POST['formid'])){
 			$this->formController->doCheck();
 			if($this->formController->ok){
-				switch($args[1]){
+				switch($args['action']){
 					case 'person':
 						$model = new \npdc\model\Person();
 						if($model->checkMail($_SESSION[$this->formId]['data']['mail'], 0)){
@@ -77,19 +77,19 @@ class Add extends Base{
 				}
 			}
 		} else {
-			switch($args[1]){
+			switch($args['action']){
 				case 'person':
 					$_SESSION[$this->formId]['data'] = [];
-					$_SESSION[$this->formId]['data']['name'] = urldecode($args[2]);
+					$_SESSION[$this->formId]['data']['name'] = urldecode($args['subaction']);
 					break;
 				case 'organization':
 					$_SESSION[$this->formId]['data'] = [];
-					$_SESSION[$this->formId]['data']['organization_name'] = urldecode($args[2]);
+					$_SESSION[$this->formId]['data']['organization_name'] = urldecode($args['subaction']);
 					$_SESSION[$this->formId]['data']['country_id'] = 'NL';
 					break;
 				case 'publication':
 					$_SESSION[$this->formId]['data'] = [];
-					$_SESSION[$this->formId]['data']['title'] = urldecode($args[2]);
+					$_SESSION[$this->formId]['data']['title'] = urldecode($args['subaction']);
 					break;
 					
 			}

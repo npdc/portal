@@ -23,7 +23,7 @@ class CheckDownload {
 	public function __construct($session, $args){
 		if(CALLER === 'index'){
 			$this->model = new \npdc\model\Zip();
-			$this->file = $this->model->getByName($args[1]);
+			$this->file = $this->model->getByName($args['action']);
 			if($this->file !== false){
 				if($file->timestamp < "1 week geleden" && false){
 					$this->status = 'expired';

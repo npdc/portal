@@ -63,10 +63,10 @@ class Login extends Base{
 	 * 
 	 * @return void
 	 */
-	public function showItem($id){
-		switch($id){
+	public function showItem(){
+		switch($this->args['loginaction']){
 			case 'reset':
-				if(count($this->args) === 2){
+				if(!array_key_exists('loginkey', $this->args)){
 					$this->title = 'Request new password';
 				} elseif(empty($this->controller->formId)) {
 					$this->title = 'Link not valid';

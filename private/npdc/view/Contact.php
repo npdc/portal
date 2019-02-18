@@ -31,7 +31,7 @@ class Contact extends Base{
 		$this->session = $session;
 		$this->args = $args;
 		$this->controller = $controller;
-		$this->baseUrl = 'person/'.$args[1];
+		$this->baseUrl = 'person/'.$args['id'];
 	}
 	
 	/**

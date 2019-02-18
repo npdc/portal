@@ -30,7 +30,7 @@ class Front{
 		$this->session = $session;
 		$this->args = $args;
 		$this->canEdit = $session->userLevel >= NPDC_ADMIN;
-		$this->baseUrl = 'page/home';
+		$this->baseUrl = 'home';
 	}
 	
 	/**
