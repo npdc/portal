@@ -137,4 +137,3 @@ require dirname(__FILE__).'/../private/npdc/template/'.$template.'.tpl.php';
 
 //remove errors from the session
 unset($_SESSION['errors']);
-var_dump($args);

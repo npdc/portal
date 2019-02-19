@@ -320,7 +320,6 @@ class Dataset extends Base{
 		} 
 		$this->title = 'Dataset - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');
 		$this->class = 'detail';
-		var_dump($this->args);
 		if(in_array('files', $this->args)){
 			if(in_array('request', $this->args)){
 				if($this->session->userLevel === NPDC_PUBLIC){
