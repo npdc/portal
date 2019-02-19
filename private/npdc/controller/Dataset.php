@@ -35,10 +35,8 @@ class Dataset extends Base{
 		$this->args = $args;
 		$this->model = new \npdc\model\Dataset();
 		parent::__construct();
-		if(in_array('files', $this->args)){
-			if(array_slice($this->args, -1)[0] !== 'files'){
-				$this->listFiles();
-			}
+		if(array_key_exists('action', $this->args) && $this->args['action'] === 'files'){
+			$this->listFiles();
 		}
 	}
 	

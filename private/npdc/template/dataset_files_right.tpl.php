@@ -18,4 +18,4 @@
 <h4>Use constraints</h4>
 <p><?=$this->data['use_constraints']?></p>
 
-<a href="<?=BASE_URL.'/'.$this->data['uuid']?>">Full dataset description</a>
+<a href="<?=BASE_URL.'/dataset/'.$this->data['uuid']?>">Full dataset description</a>
