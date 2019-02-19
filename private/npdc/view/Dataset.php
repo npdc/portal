@@ -160,7 +160,7 @@ class Dataset extends Base{
 			$this->title = 'Please check - '.$this->data['title'];
 			$this->mid = $this->controller->showWarnings();
 		} else {
-			$this->title = ($this->args['action'] !== 'new') ? 'New dataset' : 'Edit dataset - '.$this->data['title'];
+			$this->title = ($this->args['action'] === 'new') ? 'New dataset' : 'Edit dataset - '.$this->data['title'];
 			$this->baseUrl .= '/'.$this->versions[0]['dataset_version'];
 			$this->loadEditPage($this->controller->pages);
 		}

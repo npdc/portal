@@ -102,34 +102,36 @@ class Project extends Base{
 	 * @return void
 	 */
 	public function showItem($project){
-		$this->canEdit = isset($this->session->userId) 
-			&& ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($project, $this->session->userId));
-		if(array_key_exists('version', $this->args)){
-			$this->data = $this->model->getById($project, $this->args['version']);
-			if(!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])){
-				$this->data = false;
+		if($this->args['action'] !== 'new'){
+			$this->canEdit = isset($this->session->userId) 
+				&& ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($project, $this->session->userId));
+			if(array_key_exists('version', $this->args)){
+				$this->data = $this->model->getById($project, $this->args['version']);
+				if(!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])){
+					$this->data = false;
+				}
+			} else {
+				$this->data = $this->model->getById($project);
 			}
-		} else {
-			$this->data = $this->model->getById($project);
-		}
-		$this->version = $this->data['project_version'];
-		
-		if($project !== 'new'){
-			$this->versions = $this->model->getVersions($project);
-		}
-		if($this->canEdit && is_null($this->controller->display) && count($this->versions) > 1){
-			$v = array_key_exists('version', $this->args) ? $this->args['version'] : 'published';
-			$_SESSION['notice'] = 'See version <select id="versionSelect" style="width:auto">';
-			foreach($this->versions as $version){
-				$_SESSION['notice'] .= '<option value="'.BASE_URL.'/project/'.$project.'/'.$version['project_version'].'" '
-					.(in_array($v, [$version['project_version'], $version['record_status']]) ? 'selected=true' : '')
-					.'>'.$version['project_version'].' - '.$version['record_status'].'</option>';
+			$this->version = $this->data['project_version'];
+			
+			if($project !== 'new'){
+				$this->versions = $this->model->getVersions($project);
 			}
-			$_SESSION['notice'] .= '</select>';
-		}
-		
-		if($this->data === false && $this->canEdit && in_array($this->args['action'], ['edit', 'submit', 'warnings'])){
-			$this->data = $this->model->getById($project, $this->versions[0]['project_version']);
+			if($this->canEdit && is_null($this->controller->display) && count($this->versions) > 1){
+				$v = array_key_exists('version', $this->args) ? $this->args['version'] : 'published';
+				$_SESSION['notice'] = 'See version <select id="versionSelect" style="width:auto">';
+				foreach($this->versions as $version){
+					$_SESSION['notice'] .= '<option value="'.BASE_URL.'/project/'.$project.'/'.$version['project_version'].'" '
+						.(in_array($v, [$version['project_version'], $version['record_status']]) ? 'selected=true' : '')
+						.'>'.$version['project_version'].' - '.$version['record_status'].'</option>';
+				}
+				$_SESSION['notice'] .= '</select>';
+			}
+			
+			if($this->data === false && $this->canEdit && in_array($this->args['action'], ['edit', 'submit', 'warnings'])){
+				$this->data = $this->model->getById($project, $this->versions[0]['project_version']);
+			}
 		}
 		
 		if($this->data === false && $project !== 'new'){
@@ -182,7 +184,7 @@ class Project extends Base{
 				$this->title = 'Please check - '.$this->data['title'];
 				$this->mid = $this->controller->showWarnings();
 			} else {
-				$this->title = ($project === 'new') ? 'New project' : 'Edit project - '.$this->data['title'];
+				$this->title = ($this->args['action'] === 'new') ? 'New project' : 'Edit project - '.$this->data['title'];
 				$this->baseUrl .= '/'.$this->versions[0]['project_version'];
 				$pages = null;
 				$this->loadEditPage($pages);
