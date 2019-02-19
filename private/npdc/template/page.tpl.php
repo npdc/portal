@@ -98,7 +98,7 @@
 		</div>
 		<?php if(NPDC_DEV){
 			echo '<div class="debug bottom">Loading time: '.(microtime(true)-$start).'s<div>';
-			var_dump($_SESSION);
+			var_dump(['args'=>$args, 'session'=>$_SESSION]);
 			echo '</div></div>';
 		}?>
 	</body>
