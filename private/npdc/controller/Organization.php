@@ -46,7 +46,7 @@ class Organization extends Base {
 					if($args['action'] === 'new'){
 						$id = $this->model->insertOrganization($data);
 					} else {
-						$id = $args['action'];
+						$id = $args['id'];
 						$this->model->updateOrganization($data, $args['id']);
 					}
 					$_SESSION['notice'] = 'The changes have been saved';

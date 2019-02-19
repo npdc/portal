@@ -70,11 +70,15 @@ class Organization extends Base{
 	public function showItem($id){
 		$this->canEdit = isset($this->session->userId) 
 			&& ($this->session->userLevel === NPDC_ADMIN);
-		if($id === 'new' && $this->session->userLevel >= $this->controller->userLevelAdd){
+		if($this->args['action'] === 'new' && $this->session->userLevel >= $this->controller->userLevelAdd){
 			$this->title = 'Add organization';
-		} else {
+		} elseif(!is_null($id)) {
 			$organization = $this->model->getById($id);
 			$this->title = $organization['organization_name'];
+		} else {
+			$this->title = 'Not found';
+			$this->mid .= 'The requested organization could not be found';
+			return;
 		}
 		if(($this->canEdit && $this->args['action'] === 'edit') || $this->args['action'] === 'new'){
 			$this->loadEditPage();
