@@ -54,10 +54,13 @@ $pattern = '^' //start at beginning of string
 				. '(\/'
 					. '(?P<subaction>[a-z\ +]{1,})'
 				.')?'
-			. ')?'//get extention
+			. ')?'//get extension
+			. '(\/(?P<file>[a-z0-9_]{1,}))?'
 			. '(\.(?P<ext>[a-z0-9]{1,}))?'
 		. ')'
-	.')?';
+	. ')?'
+	. '(\?(.*))?'
+	. '$';
 
 preg_match('/'.$pattern.'/i',str_replace('%20', ' ', $url), $args);
 foreach($args as $key=>$val){

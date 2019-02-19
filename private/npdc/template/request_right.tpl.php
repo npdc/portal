@@ -16,7 +16,7 @@ if(!empty($this->data['response'])){
 if(!empty($this->data['zip_id'])){
 	$zipModel = new \npdc\model\Zip();
 	$zip = $zipModel->getById($this->data['zip_id']);
-	echo '<p><a href="'.BASE_URL.'/'.\npdc\config::$downloadDir.'/'.$zip['filename'].'.zip">Download</a></p>';
+	echo '<p><a href="'.BASE_URL.'/checkDownload/'.$zip['filename'].'.zip">Download</a></p>';
 }
 if($this->modelDataset->isEditor($this->data['dataset-id'], $this->session->userId) || $this->session->userLevel === NPDC_ADMIN){
 	$personModel = new \npdc\model\Person();

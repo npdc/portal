@@ -31,8 +31,12 @@ class CheckDownload {
 	 * @return void
 	 */
 	public function showList(){
-		$this->title = 'Nothing here';
-		$this->mid = 'Nothing to show here';
+		if(array_key_exists('file', $this->args)){
+			$this->showItem();
+		} else {
+			$this->title = 'Nothing here';
+			$this->mid = 'Nothing to show here';
+		}
 	}
 
 	/**
@@ -41,7 +45,7 @@ class CheckDownload {
 	 * @param string $id paramater present for compatibility
 	 * @return void
 	 */
-	public function showItem($id){
+	public function showItem(){
 		if($this->controller->file === false){
 			$this->title = 'File doesn\'t exist';
 			$this->mid = 'Can\'t find that file';
