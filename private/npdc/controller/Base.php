@@ -34,7 +34,7 @@ class Base {
 		} else {
 			$this->draftMsg = ', please remember to publish the record when you are done.<br/><button onclick="openUrl(\''.BASE_URL.'/'.$this->args['type'].'/'.$this->args['id'].'/publish\')">Publish</button>';
 		}
-		if(!array_key_exists('id', $this->args)){
+		if(!array_key_exists('id', $this->args) && !array_key_exists('action', $this->args)){
 			unset($_SESSION[$this->formId]['data']);
 			$this->formController = new \npdc\controller\Form($this->formId);
 			$this->formController->getForm($this->name.'list');
