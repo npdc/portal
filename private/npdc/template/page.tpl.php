@@ -60,7 +60,7 @@
 						unset($_SESSION['notice']);
 					}
 				}
-				if(property_exists($view, 'canEdit') && $view->canEdit && strpos($url, '/new') === false && strpos($url, '/edit') !== false){
+				if(property_exists($view, 'canEdit') && $view->canEdit && array_key_exists('action', $args) && $args['action']==='edit'){
 					echo '<a href="'.BASE_URL.'/'.$view->baseUrl.'">&laquo; View</a>';
 				}
 				?>
@@ -69,7 +69,7 @@
 					<?=isset($view->left) ? '<div id="left">'.$view->left.'</div>' : ''?>
 					<div id="mid">
 						<?php
-						if(property_exists($view, 'canEdit') && $view->canEdit && strpos($url, '/new') === false && strpos($url, '/edit') === false && strpos($url, '/warnings') === false){
+						if(property_exists($view, 'canEdit') && $view->canEdit && !array_key_exists('action', $args)){
 							echo '<div id="tools">';
 							if(property_exists($view, 'allowDuplicate') && $view->allowDuplicate){
 								echo '<button onclick="openUrl(\''.BASE_URL.'/'.(defined('NPDC_UUID') ? NPDC_UUID : $view->baseUrl).'/duplicate\')">Duplicate this page</button> ';
