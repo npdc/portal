@@ -324,7 +324,7 @@ class Project{
 	 * @return boolean user is allowed to edit
 	 */
 	public function isEditor($project_id, $person_id){
-		return is_numeric($project_id) 
+		return is_numeric($project_id) && is_numeric($person_id)
 			? (
 				$this->fpdo
 				->from('project_person')

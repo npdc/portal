@@ -329,7 +329,7 @@ class Publication{
 	 * @return boolean user is allowed to edit
 	 */
 	public function isEditor($publication_id, $person_id){
-		return is_numeric($publication_id)
+		return is_numeric($publication_id) && is_numeric($person_id)
 			? (
 				$this->fpdo
 				->from('publication_person')

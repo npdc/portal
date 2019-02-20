@@ -640,7 +640,7 @@ class Dataset{
 	 * @return boolean user is allowed to edit
 	 */
 	public function isEditor($dataset_id, $person_id){
-		return is_numeric($dataset_id) 
+		return is_numeric($dataset_id) && is_numeric($person_id)
 			? (
 				$this->fpdo
 				->from('dataset_person')
