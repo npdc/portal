@@ -28,17 +28,13 @@ class Dataset extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		$this->session = $session;
-		$this->args = $args;
 		$this->model = new \npdc\model\Dataset();
 		parent::__construct();
-		if(in_array('files', $this->args)){
-			if(array_slice($this->args, -1)[0] !== 'files'){
-				$this->listFiles();
-			}
+		if(\npdc\lib\Args::exists('action') && \npdc\lib\Args::get('action') === 'files'){
+			$this->listFiles();
 		}
 	}
 	
@@ -1333,9 +1329,9 @@ class Dataset extends Base{
 	 * @return void
 	 */
 	private function listFiles(){
-		$dataset = $this->args[1];
-		if($this->canEdit && count($this->args) > 2 && !in_array($this->args[2], ['edit', 'files'])){
-			$this->data = $this->model->getById($dataset, $this->args[2]);
+		$dataset = \npdc\lib\Args::get('id');
+		if(\npdc\lib\Args::exists('version') && $this->canEdit){
+			$this->data = $this->model->getById($dataset, \npdc\lib\Args::get('version'));
 		} else {
 			$this->data = $this->model->getById($dataset);
 		}
@@ -1343,8 +1339,7 @@ class Dataset extends Base{
 		$files = [];
 		$tmpFiles = [];
 		$access = ['public'];
-		$action = array_pop($this->args);
-		switch ($action){
+		switch (\npdc\lib\Args::get('subaction')){
 			case 'request':
 				if(isset($_POST['request'])){
 					if(count($_POST['files']) === 0){
@@ -1362,7 +1357,7 @@ class Dataset extends Base{
 						$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 						$mail->subject('New data request');
 						$text = 'Dear admin'.",\r\n\r"
-							. 'There is a new data request at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease mak sure the request is processed.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+							. 'There is a new data request at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease make sure the request is processed.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 						$mail->text($text);
 						$mail->send();
 						header('Location: '.BASE_URL.'/request/'.$requestId);
@@ -1401,7 +1396,5 @@ class Dataset extends Base{
 			header('Location: '.$zip->redirect);
 			die();
 		}
-		header('Location: '.BASE_URL.'/'.implode('/', $this->args));
-		die();
 	}
 }

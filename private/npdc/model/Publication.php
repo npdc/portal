@@ -329,7 +329,7 @@ class Publication{
 	 * @return boolean user is allowed to edit
 	 */
 	public function isEditor($publication_id, $person_id){
-		return is_numeric($publication_id)
+		return is_numeric($publication_id) && is_numeric($person_id)
 			? (
 				$this->fpdo
 				->from('publication_person')
@@ -484,7 +484,6 @@ class Publication{
 	}
 	
 	public function insertPerson($data){
-		var_dump($data);
 		return \npdc\lib\Db::insertReturnId('publication_person', $data);
 	}
 	
@@ -529,7 +528,6 @@ class Publication{
 			->where('publication_id', $publication_id)
 			->where('publication_version_max', null);
 		if(count($currentPersons) > 0){
-			var_dump($currentPersons);
 			foreach($currentPersons as $person){
 				if(!is_numeric($person)){
 					die('Hacking attempt!');

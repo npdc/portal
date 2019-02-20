@@ -10,7 +10,6 @@ namespace npdc\view;
 
 class Request extends Base{
 	protected $session;
-	protected $args;
 	protected $controller;
 	protected $userLevelAdd = NPDC_NOBODY;
 	public $class;
@@ -19,12 +18,11 @@ class Request extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller request controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
 		$this->model = new \npdc\model\Request();
 		parent::__construct();

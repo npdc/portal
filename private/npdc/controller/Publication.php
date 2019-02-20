@@ -18,11 +18,10 @@ class Publication extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args, $limited = false){
+	public function __construct($session, $limited = false){
 		$this->session = $session;
-		$this->args = $args;
 		$this->model = new \npdc\model\Publication();
 		if(!$limited){
 			parent::__construct();
@@ -61,7 +60,7 @@ class Publication extends Base{
 	 * @return void
 	 */
 	protected function loadForm($baseData){
-		if($this->id === 'new'){
+		if(\npdc\lib\Args::get('action') === 'new'){
 			unset($_SESSION[$this->formId]);
 			if(!empty($_GET['doi'])){
 				$this->loadFromDOI($_GET['doi']);
@@ -164,7 +163,7 @@ class Publication extends Base{
 	 * @return void
 	 */
 	protected function doSave(){
-		if($this->args[1] === 'new'){
+		if(\npdc\lib\Args::get('action') === 'new'){
 			$this->version = 1;
 		}
 		if($_SESSION[$this->formId]['db_action'] === 'insert'){

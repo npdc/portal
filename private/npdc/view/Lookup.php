@@ -12,7 +12,6 @@
 namespace npdc\view;
 
 class Lookup {
-	private $args;
 	private $session;
 	private $data = [];
 	
@@ -20,10 +19,9 @@ class Lookup {
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args){
-		$this->args = $args;
+	public function __construct($session){
 		$this->session = $session;
 	}
 	
@@ -37,7 +35,7 @@ class Lookup {
 //			header('HTTP/1.0 401 Unauthorized');
 //			die('No access');
 		}
-		$this->{$this->args[1]}();
+		$this->{\npdc\lib\Args::get('action')}();
 		header('Content-type:application/json;charset=utf-8');
 		if($_GET['output'] === 'object'){
 			foreach($this->data as &$row){
@@ -69,8 +67,8 @@ class Lookup {
 	 */
 	private function organization(){
 		$model = new \npdc\model\Organization();
-		if(count($this->args) > 2){
-			$data = [$model->getById($this->args[2])];
+		if(\npdc\lib\Args::exists('subaction')){
+			$data = [$model->getById(\npdc\lib\Args::get('subaction'))];
 		} else {
 			$data = $model->search($_GET['q'], $_GET['e'] ?? null);
 		}

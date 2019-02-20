@@ -6,100 +6,28 @@
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
-
-#catch url's from the old website and redirect
-if(array_key_exists('page', $_GET)){
-	if(strpos($_GET['page'], '..') !== false || strpos($_GET['page'], '/') !== false){
-		die('ILLEGAL URL');
-	}
-	//header("HTTP/1.1 301 Moved Permanently"); 
-	switch (strtolower($_GET['page'])){
-		case 'project_list':
-			$url = 'project';
-			break;
-		default:
-			$url = strtolower($_GET['page']);
-	}
-	header('Location: '.BASE_URL.'/'.$url);
-	die();
-}
+if(file_exists('oldSite.php')){include 'oldSite.php';}//redirects from old urls
 
 //goto site.php, the main file
 define('CALLER', 'index');
 require dirname(__FILE__).'/../private/npdc/site.php';
 
 $session = new \npdc\lib\Login();
-#cut off the base url from the request_uri, remove index.php and remove any query_string
+
+#cut off the base url from the request_uri and feed to regexp
 $url = substr(
 	filter_input(INPUT_SERVER, 'REQUEST_URI'),
 	strlen(BASE_URL)+1
 );
-//remove index.php
-$url = (strpos($url, 'index.php') !== false) 
-		? substr($url, 10) 
-		: $url;
-//remove query string
-$url = (strpos($url, '?') !== false) 
-		? substr($url, 0, strpos($url, '?')) 
-		: $url;
-//remove dot if present and store part after dot in ext
-if(strpos($url, '.') !== false){
-	$parts = explode('.', $url);
-	if(count($parts) === 2 && !is_numeric($parts[1]) && strlen($parts[1]) <= 4){
-		list($url, $ext) = $parts;
-	}
-}
 
-define('NPDC_OUTPUT', $ext ?? getBestSupportedMimeType(['text/html'=>'html', 'application/xhtml+xml'=>'html', 'text/xml'=>'xml', 'application/xml'=>'xml']) ?? 'html');
+use \npdc\lib\Args;
 
-#explode $url if substr above exists
-$args = ($url === false || strlen($url)<1)
-		? [] 
-		: explode('/', trim($url, " \t\n\r\0\x0B/"));
-
-if($args[0] === 'home'){
-	unset($args[0]);
-}
-for($i=0;$i<=1;$i++){
-	if(\Lootils\Uuid\Uuid::isValid($args[$i])){
-		if(strpos('-', $args[$i]) === false){
-			$args[$i] = preg_replace("/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/i", "$1-$2-$3-$4-$5", $args[$i]);
-		}
-		define('NPDC_UUID', $args[$i]);
-		define('NPDC_UUID_POSITION', $i);
-		foreach($i==0 ? ['dataset', 'project', 'publication'] : [$args[0]] as $cType){
-			$mName = 'npdc\\model\\'.ucfirst($cType);
-			$m = new $mName();
-			$r = $m->getByUUID($args[$i]);
-			if($r !== false){
-				for($n=0;$n<=$i;$n++){unset($args[$n]);}
-				$args = array_merge([$cType, $r[$cType.'_id'], $r[$cType.'_version']], $args);
-				break 2;
-			}
-		}
-	}
-}
-
-#get controller & id
-switch(count($args)){
-	case 0://load homepage
-		$controllerName = 'Front';
-		$id = '';
-		$args[0] = '';
-		break;
-	case 1://list a content type
-		$controllerName = ucfirst($args[0]);
-		$id = 'list';
-		break;
-	default://show a item of a type
-		$controllerName = ucfirst($args[0]);
-		$id = $args[1];
-}
+$controllerName = ucfirst(Args::get('type'));
+$action = Args::exists('id') || Args::exists('action') ? 'showItem' : 'showList';
 
 //get the view
 $controllerClass = 'npdc\\controller\\'.$controllerName;
 $viewClass = 'npdc\\view\\'.$controllerName;
-$action = ($id==='list') ? 'showList' : 'showItem';
 
 //if a controller/view is requested that doesn't exists or shouldn't be called directly use Page class.
 if(in_array($controllerName, ['Base', 'Form']) || !file_exists(get_class_file($viewClass))){
@@ -107,22 +35,19 @@ if(in_array($controllerName, ['Base', 'Form']) || !file_exists(get_class_file($v
 	$controllerName = 'Page';
 	$controllerClass = 'npdc\\controller\\Page';
 	$action = 'showItem';
-	$id = $args[0];
+	Args::set('id', Args::get('type'));;
 }
 
 //now load controller if it exists
 $controller = (file_exists(get_class_file($controllerClass))) 
-		? new $controllerClass($session, $args) 
+		? new $controllerClass($session) 
 		: null;
 
 //load the view
-$view = new $viewClass($session, $args, $controller);
+$view = new $viewClass($session, $controller);
 
 //execute the view
-$view->$action($id);
-
-//format the title
-//$view->title = \npdc\lib\Template::printString($view->title);
+$view->$action(Args::get('id') ?? null);
 
 //now give the view to the page template
 $template = $view->template ?? 'page';

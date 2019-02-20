@@ -15,12 +15,11 @@ class CheckDownload {
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller checkDownload controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
 		$this->extraHeader = '<meta name="robots" content="noindex">';
 	}
@@ -31,8 +30,12 @@ class CheckDownload {
 	 * @return void
 	 */
 	public function showList(){
-		$this->title = 'Nothing here';
-		$this->mid = 'Nothing to show here';
+		if(\npdc\lib\Args::exists('file')){
+			$this->showItem();
+		} else {
+			$this->title = 'Nothing here';
+			$this->mid = 'Nothing to show here';
+		}
 	}
 
 	/**
@@ -41,7 +44,7 @@ class CheckDownload {
 	 * @param string $id paramater present for compatibility
 	 * @return void
 	 */
-	public function showItem($id){
+	public function showItem(){
 		if($this->controller->file === false){
 			$this->title = 'File doesn\'t exist';
 			$this->mid = 'Can\'t find that file';

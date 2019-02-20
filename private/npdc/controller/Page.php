@@ -17,45 +17,24 @@ class Page extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args) {
+	public function __construct($session) {
 		$this->session = $session;
-		$this->args = $args;
-		switch(count($args)){
-			case 1:
-				if($args[0] !== 'page'){
-					$this->id = $args[0];
+		$this->id = \npdc\lib\Args::get('id');
+		if(\npdc\lib\Args::exists('action')){
+			switch(\npdc\lib\Args::get('action')){
+				case 'new':
+					die('Please ask the NPDC to add a new page to the database');
 					break;
-				}
-			case 3:
-				$action = $args[2];
-			case 2:
-				if($args[0] === 'page'){
-					$id = $args[1];
-				} else {
-					$id = $args[0];
-					$action = $args[1];
-				}
-				if($id === 'new'){
-					$action = 'new';
-				} else {
-					$this->id = $id;
-				}
-				if(isset($action)){
-					switch($action){
-						case 'new':
-							die('Please ask the NPDC to add a new page to the database');
-							break;
-						case 'edit':
-							if($session->userLevel >= NPDC_ADMIN){
-								$this->editPage($id);//load edit form
-								$this->display = 'edit';
-							} else {
-								$this->display = 'not_allowed';
-							}
+				case 'edit':
+					if($session->userLevel >= NPDC_ADMIN){
+						$this->editPage(\npdc\lib\Args::get('id'));//load edit form
+						$this->display = 'edit';
+					} else {
+						$this->display = 'not_allowed';
 					}
-				}
+			}
 		}
 	}
 	

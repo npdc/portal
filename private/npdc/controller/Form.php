@@ -179,7 +179,7 @@ class Form {
 				}
 			}
 		} else {
-			$c = count($this->formData[$id]);
+			$c = count($this->formData[$id] ?? []);
 			//TODO implement check on subfields
 		}
 		if($c === 0 && ($field->required ?? true)){

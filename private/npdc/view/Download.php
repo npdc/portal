@@ -12,17 +12,21 @@
 namespace npdc\view;
 
 class Download {
+	public function __construct($session, $controller){
+		$this->session = $session;
+		$this->controller = $controller;
+	}
 	/**
 	 * Retreive the file and offer as download
 	 *
 	 * @param string $item name of the file to be downloaded
 	 * @return void
 	 */
-	public function showItem($item){
-		$file = \npdc\config::$downloadDir.'/'.$item.'.'.NPDC_OUTPUT;
+	public function showList(){
+		$file = \npdc\config::$downloadDir.'/'.\npdc\lib\Args::get('file').'.'.\npdc\lib\Args::get('ext');
 		if(file_exists($file)){
 			header('Content-type: application/octet-stream'); 
-			header('Content-Disposition: attachment; filename='.$item.'.'.NPDC_OUTPUT);
+			header('Content-Disposition: attachment; filename='.\npdc\lib\Args::get('file').'.'.\npdc\lib\Args::get('ext'));
 			header('Pragma: no-cache'); 
 			header('Expires: 0');
 			readfile($file);

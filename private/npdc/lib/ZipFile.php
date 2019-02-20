@@ -31,7 +31,6 @@ class ZipFile {
 		$this->dataDir = \npdc\config::$fileDir.'/';
 		$this->downloadDir = \npdc\config::$downloadDir.'/';
 		$this->redirect = BASE_URL.'/checkDownload/'.$this->filename;
-		var_dump($this->downloadDir.$this->filename);
 		if(!mkdir($this->downloadDir.$this->filename)){
 			die('Could not initiate zip');
 		} else {

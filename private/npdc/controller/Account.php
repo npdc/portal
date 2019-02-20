@@ -17,20 +17,18 @@ class Account extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
 	 */
-	public function __construct($session, $args) {
+	public function __construct($session) {
 		if($session->userLevel < NPDC_USER){
 			header('Location: '.BASE_URL.'/');
 			die();
 		}
 		$this->session = $session;
-		$this->args = $args;
 		$this->model = new \npdc\model\Person();
-		if(count($args) > 1){
+		if(\npdc\lib\Args::exists('action')){
 			$this->formController = new \npdc\controller\Form($this->formId);
 			$this->person = $this->model->getById($this->session->userId);
-			switch($args[1]){
+			switch(\npdc\lib\Args::get('action')){
 				case 'edit':
 					$this->formController->getForm('person');
 					$this->formController->form->fields->organization_id->options = $this->getOrganizations();
@@ -45,7 +43,7 @@ class Account extends Base{
 		if(array_key_exists('formid', $_POST)){
 			$this->formController->doCheck();
 			if($this->formController->ok){
-				switch($args[1]){
+				switch(\npdc\lib\Args::get('action')){
 					case 'edit':
 						$data = $_SESSION[$this->formId]['data'];
 						$cur = $this->model->getUser($data['mail']);
@@ -63,10 +61,10 @@ class Account extends Base{
 							$this->formController->ok = false;
 							$_SESSION[$this->formId]['errors']['current'] = 'Password not correct';
 						} else {
+							//check new password for complexity and do save
 							if(strlen($_POST['new']) < \npdc\config::$passwordMinLength){
 								$_SESSION[$this->formId]['errors']['new'] = 'New password too short, should be at least '.\npdc\config::$passwordMinLength.' characters';	
 							} else {
-	//check new password for complexity and do save
 								$data = ['password'=> password_hash($_POST['new'], PASSWORD_DEFAULT)];
 								$this->model->updatePerson($data, $this->session->userId);
 								$_SESSION['notice'] = 'The changes have been saved';
@@ -75,7 +73,7 @@ class Account extends Base{
 						
 						}
 				}
-			}			
+			}
 		}
 	}
 }

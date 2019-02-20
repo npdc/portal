@@ -15,6 +15,7 @@ class Base {
 	protected $data;
 	protected $model;
 	public $extraHeader;
+	public $allowDuplicate = false;
 	/**
 	 * Constructor
 	 */
@@ -256,14 +257,10 @@ class Base {
 	 * @return void
 	 */
 	private function loadEditMenu($pages){
-		$isNew = $this->args[1] === 'new';
+		$isNew = \npdc\lib\Args::get('action') === 'new';
 		$this->left = '<ul>';
-		$base_url = BASE_URL.'/'.implode('/', array_chunk($this->args, ($this->args[1] === 'new' ? 2 : 3))[0]).'/';
-		$cur = !empty($this->args[3]) 
-			? $this->args[3]
-			: ($isNew && !empty($this->args[2])
-				? $this->args[2]
-				: 'general');
+		$base_url = BASE_URL.'/dataset/'.(\npdc\lib\Args::get('action') === 'new' ? 'new' : \npdc\lib\Args::get('id').'/edit').'/';
+		$cur = $this->controller->screen;
 		foreach($pages as $url=>$page){
 			$this->left .= '<li><a href="'.$base_url.$url.'"'
 				. ' class="'

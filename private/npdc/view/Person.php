@@ -18,7 +18,6 @@ class Person extends Base{
 	public $canEdit;
 	public $baseUrl;
 	protected $session;
-	private $args;
 	protected $controller;
 	protected $model;
 	
@@ -26,18 +25,17 @@ class Person extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller person controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
 		$this->canEdit = $session->userLevel >= NPDC_ADMIN;
 		$this->baseUrl = $controller->id;
 		
 		$this->model = new \npdc\model\Person();
-		$this->baseUrl = implode('/', array_slice($args, 0, 2));
+		$this->baseUrl = \npdc\lib\Args::getBaseUrl();
 	}
 	
 	/**
@@ -78,9 +76,9 @@ class Person extends Base{
 			$person = $this->model->getById($id);
 			$this->title = $person['name'];
 		}
-		if(($this->canEdit && $this->args[2] === 'edit') || $id === 'new'){
+		if(($this->canEdit && \npdc\lib\Args::get('action') === 'edit') || \npdc\lib\Args::get('action') === 'new'){
 			$this->loadEditPage();
-		} elseif($this->args[2] === 'report') {
+		} elseif(\npdc\lib\Args::get('action') === 'report') {
 			$this->data = $person;
 			$this->mid = parent::parseTemplate('person_report');
 			$this->class .= ' report';

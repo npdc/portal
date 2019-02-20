@@ -21,12 +21,11 @@ class Contact {
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
 	 */
-	public function __construct($session, $args){
-		if(count($args) > 1){
+	public function __construct($session){
+		if(\npdc\lib\Args::exists('id')){
 			$this->model = new \npdc\model\Person;
-			$this->person = $this->model->getById($args[1]);
+			$this->person = $this->model->getById(\npdc\lib\Args::get('id'));
 			if($this->person !== false) {
 				$this->name = $this->person['name'];
 				$this->to = $this->person['mail'];

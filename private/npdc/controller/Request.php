@@ -16,13 +16,12 @@ class Request extends Base {
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args) {
+	public function __construct($session) {
 		$this->model = new \npdc\model\Request();
 		$this->session = $session;
-		$this->args = $args;
-		$request = $this->model->getById($this->args[1]);
+		$request = $this->model->getById(\npdc\lib\Args::get('id'));
 		$this->modelDataset = new \npdc\model\Dataset();
 		if(($this->session->userLevel === NPDC_ADMIN || $this->modelDataset->isEditor($request['dataset_id'], $this->session->userId)) && array_key_exists('reason', $_POST)){
 			if(empty($_POST['allow'])){
@@ -41,8 +40,8 @@ class Request extends Base {
 	 * @return void
 	 */
 	private function saveAccess(){
-		$this->model->updateRequest($this->args[1], ['permitted'=>($_POST['allow']==='yes' ? 1 : 0),'response'=>$_POST['reason'],'response_timestamp'=>date('Y-m-d h:i:s'), 'responder_id'=>$this->session->userId]);
-		$request = $this->model->getById($this->args[1]);
+		$this->model->updateRequest(\npdc\lib\Args::get('id'), ['permitted'=>($_POST['allow']==='yes' ? 1 : 0),'response'=>$_POST['reason'],'response_timestamp'=>date('Y-m-d h:i:s'), 'responder_id'=>$this->session->userId]);
+		$request = $this->model->getById(\npdc\lib\Args::get('id'));
 		$personModel = new \npdc\model\Person();
 		$person = $personModel->getById($request['person_id']);
 			
@@ -54,7 +53,7 @@ class Request extends Base {
 				$zip->setUser($request['person_id']);
 			}
 			$zip->addMeta($this->modelDataset->generateMeta($request['dataset_id']));
-			foreach($this->model->getFiles($this->args[1]) as $file){
+			foreach($this->model->getFiles(\npdc\lib\Args::get('id')) as $file){
 				$zip->addFile($file['file_id']);
 			}
 			$this->model->updateRequest($request['access_request_id'], ['zip_id'=>$zip->zipId]);
@@ -64,7 +63,7 @@ class Request extends Base {
 			$mailText .= "The reviewer gave the following comments:\r\n".$_POST['reason'];
 		}
 		$mailText .= "\r\n\r\nYou requested the following files:\r\n";
-		foreach($this->model->getFiles($this->args[1]) as $file){
+		foreach($this->model->getFiles(\npdc\lib\Args::get('id')) as $file){
 			$mailText .= '- '.$file['name']."\r\n";
 		}
 		$mailText .= "\r\n";

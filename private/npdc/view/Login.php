@@ -17,20 +17,18 @@ class Login extends Base{
 	public $template = 'plain';
 	
 	private $session;
-	private $args;
 	private $controller;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller account controller
 	 */
 
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
 		$this->extraHeader = '<meta name="robots" content="noindex">';
 	}
@@ -63,10 +61,10 @@ class Login extends Base{
 	 * 
 	 * @return void
 	 */
-	public function showItem($id){
-		switch($id){
+	public function showItem(){
+		switch(\npdc\lib\Args::get('loginaction')){
 			case 'reset':
-				if(count($this->args) === 2){
+				if(!\npdc\lib\Args::exists('loginkey')){
 					$this->title = 'Request new password';
 				} elseif(empty($this->controller->formId)) {
 					$this->title = 'Link not valid';

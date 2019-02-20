@@ -18,11 +18,10 @@ class Project extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		$this->session = $session;
-		$this->args = $args;
 		$this->model = new \npdc\model\Project();
 		parent::__construct();
 	}
@@ -61,7 +60,7 @@ class Project extends Base{
 	 * @return void
 	 */
 	protected function loadForm($baseData){
-		if($this->id === 'new'){
+		if(\npdc\lib\Args::get('action') === 'new'){
 			unset($_SESSION[$this->formId]);
 			$_SESSION[$this->formId]['data']['people'][] = [
 				'person_id'=>$this->session->userId, 
@@ -109,7 +108,7 @@ class Project extends Base{
 	 * @return void
 	 */
 	protected function doSave(){
-		if($this->args[1] === 'new'){
+		if(\npdc\lib\Args::get('action') === 'new'){
 			$this->version = 1;
 		}
 			
