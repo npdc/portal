@@ -259,7 +259,7 @@ class Base {
 	private function loadEditMenu($pages){
 		$isNew = \npdc\lib\Args::get('action') === 'new';
 		$this->left = '<ul>';
-		$base_url = BASE_URL.'/'.implode('/', array_chunk($this->args, (\npdc\lib\Args::get('action') === 'new' ? 2 : 3))[0]).'/';
+		$base_url = BASE_URL.'/dataset/'.(\npdc\lib\Args::get('action') === 'new' ? 'new' : \npdc\lib\Args::get('id').'/edit').'/';
 		$cur = $this->controller->screen;
 		foreach($pages as $url=>$page){
 			$this->left .= '<li><a href="'.$base_url.$url.'"'

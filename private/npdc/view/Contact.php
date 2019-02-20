@@ -59,8 +59,8 @@ class Contact extends Base{
 	 */
 	public function showList(){
 		$this->showForm('Send us a message', 'Through this form you can send a message to our general mailbox. You can also send mails to individual people by clicking on their names.');
-		$controller = new \npdc\controller\Page($this->session, $this->args);
-		$pageView = new \npdc\view\Page($this->session, $this->args, $controller);
+		$controller = new \npdc\controller\Page($this->session);
+		$pageView = new \npdc\view\Page($this->session, $controller);
 		$pageView->showItem('npdc');
 		$this->right = $pageView->right;
 	}

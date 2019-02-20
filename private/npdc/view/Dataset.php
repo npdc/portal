@@ -318,10 +318,10 @@ class Dataset extends Base{
 		} 
 		$this->title = 'Dataset - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');
 		$this->class = 'detail';
-		if(in_array('files', $this->args)){
-			if(in_array('request', $this->args)){
+		if(\npdc\lib\Args::get('action') === 'files'){
+			if(\npdc\lib\Args::get('subaction') === 'request'){
 				if($this->session->userLevel === NPDC_PUBLIC){
-					header('Location: '.BASE_URL.'/'.implode('/', array_slice($this->args, 0, -1)));
+					header('Location: '.BASE_URL.'/dataset/'.$this->data['uuid'].'/files');
 					die();
 				}
 				$this->mid .= parent::parseTemplate('dataset_files_request_mid');
