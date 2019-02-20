@@ -89,35 +89,37 @@ class Publication extends Base{
 	 * @return void
 	 */
 	public function showItem($publication){
-		$this->canEdit = isset($this->session->userId) 
-			&& ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($publication, $this->session->userId));
-		if(\npdc\lib\Args::exists('version')){
-			$this->data = $this->model->getById($publication, \npdc\lib\Args::get('version'));
-			if(!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])){
-				$this->data = false;
+		if(\npdc\lib\Args::get('action') !== 'new'){
+			$this->canEdit = isset($this->session->userId) 
+				&& ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($publication, $this->session->userId));
+			if(\npdc\lib\Args::exists('version')){
+				$this->data = $this->model->getById($publication, \npdc\lib\Args::get('version'));
+				if(!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])){
+					$this->data = false;
+				}
+			} else {
+				$this->data = $this->model->getById($publication);
 			}
-		} else {
-			$this->data = $this->model->getById($publication);
-		}
-		$this->version = $this->data['publication_version'];
-		
-		if($publication !== 'new'){
-			$this->versions = $this->model->getVersions($publication);
-		}
-
-		if($this->canEdit && is_null($this->controller->display) && count($this->versions) > 1){
-			$v = \npdc\lib\Args::exists('version') ? \npdc\lib\Args::get('version') : 'published';
-			$_SESSION['notice'] .= 'See version <select id="versionSelect" style="width:auto">';
-			foreach($this->versions as $version){
-				$_SESSION['notice'] .= '<option value="'.BASE_URL.'/publication/'.$publication.'/'.$version['publication_version'].'" '
-					.(in_array($v, [$version['publication_version'], $version['record_status']]) ? 'selected=true' : '')
-					.'>'.$version['publication_version'].' - '.$version['record_status'].'</option>';
+			$this->version = $this->data['publication_version'];
+			
+			if($publication !== 'new'){
+				$this->versions = $this->model->getVersions($publication);
 			}
-			$_SESSION['notice'] .= '</select>';
-		}
 
-		if($this->data === false && $this->canEdit && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit', 'warnings'])){
-			$this->data = $this->model->getById($publication, $this->versions[0]['publication_version']);
+			if($this->canEdit && is_null($this->controller->display) && count($this->versions) > 1){
+				$v = \npdc\lib\Args::exists('version') ? \npdc\lib\Args::get('version') : 'published';
+				$_SESSION['notice'] .= 'See version <select id="versionSelect" style="width:auto">';
+				foreach($this->versions as $version){
+					$_SESSION['notice'] .= '<option value="'.BASE_URL.'/publication/'.$publication.'/'.$version['publication_version'].'" '
+						.(in_array($v, [$version['publication_version'], $version['record_status']]) ? 'selected=true' : '')
+						.'>'.$version['publication_version'].' - '.$version['record_status'].'</option>';
+				}
+				$_SESSION['notice'] .= '</select>';
+			}
+
+			if($this->data === false && $this->canEdit && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit', 'warnings'])){
+				$this->data = $this->model->getById($publication, $this->versions[0]['publication_version']);
+			}
 		}
 
 		if($this->data === false && $publication !== 'new'){
@@ -170,7 +172,7 @@ class Publication extends Base{
 					$this->showCanonical();
 				}	
 			} else {
-				$this->title = ($publication === 'new') ? 'New publication' : 'Edit publication - '.$this->data['title'];
+				$this->title = (\npdc\lib\Args::get('action') === 'new') ? 'New publication' : 'Edit publication - '.$this->data['title'];
 				$this->baseUrl .= '/'.$this->versions[0]['publication_version'];
 				$pages = null;
 				$this->loadEditPage($pages);

@@ -238,7 +238,7 @@ class Base {
 		$this->formController->getForm($this->name.'_'.$this->screen);
 		$this->alterFields();
 		$this->formController->form->action = $_SERVER['REQUEST_URI'];
-		if($this->id === 'new'){
+		if(\npdc\lib\Args::get('action') === 'new'){
 			$_SESSION[$this->formId]['db_action'] = 'insert';
 			$this->version = 1;
 		} else {

@@ -60,7 +60,7 @@ class Project extends Base{
 	 * @return void
 	 */
 	protected function loadForm($baseData){
-		if($this->id === 'new'){
+		if(\npdc\lib\Args::get('action') === 'new'){
 			unset($_SESSION[$this->formId]);
 			$_SESSION[$this->formId]['data']['people'][] = [
 				'person_id'=>$this->session->userId, 

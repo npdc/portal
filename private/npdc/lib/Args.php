@@ -50,7 +50,7 @@ class Args {
 					. '(\/'//action for page
 						. '(?P<action>[a-z]{1,})'
 						. '(\/'
-							. '(?P<subaction>[a-z\ +]{1,})'
+							. '(?P<subaction>[a-z\ +0-9]{1,})'
 						.')?'
 					. ')?'//get extension
 					. '(\/(?P<file>[a-z0-9_]{1,}))?'
