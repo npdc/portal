@@ -17,18 +17,16 @@ class Front{
 	public $accessLevel;
 	public $frontblocks = [];
 	private $session;
-	private $args;
 	public $extraHeader;
 	
 	/**
 	 * Constructor
 	 * 
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		$this->session = $session;
-		$this->args = $args;
 		$this->canEdit = $session->userLevel >= NPDC_ADMIN;
 		$this->baseUrl = 'home';
 	}
@@ -58,8 +56,8 @@ class Front{
 				. '<a href="'.$news[0]['link'].'">More info</a></div>';
 		}
 
-		$c = new \npdc\controller\Search($this->session, $this->args);
-		$v = new \npdc\view\Search($this->session, $this->args, $c);
+		$c = new \npdc\controller\Search($this->session);
+		$v = new \npdc\view\Search($this->session, $c);
 		$this->mid .= '<div><div>'.$v->getForm().'</div></div></div>';
 
 		$list = [];

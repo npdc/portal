@@ -20,12 +20,11 @@ class Overlay{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		$this->session = $session;
-		$this->args = $args;
-		if($args['action'] === 'editor' && $session->userLevel < NPDC_EDITOR){
+		if(\npdc\lib\Args::get('action') === 'editor' && $session->userLevel < NPDC_EDITOR){
 			header('Location: '.BASE_URL.'/login?view=overlay&referer='.$_SERVER['REQUEST_URI']);die();
 		}
 		$this->extraHeader = '<meta name="robots" content="noindex">';
@@ -46,14 +45,14 @@ class Overlay{
 	 * @return void
 	 */
 	public function showItem(){
-		if($this->args['action'] === 'editor'){
+		if(\npdc\lib\Args::get('action') === 'editor'){
 			$this->editorTools();
 		} else {
 			$model = new \npdc\model\Page();
-			$page = $model->getByUrl($this->args['action']);
+			$page = $model->getByUrl(\npdc\lib\Args::get('action'));
 			$this->title = $page['title'];
 			$this->mid = ($page['show_last_revision'] ? '<p class="last-rev">Last revision: '.date('d F Y', strtotime($page['last_update'])).'</p>' : '').$page['content'];
-			if($this->args['subaction'] === 'accept'){
+			if(\npdc\lib\Args::get('subaction') === 'accept'){
 				$this->mid .= '<button onclick="window.parent.closeOverlay();" style="float:right">Close '.$page['title'].'</button>';
 			}
 		}
@@ -65,7 +64,7 @@ class Overlay{
 	 * @return void
 	 */
 	private function editorTools(){
-		$this->title = ucfirst($this->args['action']);
+		$this->title = ucfirst(\npdc\lib\Args::get('action'));
 		$editUrl = null;
 		
 		$url = parse_url($_GET['u']);
@@ -106,7 +105,7 @@ class Overlay{
 			}
 		}
 		ob_start();
-		include 'template/overlay_'.$this->args['action'].'.php';
+		include 'template/overlay_'.\npdc\lib\Args::get('action').'.php';
 		$this->mid = ob_get_clean();
 		ob_end_clean();
 	}

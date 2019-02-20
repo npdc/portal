@@ -11,7 +11,6 @@ class Dataset extends Base{
 	public $class;
 	public $accessLevel;
 	protected $session;
-	protected $args;
 	protected $controller;
 	public $canEdit = false;
 	public $baseUrl;
@@ -22,14 +21,13 @@ class Dataset extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller dataset controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
-		$this->baseUrl = implode('/', array_slice($args, 0, 2));
+		$this->baseUrl = \npdc\lib\Args::getBaseUrl();
 		$this->model = new \npdc\model\Dataset();
 		parent::__construct();
 	}
@@ -41,12 +39,12 @@ class Dataset extends Base{
 	 */
 	public function listStatusChanges(){
 		$version = $this->version;
-		if(array_key_exists('action', $this->args) && in_array($this->args['action'], ['edit', 'submit'])){
+		if(\npdc\lib\Args::exists('action') && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit'])){
 			$version = $this->versions[0]['dataset_version']; 
-		} elseif (array_key_exists('version', $this->args)){
-			$version = $this->args['version'];
+		} elseif (\npdc\lib\Args::exists('version')){
+			$version = \npdc\lib\Args::get('version');
 		}
-		return $this->doListStatusChanges($this->args['id'], $version);
+		return $this->doListStatusChanges(\npdc\lib\Args::get('id'), $version);
 	}
 	
 	/**
@@ -119,14 +117,14 @@ class Dataset extends Base{
 	 * @return void
 	 */
 	public function showItem($dataset){
-		if($this->args['action'] !== 'new'){
+		if(\npdc\lib\Args::get('action') !== 'new'){
 			$this->canEdit = isset($this->session->userId) && ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId));
 			$this->versions = $this->model->getVersions($dataset);
 
-			if(in_array($this->args['action'], ['edit', 'submit', 'warnings'])){
+			if(in_array(\npdc\lib\Args::get('action'), ['edit', 'submit', 'warnings'])){
 				$v = $this->versions[0]['dataset_version'];
-			} elseif (array_key_exists('version', $this->args)){
-				$v = $this->args['version'];
+			} elseif (\npdc\lib\Args::exists('version')){
+				$v = \npdc\lib\Args::get('version');
 			}
 			$this->data = isset($v) 
 				? $this->model->getById($dataset, $v)
@@ -140,27 +138,27 @@ class Dataset extends Base{
 				$this->data = $this->model->getById($dataset, 1);
 			}
 			$this->version = $this->data['dataset_version'];
-			if($this->args['action'] === 'duplicate'){
+			if(\npdc\lib\Args::get('action') === 'duplicate'){
 				echo 'DUP';die();
 			}
 		}
 
-		if($this->data === false && $this->args['action'] !== 'new'){//dataset not found
+		if($this->data === false && \npdc\lib\Args::get('action') !== 'new'){//dataset not found
 			$this->showError();
 		} elseif(NPDC_OUTPUT === 'xml'){//show as xml
 			$this->showXml();
 		} elseif(in_array(NPDC_OUTPUT, ['ris', 'bib'])){
 			$this->showCitation();
-		} elseif ((!$this->canEdit || is_null($this->controller->display)) && $this->args['action'] !== 'new') {//display dataset
+		} elseif ((!$this->canEdit || is_null($this->controller->display)) && \npdc\lib\Args::get('action') !== 'new') {//display dataset
 			$this->showDataset();
-			if(!array_key_exists('uuid', $this->args) || !array_key_exists('uuidtype', $this->args)){
+			if(!\npdc\lib\Args::exists('uuid') || !\npdc\lib\Args::exists('uuidtype')){
 				$this->showCanonical();
 			}
-		} elseif($this->args['action'] === 'warnings') {
+		} elseif(\npdc\lib\Args::get('action') === 'warnings') {
 			$this->title = 'Please check - '.$this->data['title'];
 			$this->mid = $this->controller->showWarnings();
 		} else {
-			$this->title = ($this->args['action'] === 'new') ? 'New dataset' : 'Edit dataset - '.$this->data['title'];
+			$this->title = (\npdc\lib\Args::get('action') === 'new') ? 'New dataset' : 'Edit dataset - '.$this->data['title'];
 			$this->baseUrl .= '/'.$this->versions[0]['dataset_version'];
 			$this->loadEditPage($this->controller->pages);
 		}
@@ -275,9 +273,9 @@ class Dataset extends Base{
 				$this->title = 'No access';
 				$this->mid .= 'No access';
 			}
-		} elseif(array_key_exists('version', $this->args)) {
-			$this->title = 'No version '.$this->args['version'].' found';
-			$this->mid .= 'There is no version '.$this->args['version'].' of this dataset.';
+		} elseif(\npdc\lib\Args::exists('version')) {
+			$this->title = 'No version '.\npdc\lib\Args::get('version').' found';
+			$this->mid .= 'There is no version '.\npdc\lib\Args::get('version').' of this dataset.';
 		}
 	}
 
@@ -302,12 +300,12 @@ class Dataset extends Base{
 			if($this->data['record_status'] === 'draft'){
 				$_SESSION['notice'] .= ' Publishing this draft is not possible since it doesn\'t appear to be different than the published record.';
 			}
-		} elseif($this->args['action'] === 'submit' && $this->data['record_status'] === 'draft'){
+		} elseif(\npdc\lib\Args::get('action') === 'submit' && $this->data['record_status'] === 'draft'){
 			$_SESSION['notice'] = $this->controller->submitForm;
 		} elseif($this->data['record_status'] !== 'published'){
 			if($this->session->userLevel === NPDC_ADMIN && $this->data['record_status'] === 'submitted'){
-				if($this->args['action'] !== 'submitted'){
-					header('Location: '.BASE_URL.'/dataset/'.$this->args['id'].'/submitted');
+				if(\npdc\lib\Args::get('action') !== 'submitted'){
+					header('Location: '.BASE_URL.'/dataset/'.\npdc\lib\Args::get('id').'/submitted');
 					die();
 				}
 				$_SESSION['notice'] = $this->controller->publishForm;
@@ -335,7 +333,7 @@ class Dataset extends Base{
 		} else {
 			$this->mid .= parent::parseTemplate('dataset_mid');
 			$this->right = parent::parseTemplate('dataset_right');
-			if(array_key_exists('uuid', $this->args) && array_key_exists('uuidtype', $this->args)){
+			if(\npdc\lib\Args::exists('uuid') && \npdc\lib\Args::exists('uuidtype')){
 				$this->json = [
 					'@context' => ['@vocab'=>'http://schema.org/'],
 					'@type' => 'Dataset',

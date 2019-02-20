@@ -40,11 +40,11 @@ if(in_array($controllerName, ['Base', 'Form']) || !file_exists(get_class_file($v
 
 //now load controller if it exists
 $controller = (file_exists(get_class_file($controllerClass))) 
-		? new $controllerClass($session, Args::getAll()) 
+		? new $controllerClass($session) 
 		: null;
 
 //load the view
-$view = new $viewClass($session, Args::getAll(), $controller);
+$view = new $viewClass($session, $controller);
 
 //execute the view
 $view->$action(Args::get('id') ?? null);

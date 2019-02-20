@@ -17,20 +17,19 @@ class Page extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args) {
+	public function __construct($session) {
 		$this->session = $session;
-		$this->args = $args;
-		$this->id = $this->args['id'];
-		if(array_key_exists('action', $this->args)){
-			switch($this->args['action']){
+		$this->id = \npdc\lib\Args::get('id');
+		if(\npdc\lib\Args::exists('action')){
+			switch(\npdc\lib\Args::get('action')){
 				case 'new':
 					die('Please ask the NPDC to add a new page to the database');
 					break;
 				case 'edit':
 					if($session->userLevel >= NPDC_ADMIN){
-						$this->editPage($this->args['id']);//load edit form
+						$this->editPage(\npdc\lib\Args::get('id'));//load edit form
 						$this->display = 'edit';
 					} else {
 						$this->display = 'not_allowed';

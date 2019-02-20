@@ -14,18 +14,16 @@ class Add extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
 	 */
-	public function __construct($session, $args) {
+	public function __construct($session) {
 		$this->session = $session;
-		$this->args = $args;
 		if($session->userLevel < NPDC_EDITOR){
 			header('Location: '.BASE_URL.'/');
 			die();
 		}
-		$this->formId = $args['action'].'_new';
+		$this->formId = \npdc\lib\Args::get('action').'_new';
 		$this->formController = new \npdc\controller\Form($this->formId);
-		switch($args['action']){
+		switch(\npdc\lib\Args::get('action')){
 			case 'person':
 				$this->formController->getForm('person');
 				$this->formController->form->fields->organization_id->options = $this->getOrganizations();
@@ -51,7 +49,7 @@ class Add extends Base{
 		if(isset($_POST['formid'])){
 			$this->formController->doCheck();
 			if($this->formController->ok){
-				switch($args['action']){
+				switch(\npdc\lib\Args::get('action')){
 					case 'person':
 						$model = new \npdc\model\Person();
 						if($model->checkMail($_SESSION[$this->formId]['data']['mail'], 0)){
@@ -77,19 +75,19 @@ class Add extends Base{
 				}
 			}
 		} else {
-			switch($args['action']){
+			switch(\npdc\lib\Args::get('action')){
 				case 'person':
 					$_SESSION[$this->formId]['data'] = [];
-					$_SESSION[$this->formId]['data']['name'] = urldecode($args['subaction']);
+					$_SESSION[$this->formId]['data']['name'] = urldecode(\npdc\lib\Args::get('subaction'));
 					break;
 				case 'organization':
 					$_SESSION[$this->formId]['data'] = [];
-					$_SESSION[$this->formId]['data']['organization_name'] = urldecode($args['subaction']);
+					$_SESSION[$this->formId]['data']['organization_name'] = urldecode(\npdc\lib\Args::get('subaction'));
 					$_SESSION[$this->formId]['data']['country_id'] = 'NL';
 					break;
 				case 'publication':
 					$_SESSION[$this->formId]['data'] = [];
-					$_SESSION[$this->formId]['data']['title'] = urldecode($args['subaction']);
+					$_SESSION[$this->formId]['data']['title'] = urldecode(\npdc\lib\Args::get('subaction'));
 					break;
 					
 			}

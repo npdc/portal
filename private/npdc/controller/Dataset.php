@@ -28,14 +28,12 @@ class Dataset extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		$this->session = $session;
-		$this->args = $args;
 		$this->model = new \npdc\model\Dataset();
 		parent::__construct();
-		if(array_key_exists('action', $this->args) && $this->args['action'] === 'files'){
+		if(\npdc\lib\Args::exists('action') && \npdc\lib\Args::get('action') === 'files'){
 			$this->listFiles();
 		}
 	}
@@ -1331,9 +1329,9 @@ class Dataset extends Base{
 	 * @return void
 	 */
 	private function listFiles(){
-		$dataset = $this->args['id'];
-		if(array_key_exists('version', $this->args) && $this->canEdit){
-			$this->data = $this->model->getById($dataset, $this->args['version']);
+		$dataset = \npdc\lib\Args::get('id');
+		if(\npdc\lib\Args::exists('version') && $this->canEdit){
+			$this->data = $this->model->getById($dataset, \npdc\lib\Args::get('version'));
 		} else {
 			$this->data = $this->model->getById($dataset);
 		}
@@ -1341,7 +1339,7 @@ class Dataset extends Base{
 		$files = [];
 		$tmpFiles = [];
 		$access = ['public'];
-		switch ($this->args['subaction']){
+		switch (\npdc\lib\Args::get('subaction')){
 			case 'request':
 				if(isset($_POST['request'])){
 					if(count($_POST['files']) === 0){
@@ -1398,7 +1396,5 @@ class Dataset extends Base{
 			header('Location: '.$zip->redirect);
 			die();
 		}
-		//header('Location: '.BASE_URL.'/'.implode('/', $this->args));
-		//die();
 	}
 }

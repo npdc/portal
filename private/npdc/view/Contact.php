@@ -16,7 +16,6 @@ class Contact extends Base{
 	public $class = 'contact';
 	
 	protected $session;
-	protected $args;
 	protected $controller;
 	protected $userLevelAdd = NPDC_ADMIN;//minimum user level required to add a new person
 	
@@ -24,14 +23,13 @@ class Contact extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller contact controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
-		$this->baseUrl = 'person/'.$args['id'];
+		$this->baseUrl = 'person/'.\npdc\lib\Args::get('id');
 	}
 	
 	/**

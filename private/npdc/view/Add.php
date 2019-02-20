@@ -17,19 +17,17 @@ class Add extends Base {
 	public $title;
 	
 	private $session;
-	private $args;
 	protected $controller;
 
 	/**
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller add controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
 		$this->extraHeader = '<meta name="robots" content="noindex">';
 	}

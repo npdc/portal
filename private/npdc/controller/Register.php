@@ -19,16 +19,16 @@ class Register extends Login{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		$this->session = $session;
 		$this->model = new \npdc\model\Person();
-		if(!array_key_exists('loginkey', $args)){
+		if(!\npdc\lib\Args::exists('loginkey')){
 			$this->formId = 'register';
 		} else {
-			$this->record = $this->model->getPasswordNew($args['loginid']);
-			if(count($this->record) === 0 || !password_verify($args['loginkey'], $this->record['code'])){
+			$this->record = $this->model->getPasswordNew(\npdc\lib\Args::get('loginid'));
+			if(count($this->record) === 0 || !password_verify(\npdc\lib\Args::get('loginkey'), $this->record['code'])){
 				return;
 			}
 			$this->formId = 'register_create';
@@ -98,7 +98,7 @@ class Register extends Login{
 									'password'=>password_hash($_POST['password'], PASSWORD_DEFAULT)
 								]);
 							}
-							$this->model->usePasswordNew($args['loginid']);
+							$this->model->usePasswordNew(\npdc\lib\Args::get('loginid'));
 							$_SESSION['notice'] = 'Your account has been created';
 							$perms = $this->model->getUserLevelDetails($this->model->getById($person_id)['user_level']);
 							$_SESSION['notice'] .= '<section class="inline">Your user level is '.$perms['name'].$perms['description'];

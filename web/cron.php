@@ -22,7 +22,7 @@ if($_GET['key'] === \npdc\config::$cronKey){
 			break;
 		case 'cleanup':
 			echo 'Cleanup<br/>';
-			$controller = new \npdc\controller\CheckDownload($session, $args);
+			$controller = new \npdc\controller\CheckDownload($session);
 			$controller->cleanup();
 			break;
 	}

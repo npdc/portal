@@ -17,7 +17,6 @@ class Publication extends Base{
 	public $class;
 	public $accessLevel;
 	protected $session;
-	protected $args;
 	protected $controller;
 	protected $userLevelAdd = NPDC_EDITOR;//minimum user level required to add a new publication
 	public $canEdit = false;
@@ -28,14 +27,13 @@ class Publication extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller account controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
-		$this->baseUrl = implode('/', array_slice($args, 0, 2));
+		$this->baseUrl = \npdc\lib\Args::getBaseUrl();
 		$this->model = new \npdc\model\Publication();
 		parent::__construct();
 	}
@@ -47,12 +45,12 @@ class Publication extends Base{
 	 */
 	public function listStatusChanges(){
 		$version = $this->version;
-		if(array_key_exists('action', $this->args) && in_array($this->args['action'], ['edit', 'submit'])){
+		if(\npdc\lib\Args::exists('action') && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit'])){
 			$version = $this->versions[0]['publication_version']; 
-		} elseif (array_key_exists('version', $this->args)){
-			$version = $this->args['version'];
+		} elseif (\npdc\lib\Args::exists('version')){
+			$version = \npdc\lib\Args::get('version');
 		}
-		return $this->doListStatusChanges($this->args['id'], $version);
+		return $this->doListStatusChanges(\npdc\lib\Args::get('id'), $version);
 	}
 	
 	/**
@@ -93,8 +91,8 @@ class Publication extends Base{
 	public function showItem($publication){
 		$this->canEdit = isset($this->session->userId) 
 			&& ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($publication, $this->session->userId));
-		if(array_key_exists('version', $this->args)){
-			$this->data = $this->model->getById($publication, $this->args['version']);
+		if(\npdc\lib\Args::exists('version')){
+			$this->data = $this->model->getById($publication, \npdc\lib\Args::get('version'));
 			if(!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])){
 				$this->data = false;
 			}
@@ -108,7 +106,7 @@ class Publication extends Base{
 		}
 
 		if($this->canEdit && is_null($this->controller->display) && count($this->versions) > 1){
-			$v = array_key_exists('version', $this->args) ? $this->args['version'] : 'published';
+			$v = \npdc\lib\Args::exists('version') ? \npdc\lib\Args::get('version') : 'published';
 			$_SESSION['notice'] .= 'See version <select id="versionSelect" style="width:auto">';
 			foreach($this->versions as $version){
 				$_SESSION['notice'] .= '<option value="'.BASE_URL.'/publication/'.$publication.'/'.$version['publication_version'].'" '
@@ -118,7 +116,7 @@ class Publication extends Base{
 			$_SESSION['notice'] .= '</select>';
 		}
 
-		if($this->data === false && $this->canEdit && in_array($this->args['action'], ['edit', 'submit', 'warnings'])){
+		if($this->data === false && $this->canEdit && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit', 'warnings'])){
 			$this->data = $this->model->getById($publication, $this->versions[0]['publication_version']);
 		}
 
@@ -134,12 +132,12 @@ class Publication extends Base{
 					$this->title = 'No access';
 					$this->mid .= 'No access';
 				}
-			} elseif(array_key_exists('version', $this->args)){
-				$this->title = 'No version '.$this->args['version'].' found';
-				$this->mid .= 'There is no version '.$this->args['version'].' of this publication.';
+			} elseif(\npdc\lib\Args::exists('version')){
+				$this->title = 'No version '.\npdc\lib\Args::get('version').' found';
+				$this->mid .= 'There is no version '.\npdc\lib\Args::get('version').' of this publication.';
 			}
 		} else {
-			if($this->args['action'] === 'warnings') {
+			if(\npdc\lib\Args::get('action') === 'warnings') {
 				$this->title = 'Please check - '.$this->data['title'];
 				$this->mid = $this->controller->showWarnings();
 			} elseif(is_null($this->controller->display)){
@@ -148,12 +146,12 @@ class Publication extends Base{
 					if($this->data['record_status'] === 'draft'){
 						$_SESSION['notice'] .= ' Publishing this draft is not possible since it doesn\'t appear to be different than the published record.';
 					}
-				} elseif($this->args['action'] === 'submit' && $this->data['record_status'] === 'draft'){
+				} elseif(\npdc\lib\Args::get('action') === 'submit' && $this->data['record_status'] === 'draft'){
 					$_SESSION['notice'] = $this->controller->submitForm;
 				} elseif($this->data['record_status'] !== 'published'){
 					if($this->session->userLevel === NPDC_ADMIN && $this->data['record_status'] === 'submitted'){
-						if($this->args['action'] !== 'submitted'){
-							header('Location: '.BASE_URL.'/publication/'.$this->args['id'].'/submitted');
+						if(\npdc\lib\Args::get('action') !== 'submitted'){
+							header('Location: '.BASE_URL.'/publication/'.\npdc\lib\Args::get('id').'/submitted');
 							die();
 						}
 						$_SESSION['notice'] = $this->controller->publishForm;

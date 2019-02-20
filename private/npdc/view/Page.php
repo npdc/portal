@@ -18,19 +18,17 @@ class Page extends Base{
 	public $canEdit;
 	public $baseUrl;
 	private $session;
-	private $args;
 	protected $controller;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller account controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
 		$this->canEdit = $session->userLevel >= NPDC_ADMIN;
 		$this->baseUrl = $controller->id;

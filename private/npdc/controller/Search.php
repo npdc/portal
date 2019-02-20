@@ -20,9 +20,9 @@ class Search {
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		$this->formController = new \npdc\controller\Form($this->formId);
 		$this->form = $this->formController->getForm('search');
 		foreach($this->form->fields->type->options as $id=>$label){

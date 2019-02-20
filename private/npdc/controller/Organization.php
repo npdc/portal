@@ -16,15 +16,14 @@ class Organization extends Base {
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		$this->session = $session;
-		$this->args = $args;
-		if($args['action'] === 'new' && $this->session->userLevel < $this->userLevelAdd){
+		if(\npdc\lib\Args::get('action') === 'new' && $this->session->userLevel < $this->userLevelAdd){
 			return;
-		} elseif (array_key_exists('id', $this->args) || array_key_exists('action', $this->args)){
-			$id = $args['id'];
+		} elseif (\npdc\lib\Args::exists('id') || \npdc\lib\Args::exists('action')){
+			$id = \npdc\lib\Args::get('id');
 			$this->display = 'edit_form';
 			$this->formId = 'organization_'.$id;
 			unset($_SESSION[$this->formId]['data']);
@@ -43,18 +42,18 @@ class Organization extends Base {
 							unset($data[$key]);
 						}
 					}
-					if($args['action'] === 'new'){
+					if(\npdc\lib\Args::get('action') === 'new'){
 						$id = $this->model->insertOrganization($data);
 					} else {
-						$id = $args['id'];
-						$this->model->updateOrganization($data, $args['id']);
+						$id = \npdc\lib\Args::get('id');
+						$this->model->updateOrganization($data, \npdc\lib\Args::get('id'));
 					}
 					$_SESSION['notice'] = 'The changes have been saved';
 					header('Location: '.BASE_URL.'/organization/'.$id);
 					die();
 				}
 				$_SESSION[$this->formId]['data'] = $_POST;
-			} elseif($args['action'] === 'new'){
+			} elseif(\npdc\lib\Args::get('action') === 'new'){
 				$_SESSION[$this->formId]['data']['country_id'] = 'NL';
 			} else {
 				$_SESSION[$this->formId]['data'] = $this->model->getById($id);

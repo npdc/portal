@@ -19,7 +19,6 @@ class Base {
 	public $display;
 	public $formController;
 	protected $session;
-	protected $args;
 	protected $model;
 	protected $version;
 	
@@ -28,13 +27,13 @@ class Base {
 	 */
 	public function __construct() {
 		if(\npdc\config::$reviewBeforePublish){
-			$this->draftMsg = ', please remember to submit the record for review when you are done. After clicking the button you can add comments to the reviewer.<br/><button onclick="openUrl(\''.BASE_URL.'/'.$this->args['type'].'/'.$this->args['id'].'/submit\')">Submit</button>';
+			$this->draftMsg = ', please remember to submit the record for review when you are done. After clicking the button you can add comments to the reviewer.<br/><button onclick="openUrl(\''.BASE_URL.'/'.\npdc\lib\Args::get('type').'/'.\npdc\lib\Args::get('id').'/submit\')">Submit</button>';
 			$this->submitForm = 'If there is anything you want the reviewer to look at or take into consideration please put it in the field below.<textarea id="comment" placeholder="Comments for reviewer"></textarea>Are you sure you want to submit this record for review? <button onclick="window.location=\'dosubmit?comment=\'+encodeURIComponent($(\'#comment\').val())">Yes</button> <button onclick="window.location=\'draft\'">No</button>';
 			$this->publishForm = 'This record is submitted for review. If everything is correct please <button onclick="window.location=\'publish?comment=\'+encodeURIComponent($(\'#comment\').val())">Publish</button>, otherwise please provide a reason<textarea id="comment" placeholder="Reason for rejection"></textarea> and <button onclick="window.location=\'cancel?comment=\'+encodeURIComponent($(\'#comment\').val())">Reject</button>';
 		} else {
-			$this->draftMsg = ', please remember to publish the record when you are done.<br/><button onclick="openUrl(\''.BASE_URL.'/'.$this->args['type'].'/'.$this->args['id'].'/publish\')">Publish</button>';
+			$this->draftMsg = ', please remember to publish the record when you are done.<br/><button onclick="openUrl(\''.BASE_URL.'/'.\npdc\lib\Args::get('type').'/'.\npdc\lib\Args::get('id').'/publish\')">Publish</button>';
 		}
-		if(!array_key_exists('id', $this->args) && !array_key_exists('action', $this->args)){
+		if(!\npdc\lib\Args::exists('id') && !\npdc\lib\Args::exists('action')){
 			unset($_SESSION[$this->formId]['data']);
 			$this->formController = new \npdc\controller\Form($this->formId);
 			$this->formController->getForm($this->name.'list');
@@ -49,20 +48,20 @@ class Base {
 				$this->formController->doCheck('get');
 			}
 		} else {
-			if(array_key_exists('action', $this->args) && in_array($this->args['action'], ['submit', 'edit', 'dosubmit', 'publish', 'cancel', 'warnings', 'new'])){
+			if(\npdc\lib\Args::exists('action') && in_array(\npdc\lib\Args::get('action'), ['submit', 'edit', 'dosubmit', 'publish', 'cancel', 'warnings', 'new'])){
 				$this->access = ($this->session->userLevel === NPDC_ADMIN 
-					|| $this->model->isEditor($this->args['id'], $this->session->userId) 
-					|| ($this->args['action'] === 'new' && $this->session->userLevel >= $this->userLevelAdd)
+					|| $this->model->isEditor(\npdc\lib\Args::get('id'), $this->session->userId) 
+					|| (\npdc\lib\Args::get('action') === 'new' && $this->session->userLevel >= $this->userLevelAdd)
 					);
 				$doSwitch = true;
 				if($this->access){
-					if(in_array($this->args['action'], ['submit', 'dosubmit', 'publish', 'warnings'])){
+					if(in_array(\npdc\lib\Args::get('action'), ['submit', 'dosubmit', 'publish', 'warnings'])){
 						$doSwitch = false;
 						if(!property_exists($this, 'pages')){
 							$this->pages = ['general'=>'Edit'];
 						}
 						$errors = [];
-						$this->id = $this->args['id'];
+						$this->id = \npdc\lib\Args::get('id');
 						$baseData = $this->model->getById($this->id, 'draft');
 						if($baseData === false){
 							header('Location: '.BASE_URL.'/'.$this->name.'/'.$this->id);
@@ -81,10 +80,10 @@ class Base {
 								$_SESSION['warnings'][$page] = [$title, $this->formController->errors];
 							}
 						}
-						if(count($_SESSION['warnings']) === 0 || ($this->args['action'] === 'publish' && $this->session->userLevel >= NPDC_ADMIN && array_key_exists('adminoverrule', $_GET) && $_GET['adminoverrule'] === 'adminoverrule')){
+						if(count($_SESSION['warnings']) === 0 || (\npdc\lib\Args::get('action') === 'publish' && $this->session->userLevel >= NPDC_ADMIN && array_key_exists('adminoverrule', $_GET) && $_GET['adminoverrule'] === 'adminoverrule')){
 							unset($_SESSION['warnings']);
 							$doSwitch = true;
-						} elseif($this->args['action'] !== 'warnings') {
+						} elseif(\npdc\lib\Args::get('action') !== 'warnings') {
 							header('Location: warnings');
 							die();
 						}
@@ -96,78 +95,78 @@ class Base {
 				} elseif(!$doSwitch){
 					$this->display = 'errors';
 				} else {
-					switch($this->args['action']){
+					switch(\npdc\lib\Args::get('action')){
 						case 'dosubmit':
-							$data = $this->model->getById($this->args['id'], 'draft');
+							$data = $this->model->getById(\npdc\lib\Args::get('id'), 'draft');
 							if($data === false){
 								$_SESSION['notice'] = 'No draft was found';
 							} else {
-								$this->model->setStatus($this->args['id'], 'draft', 'submitted', $_GET['comment']);
+								$this->model->setStatus(\npdc\lib\Args::get('id'), 'draft', 'submitted', $_GET['comment']);
 								$_SESSION['notice'] = 'You record has been submitted for review';
 								//send mail to NPDC
 								$mail = new \npdc\lib\Mailer();
 								$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 								$mail->subject(ucfirst($this->name).' for review');
 								$text = 'Dear admin'.",\r\n\r"
-									. 'Please review the '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args['id']."\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+									. 'Please review the '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.\npdc\lib\Args::get('id')."\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 	
 								$mail->text($text);
 								$mail->send();
 							}
 							\npdc\view\Base::checkUnpublished();
-							header('Location: '.BASE_URL.'/'.$this->name.'/'.$this->args['id'].'/submitted');
+							header('Location: '.BASE_URL.'/'.$this->name.'/'.\npdc\lib\Args::get('id').'/submitted');
 							die();
 						case 'publish':
 							$prevState = (\npdc\config::$reviewBeforePublish ? 'submitted' : 'draft');
-							$data = $this->model->getById($this->args['id'], $prevState);
+							$data = $this->model->getById(\npdc\lib\Args::get('id'), $prevState);
 							if($data === false) {
 								$_SESSION['notice'] = 'No version foud to publish';
 							} elseif ($this->session->userLevel < NPDC_ADMIN & \npdc\config::$reviewBeforePublish) {
 								$_SESSION['notice'] = 'You have insufficient rights to publish';
 							} else {
-								$this->model->setStatus($this->args['id'], 'published', 'archived');
-								$this->model->setStatus($this->args['id'], $prevState, 'published', $_GET['comment']);
+								$this->model->setStatus(\npdc\lib\Args::get('id'), 'published', 'archived');
+								$this->model->setStatus(\npdc\lib\Args::get('id'), $prevState, 'published', $_GET['comment']);
 								$_SESSION['notice'] = 'The record has been published';
-								$r = $this->model->getById($this->args['id']);
+								$r = $this->model->getById(\npdc\lib\Args::get('id'));
 								\npdc\lib\Push::send('['.($data[$this->name.'_version'] === 1 ? 'New': 'Updated').' '.$this->name.'] '.$data['title'], $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$r['uuid']);
 								if(\npdc\config::$reviewBeforePublish){
 									$this->sendSubmitterMail($data, 'published');
 								} else {
-									$submitter = $this->model->getLastStatusChange($this->args['id'], $data[$this->name.'_version'], 'published');
+									$submitter = $this->model->getLastStatusChange(\npdc\lib\Args::get('id'), $data[$this->name.'_version'], 'published');
 									$mail = new \npdc\lib\Mailer();
 									$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 									$mail->subject(ucfirst($this->name).' published');
 									$text = 'Dear admin'.",\r\n\r"
-										. 'The '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args['id'].' has been published by '.$submitter['name'].".\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+										. 'The '.$this->name.' \''.$data['title'].'\' at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.\npdc\lib\Args::get('id').' has been published by '.$submitter['name'].".\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 
 									$mail->text($text);
 									$mail->send();
 								}
 							}
 							\npdc\view\Base::checkUnpublished();
-							header('Location: '.BASE_URL.'/'.$this->name.'/'.$this->args['id']);
+							header('Location: '.BASE_URL.'/'.$this->name.'/'.\npdc\lib\Args::get('id'));
 							die();
 						case 'cancel':
-							$data = $this->model->getById($this->args['id'], 'submitted');
+							$data = $this->model->getById(\npdc\lib\Args::get('id'), 'submitted');
 							if($data !== false){
-								$this->model->setStatus($this->args['id'], 'submitted', 'draft', $_GET['comment']);
+								$this->model->setStatus(\npdc\lib\Args::get('id'), 'submitted', 'draft', $_GET['comment']);
 								$_SESSION['notice'] = 'The record has been reset to draft';
 								$this->sendSubmitterMail($data, 'rejected');
 							}
-							header('Location: '.BASE_URL.'/'.$this->name.'/'.$this->args['id'].'/'.$data[$his->name.'_version']);
+							header('Location: '.BASE_URL.'/'.$this->name.'/'.\npdc\lib\Args::get('id').'/'.$data[$his->name.'_version']);
 							die();
 						case 'edit':
 						default:
-							$data = $this->model->getById($this->args['id'], 'submitted');
+							$data = $this->model->getById(\npdc\lib\Args::get('id'), 'submitted');
 							if($data !== false && $this->session->userLevel < NPDC_ADMIN){
 								$this->display = 'under_review';
 							} else {
-								$this->id = $this->args['id'];
+								$this->id = \npdc\lib\Args::get('id');
 								$this->formId = $this->name.'_'.$this->id;
 								
-								$this->screen = $this->args['action'] === 'new' || empty($this->args['subaction'])
+								$this->screen = \npdc\lib\Args::get('action') === 'new' || empty(\npdc\lib\Args::get('subaction'))
 									? 'general'
-									: $this->args['subaction'];
+									: \npdc\lib\Args::get('subaction');
 								
 								$this->page();
 								$this->display = 'edit_form';
@@ -210,19 +209,19 @@ class Base {
 	 * @return void
 	 */
 	private function sendSubmitterMail($data, $status){
-		$submitter = $this->model->getLastStatusChange($this->args['id'], $data[$this->name.'_version'], 'submitted');
+		$submitter = $this->model->getLastStatusChange(\npdc\lib\Args::get('id'), $data[$this->name.'_version'], 'submitted');
 		$mail = new \npdc\lib\Mailer();
 		$mail->to($submitter['mail'], $submitter['name']);
 		$mail->subject(ucfirst($this->name).' '.$status);
 		$text = 'Dear '.$submitter['name'].",\r\n\r"
 			. 'Your '.$this->name.' \''.$data['title'].'\' has been '.$status.'. ';
 		if($status === 'published'){
-			$text .= 'It\'s available at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args['id'];
+			$text .= 'It\'s available at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.\npdc\lib\Args::get('id');
 			if(!empty($_GET['comment'])){
 				$text .= "\r\n\r\nThe reviewer added the following comment:\r\n".$_GET['comment'];
 			}
 		} else {
-			$text .= 'Please have a look at the comments below and edit your record at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.$this->args['id'].'/edit'."\r\n\r\n".$_GET['comment'];
+			$text .= 'Please have a look at the comments below and edit your record at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$this->name.'/'.\npdc\lib\Args::get('id').'/edit'."\r\n\r\n".$_GET['comment'];
 		}
 		$text .= "\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 		$mail->text($text);
@@ -257,7 +256,7 @@ class Base {
 		if(isset($_POST['formid'])){
 			$this->formController->doCheck();
 			if($this->formController->ok){
-				$this->id = $_POST[$this->name.'_id'] ?? $this->args['id'] ?? 'new';
+				$this->id = $_POST[$this->name.'_id'] ?? \npdc\lib\Args::get('id') ?? 'new';
 				if($this->id !== 'new' && $baseData['record_status'] === 'published' && !($this->session->userLevel >= NPDC_ADMIN && $_SESSION[$this->formId]['data']['rev'] === 'minor')){
 					$baseData[$this->name.'_version']++;
 					$baseData['record_status'] = 'draft';

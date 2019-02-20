@@ -12,9 +12,8 @@
 namespace npdc\view;
 
 class Download {
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
 	}
 	/**
@@ -24,10 +23,10 @@ class Download {
 	 * @return void
 	 */
 	public function showList(){
-		$file = \npdc\config::$downloadDir.'/'.$this->args['file'].'.'.$this->args['ext'];
+		$file = \npdc\config::$downloadDir.'/'.\npdc\lib\Args::get('file').'.'.\npdc\lib\Args::get('ext');
 		if(file_exists($file)){
 			header('Content-type: application/octet-stream'); 
-			header('Content-Disposition: attachment; filename='.$this->args['file'].'.'.$this->args['ext']);
+			header('Content-Disposition: attachment; filename='.\npdc\lib\Args::get('file').'.'.\npdc\lib\Args::get('ext'));
 			header('Pragma: no-cache'); 
 			header('Expires: 0');
 			readfile($file);

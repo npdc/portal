@@ -124,6 +124,10 @@ class Args {
 		return self::$args;
 	}
 
+	public static function getBaseUrl(){
+		return implode('/', array_slice(self::$args, 0, 2));
+	}
+
 	public static function set($arg, $value){
 		if(!isset(self::$args)){
 			self::parse();

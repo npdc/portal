@@ -16,7 +16,6 @@ class Project extends Base{
 	public $right;
 	public $class;
 	protected $session;
-	protected $args;
 	protected $controller;
 	protected $userLevelAdd = NPDC_ADMIN;//minimum user level required to add a new project
 	public $canEdit = false;
@@ -27,14 +26,13 @@ class Project extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller project controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
-		$this->baseUrl = implode('/', array_slice($args, 0, 2));
+		$this->baseUrl = \npdc\lib\Args::getBaseUrl();
 		$this->model = new \npdc\model\Project();
 		parent::__construct();
 	}
@@ -46,12 +44,12 @@ class Project extends Base{
 	 */
 	public function listStatusChanges(){
 		$version = $this->version;
-		if(array_key_exists('action', $this->args) && in_array($this->args['action'], ['edit', 'submit'])){
+		if(\npdc\lib\Args::exists('action') && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit'])){
 			$version = $this->versions[0]['project_version']; 
-		} elseif (array_key_exists('version', $this->args)){
-			$version = $this->args['version'];
+		} elseif (\npdc\lib\Args::exists('version')){
+			$version = \npdc\lib\Args::get('version');
 		}
-		return $this->doListStatusChanges($this->args['id'], $version);
+		return $this->doListStatusChanges(\npdc\lib\Args::get('id'), $version);
 	}
 	
 	/**
@@ -102,11 +100,11 @@ class Project extends Base{
 	 * @return void
 	 */
 	public function showItem($project){
-		if($this->args['action'] !== 'new'){
+		if(\npdc\lib\Args::get('action') !== 'new'){
 			$this->canEdit = isset($this->session->userId) 
 				&& ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($project, $this->session->userId));
-			if(array_key_exists('version', $this->args)){
-				$this->data = $this->model->getById($project, $this->args['version']);
+			if(\npdc\lib\Args::exists('version')){
+				$this->data = $this->model->getById($project, \npdc\lib\Args::get('version'));
 				if(!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])){
 					$this->data = false;
 				}
@@ -119,7 +117,7 @@ class Project extends Base{
 				$this->versions = $this->model->getVersions($project);
 			}
 			if($this->canEdit && is_null($this->controller->display) && count($this->versions) > 1){
-				$v = array_key_exists('version', $this->args) ? $this->args['version'] : 'published';
+				$v = \npdc\lib\Args::exists('version') ? \npdc\lib\Args::get('version') : 'published';
 				$_SESSION['notice'] = 'See version <select id="versionSelect" style="width:auto">';
 				foreach($this->versions as $version){
 					$_SESSION['notice'] .= '<option value="'.BASE_URL.'/project/'.$project.'/'.$version['project_version'].'" '
@@ -129,7 +127,7 @@ class Project extends Base{
 				$_SESSION['notice'] .= '</select>';
 			}
 			
-			if($this->data === false && $this->canEdit && in_array($this->args['action'], ['edit', 'submit', 'warnings'])){
+			if($this->data === false && $this->canEdit && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit', 'warnings'])){
 				$this->data = $this->model->getById($project, $this->versions[0]['project_version']);
 			}
 		}
@@ -146,9 +144,9 @@ class Project extends Base{
 					$this->title = 'No access';
 					$this->mid .= 'No access';
 				}
-			} elseif(array_key_exists('version', $this->args)) {
-				$this->title = 'No version '.$this->args['version'].' found';
-				$this->mid .= 'There is no version '.$this->args['version'].' of this project.';
+			} elseif(\npdc\lib\Args::exists('version')) {
+				$this->title = 'No version '.\npdc\lib\Args::get('version').' found';
+				$this->mid .= 'There is no version '.\npdc\lib\Args::get('version').' of this project.';
 			}
 		} else {
 			if(is_null($this->controller->display)){
@@ -157,12 +155,12 @@ class Project extends Base{
 					if($this->data['record_status'] === 'draft'){
 						$_SESSION['notice'] .= ' Publishing this draft is not possible since it doesn\'t appear to be different than the published record.';
 					}
-				} elseif($this->args['action'] === 'submit' && $this->data['record_status'] === 'draft'){
+				} elseif(\npdc\lib\Args::get('action') === 'submit' && $this->data['record_status'] === 'draft'){
 					$_SESSION['notice'] = $this->controller->submitForm;
 				} elseif($this->data['record_status'] !== 'published'){
 					if($this->session->userLevel === NPDC_ADMIN && $this->data['record_status'] === 'submitted'){
-						if($this->args['action'] !== 'submitted'){
-							header('Location: '.BASE_URL.'/project/'.$this->args['id'].'/submitted');
+						if(\npdc\lib\Args::get('action') !== 'submitted'){
+							header('Location: '.BASE_URL.'/project/'.\npdc\lib\Args::get('id').'/submitted');
 							die();
 						}
 						$_SESSION['notice'] = $this->controller->publishForm;
@@ -180,11 +178,11 @@ class Project extends Base{
 				if(!defined('NPDC_UUID')){
 					$this->showCanonical();
 				}	
-			} elseif($this->args['action'] === 'warnings') {
+			} elseif(\npdc\lib\Args::get('action') === 'warnings') {
 				$this->title = 'Please check - '.$this->data['title'];
 				$this->mid = $this->controller->showWarnings();
 			} else {
-				$this->title = ($this->args['action'] === 'new') ? 'New project' : 'Edit project - '.$this->data['title'];
+				$this->title = (\npdc\lib\Args::get('action') === 'new') ? 'New project' : 'Edit project - '.$this->data['title'];
 				$this->baseUrl .= '/'.$this->versions[0]['project_version'];
 				$pages = null;
 				$this->loadEditPage($pages);

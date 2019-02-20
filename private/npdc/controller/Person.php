@@ -15,19 +15,18 @@ class Person extends Base {
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		$this->session = $session;
-		$this->args = $args;
 		if($session->userLevel < NPDC_ADMIN){
 			header('Location: '.BASE_URL.'/');
 			die();
 		}
-		if($args['action'] === 'new' && $this->session->userLevel < $this->userLevelAdd){
+		if(\npdc\lib\Args::get('action') === 'new' && $this->session->userLevel < $this->userLevelAdd){
 			return;
-		} elseif (array_key_exists('id', $this->args) || array_key_exists('action', $this->args)){
-			$id = $args['id'];
+		} elseif (\npdc\lib\Args::exists('id') || \npdc\lib\Args::exists('action')){
+			$id = \npdc\lib\Args::get('id');
 			$this->display = 'edit_form';
 			$this->formId = 'person_'.$id;
 			unset($_SESSION[$this->formId]['data']);
@@ -40,15 +39,15 @@ class Person extends Base {
 			if(array_key_exists('formid', $_POST)){
 				$this->formController->doCheck();
 				if($this->formController->ok){
-					if($this->model->checkMail($_SESSION[$this->formId]['data']['mail'], $args['action'] === 'new' ? 0 : $args['id'])){
+					if($this->model->checkMail($_SESSION[$this->formId]['data']['mail'], \npdc\lib\Args::get('action') === 'new' ? 0 : \npdc\lib\Args::get('id'))){
 						unset($_SESSION[$this->formId]['data']['formid']);
 						unset($_SESSION[$this->formId]['data']['submit']);
 						$data = $_SESSION[$this->formId]['data'];
-						if($args['action'] === 'new'){
+						if(\npdc\lib\Args::get('action') === 'new'){
 							$id = $this->model->insertPerson($data);
 						} else {
-							$id = $args['id'];
-							$this->model->updatePerson($data, $args['id']);
+							$id = \npdc\lib\Args::get('id');
+							$this->model->updatePerson($data, \npdc\lib\Args::get('id'));
 						}
 						$_SESSION['notice'] = 'The changes have been saved';
 						header('Location: '.BASE_URL.'/person/'.$id);
@@ -57,7 +56,7 @@ class Person extends Base {
 					}
 				}
 				$_SESSION[$this->formId]['data'] = $_POST;
-			} elseif($args['action'] !== 'new'){
+			} elseif(\npdc\lib\Args::get('action') !== 'new'){
 				$_SESSION[$this->formId]['data'] = $this->model->getById($id);
 			}
 		} else {

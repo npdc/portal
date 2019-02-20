@@ -17,7 +17,6 @@ class Search extends Base{
 	public $class = 'list search';
 	public $accessLevel;
 	protected $session;
-	protected $args;
 	protected $controller;
 	protected $userLevelAdd = NPDC_NOBODY;//minimum user level required to add a new project
 	private $search;
@@ -28,18 +27,17 @@ class Search extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller account controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
-		if(array_key_exists('types', $args)){
-			$this->type = explode('+', $args['types']);
+		if(\npdc\lib\Args::exists('types')){
+			$this->type = explode('+', \npdc\lib\Args::get('types'));
 		}
 		
-		$this->search = str_replace('+', ' ', $this->args['subject']);
+		$this->search = str_replace('+', ' ', \npdc\lib\Args::get('subject'));
 		$_SESSION[$this->controller->formId]['data']['q'] = $this->search;
 		$_SESSION[$this->controller->formId]['data']['type'] = $this->type;
 	}

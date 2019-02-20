@@ -18,7 +18,6 @@ class Organization extends Base{
 	public $canEdit;
 	public $baseUrl;
 	protected $session;
-	private $args;
 	protected $controller;
 	protected $model;
 	
@@ -26,19 +25,18 @@ class Organization extends Base{
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller organization controller
 	 */
 
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
 		$this->canEdit = $session->userLevel >= NPDC_ADMIN;
 		$this->baseUrl = $controller->id;
 		
 		$this->model = new \npdc\model\Organization();
-		$this->baseUrl = implode('/', array_slice($args, 0, 2));
+		$this->baseUrl = \npdc\lib\Args::getBaseUrl();
 	}
 	
 	/**
@@ -70,7 +68,7 @@ class Organization extends Base{
 	public function showItem($id){
 		$this->canEdit = isset($this->session->userId) 
 			&& ($this->session->userLevel === NPDC_ADMIN);
-		if($this->args['action'] === 'new' && $this->session->userLevel >= $this->controller->userLevelAdd){
+		if(\npdc\lib\Args::get('action') === 'new' && $this->session->userLevel >= $this->controller->userLevelAdd){
 			$this->title = 'Add organization';
 		} elseif(!is_null($id)) {
 			$organization = $this->model->getById($id);
@@ -80,7 +78,7 @@ class Organization extends Base{
 			$this->mid .= 'The requested organization could not be found';
 			return;
 		}
-		if(($this->canEdit && $this->args['action'] === 'edit') || $this->args['action'] === 'new'){
+		if(($this->canEdit && \npdc\lib\Args::get('action') === 'edit') || \npdc\lib\Args::get('action') === 'new'){
 			$this->loadEditPage();
 		} else {
 			$this->data = $organization;

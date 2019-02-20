@@ -18,12 +18,11 @@ class CheckDownload {
 	 * Constructor
 	 *
 	 * @param [type] $session
-	 * @param [type] $args
 	 */
-	public function __construct($session, $args){
+	public function __construct($session){
 		if(CALLER === 'index'){
 			$this->model = new \npdc\model\Zip();
-			$this->file = $this->model->getByName($args['file']);
+			$this->file = $this->model->getByName(\npdc\lib\Args::get('file'));
 			if($this->file !== false){
 				if($file->timestamp < "1 week geleden" && false){
 					$this->status = 'expired';

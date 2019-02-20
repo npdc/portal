@@ -14,19 +14,17 @@ class Register extends Base{
 	public $template = 'plain';
 	
 	private $session;
-	private $args;
 	private $controller;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param object $session login information
-	 * @param array $args url parameters
+	 *
 	 * @param object $controller registration controller
 	 */
-	public function __construct($session, $args, $controller){
+	public function __construct($session, $controller){
 		$this->session = $session;
-		$this->args = $args;
 		$this->controller = $controller;
 		$this->extraHeader = '<meta name="robots" content="noindex">';
 	}
