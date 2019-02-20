@@ -33,8 +33,11 @@ class Dataset extends Base{
 		$this->session = $session;
 		$this->model = new \npdc\model\Dataset();
 		parent::__construct();
-		if(\npdc\lib\Args::exists('action') && \npdc\lib\Args::get('action') === 'files'){
+		if(\npdc\lib\Args::get('action') === 'files'){
 			$this->listFiles();
+		}
+		if(\npdc\lib\Args::get('action') === 'doduplicate' && $this->access){
+			$this->duplicateDataset();
 		}
 	}
 	
@@ -64,7 +67,9 @@ class Dataset extends Base{
 		switch($this->screen){
 			case 'general':
 				$this->formController->form->fields->iso_topic->options = $vocab->getList('vocab_iso_topic_category');
-				if($this->id !== 'new'){
+				if($this->session->userLevel >= NPDC_ADMIN){
+					$this->formController->form->fields->dif_id->disabled = false;
+				} elseif($this->id !== 'new'){
 					$this->formController->form->fields->dif_id->edit = false;
 				}
 				break;
@@ -93,20 +98,15 @@ class Dataset extends Base{
 				$this->formController->form->fields
 					->links->fields
 					->type->options = $vocab->getList('vocab_url_type');
-				$this->formController->form->fields->related_dataset->fields->dataset->fields->dataset_id->options = $this->getDatasets();
+				$options = [];
+				foreach($this->model->getList() as $ds){
+					$options[$ds['dataset_id']] = $ds['title'];
+				}
+				$this->formController->form->fields->related_dataset->fields->dataset->fields->dataset_id->options = $options;
 				break;
 		}
 	}
 
-	private function getDatasets(){
-		$model = new \npdc\model\Dataset();
-		$options = [];
-		foreach($model->getList() as $ds){
-			$options[$ds['dataset_id']] = $ds['title'];
-		}
-		return $options;
-	}
-	
 	/**
 	 * Populate the form fields with record information
 	 *
@@ -140,7 +140,6 @@ class Dataset extends Base{
 						$words[] = $keyword['keyword'];
 					}
 					$_SESSION[$this->formId]['data']['keywords'] = $words;
-
 				}
 				break;
 			case 'people':
@@ -172,7 +171,7 @@ class Dataset extends Base{
 						$_SESSION[$this->formId]['data'][$basesubkey.'_instrument'] = $vocab->formatTerm('vocab_instrument', $vocabModel->getTermById('vocab_instrument', $subrow['vocab_instrument_id']),true,true);
 						$_SESSION[$this->formId]['data'][$basesubkey.'_technique'] = $subrow['technique'];
 						$_SESSION[$this->formId]['data'][$basesubkey.'_number_of_sensors'] = $subrow['number_of_sensors'];
-					foreach($this->model->getSensor($subrow['instrument_id'], $this->version) as $subsubrowid=>$subsubrow){
+						foreach($this->model->getSensor($subrow['instrument_id'], $this->version) as $subsubrowid=>$subsubrow){
 							$basesubsubkey = $basesubkey.'_sensor_'.$subsubrowid;
 							$_SESSION[$this->formId]['data'][$basesubsubkey.'_id'] = $subsubrow['sensor_id'];
 							$_SESSION[$this->formId]['data'][$basesubsubkey.'_sensor_id'] = $subsubrow['vocab_instrument_id'];
@@ -416,9 +415,6 @@ class Dataset extends Base{
 					$this->savePeople();
 					$this->saveDataCenter();
 					break;
-				case 'links':
-					$this->saveProjects();
-					break;
 				case 'coverage':
 					$this->saveLocations();
 					$this->saveSpatialCoverage();
@@ -471,7 +467,276 @@ class Dataset extends Base{
 			die();
 		}
 	}
+
+	/**
+	 * Create duplicate of a dataset
+	 *
+	 * @return void
+	 */
+	private function duplicateDataset(){
+		$this->id = \npdc\lib\Args::get('id');
+		$this->version = \npdc\lib\Args::get('version');
+		$data = $this->model->getById($this->id, $this->version);
+
+		foreach(['dataset_id','published','insert_timestamp','uuid'] as $key){
+			unset($data[$key]);
+		}
+		foreach(['dataset_version'=>1,'creator'=>$this->session->userId,'dif_id'=>'[COPY]'.$data['dif_id'],'title'=>'[COPY]'.$data['title'],'record_status'=>'draft'] as $key=>$val){
+			$data[$key] = $val;
+		}
+		$this->newId = $this->model->insertGeneral($data);
+		$this->duplicateKeywords();
+		$this->duplicateTopics();
+		$this->duplicatePeople();
+		$this->duplicateDataCenter();
+		$this->duplicateLocations();
+		$this->duplicateSpatialCoverage();
+		$this->duplicateTemporalCoverage();
+		$this->duplicateResolution();
+		$this->duplicateCitation();
+		$this->duplicateLink();
+		$this->duplicatePlatform();
+		$this->duplicateProjects();
+		$this->duplicatePublications();
+		$this->duplicateRelatedDatasets();
+		$_SESSION['notice'] = 'The dataset has been duplicated. Please review the details and alter where needed.<br/><br/>Please be aware:<ul><li>Files (or links to it) have not been transferred (the whole idea of duplicates is that you can easily make a similar description for different files)</li><li>Edits done in the original after this moment will <strong>not</strong> be transfered to this duplicate, nor the other way</li></ul>';
+		$data = $this->model->getById($this->newId, 1);
+		header('Location: '.BASE_URL.'/dataset/'.$data['uuid']);
+		die();
+	}
 	
+	private function duplicateKeywords(){
+		foreach($this->model->getKeywords($this->id, $this->version) as $keyword){
+			$data = [
+				'dataset_id'=>$this->newId, 
+				'dataset_version_min'=>1,
+				'vocab_science_keyword_id'=>$keyword['vocab_science_keyword_id'],
+				'detailed_variable' =>$keyword['detailed_variable']
+			];
+			$this->model->insertScienceKeyword($data);
+		}
+		foreach($keywords = $this->model->getAncillaryKeywords($this->id, $this->version) as $word){
+			$this->model->insertAncillaryKeyword($word['keyword'], $this->newId, 1);
+		}
+	}
+
+	private function duplicateTopics(){
+		foreach($this->model->getTopics($this->id, $this->version) as $topic){
+			$this->model->insertTopic($topic['vocab_iso_topic_category_id'], $this->newId, 1);
+		}
+	}
+
+	private function duplicatePeople(){
+		foreach($this->model->getPersons($this->id, $this->version) as $person){
+			$data = ['dataset_id'=>$this->newId, 'dataset_version_min'=>1, 'person_id'=>$person['person_id'], 'organization_id'=>$person['organization_id'], 'editor'=>$person['editor'], 'role'=>$person['role'], 'sort'=>$person['sort']];
+			$this->model->insertPerson($data);
+		}
+	}
+
+	private function duplicateDataCenter(){
+		foreach($this->model->getDataCenter($this->id, $this->version) as $dataCenter){
+			$data_center_id = $this->model->insertDataCenter(['dataset_id'=>$this->newId, 'dataset_version_min'=>1, 'organization_id'=>$dataCenter['organization_id']]);
+			foreach($this->model->getDataCenterPerson($dataCenter['dataset_data_center_id'], $this->version) as $person){
+				$this->model->insertDataCenterPerson(['dataset_data_center_id'=>$data_center_id, 'dataset_version_min'=>1, 'person_id'=>$person['person_id']]);
+			}
+		}
+	}
+
+	private function duplicateLocations(){
+		foreach($this->model->getLocations($this->id, $this->version) as $location){
+			$this->model->insertLocation([
+				'dataset_id'=>$this->newId, 
+				'dataset_version_min'=>1,
+				'vocab_location_id'=>$location['vocab_location_id'],
+				'detailed'=>$location['detailed']
+			]);
+		}
+	}
+
+	private function duplicateSpatialCoverage(){
+		foreach($this->model->getSpatialCoverages($this->id, $this->version) as $sc){
+			$data = ['dataset_id'=>$this->newId, 'dataset_version_min'=>1];
+			foreach(['wkt', 'depth_min', 'depth_max', 'depth_unit', 'altitude_min', 'altitude_max', 'altitude_unit', 'type', 'label'] as $key){
+				$data[$key] = $sc[$key];
+			}
+			$this->model->insertSpatialCoverage($data);
+		}
+	}
+
+	private function duplicateTemporalCoverage(){
+		foreach($this->model->getTemporalCoverages($this->id, $this->version) as $tc){
+			$temporalCoverageId = $this->model->insertTemporalCoverage(['dataset_id'=>$this->newId, 'dataset_version_min'=>1]);
+			foreach(['period', 'cycle', 'paleo', 'ancillary'] as $group){
+				foreach($this->model->getTemporalCoveragesGroup($group, $tc['temporal_coverage_id'], $this->version) as $tcg){
+					switch($group){
+						case 'period':
+						$this->model->insertTemporalCoveragePeriod([
+								'date_start'=>$tcg['date_start'],
+								'date_end'=>$tcg['date_end'],
+								'temporal_coverage_id'=>$temporalCoverageId,
+								'dataset_version_min'=>1
+							]);
+							break;
+						case 'cycle':
+							$this->model->insertTemporalCoverageCycle([
+								'name'=>$tcg['name'],
+								'date_start'=>$tcg['data_start'],
+								'date_end'=>$tcg['data_end'],
+								'sampling_frequency'=>$tcg['sampling_frequency'],
+								'sampling_frequency_unit'=>$tcg['sampling_frequency_unit'],
+								'temporal_coverage_id'=>$temporalCoverageId,
+								'dataset_version_min'=>1
+							]);
+							break;
+						case 'paleo':
+							$gid = $this->model->insertTemporalCoveragePaleo([
+								'start_value'=>$tcg['start_value'],
+								'start_unit'=>$tcg['start_unit'],
+								'end_value'=>$tcg['end_value'],
+								'end_unit'=>$tcg['end_unit'],
+								'temporal_coverage_id'=>$temporalCoverageId,
+								'dataset_version_min'=>1
+							]);
+							foreach($this->model->getTemporalCoveragePaleoChronounit($tcg['temporal_coverage_paleo_id'], $this->version) as $tcgg){
+								$this->model->insertTemporalCoveragePaleoChronounit([
+									'temporal_coverage_paleo_id'=>$gid,
+									'dataset_version_min'=>1,
+									'vocab_chronounit_id'=>$tcgg['vocab_chronounit_id']
+								]);
+							}
+							break;
+						case 'ancillary':
+							$this->model->insertTemporalCoverageAncillary([
+								'keyword'=>$_SESSION[$this->formId]['data'][$baseId.$serial.'_keyword'],
+								'temporal_coverage_id'=>$temporalCoverageId,
+								'dataset_version_min'=>1
+							]);
+							break;
+					}
+				}
+			}
+		}
+	}
+
+	private function duplicateResolution(){
+		$fields = ['latitude_resolution', 'longitude_resolution', 'vocab_res_hor_id', 'vertical_resolution', 'vocab_res_vert_id', 'temporal_resolution', 'vocab_res_time_id', 'data_resolution_id'];
+		foreach($this->model->getResolution($this->id, $this->version) as $resolution){
+			$data = ['dataset_id'=>$this->newId, 'dataset_version_min'=>1];
+			foreach($fields as $field){
+				$data[$field] = $resolution[$field];
+			}
+			$this->model->insertResolution($data);
+		}
+	}
+
+	private function duplicateCitation(){
+		$fields = ['creator', 'editor', 'title', 'series_name', 'release_date', 'release_place', 'publisher', 'version', 'issue_identification', 'presentation_form', 'other', 'persistent_identifier_type', 'persistent_identifier_identifier', 'online_resource', 'type'];
+		foreach($this->model->getCitations($this->id, $this->version) as $citation){
+			$data = ['dataset_id'=>$this->newId, 'dataset_version_min'=>1];
+			foreach($fields as $field){
+				$data[$field] = $citation[$field];
+			}
+			$this->model->insertCitation($data);
+		}
+	}
+
+	private function duplicateLink(){
+		foreach($this->model->getLinks($this->id, $this->version) as $link){
+			$link_id = $this->model->insertLink([
+				'dataset_id'=>$this->newId,
+				'dataset_version_min'=>1,
+				'vocab_url_type_id'=>$link['vocab_url_type_id'],
+				'title'=>$link['title'],
+				'description'=>$link['description']
+			]);
+			foreach($this->model->getLinkUrls($link['dataset_link_id'], $this->version) as $linkUrl){
+				$this->model->insertLinkUrl([
+					'dataset_link_id'=>$link_id,
+					'dataset_version_min'=> 1,
+					'url'=>$linkUrl['url']
+				]);
+			}
+		}
+	}
+
+	private function duplicatePlatform(){
+		foreach($this->model->getPlatform($this->id, $this->version) as $platform){
+			$platform_id = $this->model->insertPlatform([
+				'dataset_id'=>$this->newId, 
+				'dataset_version_min'=>1, 
+				'vocab_platform_id'=>$platform['vocab_platform_id']
+			]);
+			foreach($this->model->getInstrument($platform['platform_id'], $this->version) as $instrument){
+				$instrument_id = $this->model->insertInstrument([
+					'vocab_instrument_id'=>$instrument['vocab_instrument_id'],
+					'technique'=>$instrument['technique'],
+					'number_of_sensors'=>$instrument['number_of_sensors'],
+					'platform_id'=>$platform_id,
+					'dataset_version_min'=>1
+				]);
+				foreach($this->model->getSensor($instrument['instrument_id'], $this->version) as $sensor){
+					$this->model->insertSensor([
+						'vocab_instrument_id'=>$instrument['vocab_instrument_id'],
+						'technique'=>$instrument['technique'],
+						'instrument_id'=>$instrument_id,
+						'dataset_version_min'=>1
+					]);
+				}
+			}
+		}
+	}
+
+	private function duplicateProjects(){
+		foreach($this->model->getProjects($this->id, $this->version, false) as $project){
+			$this->model->insertProject([
+				'dataset_id'=>$this->newId, 
+				'project_id'=>$project['project_id'],
+				'project_version_min'=>$project['project_version_min'],
+				'dataset_version_min'=>1
+			]);
+		}
+	}
+
+	private function duplicatePublications(){
+		foreach($this->model->getPublications($this->id, $this->version, false) as $publication){
+			$this->model->insertPublication([
+				'dataset_id'=>$this->newId, 
+				'publication_id'=>$publication['publication_id'],
+				'publication_version_min'=>$publication['publication_version_min'],
+				'dataset_version_min'=>1
+			]);
+		}
+	}
+
+	private function duplicateRelatedDatasets(){
+		foreach($this->model->getRelatedDatasets($this->id, $this->version) as $set){
+			$this->model->insertRelatedDataset([
+				'same'=>$set['same'],
+				'relation'=>$set['relation'],
+				'url'=>$set['url'],
+				'doi'=>$set['doi'],
+				'internal_related_dataset_id'=>$set['internal_related_dataset_id'],
+				'dataset_id'=>$this->newId,
+				'dataset_version_min'=>1
+			]);
+		}
+		
+		$this->model->insertRelatedDataset([
+			'same'=>0,
+			'relation'=>'Similar dataset',
+			'dataset_id'=>$this->id,
+			'dataset_version_min'=>$this->version,
+			'internal_related_dataset_id'=>$this->newId
+		]);
+		$this->model->insertRelatedDataset([
+			'same'=>0,
+			'relation'=>'Similar dataset',
+			'dataset_id'=>$this->newId,
+			'dataset_version_min'=>1,
+			'internal_related_dataset_id'=>$this->id
+		]);
+	}
+
 	/**
 	 * Save keywords
 	 *
@@ -604,6 +869,11 @@ class Dataset extends Base{
 		$this->model->deletePublication($this->id, $v, $publications);
 	}
 
+	/**
+	 * Save relate datasets
+	 *
+	 * @return void
+	 */
 	private function saveRelatedDatasets(){
 		$related = [];
 		$loopId = 'related_dataset_';

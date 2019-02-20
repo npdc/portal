@@ -138,9 +138,6 @@ class Dataset extends Base{
 				$this->data = $this->model->getById($dataset, 1);
 			}
 			$this->version = $this->data['dataset_version'];
-			if(\npdc\lib\Args::get('action') === 'duplicate'){
-				echo 'DUP';die();
-			}
 		}
 
 		if($this->data === false && \npdc\lib\Args::get('action') !== 'new'){//dataset not found
@@ -149,6 +146,22 @@ class Dataset extends Base{
 			$this->showXml();
 		} elseif(in_array(NPDC_OUTPUT, ['ris', 'bib'])){
 			$this->showCitation();
+		} if(\npdc\lib\Args::get('action') === 'duplicate'){
+			if(!$this->canEdit){
+				header('Location: '.BASE_URL.'/'.\npdc\lib\Args::get('type').'/'.$this->data['uuid']);
+			}
+			$this->title = 'Confirm dataset duplication';
+			ob_start();
+			include 'template/dataset/citation.php';
+			ob_end_clean();
+			$this->mid = '<p>You have requested duplication of the following dataset:</p>
+			<p style="margin-left:20px;margin-right:20px">&ldquo;'.$citationString.'&rdquo;</p>
+			<p><strong>Please be aware:</strong></p>
+			<ul><li>This can\'t easily be undone! Please only use when you indeed need a duplicate of this dataset.<br/><i>Recommended use is for cases where datasets are mostly similar and only vary in a few fields.</i></li>
+			<li>Files (or links to it) will not be transferred (the whole idea of duplicates is that you can easily make a similar description for different files)</li>
+			<li>Edits done in the original after creating the duplicate will <strong>not</strong> be transfered to the duplicate, nor the other way</li></ul>
+			<button onclick="openUrl(\''.BASE_URL.'/dataset/'.$this->data['uuid'].'/doduplicate\')">Do create a duplicate</button> <button onclick="openUrl(\''.BASE_URL.'/dataset/'.$this->data['uuid'].'\')">Cancel</button>';
+			return;
 		} elseif ((!$this->canEdit || is_null($this->controller->display)) && \npdc\lib\Args::get('action') !== 'new') {//display dataset
 			$this->showDataset();
 			if(!\npdc\lib\Args::exists('uuid') || !\npdc\lib\Args::exists('uuidtype')){

@@ -64,7 +64,7 @@
 					echo '<a href="'.BASE_URL.'/'.$view->baseUrl.'">&laquo; View</a>';
 				}
 				?>
-				<?=method_exists($view, 'listStatusChanges') && ($view->canEdit ?? false) && !in_array(\npdc\lib\Args::get('action'), ['new', 'new_from_doi']) ? $view->listStatusChanges() : ''?>
+				<?=method_exists($view, 'listStatusChanges') && ($view->canEdit ?? false) && !in_array(\npdc\lib\Args::get('action'), ['new', 'new_from_doi', 'duplicate']) ? $view->listStatusChanges() : ''?>
 				<div class="cols">
 					<?=isset($view->left) ? '<div id="left">'.$view->left.'</div>' : ''?>
 					<div id="mid">
@@ -72,7 +72,7 @@
 						if(property_exists($view, 'canEdit') && $view->canEdit && !\npdc\lib\Args::exists('action')){
 							echo '<div id="tools">';
 							if(property_exists($view, 'allowDuplicate') && $view->allowDuplicate){
-								echo '<button onclick="openUrl(\''.BASE_URL.'/'.(defined('NPDC_UUID') ? NPDC_UUID : $view->baseUrl).'/duplicate\')">Duplicate this page</button> ';
+								echo '<button onclick="openUrl(\''.BASE_URL.'/'.(\npdc\lib\Args::exists('uuid') ? \npdc\lib\Args::get('type').'/'.\npdc\lib\Args::get('uuid') : $view->baseUrl).'/duplicate\')">Duplicate this page</button> ';
 							}
 							echo '<button onclick="openUrl(\''.BASE_URL.'/'.$view->baseUrl.'/edit\')">Edit this page</button></div>';
 						}
