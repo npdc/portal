@@ -53,7 +53,7 @@ class Contact {
 			if($this->state === 'form'){
 				if(!array_key_exists($this->formId, $_SESSION)){
 					$_SESSION[$this->formId] = [
-						'data'=>['name'=>null, 'mail'=>null, 'message'=>null],
+						'data'=>['name'=>$session->getName(), 'mail'=>$session->getMail(), 'message'=>null],
 						'errors'=>[]];
 				}
 			}

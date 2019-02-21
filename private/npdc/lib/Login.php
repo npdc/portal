@@ -49,4 +49,12 @@ class Login {
 			}
 		}
 	}
+
+	public function getName(){
+		return isset($this->user) ? $this->user['name'] : null;
+	}
+
+	public function getMail(){
+		return isset($this->user) ? $this->user['mail'] : null;
+	}
 }
