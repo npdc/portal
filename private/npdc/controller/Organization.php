@@ -22,7 +22,7 @@ class Organization extends Base {
 		$this->session = $session;
 		if(\npdc\lib\Args::get('action') === 'new' && $this->session->userLevel < $this->userLevelAdd){
 			return;
-		} elseif (\npdc\lib\Args::exists('id') || \npdc\lib\Args::exists('action')){
+		} elseif (\npdc\lib\Args::exists('action')){
 			$id = \npdc\lib\Args::get('id');
 			$this->display = 'edit_form';
 			$this->formId = 'organization_'.$id;
@@ -58,7 +58,7 @@ class Organization extends Base {
 			} else {
 				$_SESSION[$this->formId]['data'] = $this->model->getById($id);
 			}
-		} else {
+		} elseif(!\npdc\lib\Args::exists('id')) {
 			unset($_SESSION[$this->formId]['data']);
 			$this->formController = new \npdc\controller\Form($this->formId);
 			$this->formController->getForm('organizationlist');
