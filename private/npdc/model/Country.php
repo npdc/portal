@@ -10,13 +10,13 @@
 namespace npdc\model;
 
 class Country {
-	protected $fpdo;
+	protected $dsql;
 	
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**
@@ -25,14 +25,15 @@ class Country {
 	 * @return array list of countries with continent name
 	 */
 	public function getListByContinent(){
-		return $this->fpdo
-			->from('country')
-			->join('continent')->select('continent_name')
-			->orderBy('continent_id, country_id')
-			->fetchAll();
+		return $this->dsql->dsql()->table('country')
+			->join('continent.continentid', 'continent_id')
+			->order('country.continent_id, country_name')
+			->get();
 	}
 
 	public function getList(){
-		return $this->fpdo->from('country')->orderBy('country_name')->fetchAll();
+		return $this->dsql->dsql()->table('country')
+			->order('country_name')
+			->get();
 	}
 }

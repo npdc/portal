@@ -9,13 +9,13 @@
 namespace npdc\model;
 
 class News {
-	protected $fpdo;
+	protected $dsql;
 	
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**
@@ -24,9 +24,7 @@ class News {
 	 * @return array list of news items
 	 */
 	public function getList(){
-		return $this->fpdo
-			->form('news')
-			->fetchAll();
+		return $this->dsql->dsql()->table('news')->get();
 	}
 	
 	/**
@@ -36,9 +34,7 @@ class News {
 	 * @return array news item
 	 */
 	public function getById($id){
-		return $this->fpdo
-			->from('news', $id)
-			->fetch();
+		return $this->dsql->dsql()->table('news')->where('news_id', $id)->get();
 	}
 	
 	/**
@@ -50,13 +46,16 @@ class News {
 	 * @return array news items
 	 */
 	public function getLatest($n = 1){
-		return $this->fpdo
-			->from('news')
+		$this->dsql->dsql()
+			->table('news')
 			->where('published < CURRENT_TIMESTAMP')
-			->where('(show_till IS NULL OR show_till > CURRENT_TIMESTAMP)')
-			->orderBy('published DESC')
+			->where([
+				['show_till IS NULL'], 
+				['show_till > CURRENT_TIMESTAMP']
+			])
 			->limit($n)
-			->fetchAll();
+			->order('published DESC')
+			->get();
 	}
 	
 }
