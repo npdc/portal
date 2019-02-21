@@ -29,6 +29,7 @@ class Organization {
 	public function getList($filter = null){
 		$org = $this->dsql->dsql()->table('organization')
 			->join('country.country_id', 'country_id', 'left')
+			->field('organization_name, organization_city, organization_id')
 			->order('organization_name');
 		
 		if(!empty($filter)){

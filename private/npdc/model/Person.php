@@ -30,7 +30,7 @@ class Person{
 	public function getList($filters){
 		$q = $this->fpdo
 			->from('person')
-			->leftJoin('organization USING(organization_id)')->select('organization.*')
+			->leftJoin('organization USING(organization_id)')->select('organization.organization_name')
 			->orderBy('name');
 		if(!is_null($filters)){
 			foreach($filters as $filter=>$values){
