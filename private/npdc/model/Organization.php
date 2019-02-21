@@ -80,7 +80,11 @@ class Organization {
 			}
 
 			if(isset($filter['search'])){
-				$org->where('organization_name', 'LIKE', '%'.$filter['search'].'%');
+				$org->where(
+					$org->orExpr()
+					->where('organization_name', 'LIKE', '%'.$filter['search'].'%')
+					->where('historic_name', 'LIKE', '%'.$filter['search'].'%')
+				);
 			}
 		}
 		return($org->get());

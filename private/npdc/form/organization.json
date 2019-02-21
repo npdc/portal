@@ -82,6 +82,12 @@
 				}
 			}
 		},
+		"historic_name": {
+			"type": "text",
+			"label": "Historic names and aliases",
+			"required": false,
+			"hint": "Multiple allowed, please separate with comma for readability. This field is used for the search function."
+		},
 		"submit": {
 			"type": "submit",
 			"value": "Save"
