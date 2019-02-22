@@ -58,6 +58,7 @@ class Args {
 				. ')'
 			. ')?'
 			. '(\?(.*))?'
+			. '(\/)?'
 			. '$';
 		
 		preg_match('/'.$pattern.'/i',str_replace('%20', ' ', $url), self::$args);
@@ -98,7 +99,7 @@ class Args {
 				self::$args['id'] = 0;
 			}
 		}
-		if(empty(self::$args['type'])){
+		if(empty(self::$args['type']) || self::$args['type'] === 'home'){
 			self::$args['type'] = 'front';
 		}
 	}
