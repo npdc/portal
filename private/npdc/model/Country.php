@@ -26,7 +26,7 @@ class Country {
 	 */
 	public function getListByContinent(){
 		return $this->dsql->dsql()->table('country')
-			->join('continent.continentid', 'continent_id')
+			->join('continent.continent_id', 'continent_id')
 			->order('country.continent_id, country_name')
 			->get();
 	}
