@@ -46,7 +46,7 @@ class News {
 	 * @return array news items
 	 */
 	public function getLatest($n = 1){
-		$this->dsql->dsql()
+		return $this->dsql->dsql()
 			->table('news')
 			->where('published < CURRENT_TIMESTAMP')
 			->where([
