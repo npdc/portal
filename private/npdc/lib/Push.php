@@ -16,7 +16,7 @@ class Push {
 	 * @return void
 	 */
 	public static function send($title, $url, $text=null){
-		if(!NPDC_DEV){
+		if(!NPDC_DEV && !empty(\npdc\config::$ifttt['token'])){
 			$curl = 'https://maker.ifttt.com/trigger/'.\npdc\config::$ifttt['event'].'/with/key/'.\npdc\config::$ifttt['token'];
 			$ch = curl_init($curl);
 			$xml = 'value1='.urlencode(html_entity_decode(filter_var($title, FILTER_SANITIZE_STRING))).'&value2='.$url;
