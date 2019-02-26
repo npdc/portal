@@ -17,10 +17,24 @@
 ### Nginx specific config
 - In site configuration
 ```
+index index.php;
+root /<path to npdc code>/web;
 location / {
-    try_files $uri $uri/ /index.php$is_args$args;
+  try_files $uri $uri/ /index.php$is_args$args;
+}
+
+location ~ \.php$ {
+  include snippets/fastcgi-php.conf;
+  fastcgi_pass unix:/<socket_name>.sock;
 }
 ```
+The name of the socket has to be the same as defined in the `/etc/php/<php_version>/fpm/pool.d/<pool>`
+
+### Dev and test mode
+The code contains a dev mode and a test mode. In dev mode debugging info is given at the bottom of the page, in test mode no extra info is given. These mode can be recognized by the red (dev) or orange (test) background and the word development or test in the top left corner of every page.
+
+#### Setting in nginx
+Add `fastcgi_param ENVIRONMENT dev;` for dev mode or `fastcgi_param ENVIRONMENT test;` for test mode to the `location ~ \.php$` block of the server config just above the `fastcgi_pass` line.
 
 ## Setting up datebase and config
 - Clone or unpack the script to a server either in webroot or subfolder
