@@ -469,6 +469,10 @@ class Dataset extends Base{
 	}
 
 	/**
+	 * DUPLICATERS
+	 */
+
+	/**
 	 * Create duplicate of a dataset
 	 *
 	 * @return void
@@ -505,6 +509,11 @@ class Dataset extends Base{
 		die();
 	}
 	
+	/**
+	 * Copy keywords from original dataset to duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicateKeywords(){
 		foreach($this->model->getKeywords($this->id, $this->version) as $keyword){
 			$data = [
@@ -520,12 +529,22 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Copy iso topics from original dataset to duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicateTopics(){
 		foreach($this->model->getTopics($this->id, $this->version) as $topic){
 			$this->model->insertTopic($topic['vocab_iso_topic_category_id'], $this->newId, 1);
 		}
 	}
 
+	/**
+	 * Copy people from original dataset to duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicatePeople(){
 		foreach($this->model->getPersons($this->id, $this->version) as $person){
 			$data = ['dataset_id'=>$this->newId, 'dataset_version_min'=>1, 'person_id'=>$person['person_id'], 'organization_id'=>$person['organization_id'], 'editor'=>$person['editor'], 'role'=>$person['role'], 'sort'=>$person['sort']];
@@ -533,6 +552,11 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Copy data center from original dataset to duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicateDataCenter(){
 		foreach($this->model->getDataCenter($this->id, $this->version) as $dataCenter){
 			$data_center_id = $this->model->insertDataCenter(['dataset_id'=>$this->newId, 'dataset_version_min'=>1, 'organization_id'=>$dataCenter['organization_id']]);
@@ -542,6 +566,11 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Copy locations from original dataset to duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicateLocations(){
 		foreach($this->model->getLocations($this->id, $this->version) as $location){
 			$this->model->insertLocation([
@@ -553,6 +582,11 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Copy spatial coverages from original dataset to duplicate
+	 * 
+	 * @return void
+	 */
 	private function duplicateSpatialCoverage(){
 		foreach($this->model->getSpatialCoverages($this->id, $this->version) as $sc){
 			$data = ['dataset_id'=>$this->newId, 'dataset_version_min'=>1];
@@ -563,6 +597,11 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Copy temporal coverages from original dataset to duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicateTemporalCoverage(){
 		foreach($this->model->getTemporalCoverages($this->id, $this->version) as $tc){
 			$temporalCoverageId = $this->model->insertTemporalCoverage(['dataset_id'=>$this->newId, 'dataset_version_min'=>1]);
@@ -618,6 +657,11 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Copy resolution from original dataset to duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicateResolution(){
 		$fields = ['latitude_resolution', 'longitude_resolution', 'vocab_res_hor_id', 'vertical_resolution', 'vocab_res_vert_id', 'temporal_resolution', 'vocab_res_time_id', 'data_resolution_id'];
 		foreach($this->model->getResolution($this->id, $this->version) as $resolution){
@@ -629,6 +673,11 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Copy citation from original dataset to duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicateCitation(){
 		$fields = ['creator', 'editor', 'title', 'series_name', 'release_date', 'release_place', 'publisher', 'version', 'issue_identification', 'presentation_form', 'other', 'persistent_identifier_type', 'persistent_identifier_identifier', 'online_resource', 'type'];
 		foreach($this->model->getCitations($this->id, $this->version) as $citation){
@@ -640,6 +689,12 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Copy links from original dataset to duplicate
+	 * Get Data links are omitted
+	 *
+	 * @return void
+	 */
 	private function duplicateLink(){
 		foreach($this->model->getLinks($this->id, $this->version) as $link){
 			$link_id = $this->model->insertLink([
@@ -659,6 +714,11 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Copy platform (including instruments and sensors) from original dataset to duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicatePlatform(){
 		foreach($this->model->getPlatform($this->id, $this->version) as $platform){
 			$platform_id = $this->model->insertPlatform([
@@ -686,6 +746,11 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Link duplicated dataset to same projects as original dataset was linked to
+	 *
+	 * @return void
+	 */
 	private function duplicateProjects(){
 		foreach($this->model->getProjects($this->id, $this->version, false) as $project){
 			$this->model->insertProject([
@@ -697,6 +762,11 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Link duplicated dataset to same publications as original dataset was linked to
+	 *
+	 * @return void
+	 */
 	private function duplicatePublications(){
 		foreach($this->model->getPublications($this->id, $this->version, false) as $publication){
 			$this->model->insertPublication([
@@ -708,6 +778,12 @@ class Dataset extends Base{
 		}
 	}
 
+	/**
+	 * Link duplicated dataset to samen datasets as original dataset was linked to
+	 * Additionally links are added between the original dataset and the duplicate
+	 *
+	 * @return void
+	 */
 	private function duplicateRelatedDatasets(){
 		foreach($this->model->getRelatedDatasets($this->id, $this->version) as $set){
 			$this->model->insertRelatedDataset([
@@ -786,6 +862,10 @@ class Dataset extends Base{
 			}
 		}
 	}
+
+	/**
+	 * SAVE PARTS
+	 */
 	
 	/**
 	 * Save iso topics
@@ -1593,6 +1673,10 @@ class Dataset extends Base{
 		$fileModel->cancelDrafts('dataset:'. $this->id);
 	}
 	
+	/** 
+	 * FILE ACCESS
+	 */
+
 	/**
 	 * list the available files and request/get access
 	 *
