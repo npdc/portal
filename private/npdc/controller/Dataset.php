@@ -482,6 +482,7 @@ class Dataset extends Base{
 		$this->version = \npdc\lib\Args::get('version');
 		$data = $this->model->getById($this->id, $this->version);
 
+		$data['duplicate_of'] = $data['uuid'];
 		foreach(['dataset_id','published','insert_timestamp','uuid'] as $key){
 			unset($data[$key]);
 		}

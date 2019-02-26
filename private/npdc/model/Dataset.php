@@ -786,7 +786,7 @@ class Dataset{
 	 * @return array reformatted data
 	 */
 	private function parseData($data, $action){
-		$fields = ['dif_id','title','summary','purpose','region','date_start','date_end','quality','access_constraints','use_constraints','dataset_progress', 'originating_center', 'dif_revision_history', 'version_description', 'product_level_id', 'collection_data_type', 'extended_metadata', 'record_status', 'creator'];
+		$fields = ['dif_id','title','summary','purpose','region','date_start','date_end','quality','access_constraints','use_constraints','dataset_progress', 'originating_center', 'dif_revision_history', 'version_description', 'product_level_id', 'collection_data_type', 'extended_metadata', 'record_status', 'creator', 'duplicate_of'];
 		if($action === 'insert'){
 			array_push($fields, 'dataset_version');
 			if(is_numeric($data['dataset_id'])){
