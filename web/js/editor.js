@@ -1154,6 +1154,9 @@ function addFieldset(id, setFocus){
 		clone.find('[name^='+id+']').each(function(){
 			$(this).attr('name', $(this).attr('name').replace(id, id+suffix));
 		});
+		clone.find('[name^=unit_'+id+']').each(function(){
+			$(this).attr('name', $(this).attr('name').replace(id, id+suffix));
+		});
 		clone.find('[value^='+id+']').each(function(){
 			$(this).attr('value', $(this).attr('value').replace(id, id+suffix));
 		});
