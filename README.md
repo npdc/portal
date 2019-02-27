@@ -24,7 +24,7 @@ More documentation about the functionality is available at the [Wiki](https://gi
   - Easy Sass
   - minify
 
-See documentation/install.md for installation instructions
+See [documentation/install.md] for installation instructions
 
 **Credits**
 
