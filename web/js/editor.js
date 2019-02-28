@@ -1250,7 +1250,7 @@ function addFieldset(id, setFocus){
 	}
 	
 	if(setFocus){
-		$('input[name='+name+']').focus();
+		$('input[name="'+name+'"]:first').focus();
 	}
 }
 
