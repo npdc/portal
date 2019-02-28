@@ -529,6 +529,10 @@ class Form {
 				case 'multitext':
 					$this->value = array_filter($this->value);
 					break;
+				case 'number_with_unit':
+					if($this->formData['unit_'.$id] === '==Select=='){
+						$this->addError('unit_'.$id, 'Please select a unit for '.$field->label);
+					}
 			}
 		}
 		if(empty($this->value)){

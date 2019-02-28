@@ -270,8 +270,16 @@ class Form {
 						: '').'" '
 					. ' class="'.$this->class.' number_with_unit"'
 					. $this->attr
-					. '/>'
-					. '<select name="unit_'.$id.'" class="number_with_unit no-select2">';
+					. '/>';
+				if($this->hasError('unit_'.$id)){
+					if($hasError){
+
+					} else {
+						$_SESSION[$this->formId]['errors'][$id] = $_SESSION[$this->formId]['errors']['unit_'.$id];
+						$hasError = true;
+					}
+				}
+				$input .= '<select name="unit_'.$id.'" class="number_with_unit no-select2 '.($this->hasError('unit_'.$id) ? 'error' : '').'"><option>==Select==</option>';
 				foreach($field->units as $unitid=>$unit){
 					$input .= '<option value="'.$unitid.'" '.($_SESSION[$this->formId]['data']['unit_'.$id] === $unitid ? 'selected' : '').'>'.$unit.'</option>';
 				}
