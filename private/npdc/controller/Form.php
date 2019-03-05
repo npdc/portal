@@ -570,6 +570,7 @@ class Form {
 			case 'down':
 				$month_default = 1;
 				$day_default = 1;
+				break;
 			case 'none':
 				$month_default = 0;
 				$day_default = 0;
@@ -580,7 +581,6 @@ class Form {
 			list($year, $month, $day) = explode('-', $date);
 			$valid = checkdate($month, $day, $year);
 		}
-		
 		if(!$valid){
 			$pattern = '/^(?P<year>[0-9]{2,4})([-\/](?P<month>([1-9][0-9])|0?[1-9])([-\/](?P<day>([1-9][0-9])|0?[1-9]))?)?/';
 			if(preg_match($pattern, $date, $matches)){

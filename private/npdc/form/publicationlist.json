@@ -16,6 +16,7 @@
 			"type": "options",
 			"label": "Region",
 			"multiple": true,
+			"disabled": true,
 			"required": false,
 			"options": {
 				"Arctica": "Arctic",
@@ -31,7 +32,8 @@
 			"max": null,
 			"hint": "For a single year put the same year in both fields",
 			"format": "yyyy",
-			"range": true
+			"range": true,
+			"fuzzy": true
 		},
 		"organization": {
 			"type": "options",
