@@ -42,6 +42,8 @@ class Base {
 			}
 			$this->formController->form->fields->program->options = $this->getPrograms($this->name);
 			$this->formController->form->fields->organization->options = $this->getOrganizations($this->name);
+			$this->formController->form->action = BASE_URL.'/'.$this->formController->form->action;
+			
 
 			#check if data is sent
 			if(array_key_exists('formid', $_GET)){

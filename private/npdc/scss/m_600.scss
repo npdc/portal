@@ -1,15 +1,14 @@
 #head.sticky {
-	padding: 0px;
 	height: 35px;
-	position: fixed;
-	z-index: 998;
-	#top, #title h1{
-		display: none;
-	}
-	#title {
-		float: left;
-	}
-	img {
-		height: 50px;
+}
+#menu > ul li.sub {
+	.no-touch &:hover {
+		ul {
+			visibility: visible;
+			transition-property: visiblity, opacity;
+			transition-duration: 0s, 0.25s;
+			transition-delay: 0s, 0s;
+			opacity: 1; 
+		}
 	}
 }

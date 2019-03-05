@@ -87,14 +87,19 @@ class Dataset extends Base{
 			default:
 				$this->class = 'list dataset';
 				$this->title = 'Datasets';
-				$this->mid = $this->displayTable('dataset', $list
+				$list = array_values($list);
+				$n = count($list);
+				$page = \npdc\lib\Args::get('page') ?? 1;
+				$list = array_slice($list, ($page-1)*\npdc\config::$rowsPerPage, min($page*\npdc\config::$rowsPerPage, $n));
+				$pager = $this->makePager($n, $page);
+				$this->mid = $pager.$this->displayTable('dataset', $list
 						, ['title'=>'Title', 
 							'date_start'=>'Start date', 
 							'date_end'=>'End date']
 						, ['dataset', 'dataset_id']
 						, true
 						, true
-					);
+					).$pager;
 					$this->json = array_merge([
 						'@context' => ['@vocab'=>'http://schema.org/'],
 						'@type' => ['Service', 'ResearchProject'],

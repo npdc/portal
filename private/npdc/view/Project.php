@@ -65,7 +65,12 @@ class Project extends Base{
 				? $_SESSION[$this->controller->formId]['data'] 
 				: null
 			);
-		foreach($list as $i=>&$item){
+		$list = array_values($list);
+		$list2 = [] ;
+		$n = count($list);
+		$page = \npdc\lib\Args::get('page') ?? 1;
+		for($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++){
+			$item = $list[$i];
 			$add = '';
 			$parent = $this->model->getParents($item['project_id']);
 			if(count($parent) > 0){
@@ -80,9 +85,12 @@ class Project extends Base{
 			if(!empty($add)){
 				$item['title'] .= '<div class="related"></div>'.$add;
 			}
+			$list2[] = $item;
 		}
+		$pager = $this->makePager($n, $page);
 		$this->mid = '<div class="related"><i>Projects with related projects</i> <a href="javascript:toggleRelated(false)">Show related projects</a></div><div class="noRelated"><a href="javascript:toggleRelated(true)">Hide related projects</a></div>'
-			.$this->displayTable('project', $list
+			.$pager
+			.$this->displayTable('project', $list2
 				, ['title'=>'Title',
 					'nwo_project_id'=>'Funding id',
 					'date_start'=>'Start date',
@@ -90,7 +98,8 @@ class Project extends Base{
 				, ['project', 'project_id']
 				, true
 				, true
-			);
+			)
+			.$pager;
 	}
 	
 	/**

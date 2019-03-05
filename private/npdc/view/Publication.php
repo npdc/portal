@@ -64,14 +64,18 @@ class Publication extends Base{
 		$this->left = parent::showFilters($this->controller->formId);
 		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data']) 
 				? $_SESSION[$this->controller->formId]['data'] 
-				: null
-			);
+				: null);
 		$list2 = [];
-		foreach($list as $item){
+		$list = array_values($list);
+		$n = count($list);
+		$page = \npdc\lib\Args::get('page') ?? 1;
+		for($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++){
+			$item = $list[$i];
 			$item['authors'] = $this->model->getAuthors($item['publication_id'], $item['publication_version']);
 			$list2[] = $item;
 		}
-		$this->mid = $this->displayTable('publication', $list2
+		$pager = $this->makePager($n, $page);
+		$this->mid = $pager.$this->displayTable('publication', $list2
 				, ['authors'=>'Authors',
 					'title'=>'Title', 
 					'year'=>'Year', 
@@ -79,7 +83,7 @@ class Publication extends Base{
 				, ['publication', 'publication_id']
 				, true
 				, true
-			);
+			).$pager;
 	}
 
 	/**

@@ -5,7 +5,9 @@
 	padding: 125px 10px 10px;
 	box-shadow: 0 0 5px #aaa;
 }
-
+#toplink {
+	display: none;
+}
 #head {
 	background-color: $color-accent-1;
 	position: absolute;
@@ -20,6 +22,33 @@
 	& > div {
 		max-width: 1240px;
 		margin: 0px auto;
+	}
+	&.sticky {
+		margin: 0px;
+		padding: 0px;
+		position: fixed;
+		z-index: 998;
+		#top, #title h1{
+			display: none;
+		}
+		#title {
+			float: left;
+		}
+		img {
+			height: 50px;
+		}
+		#toplink{
+			display: block;
+			float: right;
+			a {
+				text-decoration:none;
+				display: block;
+				padding: 5px;
+				&:before {
+					content: '\25B2\0020';
+				}
+			}
+		}
 	}
 }
 #top {
@@ -148,7 +177,7 @@
 					color: $color-accent-2;
 				}*/
 			}
-			.no-touch &:hover, &.hover {
+			.no-touch &:hover {
 				background: $menu-bg-hover;
 				color: $color-accent-2;
 			}
@@ -194,13 +223,9 @@
 						background: mix($bg-color, $color-accent-1, 75%);
 					}
 				}
-				.no-touch &:hover, &.hover {
+				&.hover {
 					ul {
-						visibility: visible;
-						transition-property: visiblity, opacity;
-						transition-duration: 0s, 0.25s;
-						transition-delay: 0s, 0s;
-						opacity: 1; 
+						
 					}
 				}
 			}

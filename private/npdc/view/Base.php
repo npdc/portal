@@ -80,6 +80,41 @@ class Base {
 	}
 	
 	/**
+	 * Create pager
+	 *
+	 * @param int $n number of rows
+	 * @param int $page current pagenumber
+	 * @return string pager
+	 */
+	protected function makePager($n, $page){
+		if($n > \npdc\config::$rowsPerPage){
+			$pager = '<div class="pager">
+				<span class="hint">Showing results '.(($page-1)*\npdc\config::$rowsPerPage+1).' to '.$page*\npdc\config::$rowsPerPage.' of '.$n.'</span>
+				<span class="numbers">Page:';
+				$pages = ceil($n/\npdc\config::$rowsPerPage);
+				$base_url = BASE_URL.'/'.\npdc\lib\Args::get('type').'/p';
+				for($i=1;$i<=ceil($n/\npdc\config::$rowsPerPage);$i++){
+					if(in_array($i, [1,$pages]) || ($i < $page+2 && $i > $page-2)){
+						if($prev < $i-1){
+							$pager .= '<span class="numberdots">...</span>';
+						} 
+						if ($i == $page){
+							$pager .= '<span class="page-number active">'.$i.'</i></span>';
+						} else {
+							$pager .= '<span class="page-number"><a href="'.$base_url.$i.(empty($_SERVER['QUERY_STRING']) ? '' : '?'.$_SERVER['QUERY_STRING']).'">'.$i.'</a></i></span>';
+						}
+						$prev = $i;
+					}
+				}
+				$pager .= '</span>
+			</div>';
+		} else {
+			$pager = '';
+		}
+		return $pager;
+	}
+
+	/**
 	 * * display a list of items
 	 *
 	 * @param string $class any classnames that need to be added to the table element
