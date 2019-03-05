@@ -94,6 +94,7 @@ class config {
 		'publication'=>true,
 		'project'=>true
 	];
+	public static $rowsPerPage = 25;//number of rows to show in a list
 	
 	public static $reviewBeforePublish = false;
 	
