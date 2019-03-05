@@ -68,7 +68,6 @@ ul.collapsable{
 	}
 	#right{
 		border: none;
-		padding-left: 0px;
 		margin-top: 1em;
 		max-width: none;
 		-webkit-column-count: 2;
@@ -99,7 +98,8 @@ ul.collapsable{
 
 #menu > ul > li{
 	a:link, a:visited, span {
-		width: auto;
+		min-width: auto;
+		padding: 6px 10px;
 	}
 }
 

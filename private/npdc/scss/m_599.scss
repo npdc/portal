@@ -2,14 +2,20 @@ h1 {
 	font-size: 20pt;
 }
 body:not(.edit) {
-	padding: 0px;
+	//padding: 0px;
 	&:before{
-		color: white;
+		color: $color-accent-1;
 		display:block;
 		margin: 5px;
 		text-align: center;
-		content: 'This site works best on a screen of at least 600 pixels wide';
+		content: 'This site works best on a screen of at least 620 pixels wide';
 	}
+}
+#head {
+	position: relative;
+}
+#page {
+	padding-top: 10px !important;
 }
 .debug.top {
 	margin-top: -10px;
@@ -17,7 +23,7 @@ body:not(.edit) {
 }
 .edit #page{
 	#main:after{
-		content: 'The edit interface requires a screen of at least 600 pixels wide';
+		content: 'The edit interface requires a screen of at least 620 pixels wide';
 	}
 	#main div, #main h2 {
 		display: none;
@@ -28,6 +34,7 @@ body:not(.edit) {
 }
 
 #menu {
+	clear:both;
 	height: auto;
 	padding: 0px;
 	h4 {
@@ -74,6 +81,7 @@ body:not(.edit) {
 				height: auto;
 				padding: 10px;
 				padding-left: 30px;
+				color: $color-accent-1;
 
 			}
 		}

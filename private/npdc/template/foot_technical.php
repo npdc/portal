@@ -1,4 +1,4 @@
-<hr><div class="technical">
+<hr/><div class="technical">
 <?php if(!empty($this->data['dif_id'])){
 	echo '<nobr><strong>Dif id:</strong> <a href="https://gcmd.nasa.gov/r/d/[GCMD]'.$this->data['dif_id'].'">'.$this->data['dif_id'].'</a></nobr> | ';
 }

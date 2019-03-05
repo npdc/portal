@@ -2,23 +2,45 @@
 	max-width: 1240px;
 	margin: 0px auto;
 	background: $bg-color;
-	padding: 10px;
+	padding: 125px 10px 10px;
+	box-shadow: 0 0 5px #aaa;
 }
 
+#head {
+	background-color: $color-accent-1;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	a:link, a:visited {
+		color: white;
+	}
+	box-shadow: 0 0 5px #aaa;
+	padding-top: 5px;
+	& > div {
+		max-width: 1240px;
+		margin: 0px auto;
+	}
+}
 #top {
-	float: none;
+	float: right;
+	margin-right: 5px;
 	padding-bottom: 2px;
-	margin: 0px;
 	padding-right: 0px;
-	color: black;
+	color: white;
 	overflow: auto;
 	& > div {
 		float: right;
 		margin-left: 5px;
 	}
-	#user {
+	div:not(#search){
 		font-size: 80%;
-		float: right;
+	}
+	a:hover, a:active {
+		color: #b71f1c;
+	}
+	
+	#user {
 		.unpublished {
 			background: #b71f1c;
 			color: white;
@@ -32,8 +54,9 @@
 	}
 	#social {
 		a:link, a:visited {
-			color: $color-accent-1;
+			color: white;
 			text-decoration: none;
+			font-size: 120%;
 			&:hover {
 				color: $color-accent-2;
 			}
@@ -45,6 +68,7 @@
 			padding-top: 0px;
 			padding-bottom: 0px;
 			float: left;
+			border: solid 1px $color-accent-3;
 		}
 		input[type=text]{
 			width: auto;
@@ -54,7 +78,7 @@
 		}
 		input[type=submit]{
 			box-sizing: border-box;
-			border: none;
+			border-left: none;
 			margin: 0px;
 			background-color: $color-accent-1;
 			font-weight: bold;
@@ -66,27 +90,26 @@
 }
 
 #title {
-	min-height: 100px;
 	padding: 10px;
-	border-top-left-radius: $border-radius;
-	border-top-right-radius: $border-radius;
-	background-image: url('../img/title_bg.jpg');
-	background-position: center;
-	background-size: cover;
 	img {
 		float: left;
 		margin-right: 10px;
 		height: 100px;
+		border: solid 3px white;
+		border-radius: 50%;
 	}
 }
 
 #menu {
-	border-bottom: $border;
 	padding: 0;
 	overflow: auto;
 	h4 {
 		display: none;
 	}
+	a:hover, a:active {
+		color: $color-accent-2;
+	}
+	
 	> ul {
 		margin: 0px;
 		margin-left: 0px;
@@ -99,8 +122,8 @@
 				border-left: 1px solid $color-accent-3;
 				border-image: linear-gradient(to bottom, 
 					transparent, 
-					transparent 15%, #c6d7eb 15%,
-					#c6d7eb 85%, transparent 85%
+					transparent 15%, $color-accent-3 15%,
+					$color-accent-3 85%, transparent 85%
 					, transparent) 1;
 					
 				}
@@ -109,9 +132,7 @@
 		}
 		li {
 			list-style: none;
-			span{
-				color: $color-accent-1;
-			}
+			color: white;
 			a:link, a:visited, span {
 				font-weight: bold;
 				text-decoration: none;
@@ -122,12 +143,14 @@
 				text-align: center;
 			}
 			&.active {
-				> a:link, > a:visited {
+				background: mix($bg-color, $color-accent-1, 25%);
+				/*> a:link, > a:visited {
 					color: $color-accent-2;
-				}
+				}*/
 			}
 			.no-touch &:hover, &.hover {
 				background: $menu-bg-hover;
+				color: $color-accent-2;
 			}
 			
 			ul {
@@ -149,6 +172,7 @@
 						text-align: left;
 						border-bottom: $border;
 						border-top-width: 0px;
+						color: $color-accent-1;
 					}
 					&:hover{
 						background-color: $menu-bg-hover;
@@ -162,8 +186,13 @@
 				> span:before {
 					content: '\25BC\0020';
 				}
-				&.active-child > span {
-					color: $color-accent-2;
+				&.active-child {
+					& > span {
+					background: mix($bg-color, $color-accent-1, 25%);
+					}
+					.active {
+						background: mix($bg-color, $color-accent-1, 75%);
+					}
 				}
 				.no-touch &:hover, &.hover {
 					ul {
@@ -290,7 +319,6 @@
 	}
 }
 
-
 .collapsible {
 	&:before {
 		content: '\25B2\0020';
@@ -402,7 +430,7 @@
 		flex: 2;
 		min-height: 250px;
 		padding-right: 10px;
-		padding-left: 10px;
+		padding-left: 5px;
 		order: 1;
 		div.overheight{
 			max-height: 120px;
@@ -484,9 +512,12 @@
 	}
 	#right{
 		flex: 1;
-		border-left: $border;
+		//border-left: $border;
 		background: none;
 		padding-left: 10px;
+		background-color: $table-stripe-bg;
+		padding: 10px;
+		min-width: 200px;
 		order: 2;
 		max-width: 300px;
 		ul {

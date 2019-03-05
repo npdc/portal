@@ -1,0 +1,15 @@
+#head.sticky {
+	padding: 0px;
+	height: 35px;
+	position: fixed;
+	z-index: 998;
+	#top, #title h1{
+		display: none;
+	}
+	#title {
+		float: left;
+	}
+	img {
+		height: 50px;
+	}
+}

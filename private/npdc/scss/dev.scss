@@ -2,7 +2,7 @@
 
 .debug {
 	text-align: center;
-	color: white;
+	color: #888;
 	font-style: italic;
 	font-size: 80%;
 	&.top {
@@ -10,8 +10,6 @@
 		margin-bottom: 20px;
 	}
 	&.bottom {
-		margin-top: 20px;
-		margin-bottom: -20px;
 		div {
 			font-style: normal;
 			text-align: left;
@@ -27,13 +25,17 @@
 }
 
 body {
-	background-color: #ff6666;
+	border: solid 5px red;
 }
+
 #page:before {
-	position: absolute;
-	top: 0px;
+	position: fixed;
+	top: 5px;
 	left: 5px;
 	content: 'Development';
 	opacity: 0.5;
-	z-index: -999;
+	z-index: 999;
+	color: red;
+	font-weight: bold;
+	font-size: 30pt;
 }

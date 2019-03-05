@@ -23,7 +23,7 @@ class Menu{
 	 */
 	private function __construct($session, $current){
 		$this->model = new \npdc\model\Menu();
-		$this->current = $current;
+		$this->current = $current === 'front' ? '' : $current;
 		$this->userLevel = array_slice($session->levels, 0, $session->userLevel+1);
 		$this->session = $session;
 	}

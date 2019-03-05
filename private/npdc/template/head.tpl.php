@@ -34,9 +34,10 @@
 	if(NPDC_ENVIRONMENT !== 'production'){
 		$css[] = NPDC_ENVIRONMENT;
 	}
+	$v = NPDC_DEV ? time() : APP_BUILD;
 	foreach([
-		'css'=>['<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/', '.css?'.APP_BUILD.'" />'],
-		'js'=>['<script type="text/javascript" src="'.BASE_URL.'/js/', '.js?'.APP_BUILD.'"></script>']
+		'css'=>['<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/', '.css?'.$v.'" />'],
+		'js'=>['<script type="text/javascript" src="'.BASE_URL.'/js/', '.js?'.$v.'"></script>']
 	] as $type=>$code){
 		foreach($$type as $file){
 			if(is_array($file)){

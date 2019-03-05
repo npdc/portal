@@ -17,15 +17,10 @@
 	<body class="<?=$view->class?> <?=(empty($session->userLevel) || $session->userLevel === NPDC_PUBLIC ? 'guest' : 'user')?>">
 		<div id="overlay"><div class="inner"></div></div>
 		<div id="page">
-			<div id="head">
+			<div id="head"><div>
 				<div id="top">
 					<div id="search"><form method="post" action="<?=BASE_URL?>/search"><input type="text" placeholder="search term" name="q" /><input type="submit" value="search"/></form></div>
-					<?php
-					if(\npdc\config::$social['twitter_in_head'] && !empty(\npdc\config::$social['twitter'])){
-						echo '<div id="social"> - <a href="https://twitter.com/'.\npdc\config::$social['twitter'].'"><span class="icon-twitter"></span></a></div>';
-					}
-					?>
-					<div id="user"><?php
+					<div><span id="user"><?php
 					if($session->userLevel > NPDC_PUBLIC){
 						echo 'You are logged in as <a href="'.BASE_URL.'/account">'.$session->name.'</a> ('.$session->levelDetails[$session->userLevel]['name'].')';
 						if($session->userLevel >= NPDC_EDITOR){
@@ -43,6 +38,11 @@
 						}
 						echo '<a href="#" onclick="openOverlay(\''.BASE_URL.'/login\')">Log in</a>';
 					}
+					?></span>
+					<?php
+					if(\npdc\config::$social['twitter_in_head'] && !empty(\npdc\config::$social['twitter'])){
+						echo '<span id="social"> - <a href="https://twitter.com/'.\npdc\config::$social['twitter'].'"><span class="icon-twitter"></span></a></span>';
+					}
 					?></div>
 				</div>
 				<div id="title">
@@ -52,7 +52,7 @@
 				<div id="menu">
 					<h4>≡ Menu</h4>
 					<?=\npdc\lib\Menu::getMenu($session, \npdc\lib\Args::get('type'));?>	
-				</div>
+				</div></div>
 			</div>
 			<div id="main">
 				<?=isset($view->title) && strlen($view->title) > 0 ? '<h2>'.$view->title.'</h2>' : '';?>

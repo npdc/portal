@@ -20,11 +20,11 @@ $().ready(function(){
 	});
 	$('body').addClass('no-touch');
 	//add click action when device is a touch device
-	$('#menu .sub span').click(function(){
+	$('#menu .sub span').click(function(event){
 		if($(this).parent().hasClass('hover')){
-			$('.hover').removeClass('hover');
+			$('li.hover').removeClass('hover');
 		} else {
-			$('.hover').removeClass('hover');
+			$('li.hover').removeClass('hover');
 			$(this).parent().addClass('hover');
 		}
 		event.stopPropagation();
@@ -44,7 +44,7 @@ $().ready(function(){
 	});
 	
 	//toggle for showing or hiding menu
-	$('#menu h4').click(function(){
+	$('#menu h4').click(function(event){
 		$('#menu').toggleClass('hover');
 		$('#menu .sub.hover').removeClass('hover');
 		event.stopPropagation();
@@ -177,18 +177,18 @@ $().ready(function(){
 	Inputmask.extendDefinitions({
 		"X": {
 			validator: "[0-9xX]",
-            cardinality: 1,
-            casing: "upper"
+			cardinality: 1,
+			casing: "upper"
 		}
 	});
 	Inputmask.extendAliases({
 		"yyyy[-mm[-dd]]": {
-            mask: "y[-1[-d]]",
-            placeholder: "yyyy-mm-dd",
-            leapday: "-02-29",
-            separator: "-",
-            alias: "yyyy/mm/dd"
-        },
+			mask: "y[-1[-d]]",
+			placeholder: "yyyy-mm-dd",
+			leapday: "-02-29",
+			separator: "-",
+			alias: "yyyy/mm/dd"
+		},
 		"orcid": {
 			mask: "9999-9999-9999-999X"
 		}
@@ -220,18 +220,36 @@ $().ready(function(){
 	$('.bottombar').click(function(){
 		$(this).parent().toggleClass('expanded');
 	});
+
+	var menuPos, headHeight;
+	setHeadMargin = function(){
+		menuPos = $('#menu').position().top;
+		headHeight = Math.max(125, $('#head').height());
+		$('#page').css('padding-top', headHeight+15+'px');
+	}
+	$(window).on('load resize', function(){
+		setHeadMargin();
+	});
+	$(window).on('scroll touchmove', function (){
+		if($(window).scrollTop() > menuPos){
+			$('#head').addClass('sticky');
+		} else {
+			$('#head').removeClass('sticky');
+			setHeadMargin();
+		}
+	});
 });
 
 function getParameterByName(name, url) {
-    if (!url) {
-      url = window.location.href;
-    }
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+	if (!url) {
+	  url = window.location.href;
+	}
+	name = name.replace(/[\[\]]/g, "\\$&");
+	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		results = regex.exec(url);
+	if (!results) return null;
+	if (!results[2]) return '';
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
 function openOverlay(url){

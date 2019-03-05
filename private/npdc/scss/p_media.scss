@@ -1,12 +1,16 @@
-@media screen and (max-width: 799px){
+@media screen and (min-width: 620px){
+	@import "m_600";
+}
+
+@media screen and (max-width: 819px){
 	@import "m_799";
 }
 
-@media screen and (max-width: 599px){
+@media screen and (max-width: 619px){
 	@import "m_599";
 }
 
-@media screen and (max-width:449px){
+@media screen and (max-width:469px){
 	@import "m_499";
 }
 
