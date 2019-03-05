@@ -146,7 +146,7 @@ class Dataset extends Base{
 			$this->showXml();
 		} elseif(in_array(NPDC_OUTPUT, ['ris', 'bib'])){
 			$this->showCitation();
-		} if(\npdc\lib\Args::get('action') === 'duplicate'){
+		} elseif(\npdc\lib\Args::get('action') === 'duplicate'){
 			if(!$this->canEdit){
 				header('Location: '.BASE_URL.'/'.\npdc\lib\Args::get('type').'/'.$this->data['uuid']);
 			}
