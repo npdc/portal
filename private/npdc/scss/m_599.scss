@@ -13,9 +13,11 @@ body:not(.edit) {
 }
 #head {
 	position: relative;
+	margin-left: -20px;
+	margin-right: -20px;
 }
 #page {
-	padding-top: 10px !important;
+	padding-top: 0px !important;
 }
 .debug.top {
 	margin-top: -10px;
@@ -34,16 +36,15 @@ body:not(.edit) {
 }
 
 #menu {
-	clear:both;
-	height: auto;
 	padding: 0px;
+	overflow: visible;
 	h4 {
 		display: block;
 		padding: 10px;
-		background: $menu-bg-mobile;
 		border: $border-menu;
 		text-align: center;
 		cursor: pointer;
+		color: white;
 	}
 	&.hover > ul {
 		display: block;
@@ -54,8 +55,13 @@ body:not(.edit) {
 			background: $menu-bg-mobile;
 		}
 		> li {
+			&.active {
+				background: mix($bg-color, $color-accent-1, 75%);
+			}
+			border-bottom: $border-menu;
 			&:not(:first-child){
 				border-left: none;
+				margin-left: 0px;
 			}
 			float: none;
 			margin-right: 0px;
