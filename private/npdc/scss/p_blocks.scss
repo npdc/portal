@@ -5,6 +5,9 @@
 	padding: 125px 10px 10px;
 	box-shadow: 0 0 5px #aaa;
 }
+#smallscreen {
+	display:none;
+}
 #toplink {
 	display: none;
 }
@@ -23,7 +26,7 @@
 		max-width: 1240px;
 		margin: 0px auto;
 	}
-	&.sticky {
+	.sticky & {
 		margin: 0px;
 		padding: 0px;
 		position: fixed;

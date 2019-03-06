@@ -1,4 +1,4 @@
-#head.sticky {
+.sticky #head {
 	height: 45px;
 	#toplink {
 		padding: 7px;
@@ -8,22 +8,19 @@
 h1 {
 	font-size: 20pt;
 }
-body:not(.edit) {
-	//padding: 0px;
-	&:before{
-		color: $color-accent-1;
-		display:block;
-		margin: 5px;
-		text-align: center;
-		content: 'This site works best on a screen of at least 620 pixels wide';
-	}
+#smallscreen {
+	display: block;
+	color: $color-accent-1;
+	margin: 5px;
+	text-align: center;
+	content: 'This site works best on a screen of at least 620 pixels wide';
 }
 #head {
 	position: relative;
 	margin-left: -20px;
 	margin-right: -20px;
 }
-#page {
+body:not(.sticky) #page {
 	padding-top: 0px !important;
 }
 .debug.top {

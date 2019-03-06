@@ -16,6 +16,7 @@
 	?>
 	<body class="<?=$view->class?> <?=(empty($session->userLevel) || $session->userLevel === NPDC_PUBLIC ? 'guest' : 'user')?>">
 		<a id="top"></a>
+		<div id="smallscreen">This site works best on a screen of at least 620 pixels wide</div>
 		<div id="overlay"><div class="inner"></div></div>
 		<div id="page">
 			<div id="head">

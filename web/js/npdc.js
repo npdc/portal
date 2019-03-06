@@ -134,7 +134,8 @@ $().ready(function(){
 
 	var menuPos, headHeight;
 	setHeadMargin = function(){
-		menuPos = $('#menu').position().top;
+		menuPos = $('#menu').position().top+$('#head').position().top;
+		console.log(menuPos);
 		headHeight = Math.max(125, $('#head').height());
 		$('#page').css('padding-top', headHeight+15+'px');
 	}
@@ -143,9 +144,9 @@ $().ready(function(){
 	});
 	$(window).on('scroll touchmove', function (){
 		if($(window).scrollTop() > menuPos){
-			$('#head').addClass('sticky');
+			$('body').addClass('sticky');
 		} else {
-			$('#head').removeClass('sticky');
+			$('body').removeClass('sticky');
 			setHeadMargin();
 		}
 	});
