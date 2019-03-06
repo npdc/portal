@@ -87,9 +87,8 @@ class Project extends Base{
 			}
 			$list2[] = $item;
 		}
-		$pager = $this->makePager($n, $page);
+		$this->makePager($n, $page);
 		$this->mid = '<div class="related"><i>Projects with related projects</i> <a href="javascript:toggleRelated(false)">Show related projects</a></div><div class="noRelated"><a href="javascript:toggleRelated(true)">Hide related projects</a></div>'
-			.$pager
 			.$this->displayTable('project', $list2
 				, ['title'=>'Title',
 					'nwo_project_id'=>'Funding id',
@@ -98,8 +97,7 @@ class Project extends Base{
 				, ['project', 'project_id']
 				, true
 				, true
-			)
-			.$pager;
+			);
 	}
 	
 	/**

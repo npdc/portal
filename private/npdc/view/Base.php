@@ -14,6 +14,7 @@ class Base {
 	protected $vocab;
 	protected $data;
 	protected $model;
+	protected $pager;
 	public $extraHeader;
 	public $allowDuplicate = false;
 	/**
@@ -84,32 +85,31 @@ class Base {
 	 *
 	 * @param int $n number of rows
 	 * @param int $page current pagenumber
-	 * @return string pager
 	 */
 	protected function makePager($n, $page){
 		if($n > \npdc\config::$rowsPerPage){
-			$pager = '<div class="pager">
+			$this->pager = '<div class="pager">
 				<span class="hint">Showing results '.(($page-1)*\npdc\config::$rowsPerPage+1).' to '.$page*\npdc\config::$rowsPerPage.' of '.$n.'</span>
 				<span class="numbers">Page:';
 				$pages = ceil($n/\npdc\config::$rowsPerPage);
 				$base_url = BASE_URL.'/'.\npdc\lib\Args::get('type').'/p';
 				for($i=1;$i<=ceil($n/\npdc\config::$rowsPerPage);$i++){
-					if(in_array($i, [1,$pages]) || ($i < $page+2 && $i > $page-2)){
+					if(in_array($i, [1,$pages]) || ($i < $page+4 && $i > $page-4)){
 						if($prev < $i-1){
-							$pager .= '<span class="numberdots">...</span>';
+							$this->pager .= '<span class="numberdots">...</span>';
 						} 
 						if ($i == $page){
-							$pager .= '<span class="page-number active">'.$i.'</i></span>';
+							$this->pager .= '<span class="page-number active">'.$i.'</i></span>';
 						} else {
-							$pager .= '<span class="page-number"><a href="'.$base_url.$i.(empty($_SERVER['QUERY_STRING']) ? '' : '?'.$_SERVER['QUERY_STRING']).'">'.$i.'</a></i></span>';
+							$this->pager .= '<span class="page-number"><a href="'.$base_url.$i.(empty($_SERVER['QUERY_STRING']) ? '' : '?'.$_SERVER['QUERY_STRING']).'">'.$i.'</a></i></span>';
 						}
 						$prev = $i;
 					}
 				}
-				$pager .= '</span>
+				$this->pager .= '</span>
 			</div>';
 		} else {
-			$pager = '';
+			$this->pager = '';
 		}
 		return $pager;
 	}
@@ -148,7 +148,7 @@ class Base {
 				$return .= '<div class="screenonly">'.ucfirst($this->controller->name).'s with a striped background are not yet published but only visible to editors of that '.$this->controller->name.' and administrators.<br/>'.ucfirst($this->controller->name).'s with an * on the edit button have a draft version</div>'
 					. '<div class="printonly">'.ucfirst($this->controller->name).'s in <i>italics</i> are not yet published but only visible to editors of that '.$this->controller->name.' and administrators.</div>';
 			}
-			$return .= '<table class="'.$class.'"><thead><tr>';
+			$return .= $this->pager.'<table class="'.$class.'"><thead><tr>';
 			foreach($columns as $column){
 				if(is_array($column)){
 					$column = $column[0];
@@ -199,7 +199,7 @@ class Base {
 			if($editTable){
 				$return .= '<td></td>';
 			}
-			$return .= '</tr></tfoot></table>';
+			$return .= '</tr></tfoot></table>'.$this->pager;
 		}
 		
 		return $return;

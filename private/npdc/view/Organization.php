@@ -48,12 +48,17 @@ class Organization extends Base{
 		$this->class = 'list';
 		$this->canEdit = false;
 		$this->title = 'Organizations';
-		$organizations = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
+		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
 			? $_SESSION[$this->controller->formId]['data'] 
 			: null
 		);
+		$list = array_values($list);
+				$n = count($list);
+				$page = \npdc\lib\Args::get('page') ?? 1;
+				$list = array_slice($list, ($page-1)*\npdc\config::$rowsPerPage, min($page*\npdc\config::$rowsPerPage, $n));
+				$this->makePager($n, $page);
 		$this->left = parent::showFilters('organizationlist');
-		$this->mid = $this->displayTable('organization'.($this->session->userLevel >= NPDC_ADMIN ? ' searchbox' : ''), $organizations
+		$this->mid = $this->displayTable('organization'.($this->session->userLevel >= NPDC_ADMIN ? ' searchbox' : ''), $list
 			, ['organization_name'=>'Name',
 				'organization_city'=>'City']
 			, ['organization', 'organization_id']);

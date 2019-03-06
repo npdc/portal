@@ -45,15 +45,22 @@ class Person extends Base{
 	 */
 	public function showList(){
 		$this->class = 'list';
-		$people = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
+		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
 				? $_SESSION[$this->controller->formId]['data'] 
 				: null
 			);
 		$this->left = parent::showFilters('personlist');
-		foreach($people as &$person){
+		$list2 = [];
+		$list = array_values($list);
+		$n = count($list);
+		$page = \npdc\lib\Args::get('page') ?? 1;
+		for($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++){
+			$person = $list[$i];
 			$person['report'] = '<button onclick="javascript:event.stopPropagation();location.href=\''.BASE_URL.'/person/'.$person['person_id'].'/report\'">View</button>';
+			$list2[] = $person;
 		}
-		$this->mid = $this->displayTable('person searchbox', $people
+		$this->makePager($n, $page);
+		$this->mid = $this->displayTable('person searchbox', $list2
 			, ['name'=>'Name',
 				'organization_name'=>'Organization',
 				'report'=>'Content']

@@ -74,8 +74,8 @@ class Publication extends Base{
 			$item['authors'] = $this->model->getAuthors($item['publication_id'], $item['publication_version']);
 			$list2[] = $item;
 		}
-		$pager = $this->makePager($n, $page);
-		$this->mid = $pager.$this->displayTable('publication', $list2
+		$this->makePager($n, $page);
+		$this->mid = $this->displayTable('publication', $list2
 				, ['authors'=>'Authors',
 					'title'=>'Title', 
 					'year'=>'Year', 
@@ -83,7 +83,7 @@ class Publication extends Base{
 				, ['publication', 'publication_id']
 				, true
 				, true
-			).$pager;
+			);
 	}
 
 	/**

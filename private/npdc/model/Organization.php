@@ -36,7 +36,7 @@ class Organization {
 			if(!is_array($filter)){
 				$filter = ['combine'=>'any', 'type'=>[$filter]];
 			}
-			if(count($filter['type']) > 0){
+			if(is_array($filter['type']) && count($filter['type']) > 0){
 				if($filter['combine'] === 'all'){
 					$qf = $this->dsql->andExpr();
 				} else {
@@ -76,7 +76,7 @@ class Organization {
 					$org->where($qf);
 				}
 			}
-			if(array_key_exists('country', $filter) && count($filter['country']) > 0){
+			if(array_key_exists('country', $filter) && is_array($filter['country']) && count($filter['country']) > 0){
 				$org->where('country.country_id', $filter['country']);
 			}
 
