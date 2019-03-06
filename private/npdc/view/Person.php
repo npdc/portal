@@ -10,7 +10,7 @@
 namespace npdc\view;
 
 class Person extends Base{
-	public $title;
+	public $title = 'People';
 	public $mid;
 	public $right;
 	public $class = 'page';
