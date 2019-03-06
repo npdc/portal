@@ -52,9 +52,7 @@
 						<a href="<?=BASE_URL?>/"><img src="<?=BASE_URL?>/img/logo.png"  /></a>
 						<h1><a href="<?=BASE_URL?>/"><?=\npdc\config::$siteName?></a></h1>
 					</div>
-					<div id="toplink">
-						<a href="#top" title="Go to top">Top</a>
-					</div>
+					<div id="toplink">Top</div>
 					<div id="menu">
 						<h4>≡ Menu</h4>
 						<?=\npdc\lib\Menu::getMenu($session, \npdc\lib\Args::get('type'));?>
