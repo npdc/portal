@@ -217,11 +217,15 @@
 					content: '\25BC\0020';
 				}
 				&.active-child {
-					& > span {
-					background: mix($bg-color, $color-accent-1, 25%);
+					background: rgba($color-accent-3, 0.35);
+					&:hover{
+						background-color: $menu-bg-hover;
 					}
 					.active {
-						background: mix($bg-color, $color-accent-1, 75%);
+						background: rgba($color-accent-3, 0.75);//mix($bg-color, $color-accent-1, 75%);
+						&:hover {
+							background-color: $menu-bg-hover;
+						}
 					}
 				}
 			}
