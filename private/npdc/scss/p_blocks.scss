@@ -173,7 +173,7 @@
 				text-align: center;
 			}
 			&.active {
-				background: mix($bg-color, $color-accent-1, 25%);
+				background: rgba($color-accent-3, 0.35);
 				/*> a:link, > a:visited {
 					color: $color-accent-2;
 				}*/
