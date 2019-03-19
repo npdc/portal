@@ -78,33 +78,6 @@ table {
 			padding-right: 0px;
 		}
 	}
-	.old-page-number {
-		background-color: $color-accent-1;
-		color: white;
-		font-weight: bold;
-		padding: 10px;
-		display: inline-block;
-		width: 20px;
-		height: 20px;
-		text-align: center;
-		margin: 0px 5px;
-		cursor: pointer;
-		border: solid 1px $color-accent-1;
-		&:hover {
-			color: $color-accent-3;
-		}
-		&:active {
-			border-color: white;
-		}
-		&.active {
-			color: $color-accent-2;
-			background-color: $color-accent-3;
-			border-color: $color-accent-3;
-			&:hover {
-				background-color: $color-accent-1;
-			}
-		}
-	}
 }
 
 .parent, .child {
