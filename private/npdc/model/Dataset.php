@@ -34,14 +34,7 @@ class Dataset{
 	 */
 	public function getList($filters=null){
 		global $session;
-		$q = $this->fpdo->from('dataset')->where('record_status', 'published');
-		$q2 = $this->fpdo
-			->from('dataset')
-			->join('(SELECT dataset_id, MAX(dataset_version) AS dataset_version FROM dataset GROUP BY dataset_id) a USING (dataset_id, dataset_version)');
-		if($session->userLevel < NPDC_ADMIN){
-			$q2->leftJoin('(SELECT * FROM dataset_person WHERE person_id = '.$session->userId.' AND editor) b ON (dataset.dataset_id=b.dataset_id AND dataset_version_min<=dataset_version AND (dataset_version_max IS NULL OR dataset_version_max >= dataset_version))')
-				->where('(editor OR creator='.$session->userId.')');
-		}
+		$q = $this->dsql->dsql()->table('dataset');
 		if(!is_null($filters)){
 			foreach($filters as $filter=>$values){
 				if((is_array($values) && count($values) === 0) || empty($values)){
@@ -50,78 +43,99 @@ class Dataset{
 				switch($filter){
 					case 'region':
 						$q->where('region', $values);
-						$q2->where('region', $values);
 						break;
-						
 					case 'period':
 						//use values swapped, include all records with start date before end date of filter and end date after start date of filter
 						if(!empty($values[1])){
-							$q->where('date_start <= ?', $values[1]);
-							$q2->where('date_start <= ?', $values[1]);
+							$q->where('date_start', '<=', $values[1]);
 						}
 						if(!empty($values[0])){
-							$q->where('date_end >= ?', $values[0]);
-							$q2->where('date_end >= ?', $values[0]);
+							$q->where('date_end', '>=', $values[0]);
 						}
 						break;
-						
 					case 'organization':
-						$q->where('(dataset.dataset_id IN (SELECT DISTINCT(dataset_id) FROM dataset_person WHERE organization_id IN ('.implode(',', $values).')) OR originating_center IN ('.implode(',', $values).'))');
-						$q2->where('(dataset.dataset_id IN (SELECT DISTINCT(dataset_id) FROM dataset_person WHERE organization_id IN ('.implode(',', $values).')) OR originating_center IN ('.implode(',', $values).'))');
+						$q->where(
+							$q->dsql()->orExpr()
+								->where('originating_center', $values)
+								->where('dataset_id',
+									$q->dsql()->table('dataset_person')
+										->field('dataset_id')
+										->where(\npdc\lib\Db::joinVersion('dataset', 'dataset_person'))
+										->where('organization_id', $values)
+								)
+						);
 						break;
 					case 'getData':
-						$download = '';
+						$gd = $q->dsql()->orExpr();
 						if(in_array('direct', $values)){
-							$download = "(SELECT dataset_id, dataset_version_min, dataset_version_max FROM dataset_file INNER JOIN file USING (file_id) WHERE default_access <> 'hidden')";
+							$gd->where('dataset_id',
+								$q->dsql()->table('dataset_file')
+									->field('dataset_id')
+									->join('file.file_id', 'file_id', 'inner')
+									->where('default_access', '<>', 'hidden')
+									->where(\npdc\lib\Db::joinVersion('dataset', 'dataset_file'))
+							);
 						}
 						if(in_array('external', $values)){
-							$download .= ($download === '' ? '' : ' UNION ALL ')
-							. "(SELECT dataset_id, dataset_version_min, dataset_version_max FROM dataset_link INNER JOIN vocab_url_type USING (vocab_url_type_id) WHERE type = 'GET DATA')";
+							$gd->where('dataset_id',
+								$q->dsql()->table('dataset_link')
+									->field('dataset_id')
+									->join('vocab_url_type.vocab_url_type_id', 'vocab_url_type_id', 'inner')
+									->where('type', 'GET DATA')
+									->where(\npdc\lib\Db::joinVersion('dataset', 'dataset_link'))
+							);
 						}
-						$download = '(SELECT dataset_id, dataset_version_min, dataset_version_max FROM ('.$download.') download GROUP BY dataset_id, dataset_version_min, dataset_version_max) dres ON dres.dataset_id = dataset.dataset_id AND dataset_version_min<=dataset_version AND (dataset_version_max IS NULL OR dataset_version_max >= dataset_version)';
-						$q->join($download);
-						$q2->innerJoin($download);
+						$q->where($gd);
 				}
 			}
 		}
-		
-		$published = $q->fetchAll('dataset_id');
-		$final = [];
+		$q->order('date_start DESC, date_end DESC');
+		$q->field('dataset.*')
+			->field($q->dsql()
+				->expr('CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}', ['draft', 'hasDraft'])
+			);
 		if($session->userLevel > NPDC_PUBLIC){
-			$editor = $q2->fetchAll('dataset_id');
-			if(empty($filters['editorOptions']) || $filters['editorOptions'][0] === 'all'){
-				foreach($published as $id=>$row){
-					$row['editor'] = array_key_exists($id, $editor);
-					$row['hasDraft'] = array_key_exists($id, $editor) && $editor[$id]['record_status'] === 'draft';
-					$final[$row['date_start'].'_'.$row['date_end'].'_'.$id] = $row;
-					unset($editor[$id]);
-				}
-			} 
-			foreach($editor as $id=>$row){
-				$row['hasDraft'] = true;
-				if(isset($filters['editorOptions']) && $filters['editorOptions'][0] !== 'all'){
-					if(array_key_exists($id, $published)){
-						$row = $published[$id];
-						$row['hasDraft'] = $editor[$id]['record_status'] === 'draft';
+			$q->where('dataset.dataset_version', 
+				$q->dsql()->table(['ds2'=>'dataset'])
+					->field('MAX(dataset_version)')
+					->where('ds2.dataset_id=dataset.dataset_id')
+			);
+			if($session->userLevel === NPDC_EDITOR){
+				$isEditor = $q->dsql()->table('dataset_person')
+				->field('dataset_id')
+				->where(\npdc\lib\Db::joinVersion('dataset', 'dataset_person'))
+				->where('person_id', $session->userId)
+				->where('editor');
+				$q->field($q->dsql()
+					->expr('CASE 
+						WHEN creator=[] THEN TRUE
+						WHEN EXISTS([]) THEN TRUE
+						ELSE FALSE 
+						END {}', [$session->userId, $isEditor, 'editor']));
+			} else {
+				$q->field($q->dsql()->expr('TRUE {}', ['editor']));
+			}
+			switch($filters['editorOptions'][0]){
+				case 'all':
+					break;
+				case 'unpublished':
+					$q->where('dataset_version', 1);
+				case 'draft':
+					$q->where('record_status', 'draft');
+				case 'edit':
+					if($session->userLevel === NPDC_EDITOR){
+						$q->where(
+							$q->dsql()->orExpr()
+								->where('creator', $session->userId)
+								->where($q->dsql()->expr('EXISTS([])', [$isEditor]))
+						);
 					}
-				}
-				$row['editor'] = true;
-				if(empty($filters['editorOptions'])
-					|| $filters['editorOptions'][0] === 'all' 
-					|| $filters['editorOptions'][0] === 'edit' 
-					|| ($filters['editorOptions'][0] === 'draft' && $row['hasDraft']) 
-					|| ($filters['editorOptions'][0] === 'unpublished' && $row['record_status'] === 'draft')
-				){
-					$final[$row['date_start'].'_'.$row['date_end'].'_'.$id] = $row;
-				}
+					break;
 			}
 		} else {
-			foreach($published as $id=>$row){
-				$final[$row['date_start'].'_'.$row['date_end'].'_'.$id] = $row;
-			}
+			$q->where('record_status', 'published');
 		}
-		krsort($final);
-		return $final;
+		return $q->get();
 	}
 
 	/**
