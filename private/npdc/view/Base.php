@@ -87,10 +87,11 @@ class Base {
 	 * @param int $page current pagenumber
 	 */
 	protected function makePager($n, $page){
+		
+		$this->pager = '<div class="pager">
+			<span class="hint">Showing results '.(($page-1)*\npdc\config::$rowsPerPage+1).' to '.min($page*\npdc\config::$rowsPerPage, $n).' of '.$n.'</span>';
 		if($n > \npdc\config::$rowsPerPage){
-			$this->pager = '<div class="pager">
-				<span class="hint">Showing results '.(($page-1)*\npdc\config::$rowsPerPage+1).' to '.$page*\npdc\config::$rowsPerPage.' of '.$n.'</span>
-				<span class="numbers">Page:';
+			$this->pager .= '<span class="numbers">Page:';
 				$pages = ceil($n/\npdc\config::$rowsPerPage);
 				$base_url = BASE_URL.'/'.\npdc\lib\Args::get('type').'/p';
 				for($i=1;$i<=ceil($n/\npdc\config::$rowsPerPage);$i++){
@@ -106,11 +107,9 @@ class Base {
 						$prev = $i;
 					}
 				}
-				$this->pager .= '</span>
-			</div>';
-		} else {
-			$this->pager = '';
+				$this->pager .= '</span>';
 		}
+		$this->pager .= '</div>';
 		return $pager;
 	}
 
