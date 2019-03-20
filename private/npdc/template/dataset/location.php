@@ -128,7 +128,7 @@ if(count($spatialCoverages) > 0){
 				center: [0, 0],
 				zoom: 0,
 				projection: 'EPSG:3857',
-				extent: ol.proj.transform([-180,-87,180,87], 'EPSG:4326', 'EPSG:3857')
+				extent: ol.proj.transformExtent([-180,-87,180,87], 'EPSG:4326', 'EPSG:3857')
 			});
 			var map = new ol.Map({
 				layers: [raster, vector],
