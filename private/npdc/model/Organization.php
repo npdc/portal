@@ -99,16 +99,19 @@ class Organization {
 	 * @return array lists of organizations
 	 */
 	public function search($string, $exclude = null){
-		$q = $this->fpdo
-			->from('organization')
-			->orderBy('organization_name');
+		$q = $this->dsql->dsql()->table('organization');
 		if(!empty($string)){
-			$q->where('(organization_name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search1 OR dif_code '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search2 OR dif_name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :search3)', [':search1'=>$string, ':search2'=>$string, ':search3'=>$string]);
+			$f = $q->orExpr();
+			foreach(['organization_name', 'dif_code', 'dif_name'] as $field){
+				$f->where($field, (\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP'), $string);
+			}
+			$q->where($f);
 		}
+		$q->order($q->expr('(CASE WHEN country_id IN [] THEN 0 ELSE 1 END), organization_name', [\npdc\config::$defaultOrganizationFilter['country']]));
 		if(is_array($exclude) && count($exclude) > 0){
-			$q->where('organization_id NOT', $exclude);
+			$q->where('organization_id', 'NOT', $exclude);
 		}
-		return $q->fetchAll();
+		return $q->get();
 	}
 	
 	/**
