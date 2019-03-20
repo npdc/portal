@@ -47,7 +47,9 @@ spl_autoload_register(
 			require_once $file;
 		} else {
 			echo 'A required file was not found '.$file;
-			die();
+			if(!NPDC_DEV){
+				die();
+			}
 		}
 	}
 );
