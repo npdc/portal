@@ -588,34 +588,29 @@ $().ready(function(){
 	$('.lookuptable tbody tr:not(:last-child) td:nth-child(2), .multivalue tbody tr:not(:last-child) td:nth-child(2)').click(function(){
 		lookup.delete($(this).parents('tr').attr('id'));
 	});
-//	if($('body').hasClass('no-touch')){
-		$('.lookuptable,.multivalue').each(function(){
-			if($(this).hasClass('noAdd')){
-				$(this).find('[id$=_new]').hide();
-				
-				if($(this).find('tbody tr:visible').length === 0){
-					$(this).hide();
-					$(this).next('.hint').hide();
-				}
+
+	$('.lookuptable,.multivalue').each(function(){
+		if($(this).hasClass('noAdd')){
+			$(this).find('[id$=_new]').hide();
+			
+			if($(this).find('tbody tr:visible').length === 0){
+				$(this).hide();
+				$(this).next('.hint').hide();
 			}
-			if($(this).attr('data-sortable') === 'true'){
-				$(this).sortable({
-					items: 'tbody tr:not(:last-child)'
-				});
-				$(this).find('tbody td:first-child').on('touchstart', function(){npdc.alert('Sorting is only possible using a mouse');});
-				if($(this).hasClass('multivalue')){
-					$(this).after('The last line can be left empty, to sort the last line add a new line below it using the + at the start of the line');
-				}
-			} else if(!$(this).hasClass('single')) {
-				$(this).find('tbody tr td:first-child').hide();
-				$(this).find('td:first-child').attr('colspan', 1);
+		}
+		if($(this).attr('data-sortable') === 'true'){
+			$(this).sortable({
+				items: 'tbody tr:not(:last-child)'
+			});
+			$(this).find('tbody td:first-child').on('touchstart', function(){npdc.alert('Sorting is only possible using a mouse');});
+			if($(this).hasClass('multivalue')){
+				$(this).after('The last line can be left empty, to sort the last line add a new line below it using the + at the start of the line');
 			}
-		});
-//	} else {
-//		$('.lookuptable:not(.single),.multivalue').after('Sorting is not possible on your device, please use a desktop or laptop for that');
-//		$('.lookuptable:not(.single) tbody td:first-child,.multivalue tbody td:first-child').css('display', 'none');
-//		$('.lookuptable:not(.single) td:first-child,.multivalue td:first-child').attr('colspan', 1);
-//	}
+		} else if(!$(this).hasClass('single')) {
+			$(this).find('tbody tr td:first-child').hide();
+			$(this).find('td:first-child').attr('colspan', 1);
+		}
+	});
 	
 	$('fieldset').each(function(){
 		if($(this).attr('data-min') !== undefined || $(this).attr('data-max') !== undefined){
@@ -890,11 +885,11 @@ function createButton(element){
 }
 
 $.fn.scrollView = function (){
-    return this.each(function () {
-        $('html, body').animate({
-            scrollTop: $(this).offset().top - 100
-        }, 500);
-    });
+	return this.each(function () {
+		$('html, body').animate({
+			scrollTop: $(this).offset().top - 100
+		}, 500);
+	});
 };
 
 function loadMap(element){
@@ -1321,9 +1316,9 @@ function removeFile(id){
 }
 
 function decodeEntities(encodedString) {
-    var textArea = document.createElement('textarea');
-    textArea.innerHTML = encodedString;
-    return textArea.value;
+	var textArea = document.createElement('textarea');
+	textArea.innerHTML = encodedString;
+	return textArea.value;
 }
 
 function closeOverlay(data){
