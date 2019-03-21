@@ -148,14 +148,7 @@
 			float: left;
 			&:not(:first-child) {
 				> a, > span {
-				border-width: 0px;
-				border-left: 1px solid $color-accent-3;
-				border-image: linear-gradient(to bottom, 
-					transparent, 
-					transparent 15%, $color-accent-3 15%,
-					$color-accent-3 85%, transparent 85%
-					, transparent) 1;
-					
+					border-width: 0px;	
 				}
 				margin-left: -1px;
 			}

@@ -1,14 +1,29 @@
 .sticky #head {
 	height: 35px;
 }
-#menu > ul li.sub {
-	.no-touch &:hover {
-		ul {
-			visibility: visible;
-			transition-property: visiblity, opacity;
-			transition-duration: 0s, 0.25s;
-			transition-delay: 0s, 0s;
-			opacity: 1; 
+#menu > ul {
+	li {
+		&.sub {
+			.no-touch &:hover {
+				ul {
+					visibility: visible;
+					transition-property: visiblity, opacity;
+					transition-duration: 0s, 0.25s;
+					transition-delay: 0s, 0s;
+					opacity: 1; 
+				}
+			}
+		}
+		&:not(:first-child) {
+			> a, > span {
+				border-width: 0px;
+				border-left: 1px solid $color-accent-3;
+				border-image: linear-gradient(to bottom, 
+					transparent, 
+					transparent 15%, $color-accent-3 15%,
+					$color-accent-3 85%, transparent 85%
+					, transparent) 1;
+			}
 		}
 	}
 }
