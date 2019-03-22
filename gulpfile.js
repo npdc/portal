@@ -7,18 +7,18 @@ const gulp = require('gulp')
 	, sass = require('gulp-sass');
 
 function minifyJS(file) {
-	return gulp.src('private/npdc/javascript/' + file, {sourcemaps: true})
+	return gulp.src('private/npdc/javascript/' + file + '/*', {sourcemaps: true})
 		.pipe(concat(file + '.js'))
 		.pipe(uglify())
 		.pipe(rename({ extname: '.min.js' }))
-		.pipe(gulp.dest('web/js', {sourcemaps: '.'}));
+		.pipe(gulp.dest('web/js/npdc', {sourcemaps: '.'}));
 }
 
 function css2scss(){
 	return gulp.src(['private/npdc/scss/*.scss', '!private/npdc/scss/[a-z]_*.scss'], {sourcemaps: true})
 		.pipe(sass({outputStyle: 'compressed'}))
 		.pipe(rename({extname: '.min.css'}))
-		.pipe(gulp.dest('web/css', {sourcemaps: '.'}));
+		.pipe(gulp.dest('web/css/npdc', {sourcemaps: '.'}));
 }
 
 gulp.task('css', function(){

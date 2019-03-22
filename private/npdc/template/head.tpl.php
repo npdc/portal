@@ -20,7 +20,7 @@
 		'ol',
 		'select2.min',
 		'icomoon.min',
-		'style.min'
+		'npdc/style.min'
 	];
 	$js = [
 		'external/jquery-2.2.3.min',
@@ -29,10 +29,10 @@
 		'external/select2.full.min',
 		'external/jquery.inputmask.bundle.min',
 		'external/ol',
-		'npdc.min'
+		'npdc/npdc.min'
 	];
 	if(NPDC_ENVIRONMENT !== 'production'){
-		$css[] = NPDC_ENVIRONMENT.'.min';
+		$css[] = 'npdc/'.NPDC_ENVIRONMENT.'.min';
 	}
 	$v = NPDC_DEV ? time() : APP_BUILD;
 	foreach([

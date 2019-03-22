@@ -835,7 +835,7 @@ $().ready(function(){
 				break;
 		}
 		$(this).htmlarea({
-			css: baseUrl+'/css/textarea.css',
+			css: baseUrl+'/css/npdc/textarea.min.css',
 			toolbar: toolbar
 			});
 	});

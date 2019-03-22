@@ -1,15 +1,7 @@
 private/config.php
 private/vendor
-web/css/style.css
-web/css/style.min.css
-web/css/plain.css
-web/css/plain.min.css
-web/css/textarea.css
-web/css/textarea.min.css
-web/css/test.min.css
-web/css/dev.css
-web/css/dev.min.css
-web/css/test.css
+web/css/npdc
+web/js/npdc
 web/img/news
 web/img/favicon.ico
 web/img/*.jpg

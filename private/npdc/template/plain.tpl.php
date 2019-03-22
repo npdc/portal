@@ -10,7 +10,7 @@
 ?><!DOCTYPE html>
 <html>
 	<?php 
-		$extraCSS = '<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/plain.css" />';
+		$extraCSS = '<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/npdc/plain.min.css" />';
 		include 'head.tpl.php';
 	?>
 	<body class="<?=$view->bodyClass?> nomenu <?=$view->class?> <?=(empty($session->userLevel) || $session->userLevel === NPDC_PUBLIC ? 'guest' : 'user')?>">
