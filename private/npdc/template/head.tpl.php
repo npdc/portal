@@ -18,9 +18,9 @@
 	<?php
 	$css = [
 		'ol',
-		['select2', '.min'],
-		['icomoon', '.min'],
-		['style', '.min']
+		'select2.min',
+		'icomoon.min',
+		'style.min'
 	];
 	$js = [
 		'external/jquery-2.2.3.min',
@@ -29,10 +29,10 @@
 		'external/select2.full.min',
 		'external/jquery.inputmask.bundle.min',
 		'external/ol',
-		['npdc', '.min']
+		'npdc.min'
 	];
 	if(NPDC_ENVIRONMENT !== 'production'){
-		$css[] = NPDC_ENVIRONMENT;
+		$css[] = NPDC_ENVIRONMENT.'.min';
 	}
 	$v = NPDC_DEV ? time() : APP_BUILD;
 	foreach([
@@ -40,9 +40,6 @@
 		'js'=>['<script type="text/javascript" src="'.BASE_URL.'/js/', '.js?'.$v.'"></script>']
 	] as $type=>$code){
 		foreach($$type as $file){
-			if(is_array($file)){
-				$file = NPDC_DEV ? $file[0] : implode('', $file);
-			}
 			echo $code[0].$file.$code[1]."\r\n";
 		}
 	}
