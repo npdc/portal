@@ -1,0 +1,28 @@
+{
+  "name": "portal",
+  "version": "1.0.0",
+  "description": "**Features:**\r - Project descriptions\r - Dataset descriptions according to DIF10 format (GCMD standard)\r   - Datasets available in json-ld (schema.org / Google dataset search)\r - Publication descriptions\r - Responsive",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "gulp": "^4.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-filter": "^5.1.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/npdc/portal.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/npdc/portal/issues"
+  },
+  "homepage": "https://github.com/npdc/portal#readme"
+}
