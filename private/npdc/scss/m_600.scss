@@ -2,7 +2,7 @@
 	height: 35px;
 }
 #menu > ul {
-	li {
+	> li {
 		&.sub {
 			.no-touch &:hover {
 				ul {

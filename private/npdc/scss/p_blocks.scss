@@ -215,7 +215,7 @@
 						background-color: $menu-bg-hover;
 					}
 					.active {
-						background: rgba($color-accent-3, 0.75);//mix($bg-color, $color-accent-1, 75%);
+						background: mix($bg-color, $color-accent-1, 75%);
 						&:hover {
 							background-color: $menu-bg-hover;
 						}
