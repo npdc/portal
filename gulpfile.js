@@ -1,10 +1,11 @@
 const gulp = require('gulp')
 	, concat = require('gulp-concat')
-	, sourcemaps = require('gulp-sourcemaps')
 	, uglify = require('gulp-uglify')
 	, rename = require('gulp-rename')
-	, filter = require('gulp-filter')
-	, sass = require('gulp-sass');
+	, sass = require('gulp-sass')
+	, bump = require('gulp-bump')
+	, conventionalChangelog = require('gulp-conventional-changelog')
+	, fs = require('fs');
 
 function minifyJS(file) {
 	return gulp.src('private/npdc/javascript/' + file + '/*', {sourcemaps: true})
@@ -21,15 +22,35 @@ function css2scss(){
 		.pipe(gulp.dest('web/css/npdc', {sourcemaps: '.'}));
 }
 
-gulp.task('css', function(){
+changelog = function(){
+	console.log('=!= REMEMBER TO UPDATE CHANGELOG =!=');
+	return gulp.src('CHANGELOG.md')
+		.pipe(conventionalChangelog({
+				preset: 'conventionalcommits'
+			})
+		)
+		.pipe(gulp.dest('./'));
+};
+
+bumpVersion = function(lvl){
+	return gulp.src(['package.json'])
+		.pipe(bump({type: lvl}))
+		.pipe(gulp.dest('./'));
+}
+
+gulp.task('cl', function(){
+	return changelog();
+});
+
+gulp.task('build:css', function(){
 	return css2scss();
 });
 
-gulp.task('js-editor', function(){
+gulp.task('build:js-editor', function(){
 	return minifyJS('editor');
 });
 
-gulp.task('js-npdc', function(){
+gulp.task('build:js-npdc', function(){
 	return minifyJS('npdc');
 });
 
@@ -43,4 +64,23 @@ gulp.task('watch', function(){
 	gulp.watch('private/npdc/scss/*.scss', function(){
 		return css2scss();
 	});
+});
+
+gulp.task('bump:patch', function(){
+	changelog();
+	return bumpVersion('patch');
+});
+
+gulp.task('bump:minor', function(){
+	changelog();
+	return bumpVersion('minor');
+});
+
+gulp.task('bump:major', function(){
+	changelog();
+	return bumpVersion('major');
+});
+
+gulp.task('bump:test', function(){
+	return bumpVersion('prerelease');
 });

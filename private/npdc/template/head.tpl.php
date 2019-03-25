@@ -34,7 +34,7 @@
 	if(NPDC_ENVIRONMENT !== 'production'){
 		$css[] = 'npdc/'.NPDC_ENVIRONMENT.'.min';
 	}
-	$v = NPDC_DEV ? time() : APP_BUILD;
+	$v = NPDC_DEV ? time() : APP_VERSION;
 	foreach([
 		'css'=>['<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/', '.css?'.$v.'" />'],
 		'js'=>['<script type="text/javascript" src="'.BASE_URL.'/js/', '.js?'.$v.'"></script>']

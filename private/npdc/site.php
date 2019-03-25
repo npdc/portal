@@ -32,8 +32,7 @@ if(BASE_URL === '/npdc_dev'){
 }
 
 //get version
-define('APP_VERSION', trim(file_get_contents(__DIR__.'/version')));
-define('APP_BUILD', filemtime(__DIR__.'/build'));
+define('APP_VERSION', json_decode(file_get_contents('../package.json'))->version);
 
 //get first basic functions
 require_once 'lib/functions.php';
