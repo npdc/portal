@@ -21,8 +21,7 @@ More documentation about the functionality is available at the [Wiki](https://gi
 
 **For generating compressed js/css**
 - visual studio code
-  - Easy Sass
-  - minify
+  - gulp (see package.json or gulpfile.js for needed gulp packages)
 
 See [documentation/install.md](documentation/install.md) for installation instructions
 
