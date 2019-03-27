@@ -6,7 +6,9 @@ const gulp = require('gulp')
 	, bump = require('gulp-bump')
 	, fs = require('fs')
 	, git = require('gulp-git')
-	, insert = require('gulp-insert');
+	, insert = require('gulp-insert')
+	, file = require('gulp-file')
+;
 
 function minifyJS(file) {
 	return gulp.src('private/npdc/javascript/' + file + '/*', {sourcemaps: true})
@@ -41,13 +43,20 @@ function changelog(){
 		.pipe(gulp.dest('./'));
 };
 
+function writeVersion(){
+	v = getPackageJsonVersion();
+	return file('version', v, {src: true})
+		.pipe(gulp.dest('private/npdc'));
+}
+
 function bumpVersion(lvl){
 	if(lvl !== 'prerelease'){
 		changelogMsg();
 	}
-	return gulp.src(['package.json', 'package-lock.json'])
+	gulp.src(['package.json', 'package-lock.json'])
 		.pipe(bump({type: lvl}))
 		.pipe(gulp.dest('./'));
+	return writeVersion();
 }
 
 function getPackageJsonVersion () {
@@ -92,6 +101,10 @@ gulp.task('bump:minor', function(){
 
 gulp.task('bump:major', function(){
 	return bumpVersion('major');
+});
+
+gulp.task('writeVersion', function(){
+	return writeVersion();
 });
 
 gulp.task('changelog', function(){
