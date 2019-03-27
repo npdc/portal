@@ -1,3 +1,7 @@
+## v2.2.2 - 2019-03-27
+* Remove head background and shadows from print view
+* Move technical footer outside columns to keep it on the bottom of the page on small screen/print
+
 ## v2.2.1 - 2019-03-27
 Add url to citation in metadata.txt when downloading data
 

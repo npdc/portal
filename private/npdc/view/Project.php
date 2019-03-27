@@ -182,6 +182,7 @@ class Project extends Base{
 				$this->class = 'detail';
 				$this->mid .= parent::parseTemplate('project_mid');
 				$this->right = parent::parseTemplate('project_right');
+				$this->bottom = parent::parseTemplate('foot_technical');
 				if(!defined('NPDC_UUID')){
 					$this->showCanonical();
 				}	

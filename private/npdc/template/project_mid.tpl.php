@@ -61,5 +61,3 @@ if(\npdc\config::$partEnabled['publication'] || $this->session->userLevel >= NPD
 		}
 	}
 }
-include 'foot_technical.php';
-?>

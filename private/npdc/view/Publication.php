@@ -172,6 +172,7 @@ class Publication extends Base{
 				$this->class = 'detail';
 				$this->mid .= parent::parseTemplate('publication_mid', $model, $this->data);
 				$this->right = parent::parseTemplate('publication_right', $model, $this->data);
+				$this->bottom = parent::parseTemplate('foot_technical');
 				if(!defined('NPDC_UUID')){
 					$this->showCanonical();
 				}	

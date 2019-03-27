@@ -4,6 +4,16 @@ body{
 	font-size: 11pt;
 }
 
+#head {
+	background: none;
+	box-shadow: none;
+	position: relative;
+}
+
+#page {
+	box-shadow: none;
+	padding-top: 0px !important;
+}
 #title {
 	min-height: 0px;
 	padding: 0px;
@@ -68,6 +78,7 @@ body:not(.report) #main a:after {
 
 .detail, .page, .contact {
 	#right {
+		background: none;
 		padding-left: 0px;
 		border-left: none;
 		margin-top: 1em;

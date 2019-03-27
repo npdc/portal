@@ -49,4 +49,3 @@ if(\npdc\config::$partEnabled['project']){
 		echo $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'period'=>'Period'], ['project', 'project_id']);
 	}
 }
-include 'foot_technical.php';

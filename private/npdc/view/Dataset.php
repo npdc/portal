@@ -348,9 +348,11 @@ class Dataset extends Base{
 				$this->mid .= parent::parseTemplate('dataset_files_mid');
 				$this->right = parent::parseTemplate('dataset_files_right');
 			}
+			$this->bottom = parent::parseTemplate('foot_technical');
 		} else {
 			$this->mid .= parent::parseTemplate('dataset_mid');
 			$this->right = parent::parseTemplate('dataset_right');
+			$this->bottom = parent::parseTemplate('foot_technical');
 			if(\npdc\lib\Args::exists('uuid') && \npdc\lib\Args::exists('uuidtype')){
 				$this->json = [
 					'@context' => ['@vocab'=>'http://schema.org/'],

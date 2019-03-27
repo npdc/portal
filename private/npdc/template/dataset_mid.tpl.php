@@ -35,4 +35,3 @@ foreach($parts as $n=>$part){
 			. '</div>';
 	}
 }
-include 'foot_technical.php';

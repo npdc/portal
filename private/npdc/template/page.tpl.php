@@ -96,6 +96,7 @@
 						}
 					echo '</div>';
 				}?>
+				<?=isset($view->bottom) ? '<div id="bottom">'.$view->bottom.'</div>' : ''?>
 			</div>
 			<?php
 			if(file_exists(__DIR__.'/footer.tpl.php')){
