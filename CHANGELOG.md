@@ -1,3 +1,6 @@
+## v2.2.1 - 2019-03-27
+Add url to citation in metadata.txt when downloading data
+
 ## v2.2.0 - 2019-03-27
 Added user level and 'has password' filter to user list for admin
 

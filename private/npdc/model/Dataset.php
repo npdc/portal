@@ -771,7 +771,8 @@ class Dataset{
 	public function generateMeta($dataset_id){
 		$data = $this->getById($dataset_id);
 		$meta = '*'.$data['title']."*\r\n\r\n*Cite dataset as*\r\n\r\n";
-		foreach($this->getCitations($dataset_id, $data['dataset_version']) as $citation){
+		foreach($this->getCitations($dataset_id, $data['dataset_version'], 'this') as $citation){
+			$url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$data['uuid'];
 			$meta .= $citation['creator']
 				. ' ('.substr($citation['release_date'],0,4).').'
 				. ' /'.($citation['title'] ?? $data['title']).'./'
@@ -779,12 +780,13 @@ class Dataset{
 				. (!is_null($citation['release_place']) ? ' '.$citation['release_place'].'.' : '')
 				. (!is_null($citation['editor']) ? ' Edited by '.$citation['editor'].'.' : '')
 				. (!is_null($citation['publisher']) ? ' Published by '.$citation['publisher'].'.' : '')
+				. ' '.$url
 				. "\r\n";
 		}
 		$meta .= "\r\n*Use Constraints*\r\n".$data['use_constraints']."\r\n\r\n";
 		$meta .= "*Quality*\r\n".$data['quality']."\r\n\r\n";
 
-		$meta .= "*Full metadata*\r\n".getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/'.$data['uuid'];
+		$meta .= "*Full metadata*\r\n".getProtocol().$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$data['uuid'];
 		return $meta;
 	}
 
