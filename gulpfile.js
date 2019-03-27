@@ -23,11 +23,11 @@ function css2scss(){
 		.pipe(gulp.dest('web/css/npdc', {sourcemaps: '.'}));
 }
 function changelogMsg(version){
-	var msg = '* REMEMBER TO UPDATE CHANGELOG ';
+	var msg = '* REMEMBER TO UPDATE CHANGELOG';
 	if(version !== undefined){
-		msg = msg + 'FOR v'+version;
+		msg = msg + ' FOR v'+version;
 	}
-	msg = msg + '*';
+	msg = msg + ' *';
 	console.log('*'.repeat(msg.length));
 	console.log(msg);
 	console.log('*'.repeat(msg.length));
@@ -45,7 +45,7 @@ function bumpVersion(lvl){
 	if(lvl !== 'prerelease'){
 		changelogMsg();
 	}
-	return gulp.src(['package.json'])
+	return gulp.src(['package.json', 'package-lock.json'])
 		.pipe(bump({type: lvl}))
 		.pipe(gulp.dest('./'));
 }
