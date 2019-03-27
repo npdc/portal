@@ -42,21 +42,15 @@ function changelog(){
 		.pipe(insert.prepend('## v'+ version + ' - ' +date.toISOString().substring(0, 10)+'\n\n\n'))
 		.pipe(gulp.dest('./'));
 };
-
 function writeVersion(){
 	v = getPackageJsonVersion();
 	return file('version', v, {src: true})
 		.pipe(gulp.dest('private/npdc'));
 }
-
 function bumpVersion(lvl){
-	if(lvl !== 'prerelease'){
-		changelogMsg();
-	}
-	gulp.src(['package.json', 'package-lock.json'])
+	return gulp.src(['package.json', 'package-lock.json'])
 		.pipe(bump({type: lvl}))
 		.pipe(gulp.dest('./'));
-	return writeVersion();
 }
 
 function getPackageJsonVersion () {
@@ -87,29 +81,28 @@ gulp.task('watch', function(){
 	});
 });
 
-gulp.task('bump:test', function(){
-	return bumpVersion('prerelease');
-});
+gulp.task('bump:test', gulp.series(
+	function(){return bumpVersion('prerelease')}, 
+	function(){return writeVersion()}
+));
 
-gulp.task('bump:patch', function(){
-	return bumpVersion('patch');
-});
+gulp.task('bump:patch', gulp.series(
+	function(){return bumpVersion('patch')}, 
+	function(){return writeVersion()},
+	function(){return changelog()}
+));
 
-gulp.task('bump:minor', function(){
-	return bumpVersion('minor');
-});
+gulp.task('bump:minor', gulp.series(
+	function(){return bumpVersion('minor')}, 
+	function(){return writeVersion()},
+	function(){return changelog()}
+));
 
-gulp.task('bump:major', function(){
-	return bumpVersion('major');
-});
-
-gulp.task('writeVersion', function(){
-	return writeVersion();
-});
-
-gulp.task('changelog', function(){
-	return changelog();
-});
+gulp.task('bump:major', gulp.series(
+	function(){return bumpVersion('major')}, 
+	function(){return writeVersion()},
+	function(){return changelog()}
+));
 
 gulp.task('git:tag', function (done) {
 	var version = getPackageJsonVersion();
