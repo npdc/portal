@@ -19,6 +19,7 @@ class Person{
 	 */
 	public function __construct(){
 		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**
@@ -28,10 +29,10 @@ class Person{
 	 * @return array list of persons
 	 */
 	public function getList($filters){
-		$q = $this->fpdo
-			->from('person')
-			->leftJoin('organization USING(organization_id)')->select('organization.organization_name')
-			->orderBy('name');
+		//var_dump($filters);die();
+		$q = $this->dsql->dsql()->table('person')
+			->join('organization.organization_id', 'organization_id', 'left')
+			->order('name')->field('person.*, organization_name');
 		if(!is_null($filters)){
 			foreach($filters as $filter=>$values){
 				if(
@@ -47,16 +48,24 @@ class Person{
 						break;
 
 					case 'organization':
-						$q->where('organization_id IN ('.implode(',', $values).')');
+						$q->where('organization_id', $values);
 						break;
 					case 'type':
 						foreach($values as $value){
-							$q->where('person_id IN (SELECT person_id FROM '.$value.'_person)');
+							$q->where($q->expr('person_id IN (SELECT person_id FROM '.$value.'_person)'));
 						}
+						break;
+					case 'userLevel':
+						$q->where('user_level', $values);
+					case 'hasPassword':
+						if($values[0] === 'yes'){
+							$q->where('password IS NOT NULL');
+						}
+						break;
 				}
 			}
 		}
-		return $q->fetchAll();
+		return $q->get();
 	}
 
 	/**

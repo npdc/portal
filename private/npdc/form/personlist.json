@@ -27,6 +27,25 @@
 				"publication": "Publications"
 			}
 		},
+		"userLevel": {
+			"type": "options",
+			"label": "Only people with user level",
+			"multiple": true,
+			"required": false,
+			"options": {
+				"user": "Logged in user",
+				"editor": "Editor",
+				"admin": "Admin"
+			}
+		},
+		"hasPassword": {
+			"type": "options",
+			"options": {
+				"yes": "Show only users with password"
+			},
+			"required": false,
+			"hint": "A person can have a user level linked to a e-mail address but have no password"
+		},
 		"submit": {
 			"type": "submit",
 			"value": "Apply",
