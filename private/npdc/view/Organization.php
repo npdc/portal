@@ -75,12 +75,13 @@ class Organization extends Base{
 			&& ($this->session->userLevel === NPDC_ADMIN);
 		if(\npdc\lib\Args::get('action') === 'new' && $this->session->userLevel >= $this->controller->userLevelAdd){
 			$this->title = 'Add organization';
-		} elseif(!is_null($id)) {
+		} elseif(!empty($id)) {
 			$organization = $this->model->getById($id);
 			$this->title = $organization['organization_name'];
 		} else {
 			$this->title = 'Not found';
 			$this->mid .= 'The requested organization could not be found';
+			http_response_code(404);
 			return;
 		}
 		if(($this->canEdit && \npdc\lib\Args::get('action') === 'edit') || \npdc\lib\Args::get('action') === 'new'){

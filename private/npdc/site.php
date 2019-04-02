@@ -47,6 +47,7 @@ spl_autoload_register(
 		} else {
 			echo 'A required file was not found '.$file;
 			if(!NPDC_DEV){
+				http_response_code(500);
 				die();
 			}
 		}

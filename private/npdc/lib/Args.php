@@ -87,11 +87,13 @@ class Args {
 				}
 				foreach(array_key_exists('uuidtype', self::$args) ? [self::$args['uuidtype']] : ['dataset', 'project', 'publication'] as $cType){
 					$mName = 'npdc\\model\\'.ucfirst($cType);
-					$m = new $mName();
-					$r = $m->getByUUID(self::$args['uuid']);
-					if($r !== false){
-						self::$args = array_merge(['type'=>$cType, 'id'=>$r[$cType.'_id'], 'version'=>$r[$cType.'_version']], self::$args);
-						break;
+					if(method_exists($mName, 'getByUUID')){
+						$m = new $mName();
+						$r = $m->getByUUID(self::$args['uuid']);
+						if($r !== false){
+							self::$args = array_merge(['type'=>$cType, 'id'=>$r[$cType.'_id'], 'version'=>$r[$cType.'_version']], self::$args);
+							break;
+						}
 					}
 				}
 			}

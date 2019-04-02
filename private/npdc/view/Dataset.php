@@ -281,6 +281,7 @@ class Dataset extends Base{
 	 */
 	private function showError(){
 		if(count($this->versions) === 0){
+			http_response_code(404);
 			$this->title = 'Not found';
 			$this->mid .= 'The requested dataset could not be found';
 		} elseif(!$this->canEdit){

@@ -129,6 +129,19 @@ class Organization {
 	}
 
 	/**
+	 * Get organization by uuid
+	 *
+	 * @param string $uuid the uuid
+	 * @return array organization details
+	 */
+	public function getByUUID($uuid){
+		return $this->dsql->dsql()
+			->table('organization')->where('uuid', $uuid)
+			->get()[0];
+	}
+
+
+	/**
 	 * Get persons of organization
 	 * 
 	 * @param integer $organization_id

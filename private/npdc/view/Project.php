@@ -143,6 +143,7 @@ class Project extends Base{
 			if(count($this->versions) === 0){
 				$this->title = 'Not found';
 				$this->mid .= 'The requested project could not be found';
+				http_response_code(404);
 			} elseif(!$this->canEdit){
 				if($this->session->userLevel === NPDC_PUBLIC){
 					$this->title = 'Please login';
