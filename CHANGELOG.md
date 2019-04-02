@@ -1,3 +1,6 @@
+## v2.2.4 - 2019-04-02
+Lighten main background
+
 ## v2.2.3 - 2019-04-02
 * First check for existence of getByUUID before calling it
 * Provide proper response codes when page not found or technical error
