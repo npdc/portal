@@ -293,7 +293,9 @@ foreach([
 	}
 }
 
-$data['Originating_Center'] = $this->organizationModel->getById($this->data['originating_center'])['organization_name'];
+if(!is_null($this->data['originating_center'])){
+	$data['Originating_Center'] = $this->organizationModel->getById($this->data['originating_center'])['organization_name'];
+}
 
 $datacenters = $this->model->getDataCenter($this->data['dataset_id'], $this->data['dataset_version']);
 if(count($datacenters) === 0){
