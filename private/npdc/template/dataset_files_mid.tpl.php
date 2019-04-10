@@ -64,7 +64,7 @@ if(count($files) === 0){
 	echo '</table>'
 	. '<div class="cols" style="font-size:80%;font-style:italic">'
 		. ($login > 0 && ($this->session->userLevel < 1 || $this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId)) ? '<div><span class="icon-key"></span> File can be downloaded when logged in</div>' : '')
-		. ($restricted > 0 ? '<div><span class="icon-lock"></span> Permission has to be given by the owner of the file</div>' : '')
+		. ($ask > 0 ? '<div><span class="icon-lock"></span> Permission has to be given by the owner of the file</div>' : '')
 		. ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId) ? '<div><span class="icon-eye-blocked"></span> File is hidden for all users except editors and admins</div>' : '')
 	. '</div>'
 	. ($downloadable > 0 
