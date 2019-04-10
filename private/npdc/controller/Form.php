@@ -26,7 +26,7 @@ class Form {
 
 	private $purifier_allowed = [
 		'full'=>null,//allows all
-		'default'=>'p,b,a[href],i,u,h4,h5,h6,sup,sub,br,div,*[style], em,strong', 
+		'default'=>'p,b,a[href],i,u,h4,h5,h6,sup,sub,br,div,em,strong', 
 		'italics'=>'i,em',
 		'none'=>''//allows none
 	];
@@ -119,8 +119,8 @@ class Form {
 	 * @param string $allowTags comma separated list of allowed tags
 	 * @return string purified string
 	 */
-	private function purified($value, $allowTags = null){
-		$allowTags = $allowTags ?? 'none';
+	
+	private function purified($value, $allowTags = 'none'){
 		if(!array_key_exists($allowTags, $this->purifiers)){
 			$config = HTMLPurifier_Config::createDefault();
 			if(!is_null($this->purifier_allowed[$allowTags])){
@@ -128,10 +128,12 @@ class Form {
 			}
 			$this->purifers[$allowTags] = new HTMLPurifier($config);
 		}
-		if(in_array($allowTags,['full', 'default'])){
+		$value = $this->purifers[$allowTags]->purify($value);
+		$value = trim(preg_replace('/<([a-z][a-z0-9]*)[ a-zA-Z0-9:;"\'=-]*>[ \r\n(<br\/?>)]*<\/\1>/','', $value));//remove empty elements
+		if(in_array($allowTags,['full', 'default']) && strpos($value, '<p>') !== 0){
 			$value = '<p>'.$value.'</p>';
 		}
-		return str_replace(['<div><br /></div>','<p></p>'], ['', ''], $this->purifers[$allowTags]->purify($value));
+		return $value;
 	}
 	
 	/**
