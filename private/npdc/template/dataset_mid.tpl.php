@@ -23,7 +23,7 @@ $parts = [
 foreach($parts as $n=>$part){
 	$content = '';
 	if($part[1] === 'field' && !empty(strip_tags($this->data[$part[2]]))){
-		$content = '<div class="overflow">'.(strpos('<',$this->data[$part[2]]) ? $this->data[$part[2]] : nl2br($this->data[$part[2]])).'</div>';
+		$content = '<div class="overflow">'.(strpos($this->data[$part[2]], '<') === 0 ? $this->data[$part[2]] : nl2br($this->data[$part[2]])).'</div>';
 	} elseif($part[1] === 'file'){
 		ob_start();
 		include 'dataset/'.$part[2].'.php';
