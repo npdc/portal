@@ -340,7 +340,10 @@ foreach($links as $i=>$link){
 	$data['Related_URL'][$i]['Title'] = $link['title'];
 	$data['Related_URL'][$i]['Description'] =$link['description'];
 }
-
+if(count($this->model->getFiles($this->data['dataset_id'], $this->data['dataset_version'])) > 0){
+	$data['Related_URL'][] = ['Title'=>'Download data', 'Description'=>'Download data from the NPDC', 'URL'=>$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'].'/files', 'URL_Content_Type'=>['Type'=>'GET DATA']];	
+}
+$data['Related_URL'][] = ['Title'=>'Data set description at NPDC', 'Description'=>'Data set description at the NPDC', 'URL'=>$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'], 'URL_Content_Type'=>['Type'=>'EXTENDED METADATA']];
 $nodes = [];
 if(in_array($this->data['region'], ['Arctica', 'Bipolar'])){
 	$nodes = ['ARCTIC/NL', 'ARCTIC'];
