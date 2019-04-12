@@ -1708,11 +1708,34 @@ class Dataset extends Base{
 							$requestModel->insertFile(['access_request_id'=>$requestId, 'file_id'=>$file]);
 						}
 						$_SESSION['notice'] = 'Your request has been saved with number '.$requestId;
+
+						$mail = new \npdc\lib\Mailer();
+						$personModel = new \npdc\model\Person();
+						$sendable = false;
+						foreach($this->model->getPersons($this->data['dataset_id'], $this->data['dataset_version']) as $person){
+							if($person['editor'] == 1){
+								$personData = $personModel->getById($person['person_id']);
+								if($personData['mail'] !== null){
+									$mail->to($personData['mail'], $personData['name']);
+									$sendable = true;
+								}
+							}
+						}
+						if($sendable){
+							$mail->subject('New data request');
+							$text = 'Dear data provider'.",\r\n\r"
+								. 'There is a new data request for data you provided at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease process this request.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+							$mail->text($text);
+							$mail->send();	
+						}
+						
 						$mail = new \npdc\lib\Mailer();
 						$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 						$mail->subject('New data request');
 						$text = 'Dear admin'.",\r\n\r"
-							. 'There is a new data request at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease make sure the request is processed.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+							. 'There is a new data request at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease make sure the request is processed.\r\n\r\n"
+							. ($sendable ? 'A message has been sent to the researchers to notify them of the request' : 'It was NOT possible to send a notification to the researchers')
+							. "\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 						$mail->text($text);
 						$mail->send();
 						header('Location: '.BASE_URL.'/request/'.$requestId);

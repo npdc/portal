@@ -11,26 +11,17 @@
 		{
 			"type": "gulp",
 			"task": "js-editor",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			}
+			"group": "build"
 		},
 		{
 			"type": "gulp",
 			"task": "js-npdc",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			}
+			"group": "build"
 		},
 		{
 			"type": "gulp",
 			"task": "css",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			}
+			"group": "build"
 		},
 		{
 			"type": "gulp",
@@ -38,7 +29,8 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			}
+			},
+			"runOptions": {"runOn": "folderOpen"}
 		}
 	]
 }

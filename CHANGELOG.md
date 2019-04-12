@@ -1,3 +1,6 @@
+## v2.3.0 - 2019-04-12
+Also send notification for data request to data provider
+
 ## v2.2.4 - 2019-04-02
 Lighten main background
 
