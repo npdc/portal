@@ -1,3 +1,7 @@
+## v2.3.1 - 2019-04-12
+* Fixed error in css resulting in unclear select boxes
+* Fixed error in permissions to view data requests
+
 ## v2.3.0 - 2019-04-12
 Also send notification for data request to data provider
 

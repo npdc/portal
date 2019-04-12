@@ -78,7 +78,7 @@ class Request extends Base{
 		$this->class = 'detail';
 		$this->data = $this->model->getById($id);
 		$this->modelDataset = new \npdc\model\Dataset();
-		if($this->session->userLevel === NPDC_ADMIN || $this->data['person_id'] === $this->session->userId || $this->modelDataset->isEditor($this->data['dataset-id'], $this->session->userId)){
+		if($this->session->userLevel === NPDC_ADMIN || $this->data['person_id'] === $this->session->userId || $this->modelDataset->isEditor($this->data['dataset_id'], $this->session->userId)){
 			$this->title = 'File request '.$id;
 			$this->mid = parent::parseTemplate('request_mid');
 			$this->right = parent::parseTemplate('request_right');
