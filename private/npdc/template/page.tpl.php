@@ -15,7 +15,6 @@
 		include 'head.tpl.php';
 	?>
 	<body class="<?=$view->class?> <?=(empty($session->userLevel) || $session->userLevel === NPDC_PUBLIC ? 'guest' : 'user')?>">
-		<a id="top"></a>
 		<div id="smallscreen">This site works best on a screen of at least 620 pixels wide</div>
 		<div id="overlay"><div class="inner"></div></div>
 		<div id="page">
@@ -49,7 +48,7 @@
 						?></div>
 					</div>
 					<div id="title">
-						<a href="<?=BASE_URL?>/"><img src="<?=BASE_URL?>/img/logo.png"  /></a>
+						<a href="<?=BASE_URL?>/"><img src="<?=BASE_URL?>/img/logo.png" alt="NPDC" /></a>
 						<h1><a href="<?=BASE_URL?>/"><?=\npdc\config::$siteName?></a></h1>
 					</div>
 					<div id="toplink">Top</div>
