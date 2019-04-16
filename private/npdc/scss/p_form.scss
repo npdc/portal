@@ -272,6 +272,9 @@ input, button, textarea, select:not([multiple]) {
 input[type=submit], input[type=reset], button {
 	box-shadow: none;
 }
+div.submitspacer {
+	height: 5px;
+}
 textarea {
 	height: auto;
 	resize: vertical;
@@ -333,7 +336,7 @@ input[type=radio]{
 	display: none;
 	&+label {
 		cursor: pointer;
-		div.indicator {
+		span.indicator {
 			display: inline-block;
 			border: solid 1px $color-accent-3;
 			width: 12px;
@@ -348,20 +351,20 @@ input[type=radio]{
 				content: ' ';
 			}
 		}
-		&:hover div.indicator{
+		&:hover span.indicator{
 			border-color: $color-accent-1;
 		}
 	}
-	&:disabled+label div.indicator{
+	&:disabled+label span.indicator{
 		background-color: $table-stripe-bg;
 	}
 }
 
 input[type=radio]{
-	&+label div.indicator {
+	&+label span.indicator {
 		border-radius: 50%;
 	}
-	&:checked+label div.indicator:after {
+	&:checked+label span.indicator:after {
 		background: $color-accent-1;
 		left: 2px;
 		top: 2px;
@@ -369,13 +372,13 @@ input[type=radio]{
 		width: 8px;
 		border-radius: 50%;
 	}
-	&:checked:disabled+label div.indicator:after{
+	&:checked:disabled+label span.indicator:after{
 		background: mix($color-accent-1, $table-stripe-bg, 50%);
 	}
 }
 
 input[type=checkbox]{
-	&:checked+label div.indicator:after {
+	&:checked+label span.indicator:after {
 		left: 3px;
 		top: 0px;
 		width: 4px;
@@ -384,7 +387,7 @@ input[type=checkbox]{
 		border-width: 0 2px 2px 0;
 		transform: rotate(45deg);
 	}
-	&:disabled+label div.indicator:after {
+	&:disabled+label span.indicator:after {
 		border-color: mix($color-accent-1, $table-stripe-bg, 50%);
 	}
 }

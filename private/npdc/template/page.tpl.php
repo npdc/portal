@@ -7,7 +7,7 @@
  */
 
 ?><!DOCTYPE html>
-<html>
+<html lang="en">
 	<?php 
 		if(!empty($_GET['overlay'])){
 			$extraJS .= '<script type="text/javascript">$().ready(function(){openOverlay(\''.BASE_URL.'/'.$_GET['overlay'].'\');});</script>';

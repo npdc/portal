@@ -1,3 +1,6 @@
+## v2.3.2 - 2019-04-16
+Several css and html adjustments to make html w3c valid
+
 ## v2.3.1 - 2019-04-12
 * Fixed error in css resulting in unclear select boxes
 * Fixed error in permissions to view data requests

@@ -100,9 +100,9 @@ class Base {
 							$this->pager .= '<span class="numberdots">...</span>';
 						} 
 						if ($i == $page){
-							$this->pager .= '<span class="page-number active">'.$i.'</i></span>';
+							$this->pager .= '<span class="page-number active">'.$i.'</span>';
 						} else {
-							$this->pager .= '<span class="page-number"><a href="'.$base_url.$i.(empty($_SERVER['QUERY_STRING']) ? '' : '?'.$_SERVER['QUERY_STRING']).'">'.$i.'</a></i></span>';
+							$this->pager .= '<span class="page-number"><a href="'.$base_url.$i.(empty($_SERVER['QUERY_STRING']) ? '' : '?'.$_SERVER['QUERY_STRING']).'">'.$i.'</a></span>';
 						}
 						$prev = $i;
 					}

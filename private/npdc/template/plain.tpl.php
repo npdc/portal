@@ -8,7 +8,7 @@
  */
 
 ?><!DOCTYPE html>
-<html>
+<html lang="en">
 	<?php 
 		$extraCSS = '<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/npdc/plain.min.css" />';
 		include 'head.tpl.php';

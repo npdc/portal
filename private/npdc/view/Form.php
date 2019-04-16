@@ -11,7 +11,7 @@ namespace npdc\view;
 
 class Form {
 	private $errorHead = '<div class="error head">There were errors when processing your submission</div>';
-	private $adminOverrule = '<div id="adminoverrule"><p><i>As admin you can overrule the checking of a record before it is being saved to the database using the checkbox below. Some fields are required on database level, if you left one of those fields empty your record will not be saved and the site will give a server error (you will not get a message telling what went wrong). Please use this function with care!</i></p><input type="checkbox" id="adminoverruleinput" name="adminoverrule" value="adminoverrule"><label for="adminoverruleinput"><div class="indicator"></div>I am aware of the risks and wish to use the admin override for this submission.</label></div>';
+	private $adminOverrule = '<div id="adminoverrule"><p><i>As admin you can overrule the checking of a record before it is being saved to the database using the checkbox below. Some fields are required on database level, if you left one of those fields empty your record will not be saved and the site will give a server error (you will not get a message telling what went wrong). Please use this function with care!</i></p><input type="checkbox" id="adminoverruleinput" name="adminoverrule" value="adminoverrule"><label for="adminoverruleinput"><span class="indicator"></span>I am aware of the risks and wish to use the admin override for this submission.</label></div>';
 	private $formId;
 	private $active = 0;
 	private $required;
@@ -331,7 +331,7 @@ class Form {
 					. 'id="'.$id.'" '
 					. (substr($id, -4) === '_new' ? $field->default ?? null : $_SESSION[$this->formId]['data'][$id] ? 'checked ' : '')
 					. '>'
-					. '<label for="'.$id.'"><div class="indicator"></div>'
+					. '<label for="'.$id.'"><span class="indicator"></span>'
 					. (isset($field->sideLabel) ? $field->sideLabel : '') 
 					. '</label>';
 				break;
@@ -671,7 +671,7 @@ class Form {
 					.(in_array($option_id, $_SESSION[$this->formId]['data'][$id] ?? []) 
 						? ' checked' 
 						:'')
-					.'><label for="'.$fieldName.'_'.$option_id.'"> <div class="indicator"></div>'.$label.'</label></div>';
+					.'><label for="'.$fieldName.'_'.$option_id.'"> <span class="indicator"></span>'.$label.'</label></div>';
 			}
 			$input .= '</div>';
 		}
@@ -829,11 +829,13 @@ class Form {
 	 */
 	private function submit($field){
 		global $session;
-		$return = '<h4 class="label empty"></h4>'
+		$return = /*'<h4 class="label empty"></h4>'
+				.*/ 
+				'<div class="submitspacer"></div>'
 				. ($session->userLevel >= NPDC_ADMIN && ($_SESSION[$this->formId]['data']['record_status'] === 'published' || $_SESSION[$this->formId]['data']['rev'] === 'minor') 
 					? '<input type="checkbox" name="rev" value="minor" id="minorRev" '
 						. ($_SESSION[$this->formId]['data']['rev'] === 'minor' 
-							? 'checked=true' : '').'> <label for="minorRev"><div class="indicator"></div>This is a minor revision, don\'t create a new version</label><br/>' 
+							? 'checked=true' : '').'> <label for="minorRev"><span class="indicator"></span>This is a minor revision, don\'t create a new version</label><br/>' 
 							: '')
 						. '<input type="submit" value="'.$field->value.'"'
 						. ($field->includeNext ?? false ? 'class="hasGotoNext" ' 

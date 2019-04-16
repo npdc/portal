@@ -9,7 +9,7 @@
 <head>
 	<title><?=isset($view->title) && strlen($view->title) > 0 ? str_replace(['<i>', '</i>'], '', $view->title).' |' : '';?> <?=\npdc\config::$siteName?></title>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0,maximum-scale=1.0" />
+	<meta name="viewport" content="initial-scale=1.0" />
 	<meta name="author" content="Marten Tacoma, NIOZ, 2017" />
 	<meta name="application-name" content="NPDC" />
 	<meta name="page-version" content="<?=APP_VERSION?>" />
@@ -37,14 +37,14 @@
 	$v = NPDC_DEV ? time() : APP_VERSION;
 	foreach([
 		'css'=>['<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/', '.css?'.$v.'" />'],
-		'js'=>['<script type="text/javascript" src="'.BASE_URL.'/js/', '.js?'.$v.'"></script>']
+		'js'=>['<script src="'.BASE_URL.'/js/', '.js?'.$v.'"></script>']
 	] as $type=>$code){
 		foreach($$type as $file){
 			echo $code[0].$file.$code[1]."\r\n";
 		}
 	}
 	?>
-	<script type="text/javascript">var baseUrl = "<?=BASE_URL?>";var controller = "<?=$controllerName?>";</script>
+	<script>var baseUrl = "<?=BASE_URL?>";var controller = "<?=$controllerName?>";</script>
 	<?=$extraJS?>
 	<?=\npdc\config::$extraHeader?>
 	<?=$view->js?>
