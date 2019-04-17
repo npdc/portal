@@ -1,3 +1,7 @@
+## v2.3.3 - 2019-04-17
+* Clearer layout of version selector in foot of page
+* gulpfile improvements
+
 ## v2.3.2 - 2019-04-16
 Several css and html adjustments to make html w3c valid
 

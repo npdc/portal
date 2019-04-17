@@ -12,7 +12,7 @@ if(!empty($this->data['doi'])){
 $versions = [];
 foreach($this->versions as $version){
 	if(in_array($version['record_status'], ['published', 'archived'])){
-		$versions[] = '<a href="'.BASE_URL.'/'.$this->controller->name.'/'.$version['uuid'].'">'.$version[$this->controller->name.'_version'].' ('.($version['record_status'] === 'published' ? 'current' : $version['record_status']).')</a>';
+		$versions[] = '<a href="'.BASE_URL.'/'.$this->controller->name.'/'.$version['uuid'].'" '.($this->data[$this->controller->name.'_version'] === $version[$this->controller->name.'_version'] ? ' class="active"' : '').'>'.$version[$this->controller->name.'_version'].' ('.($version['record_status'] === 'published' ? 'current' : $version['record_status']).')</a>';
 	}
 }
 if(count($versions) === 1){

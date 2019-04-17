@@ -1,6 +1,6 @@
 {
   "name": "portal",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "**Features:**\r - Project descriptions\r - Dataset descriptions according to DIF10 format (GCMD standard)\r   - Datasets available in json-ld (schema.org / Google dataset search)\r - Publication descriptions\r - Responsive",
   "main": "gulpfile.js",
   "dependencies": {
@@ -10,6 +10,7 @@
     "gulp-file": "^0.4.0",
     "gulp-git": "^2.9.0",
     "gulp-insert": "^0.5.0",
+    "gulp-open": "^3.0.1",
     "gulp-rename": "^1.4.0",
     "gulp-sass": "^4.0.2",
     "gulp-uglify": "^3.0.2",

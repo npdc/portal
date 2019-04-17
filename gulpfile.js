@@ -8,6 +8,7 @@ const gulp = require('gulp')
 	, git = require('gulp-git')
 	, insert = require('gulp-insert')
 	, file = require('gulp-file')
+	, open = require("gulp-open")
 ;
 
 function minifyJS(file) {
@@ -42,6 +43,11 @@ function changelog(){
 		.pipe(insert.prepend('## v'+ version + ' - ' +date.toISOString().substring(0, 10)+'\n\n\n'))
 		.pipe(gulp.dest('./'));
 };
+
+function openChangelog(){
+	return gulp.src('CHANGELOG.md')
+		.pipe(open({app: 'code'}));
+}
 function writeVersion(){
 	v = getPackageJsonVersion();
 	return file('version', v, {src: true})
@@ -89,19 +95,22 @@ gulp.task('bump:test', gulp.series(
 gulp.task('bump:patch', gulp.series(
 	function(){return bumpVersion('patch')}, 
 	function(){return writeVersion()},
-	function(){return changelog()}
+	function(){return changelog()},
+	function(){return openChangelog()}
 ));
 
 gulp.task('bump:minor', gulp.series(
 	function(){return bumpVersion('minor')}, 
 	function(){return writeVersion()},
-	function(){return changelog()}
+	function(){return changelog()},
+	function(){return openChangelog()}
 ));
 
 gulp.task('bump:major', gulp.series(
 	function(){return bumpVersion('major')}, 
 	function(){return writeVersion()},
-	function(){return changelog()}
+	function(){return changelog()},
+	function(){return openChangelog()}
 ));
 
 gulp.task('git:tag', function (done) {

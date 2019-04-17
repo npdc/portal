@@ -535,13 +535,18 @@ div.technical {
 			bottom: 20px;
 			left: 0px;
 			border: solid 1px $table-stripe-bg;
-			background: $table-stripe-bg;
+			background: $bg-color;
 			a {
 				display: block;
 				padding: 0px 5px;
-				&:nth-child(odd){
-					background-color: $bg-color;
-
+				&:not(:last-child){
+					border-bottom: solid 1px $table-stripe-bg;
+				}
+				&.active, &:hover {
+					background-color: $table-stripe-bg;
+					&:not(:last-child){
+						border-color: $bg-color;
+					}
 				}
 			}
 		}
