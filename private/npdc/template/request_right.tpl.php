@@ -32,8 +32,8 @@ if($this->modelDataset->isEditor($this->data['dataset-id'], $this->session->user
 		<form method="post">
 		<h4>Allow*:</h4>
 		<div class="cols">
-			<div><input type="radio" name="allow" id="allow_yes" value="yes" <?=$_POST['allow'] === 'yes' ? 'checked' : ''?> /><label for="allow_yes"><div class="indicator"></div>Yes</label></div>
-			<div><input type="radio" name="allow" id="allow_no" value="no" <?=$_POST['allow'] === 'no' ? 'checked' : ''?> /><label for="allow_no"><div class="indicator"></div>No</label></div>
+			<div><input type="radio" name="allow" id="allow_yes" value="yes" <?=$_POST['allow'] === 'yes' ? 'checked' : ''?> /><label for="allow_yes"><span class="indicator"></span>Yes</label></div>
+			<div><input type="radio" name="allow" id="allow_no" value="no" <?=$_POST['allow'] === 'no' ? 'checked' : ''?> /><label for="allow_no"><span class="indicator"></span>No</label></div>
 		</div>
 		<h4>Comments:</h4>
 		<textarea name="reason" placeholder="If no access is given please give a reason" rows="5"><?=$_POST['reason']?></textarea>

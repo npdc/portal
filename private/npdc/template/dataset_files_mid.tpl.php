@@ -56,10 +56,10 @@ if(count($files) === 0){
 		}
 		echo '<tr>'
 		. '<td>'
-			. ($checkbox ? '<input type="checkbox" name="files[]" value="'.$file['file_id'].'" id="file_'.$file['file_id'].'" /><label for="file_'.$file['file_id'].'"><div class="indicator"></div> </label>' : '')
+			. ($checkbox ? '<input type="checkbox" name="files[]" value="'.$file['file_id'].'" id="file_'.$file['file_id'].'" /><label for="file_'.$file['file_id'].'"><span class="indicator"></span> </label>' : '')
 			. (!is_null($icon) ? '<span class="icon-'.$icon.'"></span>' : '')
 		. '</td>'
-		. '<td><b>'.$file['title'].'</b><br/>'.$file['description'].'<br/><span style="font-size: 80%;font-style:italic">'.$file['name'].', '.$file['type'].', '.formatBytes($file['size']).', downloaded '.$fileModel->getDownloadCount($file['file_id']).' times</td></tr>';
+		. '<td><b>'.$file['title'].'</b><br/>'.$file['description'].'<br/><span style="font-size: 80%;font-style:italic">'.$file['name'].', '.$file['type'].', '.formatBytes($file['size']).', downloaded '.$fileModel->getDownloadCount($file['file_id']).' times</span></td></tr>';
 	}
 	echo '</table>'
 	. '<div class="cols" style="font-size:80%;font-style:italic">'
@@ -68,7 +68,7 @@ if(count($files) === 0){
 		. ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId) ? '<div><span class="icon-eye-blocked"></span> File is hidden for all users except editors and admins</div>' : '')
 	. '</div>'
 	. ($downloadable > 0 
-		? ($this->session->userLevel === 0 ? '<br/><input type="text" name="contact" placeholder="Contact details" /><span class="hint">If you wish you can leave your name and mail address here so we can contact you when a new version of a file becomes available<br/>' : '')
+		? ($this->session->userLevel === 0 ? '<br/><input type="text" name="contact" placeholder="Contact details" /><span class="hint">If you wish you can leave your name and mail address here so we can contact you when a new version of a file becomes available</span><br/>' : '')
 			. '<button type="submit" formaction="files/selected">Download selected files</button> '
 			. ($public > 0 ? '<button type="submit" formaction="files/public">Download all public files</button> ' : '')
 			. ($this->session->userLevel > NPDC_PUBLIC && $login > 0 ? '<button type="submit" formaction="files/all">Download all available files</button> ' : '') 

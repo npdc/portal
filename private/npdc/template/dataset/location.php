@@ -31,7 +31,7 @@ if(count($spatialCoverages) > 0){
 			<a href="#" id="popup-closer" class="ol-popup-closer"></a>
 			<div id="popup-content"></div>
 		</div>
-	</div><script type="text/javascript" language="javascript">
+	</div><script>
 		$().ready(function(){
 			var wkt = new ol.format.WKT();
 			var raster = new ol.layer.Tile({

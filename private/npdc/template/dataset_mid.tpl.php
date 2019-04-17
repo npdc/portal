@@ -30,8 +30,11 @@ foreach($parts as $n=>$part){
 		$content = ob_get_clean();
 	}
 	if(!empty($content) || ($this->data['record_status'] === 'draft' && $this->canEdit)){
-		echo '<hr><div><h4>'.$part[0].($this->data['record_status'] === 'draft' && $this->canEdit ? ' [<a href="'.BASE_URL.'/dataset/'.$this->data['dataset_id'].'/edit/'.$part[3].'">edit</a>]' : '').'</h4>'
-			. $content
+		echo '<hr><div>';
+		if($part[0] != '' || ($this->data['record_status'] === 'draft' && $this->canEdit)){
+			echo '<h4>'.$part[0].($this->data['record_status'] === 'draft' && $this->canEdit ? ' [<a href="'.BASE_URL.'/dataset/'.$this->data['dataset_id'].'/edit/'.$part[3].'">edit</a>]' : '').'</h4>';
+		}
+		echo $content
 			. '</div>';
 	}
 }

@@ -26,11 +26,11 @@
 		max-width: 1240px;
 		margin: 0px auto;
 	}
+	z-index: 998;
 	.sticky & {
 		margin: 0px;
 		padding: 0px;
 		position: fixed;
-		z-index: 998;
 		#top, #title h1{
 			display: none;
 		}
@@ -529,7 +529,7 @@ div.technical {
 	.version-selector {
 		position: relative;
 		display: inline-block;
-		div {
+		span {
 			display: none;
 			position: absolute;
 			bottom: 20px;
@@ -551,7 +551,7 @@ div.technical {
 			}
 		}
 		&:hover {
-			div {
+			span {
 				display: block;
 			}
 		}
