@@ -35,7 +35,7 @@ if(in_array($controllerName, ['Base', 'Form']) || !file_exists(get_class_file($v
 	$controllerName = 'Page';
 	$controllerClass = 'npdc\\controller\\Page';
 	$action = 'showItem';
-	Args::set('id', Args::get('type'));;
+	Args::set('id', Args::get('type'));
 }
 
 //now load controller if it exists

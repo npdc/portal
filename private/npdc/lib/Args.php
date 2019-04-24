@@ -103,7 +103,12 @@ class Args {
 			}
 		}
 		if(empty(self::$args['type']) || self::$args['type'] === 'home'){
-			self::$args['type'] = 'front';
+			if(self::$args['action'] === 'edit'){
+				self::$args['type'] = 'page';
+				self::$args['id'] = 'home';
+			} else {
+				self::$args['type'] = 'front';
+			}
 		}
 	}
 

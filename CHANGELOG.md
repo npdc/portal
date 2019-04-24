@@ -1,3 +1,6 @@
+## v2.4.1 - 2019-04-24
+Fix editing frontpage
+
 ## v2.4.0 - 2019-04-24
 Make layout always use at least full screen height
 

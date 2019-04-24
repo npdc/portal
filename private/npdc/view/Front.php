@@ -44,7 +44,7 @@ class Front{
 		$model = new \npdc\model\Page();
 
 		$data = $model->getByUrl('home');
-		$this->mid = '<div>'.$data['content'].'</div><div>';
+		$this->mid = '<div class="frontPageContent">'.$data['content'].'</div><div>';
 		
 		$newsModel = new \npdc\model\News();
 		$news = $newsModel->getLatest();
