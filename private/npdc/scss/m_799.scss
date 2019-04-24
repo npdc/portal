@@ -25,6 +25,7 @@ ul.collapsable{
 
 #main > .cols{
 	display: block;
+	min-height: auto;
 	&.frontblocks {
 		display: flex;
 		& > div {

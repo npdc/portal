@@ -24,18 +24,28 @@
 	}
 }
 
-body {
-	border: solid 5px red;
+#head {
+	background-color: #ff6961;
 }
-
-#page:before {
+#page:before,
+#page:after {
 	position: fixed;
-	top: 5px;
-	left: 5px;
 	content: 'Development';
 	opacity: 0.5;
 	z-index: 999;
 	color: red;
 	font-weight: bold;
-	font-size: 30pt;
+	font-size: calc(10pt + 5vmin);
+	transform: rotate(-25deg)
+}
+
+#page:before {
+	top: 10vmin;
+	left: 5px;
+	color: white;
+}
+
+#page:after {
+	bottom: 10vmin;
+	right: 5px;
 }

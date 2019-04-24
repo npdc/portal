@@ -15,7 +15,6 @@ class Front{
 	public $right;
 	public $class = 'front';
 	public $accessLevel;
-	public $frontblocks = [];
 	private $session;
 	public $extraHeader;
 	
@@ -95,7 +94,6 @@ class Front{
 			$block .= '<a href="'.BASE_URL.'/'.strtolower($type).'/'.$item['uuid'].'">'.trim($item['title']).'</a> <span class="info"><span class="type">'.$type.'</span> <span class="time">'.date('j F Y H:i', strtotime($item['published'])).'</span></span>';
 		}
 		
-		//$this->frontblocks['update'] = $block;
 		$this->right = $block;
 		$this->json = array_merge([
 			'@context' => ['@vocab'=>'http://schema.org/'],

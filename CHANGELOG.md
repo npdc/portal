@@ -1,3 +1,6 @@
+## v2.4.0 - 2019-04-24
+Make layout always use at least full screen height
+
 ## v2.3.4 - 2019-04-17
 Various small html and css improvements to get to valid html5
 
