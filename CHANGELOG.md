@@ -1,3 +1,7 @@
+## v2.4.2 - 2019-05-01
+* Fix bug in lookup with underscore in vocab name
+* Enhanced gulp workflow for easier js debugging
+
 ## v2.4.1 - 2019-04-24
 Fix editing frontpage
 

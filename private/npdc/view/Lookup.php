@@ -24,7 +24,16 @@ class Lookup {
 	public function __construct($session){
 		$this->session = $session;
 	}
-	
+
+	/**
+	 * If vocab is stored in file move param to action and run showItem
+	 *
+	 * @return void
+	 */
+	public function showList(){
+		\npdc\lib\Args::set('action', \npdc\lib\Args::get('file'));
+		$this->showItem();
+	}
 	/**
 	 * Show option list
 	 *

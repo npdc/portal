@@ -13,13 +13,13 @@ const gulp = require('gulp')
 
 function minifyJS(file) {
 	return gulp.src('private/npdc/javascript/' + file + '/*', {sourcemaps: true})
-		.pipe(concat(file + '.js'))
 		.pipe(uglify())
+		.pipe(concat(file + '.js'))
 		.pipe(rename({ extname: '.min.js' }))
 		.pipe(gulp.dest('web/js/npdc', {sourcemaps: '.'}));
 }
 
-function css2scss(){
+function scss2css(){
 	return gulp.src(['private/npdc/scss/*.scss', '!private/npdc/scss/[a-z]_*.scss'], {sourcemaps: true})
 		.pipe(sass({outputStyle: 'compressed'}))
 		.pipe(rename({extname: '.min.css'}))
@@ -64,7 +64,7 @@ function getPackageJsonVersion () {
 };
 
 gulp.task('build:css', function(){
-	return css2scss();
+	return scss2css();
 });
 
 gulp.task('build:js-editor', function(){
@@ -83,7 +83,7 @@ gulp.task('watch', function(){
 		return minifyJS('npdc');
 	});
 	gulp.watch('private/npdc/scss/*.scss', function(){
-		return css2scss();
+		return scss2css();
 	});
 });
 
