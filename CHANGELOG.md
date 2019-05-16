@@ -1,3 +1,6 @@
+## v2.5.0 - 2019-05-16
+Expanded search with organization and person search, including listing of project, publications and datasets in which a person or organization is involved
+
 ## v2.4.2 - 2019-05-01
 * Fix bug in lookup with underscore in vocab name
 * Enhanced gulp workflow for easier js debugging

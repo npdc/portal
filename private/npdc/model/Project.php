@@ -31,7 +31,7 @@ class Project{
 	 */
 	public function getList($filters=null){
 		global $session;
-		$q = $this->fpdo->from('project')->where('record_status', 'published')->select('date_start || \' - \' || date_end period');
+		$q = $this->fpdo->from('project')->where('record_status', 'published')->select('date_start || \' - \' || date_end period')->select('"Project" as content_type');
 		$q2 = $this->fpdo
 			->from('project')->select('date_start || \' - \' || date_end period')
 			->join('(SELECT project_id, MAX(project_version) AS project_version FROM project GROUP BY project_id) a USING (project_id, project_version)');

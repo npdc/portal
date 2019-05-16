@@ -91,6 +91,7 @@ class Dataset{
 		}
 		$q->order('(CASE WHEN date_start IS NULL THEN 0 ELSE 1 END), date_start DESC, date_end DESC');
 		$q->field('dataset.*')
+			->field($q->dsql()->expr('"Dataset"'), 'content_type')
 			->field($q->dsql()
 				->expr('CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}', ['draft', 'hasDraft'])
 			);

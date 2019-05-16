@@ -18,10 +18,11 @@ class Search extends Base{
 	public $accessLevel;
 	protected $session;
 	protected $controller;
-	protected $userLevelAdd = NPDC_NOBODY;//minimum user level required to add a new project
+	protected $userLevelAdd = NPDC_NOBODY;//minimum user level required to add a new search
 	private $search;
 	private $types;
 	private $type = [];
+	private $searchFields = [];
 	
 	/**
 	 * Constructor
@@ -82,33 +83,105 @@ class Search extends Base{
 					}
 				}
 			} else {
+				$this->type = count($this->type) === 0 ? array_keys($this->types) : $this->type;
 				//search organizations
-				$orgModel = new \npdc\model\Organization();
-				$orgFilter = [
-					'country'=>\npdc\config::$defaultOrganizationFilter['country'],
-					'type'=>['project','dataset','publication'],
-					'combine'=>'any',
-					'search'=>$this->search
-				];
-				$orgs = $orgModel->getList($orgFilter);
-				if(count($orgs) > 0){
-					$this->mid .= count($orgs).' Organization'.(count($orgs) > 1 ? 's' : '').' found<ul>';
-					foreach ($orgs as $org){
-						$this->mid .= '<li><a href='.BASE_URL.'/organization/'.$org['organization_id'].'>'.$org['organization_name'].'</a></li>';
-					}
-					$this->mid .= '</ul>';
-				}
-
-				//free text search trough dataset, project and publication
-				foreach(count($this->type) === 0 ? array_keys($this->types) : $this->type as $type){
-					$modelName = 'npdc\\model\\'.ucfirst($type);
-					$model = new $modelName();
-					$res = $model->search($this->search, true);
-					if(!is_null($res)){
-						$list = array_merge($list, $res);
+				if(in_array('organization', $this->type)){
+					$this->searchFields['organization'] = [];
+					$orgModel = new \npdc\model\Organization();
+					$orgFilter = [
+						'country'=>\npdc\config::$defaultOrganizationFilter['country'],
+						'type'=>['project','dataset','publication'],
+						'combine'=>'any',
+						'search'=>$this->search
+					];
+					$orgs = $orgModel->getList($orgFilter);
+					if(count($orgs) > 0){
+						$this->mid .= count($orgs).' Organization'.(count($orgs) > 1 ? 's' : '').' found<ul>';
+						foreach ($orgs as $org){
+							$this->searchFields['organization'][] = $org['organization_id'];
+							$this->mid .= '<li><a href='.BASE_URL.'/organization/'.$org['organization_id'].'>'.$org['organization_name'].'</a></li>';
+						}
+						$this->mid .= '</ul>';
+					} else {
+						$this->mid .= '<p>No organizations found</p>';
 					}
 				}
-
+				if(in_array('person', $this->type)){
+					$this->searchFields['person'] = [];
+					$personModel = new \npdc\model\Person();
+					$persons = $personModel->search($this->search);
+					if(count($persons) > 0){
+						$this->mid .= count($persons).' Person'.(count($persons) > 1 ? 's' : '').' found<ul>';
+						foreach ($persons as $person){
+							$this->searchFields['person'][] = $person['person_id'];
+							$this->mid .= '<li><a href='.BASE_URL.'/contact/'.$person['person_id'].'>'.$person['name'].'</a></li>';
+						}
+						$this->mid .= '</ul>';
+					} else {
+						$this->mid .= '<p>No persons found</p>';
+					}
+				}
+				if(count($this->searchFields) > 0){
+					$pubModel = new \npdc\model\Publication();
+					$personModel = new \npdc\model\Person();
+					foreach(array_diff(array_keys($this->types), ['organization', 'person']) as $type){
+						$modelName = 'npdc\\model\\'.ucfirst($type);
+						$model = new $modelName();
+						if(array_key_exists('organization', $this->searchFields)){
+							if(count($this->searchFields['organization']) > 0){
+								foreach($model->getList(['organization'=>$this->searchFields['organization']]) as $row){
+									$row['content_type'] = $type;
+									switch($type){
+										case 'project':
+										case 'dataset':
+										$row['date'] = $row['date_start'].' - '.$row['date_end'];
+									}
+									$key = $type.$row[$type.'_id'];
+									$list[$key] = $row;
+								}
+							}
+						}
+						foreach($pubModel->searchByFreeOrganization($this->search) as $row){
+							$row['content_type'] = 'publication';
+							$key = 'publication'.$row['publication_id'];
+							$list[$key] = $row;
+						}
+						if(array_key_exists('person', $this->searchFields)){
+							if(count($this->searchFields['person']) > 0){
+								$function = 'get'.ucfirst($type).'s';
+								foreach($this->searchFields['person'] as $id){
+									foreach($personModel->{$function}($id) as $row){
+										$row['content_type'] = $type;
+										switch($type){
+											case 'project':
+											case 'dataset':
+											$row['date'] = $row['date_start'].' - '.$row['date_end'];
+										}
+										$key = $type.$row[$type.'_id'];
+										$list[$key] = $row;
+									}
+								}
+							}
+							foreach($pubModel->searchByFreePerson($this->search) as $row){
+								$row['content_type'] = 'publication';
+								$key = 'publication'.$row['publication_id'];
+								$list[$key] = $row;
+							}
+						}
+					}
+				}
+				$this->type = array_diff($this->type, ['organization', 'person']);
+				if(count($this->type) > 0){
+					//free text search trough dataset, project and publication
+					foreach($this->type as $type){
+						$modelName = 'npdc\\model\\'.ucfirst($type);
+						$model = new $modelName();
+						foreach($model->search($this->search, true) as $row){
+							$key = $type.$row[$type.'_id'];
+							$list[$key] = $row;
+						}
+					}
+				}
 				//make keys with date for ordering by date
 				$keys = [];
 				foreach($list as $data){

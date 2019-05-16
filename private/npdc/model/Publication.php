@@ -17,6 +17,7 @@ class Publication{
 	 */
 	public function __construct(){
 		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**
@@ -31,7 +32,7 @@ class Publication{
 	 */
 	public function getList($filters=null){
 		global $session;
-		$q = $this->fpdo->from('publication')->select('extract(YEAR FROM date) as year')->where('record_status', 'published');
+		$q = $this->fpdo->from('publication')->select('extract(YEAR FROM date) as year')->select('"Publication" AS content_type')->where('record_status', 'published');
 		$q2 = $this->fpdo
 			->from('publication')
 			->select('extract(YEAR FROM date) as year')
@@ -319,6 +320,34 @@ class Publication{
 			$q->where('record_status = \'published\'');
 		}
 		return $q->fetchAll();
+	}
+
+	/**
+	 * Search by freely inputted organization
+	 *
+	 * @param string $search search string
+	 * @return array list of publications matching filter
+	 */
+	public function searchByFreeOrganization($search){
+		$q = $this->dsql->dsql()->table('publication_person')
+			->join('publication.publication_id', 'publication_id', 'inner')
+			->where(\npdc\lib\Db::joinVersion('publication', 'publication_person'))
+			->where('free_organization', 'LIKE', '%'.$search.'%');
+		return $q->get();
+	}
+
+	/**
+	 * Search by freely inputted person
+	 *
+	 * @param string $search search string
+	 * @return array list of publications matching filter
+	 */
+	public function searchByFreePerson($search){
+		$q = $this->dsql->dsql()->table('publication_person')
+			->join('publication.publication_id', 'publication_id', 'inner')
+			->where(\npdc\lib\Db::joinVersion('publication', 'publication_person'))
+			->where('free_person', 'LIKE', '%'.$search.'%');
+		return $q->get();
 	}
 	
 	/**

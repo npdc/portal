@@ -15,7 +15,9 @@
 			"options": {
 				"project": "Projects",
 				"dataset": "Datasets",
-				"publication": "Publications"
+				"publication": "Publications",
+				"organization": "Organizations",
+				"person": "Persons"
 			},
 			"hint": "If no boxes are checked a search will be performed on all content types"
 		},

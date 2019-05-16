@@ -339,7 +339,7 @@ class Person{
 	 * @param boolean $fuzzy whether fuzzy search has to be used
 	 * @return array resulting people
 	 */
-	public function search($string, $exclude, $fuzzy = false){
+	public function search($string, $exclude = [], $fuzzy = false){
 		$query = $this->fpdo
 			->from('person');
 		if(strlen($string) > 0){

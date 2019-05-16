@@ -26,7 +26,7 @@ class Search {
 		$this->formController = new \npdc\controller\Form($this->formId);
 		$this->form = $this->formController->getForm('search');
 		foreach($this->form->fields->type->options as $id=>$label){
-			if(!\npdc\config::$partEnabled[$id]){
+			if(!\npdc\config::$partEnabled[$id] && in_array($id, ['project', 'publication', 'dataset'])){
 				unset($this->form->fields->type->options->$id);
 			}
 		}
