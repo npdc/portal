@@ -57,11 +57,11 @@ Cron is in the main folder of the site, so run cron as `<domain>[/<path_to_porta
 We recommend to run cron daily (we suggest early morning local time) to work with the most recent vocabylaries
 
 ## Styling
-- Change colors in `private/npdc/scss/p_base_colors.scss` to match your style and compile scss (in VS code with Easy Sass: `F1 > Compile all SCSS/SASS files in the project`)
+- Change colors in `private/npdc/scss/p_base_colors.scss` to match your style and compile scss (in VS code with gulp-task `build:css`)
 - Place logo (200x200px) at `img/logo.png`
 - Place header image (at least 1240x120px) at `img/title_bg.jpg`
 - If you have one you can place your favicon.ico also in the img folder
-- When changing your css also edit build in the main directory (`touch build` or edit some content in the file) to force usage of new css for visitors
+- When changing your css also increase version number in `private/npdc/version` (recommended to append with something to keep versioning in line with git repo), this can be done by running the gulp taks `bump:test`.
 - In `private/npdc/template` Copy `footer.example.php` to `footer.tpl.php` and edit to your liking
 
 ## Linking with Twitter
