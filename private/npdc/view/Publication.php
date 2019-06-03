@@ -143,6 +143,8 @@ class Publication extends Base{
 				$this->title = 'No version '.\npdc\lib\Args::get('version').' found';
 				$this->mid .= 'There is no version '.\npdc\lib\Args::get('version').' of this publication.';
 			}
+		} elseif(in_array(NPDC_OUTPUT, ['ris', 'bib'])) {
+			$this->showCitation();
 		} else {
 			if(\npdc\lib\Args::get('action') === 'warnings') {
 				$this->title = 'Please check - '.$this->data['title'];
@@ -184,5 +186,26 @@ class Publication extends Base{
 				$this->loadEditPage($pages);
 			}
 		}
+	}
+
+	private function showCitation(){
+		$url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/publication/'.$this->data['uuid'];
+		$authors = explode('; ', str_replace(' &amp;', ';', $this->model->getAuthors($this->data['publication_id'], $this->data['publication_version'], 9999, ';')));
+		foreach($authors as $author){
+			list($last, $first) = explode(', ', $author);
+			if(empty($str)){
+				$aut = $last;
+			} else {
+				$str .= ' and ';
+			}
+			$str .= str_replace('  ', ' ', str_replace('.', ' ', $first).' {'.$last.'}');
+		}
+		
+		$id = str_replace(' ', '', $aut.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).substr($citation['title'] ?? $this->data['title'], 0,5));		
+		include('template/publication/'.NPDC_OUTPUT.'.php');
+		header('Content-type: '.$content_type);
+		header("Content-Disposition: attachment; filename=\"" . $this->data['uuid'].'.'.NPDC_OUTPUT . "\""); 
+		echo strip_tags($output);
+		die();
 	}
 }

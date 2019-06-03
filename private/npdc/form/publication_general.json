@@ -11,6 +11,12 @@
 			"allowTags": "italic",
 			"trigger": "doubleTitle"
 		},
+		"publication_type_id": {
+			"type": "options",
+			"label": "Publication type",
+			"options" : {},
+			"multiple": false
+		},
 		"date": {
 			"type": "date",
 			"label": "Publication date",

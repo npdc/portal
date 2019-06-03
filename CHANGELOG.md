@@ -1,3 +1,6 @@
+## v2.6.0 - 2019-06-03
+Added bib and ris citation export to publication pages
+
 ## v2.5.0 - 2019-05-16
 Expanded search with organization and person search, including listing of project, publications and datasets in which a person or organization is involved
 

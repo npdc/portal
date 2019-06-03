@@ -11,7 +11,8 @@ if(!empty($this->data['url'])){
 	echo '<h4>External resource</h4><p><a href="'.checkUrl($this->data['url']).'">Link</a></p>';
 }
 
-$fields = ['date'=>'Date'
+$fields = ['publication_type_id'=>'Publication type'
+	, 'date'=>'Date'
 	, 'journal'=>'Journal'
 	, 'volume'=>'Volume'
 	, 'issue'=>'Issue'
@@ -31,6 +32,9 @@ foreach($fields as $id=>$label){
 				break;
 			case 'date':
 				echo str_replace('-00', '', $this->data[$id]);
+				break;
+			case 'publication_type_id':
+				echo $this->model->getTypeById($this->data[$id])['label'];
 				break;
 			default:
 				echo $this->data[$id];

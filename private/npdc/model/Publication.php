@@ -180,7 +180,7 @@ class Publication{
 	 * @param integer $names nummber of names to show before 'et al'
 	 * @return string formatted list of authors
 	 */
-	public function getAuthors($publication_id, $publication_version, $names=2){
+	public function getAuthors($publication_id, $publication_version, $names=2, $sep = ','){
 		$res = $this->fpdo
 			->from('publication_person')
 			->leftJoin('person')->select('CASE 
@@ -204,12 +204,12 @@ class Publication{
 				$names = 1;
 			}
 			for($i=0;$i<min($c-1, $names);$i++){
-				$return .= ($i>0 ? ', ' : '').$res[$i]['name'];
+				$return .= ($i>0 ? $sep.' ' : '').$res[$i]['name'];
 			}
 			if($c <= $names+1){
-				$return .= ', &amp; '.$res[$i]['name'];
+				$return .= $sep.' &amp; '.$res[$i]['name'];
 			} else {
-				$return .= ', et al.';
+				$return .= $sep.' et al.';
 			}
 		}
 		return $return;
@@ -431,6 +431,28 @@ class Publication{
 	}
 
 	/**
+	 * Retun list of publication types
+	 *
+	 * @return array list of publication types
+	 */
+	public function getTypes(){
+		return $this->dsql->dsql()->table('publication_type')->get();
+	}
+
+	/**
+	 * Get publication type details based on id
+	 *
+	 * @param integer $id publication type id
+	 * @return array a single publication type
+	 */
+	public function getTypeById($id){
+		return $this->dsql->dsql()
+			->table('publication_type')
+			->where('publication_type_id', $id)
+			->get()[0];
+	}
+
+	/**
 	 * Return formatted citation
 	 *
 	 * @param integer|array $publication either id or full publication record
@@ -441,13 +463,12 @@ class Publication{
 		if(is_numeric($publication)){
 			$publication = $this->getById($publication, $version);
 		}
-		return '<p>'.$this->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
+		return $this->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
 		. ($publication['year'] ?? substr($publication['date'], 0, 4)).'. '
 		. '<a href="'.BASE_URL.'/publication/'.$publication['uuid'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
 		. $publication['journal'].'</i> '.$publication['volume']
 		. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
-		. (empty($publication['pages'] && $publication['pages'] !== '-') ? '' :', '.$publication['pages'])
-		. '</p>';
+		. (empty($publication['pages'] && $publication['pages'] !== '-') ? '' :', '.$publication['pages']);
 
 	}
 	/**
@@ -455,7 +476,7 @@ class Publication{
 	 */
 
 	private function parseData($data, $action){
-		$fields = ['title','abstract','journal','volume', 'issue','pages','isbn','doi','date','url','record_status', 'creator'];
+		$fields = ['title','abstract','journal','volume', 'issue','pages','isbn','doi','date','url','record_status', 'creator', 'publication_type_id'];
 		if($action === 'insert'){
 			array_push($fields, 'publication_version');
 			if(is_numeric($data['publication_id'])){

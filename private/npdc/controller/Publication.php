@@ -51,8 +51,16 @@ class Publication extends Base{
 	 */
 	protected function alterFields(){
 		$this->formController->form->fields->people->fields->organization_id->options = $this->getOrganizations();
+		$this->formController->form->fields->publication_type_id->options = $this->getTypes();
 	}
 	
+	private function getTypes(){
+		$types = [];
+		foreach($this->model->getTypes() as $type){
+			$types[$type['publication_type_id']] = $type['label'].' | '.$type['description'];
+		}
+		return $types;
+	}
 	/**
 	 * Populate fields with record data
 	 *

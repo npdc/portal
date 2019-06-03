@@ -7,7 +7,12 @@
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
-echo $this->model->getCitation($this->data);
+echo '<div id="citation"><span style="font-weight:bold">&ldquo;</span>'
+	. $this->model->getCitation($this->data)
+	. '<span style="font-weight:bold">&rdquo;</span>
+	<div>Download citation as: <a href="'.BASE_URL.'/publication/'.$this->data['uuid'].'.bib" style="font-variant:small-caps">BibTex</a> or <a href="'.BASE_URL.'/publication/'.$this->data['uuid'].'.ris"><abbr title="EndNote/ProCite/Reference Manager">RIS</abbr></a></div></div>';
+$this->json['citation'] = strip_tags($citationString);
+
 ?><h4>Abstract</h4>
 <p><?=$this->data['abstract']?></p>
 

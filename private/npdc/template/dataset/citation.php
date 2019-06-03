@@ -20,5 +20,5 @@ $citationString = ($citation['creator'] ?? $this->model->getAuthors($this->data[
 echo '<div id="citation"><span style="font-weight:bold">&ldquo;</span>'
 	. $citationString
 	. '<span style="font-weight:bold">&rdquo;</span>
-	<div>Please use the citation above when using this dataset. Download  as: <a href="'.BASE_URL.'/'.$this->data['uuid'].'.bib" style="font-variant:small-caps">BibTex</a> or <a href="'.BASE_URL.'/'.$this->data['uuid'].'.ris"><abbr title="EndNote/ProCite/Reference Manager">RIS</abbr></a></div></div>';
+	<div>Please use the citation above when using this dataset. Download  as: <a href="'.BASE_URL.'/dataset/'.$this->data['uuid'].'.bib" style="font-variant:small-caps">BibTex</a> or <a href="'.BASE_URL.'/dataset/'.$this->data['uuid'].'.ris"><abbr title="EndNote/ProCite/Reference Manager">RIS</abbr></a></div></div>';
 $this->json['citation'] = strip_tags($citationString);
