@@ -1,3 +1,6 @@
+## v2.6.1 - 2019-06-04
+Change some css to mitigate the effect of removing the logo's from the footer
+
 ## v2.6.0 - 2019-06-03
 Added bib and ris citation export to publication pages
 
