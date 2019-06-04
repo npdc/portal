@@ -2,7 +2,7 @@
 	max-width: 1240px;
 	margin: 0px auto;
 	background: $bg-color;
-	padding: 125px 10px 10px;
+	padding: 125px 10px 0px;
 	box-shadow: 0 0 5px #aaa;
 }
 #smallscreen {
@@ -12,7 +12,7 @@
 	display: none;
 }
 #head {
-	background-color: $color-accent-1;
+	background-color: $color-bar;
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -234,10 +234,10 @@
 
 .cols {
 	#main > & {
-		min-height: calc(100vh - 244px);
+		min-height: calc(100vh - 262px);
 	}
 	#main > h2 + & {
-		min-height: calc(100vh - 300px);
+		min-height: calc(100vh - 319px);
 	}
 	display: flex;
 	flex-wrap: wrap;
@@ -590,27 +590,25 @@ div.technical {
 }
 
 #footer {
-	text-align: right;
-	border-top: $border;
-	margin-top: 10px;
-	padding: 5px 0 0;
+	background-color: $color-bar;
+	margin: 10px -11px 0px;
+	padding: 10px;
 	font-size: 90%;
 	overflow: auto;
+	color: white;
+	a {
+		color: white;
+	}
 	.links {
 		float: left;
 	}
-	.rechts {
+	.logos {
 		float: right;
-	}
-	img{
-		max-height: 50px;
-		max-width: 50px;
-		margin: 0 2px;
-		&.nioz{
-			vertical-align: -16px;
-		}
-		&.nwo {
-			vertical-align: -2px;
+		text-align:center;
+		line-height: 100%;
+		img {
+			height: 75px;
+			margin: 5px 10px 0px;
 		}
 	}
 }

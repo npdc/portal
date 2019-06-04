@@ -1,3 +1,6 @@
+## v2.6.2 - 2019-06-04
+More css edits to include logos again in different position
+
 ## v2.6.1 - 2019-06-04
 Change some css to mitigate the effect of removing the logo's from the footer
 

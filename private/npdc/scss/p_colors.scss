@@ -2,6 +2,7 @@
 
 $h-color: darken($color-accent-1, 20%);
 $color-accent-3: lighten($color-accent-1, 40%);
+$color-bar: lighten(desaturate($color-accent-1,10%),10%);
 $border: solid 1px $color-accent-3;
 $border-radius: 5px;
 $table-head-bg: lighten($color-accent-1, 30%);
