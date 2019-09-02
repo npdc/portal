@@ -1,3 +1,6 @@
+## v2.6.3 - 2019-09-02
+Display fix for news item on front page
+
 ## v2.6.2 - 2019-06-04
 More css edits to include logos again in different position
 
