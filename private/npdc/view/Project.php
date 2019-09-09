@@ -184,7 +184,7 @@ class Project extends Base{
 				$this->mid .= parent::parseTemplate('project_mid');
 				$this->right = parent::parseTemplate('project_right');
 				$this->bottom = parent::parseTemplate('foot_technical');
-				if(!defined('NPDC_UUID')){
+				if(!\npdc\lib\Args::exists('uuid') || !\npdc\lib\Args::exists('uuidtype')){
 					$this->showCanonical();
 				}	
 			} elseif(\npdc\lib\Args::get('action') === 'warnings') {

@@ -176,7 +176,7 @@ class Publication extends Base{
 				$this->mid .= parent::parseTemplate('publication_mid', $model, $this->data);
 				$this->right = parent::parseTemplate('publication_right', $model, $this->data);
 				$this->bottom = parent::parseTemplate('foot_technical');
-				if(!defined('NPDC_UUID')){
+				if(!\npdc\lib\Args::exists('uuid') || !\npdc\lib\Args::exists('uuidtype')){
 					$this->showCanonical();
 				}	
 			} else {

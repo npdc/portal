@@ -1,3 +1,6 @@
+## v2.6.4 - 2019-09-09
+Fix bug in display of canonical url header on project and publication pages
+
 ## v2.6.3 - 2019-09-02
 Display fix for news item on front page
 
