@@ -83,7 +83,7 @@ class Contact extends Base{
 			} else {
 				$this->showForm('Send a message', 'Through this form you can send a message to '.$this->controller->person['name']);
 			}
-			$this->right = $personView->showPerson($this->controller->person, false).$personView->showAddress($this->controller->person).(empty($this->controller->person['orcid']) ? '' : '<section class="inline"><h4>ORCID</h4><p>'.$this->controller->person['orcid'].'</p></section>');
+			$this->right = $personView->showPerson($this->controller->person, false).$personView->showAddress($this->controller->person).(empty($this->controller->person['orcid']) ? '' : '<section class="inline"><h4>ORCID</h4><p><a href="https://orcid.org/'.$this->controller->person['orcid'].'">'.$this->controller->person['orcid'].'</a></p></section>');
 			
 			$projects = $this->controller->model->getProjects($this->controller->person['person_id']);
 			$publications = $this->controller->model->getPublications($this->controller->person['person_id']);

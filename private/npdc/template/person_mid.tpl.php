@@ -31,7 +31,7 @@ foreach($fields as $id=>$label){
 	if(!empty($this->data[$id])){
 		echo '<div class="inline">
 		<h4>'.$label.'</h4>
-		<p>'.$this->data[$id];
+		<p>'.($id === 'orcid' ? '<a href="https://orcid.org/'.$this->data[$id].'">'.$this->data[$id].'</a>' : $this->data[$id]);
 		if(substr($id, 0, 6) === 'phone_'){
 			echo ' ('.($this->data[$id.'_public'] === 'yes' ? 'public' : 'hidden').')';
 		}
