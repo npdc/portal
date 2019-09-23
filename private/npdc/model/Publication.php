@@ -457,6 +457,7 @@ class Publication{
 	 *
 	 * @param integer|array $publication either id or full publication record
 	 * @param string|integer $version (optional) version number of type
+	 * @param boolean $wrap (optional, default true) whether to wrap the citation in a p-element or not
 	 * @return string formatted citation
 	 */
 	public function getCitation($publication, $version = 'published', $wrap = true){
