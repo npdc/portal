@@ -43,12 +43,11 @@
 		},
 		"program":{
 			"type": "options",
-			"label": "Programme",
+			"label": "Funding program",
 			"multiple": true,
 			"required": false,
 			"options": {},
-			"asList": true,
-			"disabled": true
+			"asList": true
 		},
 		"editorOptions":{
 			"type": "options",

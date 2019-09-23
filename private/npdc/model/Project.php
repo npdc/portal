@@ -66,6 +66,11 @@ class Project{
 						$q->where('project.project_id IN (SELECT DISTINCT(project_id) FROM project_person WHERE organization_id IN ('.implode(',', $values).'))');
 						$q2->where('project.project_id IN (SELECT DISTINCT(project_id) FROM project_person WHERE organization_id IN ('.implode(',', $values).'))');
 						break;
+
+					case 'program':
+						$q->where('program_id', $values);
+						$q2->where('program_id', $values);
+						break;
 				}
 			}
 		}
