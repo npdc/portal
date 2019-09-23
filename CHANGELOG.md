@@ -1,3 +1,6 @@
+## v2.6.5 - 2019-09-23
+Wrap each publication in a p element
+
 ## v2.6.4 - 2019-09-09
 Fix bug in display of canonical url header on project and publication pages
 
