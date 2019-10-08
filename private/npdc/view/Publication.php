@@ -71,15 +71,12 @@ class Publication extends Base{
 		$page = \npdc\lib\Args::get('page') ?? 1;
 		for($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++){
 			$item = $list[$i];
-			$item['authors'] = $this->model->getAuthors($item['publication_id'], $item['publication_version']);
+			$item['publication'] = $this->model->getCitation($item['publication_id'], $item['publication_version'], false, false);
 			$list2[] = $item;
 		}
 		$this->makePager($n, $page);
 		$this->mid = $this->displayTable('publication', $list2
-				, ['authors'=>'Authors',
-					'title'=>'Title', 
-					'year'=>'Year', 
-					'journal'=>'Source']
+				, ['publication'=>'']
 				, ['publication', 'publication_id']
 				, true
 				, true

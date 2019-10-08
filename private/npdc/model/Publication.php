@@ -460,16 +460,17 @@ class Publication{
 	 * @param boolean $wrap (optional, default true) whether to wrap the citation in a p-element or not
 	 * @return string formatted citation
 	 */
-	public function getCitation($publication, $version = 'published', $wrap = true){
+	public function getCitation($publication, $version = 'published', $wrap = true, $link=true){
 		if(is_numeric($publication)){
 			$publication = $this->getById($publication, $version);
 		}
 		return ($wrap ? '<p>' : '').$this->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
 		. ($publication['year'] ?? substr($publication['date'], 0, 4)).'. '
-		. '<a href="'.BASE_URL.'/publication/'.$publication['uuid'].'">'.$publication['title'].'</a>'.(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
+		. ($link ? '<a href="'.BASE_URL.'/publication/'.$publication['uuid'].'">' : '').$publication['title'].($link ? '</a>' : '').(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
 		. $publication['journal'].'</i> '.$publication['volume']
 		. (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
-		. (empty($publication['pages'] && $publication['pages'] !== '-') ? '' :', '.$publication['pages']).($wrap ? '</p>' : '');
+		. (empty($publication['pages'] && $publication['pages'] !== '-') ? '' :', '.$publication['pages'])
+		.($wrap ? '</p>' : '');
 
 	}
 	/**
