@@ -113,3 +113,21 @@ body:not(.sticky) #page {
 .project td:not(:nth-child(1)) {
 	display: none;
 }
+
+.dataset td {
+	display: block;
+	&:not(:first-child){
+		font-style:italic;
+		font-size: 80%;
+		
+	}
+	&:nth-child(2){
+		float: left;
+		&::after { 
+			content: ' - ';
+		}
+		a {
+			display:inline;
+		}
+	}
+}
