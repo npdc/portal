@@ -1,3 +1,7 @@
+## v2.7.0 - 2019-10-09
+* Reformat publication list
+* Make dataset list more mobile friendly
+
 ## v2.6.5 - 2019-09-23
 Wrap each publication in a p element
 
