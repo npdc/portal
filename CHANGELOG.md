@@ -1,3 +1,6 @@
+## v2.7.1 - 2019-10-24
+Added github link to footer with icon from icomoon
+
 ## v2.7.0 - 2019-10-09
 * Reformat publication list
 * Make dataset list more mobile friendly
