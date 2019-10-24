@@ -15,6 +15,8 @@
 		<a href="<?=BASE_URL?>/terms">Terms of use</a>
 		- 
 		<a href="<?=BASE_URL?>/copyright">Copyright &amp; Credits</a>
+		-
+		<a href="https://github.com/npdc/portal">View code on GitHub <span class="icon-github"></span></a>
 		<br/><br/>
 		<span class="nobr">The Netherlands Polar Data Center</span> 
 		is <span class="nobr">hosted by <a href="http://www.nioz.nl" title="Royal Netherlands Institute for Sea Research">NIOZ</a></span> 
