@@ -51,7 +51,7 @@ $view->$action(Args::get('id') ?? null);
 
 //now give the view to the page template
 $template = $view->template ?? 'page';
-if($session->userLevel > NPDC_PUBLIC && $view->class==="edit"){
+if($session->userLevel > NPDC_PUBLIC && preg_match('/\bedit\b/', $view->class)){
 	$extraJS = '<script type="text/javascript" src="'.BASE_URL.'/js/external/jHtmlArea/jHtmlArea-0.8.min.js?v='.APP_VERSION.'"></script><script type="text/javascript" src="'.BASE_URL.'/js/npdc/editor.min.js?v='.APP_VERSION.'"></script>';
 	$extraCSS = '<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/jHtmlArea/jHtmlArea.css?v='.APP_VERSION.'" />';
 }

@@ -49,7 +49,7 @@ class Account extends Base {
 	 * @return void
 	 */
 	public function showItem($item){
-		switch ($item){
+		switch (\npdc\lib\Args::get('action')){
 			case 'edit':
 				$this->title = 'Edit details';
 				break;
