@@ -1,3 +1,8 @@
+## v2.8.0 - 2020-01-15
+* Allow partial sitemaps
+* Permission/account takeover by admins
+* Many bug fixes and small tweaks
+
 ## v2.7.1 - 2019-10-24
 Added github link to footer with icon from icomoon
 
