@@ -18,7 +18,44 @@ class Sitemap {
 	private $dataset_last = null;
 	private $publications = [];
 	private $publication_last = null;
+	private $map = [];
 
+	private function output(){
+		switch(NPDC_OUTPUT){
+			case 'txt':
+				header('Content-Type: text/plain');
+				foreach($this->map as $url=>$line){
+					echo $this->url($url)."\r\n";
+				}
+				die();
+			
+			case 'xml':
+				$xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>
+				<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> </urlset>');
+				foreach($this->map as $url=>$data){
+					$line = $xml->addChild('url');
+					$line->addChild('loc', $this->url($url));
+					$line->addChild('lastmod', str_replace(' ', 'T', $data[1]).'+01:00');
+				}
+				header('Content-Type: application/xml');
+				$dom = new \DOMDocument('1.0');
+				$dom->preserveWhiteSpace = false;
+				$dom->formatOutput = true;
+				$dom->loadXML($xml->asXML());
+				echo $dom->saveXML();
+				die();
+
+			default:
+			foreach($this->map as $title=>$group){
+				$this->title = 'Sitemap';
+				$this->mid .= '<h3>'.$title.'</h3><ul>';
+				foreach($group[1] as $url=>$data){
+					$this->mid .= '<li><a href="'.$this->url($url,false).'">'.$data[0].'</a><span style="font-size: 80%;font-style:italic"> (Updated: '.$data[1].')</span></li>';
+				}
+				$this->mid .= '</ul>';
+			}
+		}
+	}
 	/**
 	 * Show the list
 	 *
@@ -33,7 +70,7 @@ class Sitemap {
 		switch(NPDC_OUTPUT){
 			case 'xml':
 			case 'txt':
-				$map = array_merge(
+				$this->map = array_merge(
 					$this->pages,
 					['project'=>['Projects', $this->project_last]],
 					$this->projects,
@@ -44,7 +81,7 @@ class Sitemap {
 				);
 				break;
 			default:
-				$map = [
+				$this->map = [
 					'Pages' => [null,$this->pages],
 					'Projects' => [['project', $this->project_last], $this->projects],
 					'Data sets' => [['dataset', $this->dataset_last], $this->datasets],
@@ -52,40 +89,47 @@ class Sitemap {
 				];
 		}
 
-		switch(NPDC_OUTPUT){
-			case 'txt':
-				header('Content-Type: text/plain');
-				foreach($map as $url=>$line){
-					echo $this->url($url)."\r\n";
-				}
-				die();
-			
-			case 'xml':
-				$xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>
-				<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> </urlset>');
-				foreach($map as $url=>$data){
-					$line = $xml->addChild('url');
-					$line->addChild('loc', $this->url($url));
-					$line->addChild('lastmod', str_replace(' ', 'T', $data[1]).'+01:00');
-				}
-				header('Content-Type: application/xml');
-				$dom = new \DOMDocument('1.0');
-				$dom->preserveWhiteSpace = false;
-				$dom->formatOutput = true;
-				$dom->loadXML($xml->asXML());
-				echo $dom->saveXML();
-				die();
+		$this->output();
+	}
 
+	public function showItem(){
+		$item = \npdc\lib\Args::get('action');
+		$this->getPages();
+		$this->getProjects();
+		$this->getDatasets();
+		$this->getPublications();
+
+		switch(NPDC_OUTPUT){
+			case 'xml':
+			case 'txt':
+				$this->map = $this->{$item.'s'};
+				break;
 			default:
-			foreach($map as $title=>$group){
-				$this->title = 'Sitemap';
-				$this->mid .= '<h3>'.$title.'</h3><ul>';
-				foreach($group[1] as $url=>$data){
-					$this->mid .= '<li><a href="'.$this->url($url,false).'">'.$data[0].'</a><span style="font-size: 80%;font-style:italic"> (Updated: '.$data[1].')</span></li>';
+				switch($item){
+					case 'page':
+						$this->map = [
+							'Pages' => [null,$this->pages]
+						];
+						break;
+					case 'dataset':
+						$this->map = [
+							'Data sets' => [['dataset', $this->dataset_last], $this->datasets]
+						];
+						break;
+					case 'project':
+						$this->map = [
+							'Projects' => [['project', $this->project_last], $this->projects]
+						];
+						break;
+					case 'publication':
+						$this->map = [
+							'Publications' => [['publication', $this->publication_last], $this->publications]
+						];
+						break;
 				}
-				$this->mid .= '</ul>';
-			}
 		}
+
+		$this->output();
 	}
 
 	/**
