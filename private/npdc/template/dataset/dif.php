@@ -345,7 +345,7 @@ foreach($links as $i=>$link){
 if(count($this->model->getFiles($this->data['dataset_id'], $this->data['dataset_version'])) > 0){
 	$data['Related_URL'][] = ['Title'=>'Download data', 'Description'=>'Download data from the NPDC', 'URL'=>$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'].'/files', 'URL_Content_Type'=>['Type'=>'GET DATA']];	
 }
-$data['Related_URL'][] = ['Title'=>'Data set description at NPDC', 'Description'=>'Data set description at the NPDC', 'URL'=>$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'], 'URL_Content_Type'=>['Type'=>'EXTENDED METADATA']];
+$data['Related_URL'][] = ['Title'=>'Data set description at NPDC', 'Description'=>'Data set description at the NPDC', 'URL'=>$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'], 'URL_Content_Type'=>['Type'=>'DATA SET LANDING PAGE']];
 $nodes = [];
 if(in_array($this->data['region'], ['Arctica', 'Bipolar'])){
 	$nodes = ['ARCTIC/NL', 'ARCTIC'];
