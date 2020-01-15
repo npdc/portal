@@ -17,6 +17,7 @@ class Person extends Base{
 	public $accessLevel;
 	public $canEdit;
 	public $baseUrl;
+	public $takeover;
 	protected $session;
 	protected $controller;
 	protected $model;
@@ -33,6 +34,7 @@ class Person extends Base{
 		$this->controller = $controller;
 		$this->canEdit = $session->userLevel >= NPDC_ADMIN;
 		$this->baseUrl = $controller->id;
+		$this->takeover = $session->userLevel === NPDC_ADMIN;
 		
 		$this->model = new \npdc\model\Person();
 		$this->baseUrl = \npdc\lib\Args::getBaseUrl();

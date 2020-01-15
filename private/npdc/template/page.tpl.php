@@ -81,6 +81,9 @@
 						<?php
 						if(property_exists($view, 'canEdit') && $view->canEdit && !\npdc\lib\Args::exists('action')){
 							echo '<div id="tools">';
+							if(property_exists($view, 'takeover') && $view->takeover){
+								echo '<button onclick="openUrl(\''.BASE_URL.'/'.($view->baseEditUrl ?? $view->baseUrl).'/takeover\')">Take over user rights</button> ';
+							}
 							if(property_exists($view, 'allowDuplicate') && $view->allowDuplicate){
 								echo '<button onclick="openUrl(\''.BASE_URL.'/'.(\npdc\lib\Args::exists('uuid') ? \npdc\lib\Args::get('type').'/'.\npdc\lib\Args::get('uuid') : $view->baseUrl).'/duplicate\')">Duplicate this page</button> ';
 							}

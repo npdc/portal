@@ -14,7 +14,8 @@ class Contact extends Base{
 	public $mid;
 	public $right;
 	public $class = 'contact';
-	
+	public $takeover = false;
+
 	protected $session;
 	protected $controller;
 	protected $userLevelAdd = NPDC_ADMIN;//minimum user level required to add a new person
@@ -76,6 +77,7 @@ class Contact extends Base{
 		if($this->controller->person === false){
 			$this->mid = 'Person not found';
 		} else {
+			$this->takeover = $this->session->userLevel === NPDC_ADMIN;
 			$personView = new \npdc\lib\Person();
 			//$this->canEdit = isset($this->session->userId) && ($this->session->userLevel === NPDC_ADMIN);
 			if(empty($this->controller->person['mail'])) {
