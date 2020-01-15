@@ -95,13 +95,15 @@ class Dataset{
 			->field($q->dsql()
 				->expr('CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}', ['draft', 'hasDraft'])
 			);
-		if($session->userLevel > NPDC_PUBLIC){
-			$q->where('dataset.dataset_version', 
-				$q->dsql()->table(['ds2'=>'dataset'])
-					->field('MAX(dataset_version)')
-					->where('ds2.dataset_id=dataset.dataset_id')
-			);
-			if($session->userLevel === NPDC_EDITOR){
+		if($session->userLevel > NPDC_USER){
+			if($session->userLevel === NPDC_ADMIN) {
+				$q->field($q->dsql()->expr('TRUE {}', ['editor']))
+					->where('dataset.dataset_version', 
+					$q->dsql()->table(['ds2'=>'dataset'])
+						->field('MAX(dataset_version)')
+						->where('ds2.dataset_id=dataset.dataset_id')
+				);
+			} elseif($session->userLevel === NPDC_EDITOR){
 				$isEditor = $q->dsql()->table('dataset_person')
 				->field('dataset_id')
 				->where(\npdc\lib\Db::joinVersion('dataset', 'dataset_person'))
@@ -112,9 +114,26 @@ class Dataset{
 						WHEN creator=[] THEN TRUE
 						WHEN EXISTS([]) THEN TRUE
 						ELSE FALSE 
-						END {}', [$session->userId, $isEditor, 'editor']));
+						END {}', [$session->userId, $isEditor, 'editor']
+						)
+					)->where('dataset.dataset_version', 
+						$q->dsql()->table(['ds2'=>'dataset'])
+							->field('MAX(dataset_version)')
+							->where('ds2.dataset_id=dataset.dataset_id')
+							->where($q->dsql()->andExpr()//ends with false, so inverts condition to: NOT (draft & NOT editor)
+								->where('record_status', 'draft')
+								->where($q->dsql()
+									->expr('CASE 
+										WHEN creator=[] THEN FALSE
+										WHEN EXISTS([]) THEN FALSE
+										ELSE TRUE 
+										END', [$session->userId, $isEditor]
+										)
+									)
+							, false)
+					);
 			} else {
-				$q->field($q->dsql()->expr('TRUE {}', ['editor']));
+				$q->field($q->dsql()->expr('FALSE {}', ['editor']));
 			}
 			switch($filters['editorOptions'][0]){
 				case 'all':
