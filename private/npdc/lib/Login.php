@@ -30,7 +30,7 @@ class Login {
 		if(array_key_exists('endtakeover', $_GET) && array_key_exists('adminUser', $_SESSION)){
 			$_SESSION['user']['id'] = $_SESSION['adminUser']['id'];
 			unset($_SESSION['adminUser']);
-			header('Location:'.BASE_URL);
+			header('Location: '.(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : BASE_URL));
 		}
 		if(array_key_exists('logout', $_GET)){
 			if(array_key_exists('user', $_SESSION)){
