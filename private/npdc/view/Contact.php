@@ -110,6 +110,9 @@ class Contact extends Base{
 					$this->mid .= $this->displayTable('project', $projects, ['title'=>'Title', 'nwo_project_id'=>'Funding id', 'date_start'=>'Start date', 'date_end'=>'End date'], ['project', 'project_id']);
 				}
 			}
+			if($this->session->userLevel >= NPDC_ADMIN){
+				$this->canEdit = true;
+			}
 		}
 	}
 }
