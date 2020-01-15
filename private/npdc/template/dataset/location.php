@@ -67,7 +67,7 @@ if(count($spatialCoverages) > 0){
 				]
 			];
 			foreach($spatialCoverages as $spatialCoverage){
-				$wkt = str_replace([' -90', ' 90'], [' -89.999999999', ' 89.999999999'], $spatialCoverage['wkt']);
+				$wkt = $spatialCoverage['wkt'];//str_replace([' -90', ' 90'], [' -89.999999999', ' 89.999999999'], $spatialCoverage['wkt']);
 				?>
 				feature = wkt.readFeature("<?=$wkt?>",{dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
 				<?php
@@ -142,7 +142,7 @@ if(count($spatialCoverages) > 0){
 					new ol.control.ScaleLine()
 				])
 			});
-			view.fit(source.getExtent(), map.getSize(), {maxZoom: 5});
+			//view.fit(source.getExtent(), map.getSize(), {maxZoom: 5});
 			var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
 			//Set view to max of 87 degrees North/South for better map rendering
 			if(Math.abs(center[1]) > 87){
