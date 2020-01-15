@@ -80,7 +80,7 @@
 							if(property_exists($view, 'allowDuplicate') && $view->allowDuplicate){
 								echo '<button onclick="openUrl(\''.BASE_URL.'/'.(\npdc\lib\Args::exists('uuid') ? \npdc\lib\Args::get('type').'/'.\npdc\lib\Args::get('uuid') : $view->baseUrl).'/duplicate\')">Duplicate this page</button> ';
 							}
-							echo '<button onclick="openUrl(\''.BASE_URL.'/'.$view->baseUrl.'/edit\')">Edit this page</button></div>';
+							echo '<button onclick="openUrl(\''.BASE_URL.'/'.($view->baseEditUrl ?? $view->baseUrl).'/edit\')">Edit this page</button></div>';
 						}
 						?>
 						<?=isset($_SESSION['errors']) ? '<div class="errors">'.$_SESSION['errors'].'</div>': '' ?>
