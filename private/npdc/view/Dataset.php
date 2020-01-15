@@ -149,6 +149,9 @@ class Dataset extends Base{
 			$this->showError();
 		} elseif(NPDC_OUTPUT === 'xml'){//show as xml
 			$this->showXml();
+		} elseif(NPDC_OUTPUT === 'json'){
+			$this->makeJson();
+			$this->showJson();
 		} elseif(in_array(NPDC_OUTPUT, ['ris', 'bib'])){
 			$this->showCitation();
 		} elseif(\npdc\lib\Args::get('action') === 'duplicate'){
@@ -244,6 +247,47 @@ class Dataset extends Base{
 		die();
 	}
 
+	private function makeJson(){
+		$content = ['@type' => 'Dataset',
+			'name' => $this->data['title'],
+			'description' => strip_tags($this->data['summary']),
+			'version' => $this->data['dataset_version'],
+			'identifier' => 'urn:uuid:'.$this->data['uuid'],
+			'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'],
+			'includedInDataCatalog' => [
+				'@type' => 'DataCatalog',
+				'name' => \npdc\config::$siteName,
+				'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL
+			],
+			'license' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'].'#access',
+			'isAccessbileForFree' => true,
+		];
+		$content['keywords'] = [];
+		foreach ($this->model->getTopics($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$topic){
+			$content['keywords'][] = strpos($topic['description'], $cut) === false ? $topic['description'] : trim(substr($topic['description'],0,strpos($topic['description'], $cut)));
+		}
+		foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword){
+			$content['keywords'][] = $this->vocab->formatTerm('vocab_science_keyword', $keyword);
+		}
+		foreach($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $word){
+			$content['keywords'][] = $word['keyword'];
+		}
+		
+		if(!empty($this->data['dif_id'])){
+			$content['sameAs'] = 'https://gcmd.nasa.gov/r/d/'.$this->data['dif_id'];
+		}
+		$this->json = [
+			'@context' => ['@vocab'=>'http://schema.org/'],
+			'@graph' => [$content]
+		];
+	}
+
+	private function showJson(){
+		//header('Content-type: text/ld+json');
+		header('Content-Type: application/json');
+		echo json_encode($this->json);
+		die();
+	}
 	/**
 	 * Output formatted citation
 	 * 
@@ -355,21 +399,7 @@ class Dataset extends Base{
 			$this->right = parent::parseTemplate('dataset_right');
 			$this->bottom = parent::parseTemplate('foot_technical');
 			if(\npdc\lib\Args::exists('uuid') && \npdc\lib\Args::exists('uuidtype')){
-				$this->json = [
-					'@context' => ['@vocab'=>'http://schema.org/'],
-					'@type' => 'Dataset',
-					'name' => $this->data['title'],
-					'description' => strip_tags($this->data['summary']),
-					'version' => $this->data['dataset_version'],
-					'identifier' => 'urn:uuid:'.$this->data['uuid'],
-					'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'],
-					'includedInDataCatalog' => [
-						'@type' => 'DataCatalog',
-						'name' => \npdc\config::$siteName,
-						'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL
-					],
-					'license' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'].'#access',
-				];
+				$this->makeJson();
 				$this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</script>';
 			}
 		}
