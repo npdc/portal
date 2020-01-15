@@ -27,6 +27,11 @@ class Login {
 			$this->levelDetails[$level['user_level_id']] = ['name'=>$level['name'], 'description'=>$level['description']];
 		}
 
+		if(array_key_exists('endtakeover', $_GET) && array_key_exists('adminUser', $_SESSION)){
+			$_SESSION['user']['id'] = $_SESSION['adminUser']['id'];
+			unset($_SESSION['adminUser']);
+			header('Location:'.BASE_URL);
+		}
 		if(array_key_exists('logout', $_GET)){
 			if(array_key_exists('user', $_SESSION)){
 				session_unset();
@@ -46,6 +51,16 @@ class Login {
 				$this->name = $this->user['name'];
 				$this->organization_id = $this->user['organization_id'];
 				$this->userId = $_SESSION['user']['id'];
+			}
+		}
+		if(array_key_exists('adminUser', $_SESSION)){
+			$this->model = new \npdc\model\Person();
+			$this->adminUser = $this->model->getById($_SESSION['adminUser']['id']);
+			if(empty($this->adminUser)){
+				session_unset();
+				$_SESSION['notice'] = 'Your account has been removed';
+			} else {
+				$this->adminName = $this->adminUser['name'];
 			}
 		}
 	}

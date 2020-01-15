@@ -57,13 +57,16 @@ class Person extends Base{
 		for($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++){
 			$person = $list[$i];
 			$person['report'] = '<button onclick="javascript:event.stopPropagation();location.href=\''.BASE_URL.'/person/'.$person['person_id'].'/report\'">View</button>';
+			$person['takeover'] = '<button onclick="javascript:event.stopPropagation();location.href=\''.BASE_URL.'/person/'.$person['person_id'].'/takeover\'">Take over</button>';
 			$list2[] = $person;
 		}
 		$this->makePager($n, $page);
 		$this->mid = $this->displayTable('person searchbox', $list2
 			, ['name'=>'Name',
 				'organization_name'=>'Organization',
-				'report'=>'Content']
+				'report'=>'Content',
+				'user_level' =>'Role',
+				'takeover'=>'Rights']
 			, ['person', 'person_id']);
 		$this->canEdit = false;
 	}
@@ -89,9 +92,13 @@ class Person extends Base{
 			$this->data = $person;
 			$this->mid = parent::parseTemplate('person_report');
 			$this->class .= ' report';
+		} elseif(\npdc\lib\Args::get('action') === 'takeover') {
+			$this->data = $person;
+			$this->mid = '<p>Are you sure you want to take over the rights of '.$person['name'].'?<br/>Anything you do will be logged under the name of '.$person['name'].'.</p><p><strong>Remember: </strong> With great power comes great responsibility!</p><button onclick="location.href=\''.BASE_URL.'/person/'.$person['person_id'].'/takeover/do\'">Yes, do take over rights</button>';
+			$this->class .= ' report';
 		} else {
 			$this->data = $person;
-			$this->mid = parent::parseTemplate('person_mid');
+			$this->mid = '<a href="'.$_SERVER['REQUEST_URI'].'/report">Content of person</a>'.parent::parseTemplate('person_mid');
 			$this->right = '<a href="'.BASE_URL.'/organization/'.$person['organization_id'].'">View organization</a>'.parent::parseTemplate('person_right');
 		}
 	}

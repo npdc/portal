@@ -24,7 +24,11 @@
 						<div id="search"><form method="post" action="<?=BASE_URL?>/search"><input type="text" placeholder="search term" name="q" /><input type="submit" value="search"/></form></div>
 						<div><span id="user"><?php
 						if($session->userLevel > NPDC_PUBLIC){
-							echo 'You are logged in as <a href="'.BASE_URL.'/account">'.$session->name.'</a> ('.$session->levelDetails[$session->userLevel]['name'].')';
+							if(array_key_exists('adminUser', $_SESSION)){
+								echo 'You are logged in as admin '.$session->adminName.', and have taken over the rights of <a href="'.BASE_URL.'/account">'.$session->name.'</a> ('.$session->levelDetails[$session->userLevel]['name'].') - <a href="'.BASE_URL.'/?endtakeover">Go back to admin session</a>';
+							} else {
+								echo 'You are logged in as <a href="'.BASE_URL.'/account">'.$session->name.'</a> ('.$session->levelDetails[$session->userLevel]['name'].')';
+							}
 							if($session->userLevel >= NPDC_EDITOR){
 								if($session->userLevel > NPDC_PUBLIC){
 									$unpublished = \npdc\view\Base::checkUnpublished(false);
