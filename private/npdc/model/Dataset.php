@@ -681,6 +681,7 @@ class Dataset{
 				->where('dataset_id', $dataset_id)
 				->where('person_id', $person_id)
 				->where('dataset_version_max IS NULL')
+				->where('editor')
 				->count() > 0
 			) || (
 				$this->fpdo

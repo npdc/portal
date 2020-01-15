@@ -336,6 +336,7 @@ class Project{
 				->where('project_id', $project_id)
 				->where('person_id', $person_id)
 				->where('project_version_max IS NULL')
+				->where('editor')
 				->count() > 0
 			) || (
 				$this->fpdo

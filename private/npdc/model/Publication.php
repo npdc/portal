@@ -365,6 +365,7 @@ class Publication{
 				->where('publication_id', $publication_id)
 				->where('person_id', $person_id)
 				->where('publication_version_max IS NULL')
+				->where('editor')
 				->count() > 0
 			) || (
 				$this->fpdo
