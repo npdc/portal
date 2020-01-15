@@ -21,7 +21,7 @@ foreach($fields as $id=>$label){
 		echo ' <span class="nobr">| '.$this->data[$id].' ('.$label.')</span>';
 	}
 }
-echo ' <span class="nobr">| '.$perms['name'].'</span></p>';
+echo ' <span class="nobr">| '.$perms['name'].'</span> | <a href="'.BASE_URL.'/person/'.$this->data['person_id'].'">Full details</a></p>';
 
 ?>
 <button onclick="$('.hiddenSubDiv').slideDown();$('.collapsible').removeClass('hidden');">Expand all</button> <button onclick="$('.hiddenSubDiv').slideUp();$('.collapsible').addClass('hidden');">Collapse all</button>
