@@ -84,7 +84,7 @@
 							if(property_exists($view, 'takeover') && $view->takeover){
 								echo '<button onclick="openUrl(\''.BASE_URL.'/'.($view->baseEditUrl ?? $view->baseUrl).'/takeover\')">Take over user rights</button> ';
 							}
-							if(property_exists($view, 'allowDuplicate') && $view->allowDuplicate){
+							if(property_exists($view, 'allowDuplicate') && $view->allowDuplicate && $session->userLevel >= NPDC_EDITOR){
 								echo '<button onclick="openUrl(\''.BASE_URL.'/'.(\npdc\lib\Args::exists('uuid') ? \npdc\lib\Args::get('type').'/'.\npdc\lib\Args::get('uuid') : $view->baseUrl).'/duplicate\')">Duplicate this page</button> ';
 							}
 							echo '<button onclick="openUrl(\''.BASE_URL.'/'.($view->baseEditUrl ?? $view->baseUrl).'/edit\')">Edit this page</button></div>';
