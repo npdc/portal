@@ -21,7 +21,9 @@ class Request extends Base {
 	public function __construct($session) {
 		$this->model = new \npdc\model\Request();
 		$this->session = $session;
-		$request = $this->model->getById(\npdc\lib\Args::get('id'));
+		if(\npdc\lib\Args::exists('id')){
+			$request = $this->model->getById(\npdc\lib\Args::get('id'));
+		}
 		$this->modelDataset = new \npdc\model\Dataset();
 		if(($this->session->userLevel === NPDC_ADMIN || $this->modelDataset->isEditor($request['dataset_id'], $this->session->userId)) && array_key_exists('reason', $_POST)){
 			if(empty($_POST['allow'])){
