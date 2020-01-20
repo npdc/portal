@@ -38,9 +38,6 @@ class Npp_theme {
 	 * @return array theme
 	 */
 	public function getById($id){
-		return $this->dsql->dsql()
-			->table('npp_theme')
-			->where('npp_theme_id', $id)
-			->get()[0];
+		return \npdc\lib\Db::get('npp_theme', $id);
 	}
 }

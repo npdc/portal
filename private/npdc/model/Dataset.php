@@ -981,7 +981,7 @@ class Dataset{
 	}
 	
 	public function insertLocation($data){
-		return \npdc\lib\Db::insertReturnId('location', $data);
+		return \npdc\lib\Db::insert('location', $data, true);
 	}
 
 	public function updateLocation($record, $data, $version){
@@ -1030,7 +1030,7 @@ class Dataset{
 	}
 	
 	public function insertTemporalCoverage($data){
-		return \npdc\lib\Db::insertReturnId('temporal_coverage', $data);
+		return \npdc\lib\Db::insert('temporal_coverage', $data, true);
 	}
 	
 	public function deleteTemporalCoverage($dataset_id, $version, $current){
@@ -1051,7 +1051,7 @@ class Dataset{
 
 	
 	public function insertTemporalCoveragePeriod($data){
-		return \npdc\lib\Db::insertReturnId('temporal_coverage_period', $data);
+		return \npdc\lib\Db::insert('temporal_coverage_period', $data, true);
 	}
 	
 	public function updateTemporalCoveragePeriod($record, $data, $version){
@@ -1097,7 +1097,7 @@ class Dataset{
 	}
 	
 	public function insertTemporalCoverageCycle($data){
-		return \npdc\lib\Db::insertReturnId('temporal_coverage_cycle', $data);
+		return \npdc\lib\Db::insert('temporal_coverage_cycle', $data, true);
 	}
 	
 	public function updateTemporalCoverageCycle($record, $data, $version){
@@ -1142,7 +1142,7 @@ class Dataset{
 	}
 	
 	public function insertTemporalCoverageAncillary($data){
-		return \npdc\lib\Db::insertReturnId('temporal_coverage_ancillary', $data);
+		return \npdc\lib\Db::insert('temporal_coverage_ancillary', $data, true);
 	}
 	
 	public function updateTemporalCoverageAncillary($record, $data, $version){
@@ -1186,7 +1186,7 @@ class Dataset{
 	}
 	
 	public function insertTemporalCoveragePaleo($data){
-		return \npdc\lib\Db::insertReturnId('temporal_coverage_paleo', $data);
+		return \npdc\lib\Db::insert('temporal_coverage_paleo', $data, true);
 	}
 	
 	public function updateTemporalCoveragePaleo($record, $data, $version){
@@ -1230,7 +1230,7 @@ class Dataset{
 	}
 	
 	public function insertTemporalCoveragePaleoChronounit($data){
-		return \npdc\lib\Db::insertReturnId('temporal_coverage_paleo_chronounit', $data);
+		return \npdc\lib\Db::insert('temporal_coverage_paleo_chronounit', $data, true);
 	}
 
 	public function deleteTemporalCoveragePaleoChronounit($id, $coverage, $version){

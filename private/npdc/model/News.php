@@ -34,7 +34,7 @@ class News {
 	 * @return array news item
 	 */
 	public function getById($id){
-		return $this->dsql->dsql()->table('news')->where('news_id', $id)->get();
+		return \npdc\lib\Db::get('news', $id);
 	}
 	
 	/**

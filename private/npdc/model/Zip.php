@@ -30,7 +30,7 @@ class Zip {
 	 * @return array zip details
 	 */
 	public function getById($id){
-		return $this->dsql->dsql()->table('zip')->where('zip_id', $id)->get()[0];
+		return \npdc\lib\Db::get('zip', $id);
 	}
 
 	/**
@@ -40,7 +40,7 @@ class Zip {
 	 * @return array zip details
 	 */
 	public function getByName($name){
-		return $this->dsql->dsql()->table('zip')->where('filename', $name)->get()[0];
+		return \npdc\lib\Db::get('zip', ['filename'=>$name]);
 	}
 
 	/**
@@ -54,7 +54,7 @@ class Zip {
 	 * @return integer id of newly inserted zip
 	 */
 	public function insertZip($data){
-		return \npdc\lib\Db::insertReturnId('zip', $data);
+		return \npdc\lib\Db::insert('zip', $data, true);
 	}
 	
 	/**
@@ -65,11 +65,7 @@ class Zip {
 	 * @return voi
 	 */
 	public function updateZip($id, $data){
-		$this->dsql->dsql()
-			->table('zip')
-			->where('zip_id', $id)
-			->set($data)
-			->updated();
+		\npdc\lib\Db::update('zip', $id, $data);
 	}
 	
 	/**
@@ -79,10 +75,6 @@ class Zip {
 	 * @return void
 	 */
 	public function insertFile($data){
-		$this->dsql->dsql
-			->table('zip_files')
-			->set($data)
-			->insert();
+		\npdc\lib\Db::insert('zip_files', $data);
 	}
-
 }

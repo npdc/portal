@@ -84,11 +84,7 @@ class Page{
 	 */
 	public function updatePage($id, $values){
 		$values['last_update'] = date('Y-m-d h:i:s');
-		return $this->dsql->dsql()
-			->table('page')
-			->where('page_id', $id)
-			->set($values)
-			->update();
+		return \npdc\lib\Db::update('page', $id, $values);
 	}
 	
 	/**
@@ -98,10 +94,7 @@ class Page{
 	 * @return boolean succesfully inserted
 	 */
 	public function insertPerson($data){
-		return $this->dsql->dsql()
-			->table('page_person')
-			->set($data)
-			->insert();
+		return \npdc\lib\Db::insert('page_person', $data);
 	}
 	
 	/**
@@ -112,13 +105,7 @@ class Page{
 	 * @return boolean update succesfull
 	 */
 	public function updatePerson($record, $data){
-		$q = $this->dsql->dsql()
-			->table('page_person');
-		foreach($record as $key=>$val){
-			$q->where($key, $val);
-		}
-		$q->set($data)
-			->update();
+		\npdc\lib\Db::update('page_person', $record, $data);
 	}
 	
 	/**
@@ -151,10 +138,7 @@ class Page{
 	 * @return boolean succesfully inserted
 	 */
 	public function insertLink($data){
-		return $this->dsql->dsql()
-			->table('page_link')
-			->set($data)
-			->insert();
+		return \npdc\lib\Db::insert('page_link', $data);
 	}
 	
 	/**
@@ -165,11 +149,7 @@ class Page{
 	 * @return boolean update succesfull
 	 */
 	public function updateLink($id, $data){
-		return $this->dsql->dsql()
-			->table('page_link')
-			->where('page_link_id', $id)
-			->set($data)
-			->update();
+		return \npdc\lib\Db::update('page_link', $id, $data);
 	}
 	
 	/**

@@ -538,7 +538,7 @@ class Publication{
 	}
 	
 	public function insertPerson($data){
-		return \npdc\lib\Db::insertReturnId('publication_person', $data);
+		return \npdc\lib\Db::insert('publication_person', $data, true);
 	}
 	
 	public function updatePerson($record, $data, $version){

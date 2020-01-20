@@ -169,7 +169,7 @@ class Person{
 		$q->set('expire_reason', 'new link')->update();
 		$code = bin2hex(random_bytes(16));
 		$data['code'] = password_hash($code, PASSWORD_DEFAULT);
-		$id = \npdc\lib\Db::insertReturnId('account_new', $data);
+		$id = \npdc\lib\Db::insert('account_new', $data, true);
 		return [$id, $code];
 	}
 
@@ -218,7 +218,7 @@ class Person{
 		$q->set('expire_reason', 'new link')->update();
 		$code = bin2hex(random_bytes(16));
 		$data['code'] = password_hash($code, PASSWORD_DEFAULT);
-		if(is_numeric(\npdc\lib\Db::insertReturnId('account_reset', $data))){
+		if(is_numeric(\npdc\lib\Db::insert('account_reset', $data), true)){
 			return $code;
 		} else {
 			return false;
@@ -313,7 +313,7 @@ class Person{
 	public function getDatasets($id, $published = true){
 		return $this->dsql->dsql()
 			->table('dataset_person')
-			->join('dataset', \npdc\lib\Db::joinVersion('dataset', 'dataset_person'))
+			->join('dataset', \npdc\lib\Db::joinVersion('dataset', 'dataset_person'), 'inner')
 			->where('person_id', $id)
 			->where('record_status', 'published')
 			->order('date_start DESC')
@@ -385,7 +385,7 @@ class Person{
 	 * @return integer id of newly inserted person
 	 */
 	public function insertPerson($data){
-		return \npdc\lib\Db::insertReturnId('person', $this->parseData($data));
+		return \npdc\lib\Db::insert('person', $this->parseData($data), true);
 	}
 
 	/**
@@ -396,11 +396,7 @@ class Person{
 	 * @return void
 	 */
 	public function updatePerson($data, $person_id){
-		return $this->dsq->dsql()
-			->table('person')
-			->where('person_id', $person_id)
-			->set($this->parseData($data))
-			->update();
+		return \npdc\lib\Db::update('person', $person_id, $data);
 	}
 	
 	/**

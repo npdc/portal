@@ -68,16 +68,6 @@ class Db {
 	}
 	
 	/**
-	 * Get PDO connection to database
-	 *
-	 * @return object PDO type connection
-	 */
-	public static function getPDO(){
-		$instance = self::getInstance();
-		return $instance;
-	}
-	
-	/**
 	 * Get FPDO connection to database
 	 *
 	 * @return object FPDO type connection
@@ -112,37 +102,65 @@ class Db {
 	 *
 	 * @param string $tbl the table to insert into
 	 * @param array $data the data to insert
+	 * @param bool $returnId (optional) return id, default: false
 	 * @return integer the id of the new record
 	 */
-	public static function insertReturnId($tbl, $data){
-		self::getDSQLcon()->dsql()->table($tbl)->set($data)->insert();
-		$q = self::getDSQLcon()->dsql()->table($tbl);
-		foreach($data as $key=>$val){
-			$q->where($key,$val);
+	public static function insert($tbl, $data, $returnId = false){
+		$r = self::getDSQLcon()->dsql()->table($tbl)->set($data)->insert();
+		if($returnId){
+			$q = self::getDSQLcon()->dsql()->table($tbl);
+			foreach($data as $key=>$val){
+				$q->where($key,$val);
+			}
+			return $q->order($tbl.'_id DESC')->get()[0][$tbl.'_id'];	
+		} else {
+			return $r;
 		}
-		return $q->order($tbl.'_id DESC')->get()[0][$tbl.'_id'];
 	}
-	
-		/**
+
+	private static function _getRecord($table, $record){
+		$q = self::getDSQLcon()
+			->table($table);
+		if(is_array($record)){
+			foreach($record as $key=>$val){
+				$q->where($key, $val);
+			}
+		} elseif(is_numeric($record)) {
+			$q->where($table.'_id', $record);
+		} else {
+			die('Illegal record selector');
+		}
+		return $q;
+	}
+	/**
 	 * Perform update query
 	 *
 	 * @param string $table the table
-	 * @param integer $id the primary key value
+	 * @param integer|array $record the primary key value
 	 * @param array $data the new data
 	 * @return void
 	 */
-	public static function update($table, $id, $data){
-		return self::getDSQLcon()
-			->table($table)
-			->where($table.'_id', $id)
+	public static function update($table, $record, $data){
+		$q = self::_getRecord($table, $record)
 			->set($data)
 			->update();
 	}
 	
 	/**
+	 * get a record by id or multiple fields
+	 *
+	 * @param string $tbl table
+	 * @param integer|array $record the primary key value
+	 * @return array record
+	 */
+	public static function get($tbl, $record){
+		return self::_getRecord($tbl, $record)->get()[0];
+	}
+
+	/**
 	 * Execute arbitrary query
 	 * 
-	 * For queries that are hard or impossible to build using fpdo
+	 * For queries that are hard or impossible to build using dsql
 	 *
 	 * @param string $query
 	 * @return mixed

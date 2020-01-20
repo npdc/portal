@@ -61,7 +61,7 @@ class Program {
 	 * @return array program details
 	 */
 	public function getById($id){
-		return $this->dsql->dsql()->table('program')->where('program_id', $id)->get()[0];
+		return \npdc\lib\Db::get('program', $id);
 	}
 
 	/**
@@ -71,10 +71,7 @@ class Program {
 	 * @return boolean insert succesfull
 	 */
 	public function insertProgram($data){
-		return $this->dsql->dsql()
-			->table('program')
-			->set($data)
-			->insert();
+		\npdc\lib\Db::insert('program', $data);
 	}
 	
 	/**
@@ -85,10 +82,6 @@ class Program {
 	 * @return boolean update successfull
 	 */
 	public function updateProgram($data, $id){
-		return $this->dsql->dsql()
-			->table('program')
-			->set($data)
-			->where('program_id', $id)
-			->execute();
+		\npdc\lib\Db::update('program', $id, $data);
 	}
 }

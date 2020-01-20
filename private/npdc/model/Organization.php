@@ -179,7 +179,7 @@ class Organization {
 	 * @return integer id of newly inserted record
 	 */
 	public function insertOrganization($data){
-		return \npdc\lib\Db::insertReturnId('organization', $table);
+		return \npdc\lib\Db::insert('organization', $table, true);
 	}
 	
 	/**
@@ -190,10 +190,6 @@ class Organization {
 	 * @return boolean was update succesfull
 	 */
 	public function updateOrganization($data, $id){
-		return $this->dsql->dsql()
-			->table('organization')
-			->where('organization_id', $id)
-			->set($data)
-			->update();
+		return \npdc\lib\Db::update('organization', $id, $data);
 	}	
 }

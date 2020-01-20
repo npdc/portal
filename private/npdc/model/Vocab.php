@@ -193,10 +193,7 @@ class Vocab {
 	 * @return boolean insert succesfull
 	 */
 	public function addVocab($data){
-		return $this->dsql->dsql()
-			->table('vocab')
-			->set($data)
-			->insert();
+		return \npdc\lib\Db::insert('vocab', $data);
 	}
 	
 	/**
@@ -224,7 +221,7 @@ class Vocab {
 	 * @return boolean insert succesfull
 	 */
 	public function insertTerm($tbl, $values){
-		return $this->dsql->dsql()->table($tbl)->set($values)->insert();
+		return \npdc\lib\Db::insert($tbl, $values);
 	}
 	
 	/**
@@ -236,6 +233,6 @@ class Vocab {
 	 * @return boolean update succesfull
 	 */
 	public function updateTerm($tbl, $id, $values){
-		$this->dsql->dsql->table($tbl)->where($tbl.'_id', $id)->set($values)->update();
+		\npdc\lib\Db::update($tbl,$id,$values);
 	}
 }
