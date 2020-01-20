@@ -9,14 +9,12 @@
 namespace npdc\model;
 
 class Organization {
-	protected $fpdo;
-	protected $dsql;
-	
+	private $dsql;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct(){
-		$this->fpdo = \npdc\lib\Db::getFPDO();
 		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
@@ -181,15 +179,7 @@ class Organization {
 	 * @return integer id of newly inserted record
 	 */
 	public function insertOrganization($data){
-		$this->fpdo
-			->insertInto('organization')
-			->values($data)
-			->execute();
-		return $this->fpdo
-			->from('organization')
-			->where($data)
-			->orderBy('organization_id')
-			->fetch()['organization_id'];
+		return \npdc\lib\Db::insertReturnId('organization', $table);
 	}
 	
 	/**
@@ -200,8 +190,10 @@ class Organization {
 	 * @return boolean was update succesfull
 	 */
 	public function updateOrganization($data, $id){
-		return $this->fpdo
-			->update('organization', $data, $id)
-			->execute();
+		return $this->dsql->dsql()
+			->table('organization')
+			->where('organization_id', $id)
+			->set($data)
+			->update();
 	}	
 }

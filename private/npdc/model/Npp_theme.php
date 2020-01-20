@@ -10,7 +10,7 @@
 namespace npdc\model;
 
 class Npp_theme {
-	protected $dsql;
+	private $dsql;
 	
 	/**
 	 * Constructor

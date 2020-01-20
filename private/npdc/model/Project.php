@@ -10,13 +10,15 @@
 namespace npdc\model;
 
 class Project{
-	protected $fpdo;
-	
+	private $fpdo;
+	private $dsql;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct(){
 		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**

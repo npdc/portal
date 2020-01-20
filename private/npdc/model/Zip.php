@@ -10,13 +10,15 @@
 namespace npdc\model;
 
 class Zip {
-	protected $fpdo;
-	
+	private $fpdo;
+	private $dsql;
+
 	/**
 	 * Constructor
 	 */
-	public function __construct() {
+	public function __construct(){
 		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**

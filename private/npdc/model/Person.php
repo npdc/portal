@@ -12,13 +12,12 @@ namespace npdc\model;
  * Get person data
  */
 class Person{
-	private $fpdo;
+	private $dsql;
 
 	/**
-	 * constructor
+	 * Constructor
 	 */
 	public function __construct(){
-		$this->fpdo = \npdc\lib\Db::getFPDO();
 		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
@@ -76,10 +75,11 @@ class Person{
 	 */
 	public function getById($id){
 		if($id === null){ return null;}
-		$data = $this->fpdo
-			->from('person', $id)
-			->leftJoin('organization')->select('organization.*')
-			->fetch();
+		$data = $this->dsql->dsql()
+			->table('person')
+			->join('organization.organization_id', 'organization_id', 'left')
+			->where('person_id', $id)
+			->get()[0];
 		if($data !== false){
 			if(!empty($data['orcid'])){
 				$data['orcid'] = implode('-', str_split($data['orcid'], 4));
@@ -100,7 +100,7 @@ class Person{
 	 * @return array levels
 	 */
 	public function getUserLevels(){
-		return $this->fpdo->from('user_level')->orderBy('user_level_id')->fetchAll();
+		return $this->dsql->dsql()->table('user_level')->order('user_level_id')->get();
 	}
 	
 	/**
@@ -110,15 +110,15 @@ class Person{
 	 * @return array details
 	 */
 	public function getUserLevelDetails($level){
-		$q = $this->fpdo
-			->from('user_level');
+		$q = $this->dsql->dsql()
+			->table('user_level');
 		if(is_numeric($level)){
-			$q->where('user_level_id <= ?', $level);
+			$q->where('user_level_id', '<=', $level);
 		} else {
-			$q->where('user_level_id <= (SELECT user_level_id FROM user_level WHERE label=?)', $level);
+			$q->where('user_level_id', '<=', $q->dsql()->table('user_level')->field('user_level_id')->where('label', $level));
 		}
-		$rows = $q->orderBy('user_level_id')
-			->fetchAll();
+		$rows = $q->order('user_level_id')
+			->get();
 		$description = '';
 		foreach($rows as $row){
 			$description .= $row['description']."\r\n";
@@ -134,10 +134,10 @@ class Person{
 	 * @return array persons
 	 */
 	public function getByMail($mail){
-		return $this->fpdo
-			->from('person')
+		return $this->dsql->dsql()
+			->table('person')
 			->where('mail', $mail)
-			->fetchAll();
+			->get();
 	}
 
 	/**
@@ -147,12 +147,12 @@ class Person{
 	 * @return array person
 	 */
 	public function getUser($mail){
-		return $this->fpdo
-			->from('person')
-			->where('mail', $mail)
-			->where('password IS NOT NULL')
-			->where('user_level IS NOT NULL')
-			->fetch();
+		$q = $this->dsql->dsql()
+			->table('person')
+			->where('mail', $mail);
+		$q->where($q->expr('password IS NOT NULL'))
+			->where($q->expr('user_level IS NOT NULL'));
+		return $q->get()[0];
 	}
 	
 	/**
@@ -162,7 +162,11 @@ class Person{
 	 * @return array id and request code
 	 */
 	public function requestPassword($data){
-		$this->fpdo->update('account_new')->set(['expire_reason'=>'new link'])->where($data)->where('expire_reason IS NULL')->execute();
+		$q = $this->dsql->dsql()->table('account_new')->where('expire_reason IS NULL');
+		foreach($data as $key=>$val){
+			$q->where($key, $val);
+		}
+		$q->set('expire_reason', 'new link')->update();
 		$code = bin2hex(random_bytes(16));
 		$data['code'] = password_hash($code, PASSWORD_DEFAULT);
 		$id = \npdc\lib\Db::insertReturnId('account_new', $data);
@@ -176,13 +180,13 @@ class Person{
 	 * @return object request
 	 */
 	public function getPasswordNew($id){
-		return $this->fpdo
-			->from('account_new')
-			->where('account_new_id', $id)
-			->where('used_time IS NULL')
-			->where('expire_reason IS NULL')
-			->where('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR'))
-			->fetch();
+		$q = $this->dsql->dsql()
+			->table('account_new')
+			->where('account_new_id', $id);
+		return $q->where($q-expr('used_time IS NULL'))
+			->where($q->expr('expire_reason IS NULL'))
+			->where($q->expr('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR')))
+			->get()[0];
 	}
 	
 	/**
@@ -192,10 +196,10 @@ class Person{
 	 * @return void
 	 */
 	public function usePasswordNew($id){
-		$this->fpdo->update('account_new')
+		return $this->dsql->dsql->table('account_new')
 			->set(['used_time'=>date('Y-m-d h:i:s'), 'expire_reason'=>'Used'])
 			->where('account_new_id', $id)
-			->execute();
+			->update();
 	}
 
 	/**
@@ -205,18 +209,19 @@ class Person{
 	 * @return string reset code
 	 */
 	public function requestPasswordReset($data){
-		$this->fpdo
-			->update('account_reset')
-			->set(['expire_reason'=>'new link'])
-			->where($data)
-			->where('expire_reason IS NULL')
-			->where('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR'))
-			->execute();
+		$this->dsql->dsql()
+			->table('account_reset')
+			->where('expire_reason IS NULL');
+			foreach($data as $key=>$val){
+				$q->where($key, $val);
+			}
+		$q->set('expire_reason', 'new link')->update();
 		$code = bin2hex(random_bytes(16));
 		$data['code'] = password_hash($code, PASSWORD_DEFAULT);
-		$this->fpdo->insertInto('account_reset', $data)->execute();
-		if(count($this->fpdo->from('account_reset')->where($data)->fetchAll()) > 0){
+		if(is_numeric(\npdc\lib\Db::insertReturnId('account_reset', $data))){
 			return $code;
+		} else {
+			return false;
 		}
 	}
 	
@@ -227,13 +232,13 @@ class Person{
 	 * @return object person
 	 */
 	public function getPasswordReset($person_id){
-		return $this->fpdo
-			->from('account_reset')
-			->where('person_id', $person_id)
-			->where('used_time IS NULL')
-			->where('expire_reason IS NULL')
-			->where('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR'))
-			->fetch();
+		$q = $this->dsql->dsql()
+			->table('account_reset')
+			->where('person_id', $person_id);
+		return $q->where($q-expr('used_time IS NULL'))
+			->where($q->expr('expire_reason IS NULL'))
+			->where($q->expr('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR')))
+			->get();
 	}
 	
 	/**
@@ -243,12 +248,14 @@ class Person{
 	 * @return void
 	 */
 	public function expirePasswordResetLogin($person_id){
-		$this->fpdo->update('account_reset')
+		$q = $this->dsql->dsql()
+			->table('account_reset')
+			->where('person_id', $person_id);
+		$q->where($q->expr('used_time IS NULL'))
+			->where($q->expr('expire_reason IS NULL'))
+			->where($q->expr('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR')))
 			->set(['expire_reason'=>'User logged in'])
-			->where('person_id', $person_id)
-			->where('expire_reason IS NULL')
-			->where('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR'))
-			->execute();
+			->update();
 	}
 
 	/**
@@ -258,10 +265,11 @@ class Person{
 	 * @return void
 	 */
 	public function usePasswordReset($account_reset_id){
-		$this->fpdo->update('account_reset')
-			->set(['used_time'=>date('Y-m-d h:i:s'), 'expire_reason'=>'Used'])
+		$this->dsql->dsql()
+			->table('account_reset')
 			->where('account_reset_id', $account_reset_id)
-			->execute();
+			->set(['used_time'=>date('Y-m-d h:i:s'), 'expire_reason'=>'Used'])
+			->update();
 	}
 
 	/**
@@ -270,21 +278,14 @@ class Person{
 	 * @param integer $id person id
 	 * @return array list of projects
 	 */
-	public function getProjects($id, $published = true){
-		$q = $this->fpdo
-			->from('project_person')
-			->join('project')->select('project.*')
+	public function getProjects($id){
+		return $this->dsql->dsql()
+			->table('project_person')
+			->join('project', \npdc\lib\Db::joinVersion('project', 'project_person'), 'inner')
 			->where('person_id', $id)
-			->where('project.project_version>=project_version_min')
-			->where('(project_version_max IS NULL OR project_version_max >= project.project_version)')
-			->orderBy('date_start DESC, date_end DESC');
-		if($published){
-			$q->where('record_status', 'published');
-		} else {
-			$q->join('(SELECT project_id, MAX(project_version) project_version FROM project GROUP BY project_id) AS a ON a.project_id=project.project_id AND a.project_version=project.project_version');
-		}
-		
-		return $q->fetchAll();
+			->where('record_status', 'published')
+			->order('date_start DESC, date_end DESC')
+			->get();
 	}
 	
 	/**
@@ -293,20 +294,14 @@ class Person{
 	 * @param integer $id person id
 	 * @return array list of publications
 	 */
-	public function getPublications($id, $published = true){
-		$q = $this->fpdo
-			->from('publication_person')
-			->join('publication')->select('publication.*, EXTRACT(YEAR FROM date) AS year')
+	public function getPublications($id){
+		return $this->dsql->dsql()
+			->table('publication_person')
+			->join('publication', \npdc\lib\Db::joinVersion('publication', 'publication_person'), 'inner')
 			->where('person_id', $id)
-			->where('publication.publication_version>=publication_version_min')
-			->where('(publication_version_max IS NULL OR publication_version_max >= publication.publication_version)')
-			->orderBy('date DESC');
-		if($published){
-			$q->where('record_status', 'published');
-		} else {
-			$q->join('(SELECT publication_id, MAX(publication_version) publication_version FROM publication GROUP BY publication_id) AS a ON a.publication_id=publication.publication_id AND a.publication_version=publication.publication_version');
-		}
-		return $q->fetchAll();
+			->where('record_status', 'published')
+			->order('date DESC')
+			->get();
 	}
 	
 	/**
@@ -316,19 +311,13 @@ class Person{
 	 * @return array list of datasets
 	 */
 	public function getDatasets($id, $published = true){
-		$q = $this->fpdo
-			->from('dataset_person')
-			->join('dataset')->select('dataset.*')
+		return $this->dsql->dsql()
+			->table('dataset_person')
+			->join('dataset', \npdc\lib\Db::joinVersion('dataset', 'dataset_person'))
 			->where('person_id', $id)
-			->where('dataset.dataset_version>=dataset_version_min')
-			->where('(dataset_version_max IS NULL OR dataset_version_max >= dataset.dataset_version)')
-			->orderBy('date_start DESC');
-		if($published){
-			$q->where('record_status', 'published');
-		} else {
-			$q->join('(SELECT dataset_id, MAX(dataset_version) dataset_version FROM dataset GROUP BY dataset_id) AS a ON a.dataset_id=dataset.dataset_id AND a.dataset_version=dataset.dataset_version');
-		}
-		return $q->fetchAll();
+			->where('record_status', 'published')
+			->order('date_start DESC')
+			->get();
 	}
 	
 	/**
@@ -340,37 +329,38 @@ class Person{
 	 * @return array resulting people
 	 */
 	public function search($string, $exclude = [], $fuzzy = false){
-		$query = $this->fpdo
-			->from('person');
+		$q = $this->dsql->dsql()
+			->table('person');
 		if(strlen($string) > 0){
 			if($fuzzy){
 				if(strpos($string, ',') !== false){
 					$string = implode(' ', array_reverse(explode(',', $string)));
 				}
 				preg_match(\npdc\config::$surname_regex, $string, $parts);
-				$query->where('levenshtein_ratio(?, surname) >= '.\npdc\config::$levenshtein_ratio_person, $parts['f']);
+				$q->where($q->expr('levenshtein_ratio([], surname) >= []', [$parts['f'], \npdc\config::$levenshtein_ratio_person]));
 				if($parts['f'] !== $parts['l']){
 					$subs = substr($string, strrpos($string, ' ')+1);
 					if(\npdc\config::$db['type'] === 'mysql'){
-						$query->where('levenshtein_ratio(?, SUBSTRING_INDEX(surname, \' \', -1)) >= '.\npdc\config::$levenshtein_ratio_person, $parts['l']);
+						$q->where($q->expr('levenshtein_ratio([], surname) >= []', [$parts['l'], \npdc\config::$levenshtein_ratio_person]));
 					}
-					//$query->where('levenshtein_ratio(?, regexp_replace(surname, \'^.*\', \'\')) >= '.\npdc\config::$levenshtein_ratio_person, $parts['l']);
+					//$q->where('levenshtein_ratio(?, regexp_replace(surname, \'^.*\', \'\')) >= '.\npdc\config::$levenshtein_ratio_person, $parts['l']);
 				}
-				$query->orderBy('levenshtein_ratio(?, surname) DESC', $string);
+				//$q->order('levenshtein_ratio(?, surname) DESC', $string);
 			} else {
-				$query->where('name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' ?', $string);
+				$q->where('name ', \npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP', $string);
 			}
 		}
-		$query->orderBy('name');
+		$q->order('name');
 		if(is_array($exclude) && count($exclude) > 0){
 			foreach($exclude as $id){
 				if(!is_numeric($id)){
 					die('Hacking attempt');
 				}
 			}
-			$query->where('person_id NOT', $exclude);
+			$q->where('person_id', 'NOT', $exclude);
 		}
-		return $query->fetchAll();
+		//var_dump($q->render());
+		return $q->get();
 	}
 	
 	/**
@@ -381,11 +371,11 @@ class Person{
 	 * @return boolean
 	 */
 	public function checkMail($mail, $ownId){
-		return $this->fpdo
-			->from('person')
-			->where('mail = ?', $mail)
-			->where('person_id <> ?', $ownId)
-			->count() === 0;
+		return count($this->dsql->dsql
+			->table('person')
+			->where('mail', $mail)
+			->where('person_id', '<>', $ownId)
+			->get()) === 0;
 	}
 	
 	/**
@@ -395,16 +385,7 @@ class Person{
 	 * @return integer id of newly inserted person
 	 */
 	public function insertPerson($data){
-		$data = $this->parseData($data);
-		$this->fpdo
-			->insertInto('person')
-			->values($data)
-			->execute();
-		return $this->fpdo
-			->from('person')
-			->where($data)
-			->orderBy('person_id')
-			->fetch()['person_id'];
+		return \npdc\lib\Db::insertReturnId('person', $this->parseData($data));
 	}
 
 	/**
@@ -415,9 +396,11 @@ class Person{
 	 * @return void
 	 */
 	public function updatePerson($data, $person_id){
-		return $this->fpdo
-			->update('person', $this->parseData($data), $person_id)
-			->execute();
+		return $this->dsq->dsql()
+			->table('person')
+			->where('person_id', $person_id)
+			->set($this->parseData($data))
+			->update();
 	}
 	
 	/**

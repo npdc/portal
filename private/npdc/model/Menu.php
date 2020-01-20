@@ -10,7 +10,7 @@
 namespace npdc\model;
 
 class Menu {
-	protected $dsql;
+	private $dsql;
 	
 	/**
 	 * Constructor

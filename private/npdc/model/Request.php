@@ -11,13 +11,15 @@
 namespace npdc\model;
 
 class Request {
-	protected $fpdo;
-	
+	private $fpdo;
+	private $dsql;
+
 	/**
 	 * Constructor
 	 */
-	public function __construct() {
+	public function __construct(){
 		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**

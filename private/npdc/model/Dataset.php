@@ -10,9 +10,8 @@
 namespace npdc\model;
 
 class Dataset{
-	public $title;
-	public $content;
 	private $fpdo;
+	private $dsql;
 
 	/**
 	 * Constructor

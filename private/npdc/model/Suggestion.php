@@ -12,13 +12,13 @@
 namespace npdc\model;
 
 class Suggestion{
-	protected $fpdo;
-	
+	private $dsql;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct(){
-		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**
@@ -32,11 +32,11 @@ class Suggestion{
 	 * @return array list of suggestions
 	 */
 	public function getList($field){
-		return $this->fpdo
-			->from('suggestion')
+		return $this->dsql->dsql()
+			->table('suggestion')
 			->where('field', $field)
-			->orderBy('suggestion')
-			->fetchAll();
+			->order('suggestion')
+			->get();
 	}
 
 	/**

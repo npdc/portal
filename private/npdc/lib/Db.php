@@ -115,33 +115,12 @@ class Db {
 	 * @return integer the id of the new record
 	 */
 	public static function insertReturnId($tbl, $data){
-		switch(\npdc\config::$db['type']){
-			case 'pgsql':
-				$keys = [];
-				$values = [];
-				foreach($data as $key=>$value){
-					$keys[] = $key;
-					$values[':'.$key] = $value;
-				}
-				$q = self::getInstance()->prepare('INSERT INTO '.$tbl.'('.implode(',', $keys).') VALUES ('.implode(', ', array_keys($values)).') RETURNING '.$tbl.'_id');
-				foreach($values as $key=>$value){
-					if (empty($value)) {
-						$data_type = PDO::PARAM_NULL;
-						$value = "NULL";
-					} elseif (is_float($value)) {
-						$data_type = PDO::PARAM_STR;
-					} elseif (is_numeric($value)) {
-						$data_type = PDO::PARAM_INT;
-					} else {
-						$data_type = PDO::PARAM_STR;
-					}
-					$q->bindValue($key, $value, $data_type);
-				}
-				$q->execute();
-				return $q->fetch(PDO::FETCH_ASSOC)[$tbl.'_id'];
-			case 'mysql':
-				return self::getFPDO()->insertInto($tbl, $data)->execute();
+		self::getDSQLcon()->dsql()->table($tbl)->set($data)->insert();
+		$q = self::getDSQLcon()->dsql()->table($tbl);
+		foreach($data as $key=>$val){
+			$q->where($key,$val);
 		}
+		return $q->order($tbl.'_id DESC')->get()[0][$tbl.'_id'];
 	}
 	
 	/**

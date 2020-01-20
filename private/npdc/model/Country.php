@@ -10,7 +10,7 @@
 namespace npdc\model;
 
 class Country {
-	protected $dsql;
+	private $dsql;
 	
 	/**
 	 * Constructor

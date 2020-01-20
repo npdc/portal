@@ -12,13 +12,13 @@
 namespace npdc\model;
 
 class Page{
-	private $fpdo;
+	private $dsql;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct(){
-		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**
@@ -28,10 +28,10 @@ class Page{
 	 * @return array page
 	 */
 	public function getByUrl($url){
-		return $this->fpdo
-			->from('page')
+		return $this->dsql->dsql()
+			->table('page')
 			->where('url', $url)
-			->fetch();
+			->get()[0];
 	}
 	
 	/**
@@ -41,13 +41,13 @@ class Page{
 	 * @return array list of persons
 	 */
 	public function getPersons($id){
-		return $this->fpdo
-			->from('page_person')
-			->join('person USING (person_id)')->select('person.*')
-			->join('organization USING(organization_id)')->select('organization.*')
+		return $this->dsql->dsql()
+			->table('page_person')->field('*')
+			->join('person.person_id', 'person_id', 'inner')
+			->join('organization.organization_id', 'person.organization_id')
 			->where('page_id', $id)
-			->orderBy('sort')
-			->fetchAll();
+			->order('sort')
+			->get();
 	}
 	
 	/**
@@ -57,15 +57,15 @@ class Page{
 	 * @return array list of urls
 	 */
 	public function getUrls($id){
-		return $this->fpdo
-			->from('page_link')
+		return $this->dsql
+			->table('page_link')
 			->where('page_id', $id)
-			->orderBy('sort')
-			->fetchAll();
+			->order('sort')
+			->get();
 	}
 
 	public function getList(){
-		return $this->fpdo->from('page')->orderBy('title')->fetchAll();
+		return $this->dsql->dsql()->table('page')->order('title')->get();
 	}
 	
 	/**
@@ -84,9 +84,11 @@ class Page{
 	 */
 	public function updatePage($id, $values){
 		$values['last_update'] = date('Y-m-d h:i:s');
-		return $this->fpdo
-			->update('page', $values, $id)
-			->execute();
+		return $this->dsql->dsql()
+			->table('page')
+			->where('page_id', $id)
+			->set($values)
+			->update();
 	}
 	
 	/**
@@ -96,10 +98,10 @@ class Page{
 	 * @return boolean succesfully inserted
 	 */
 	public function insertPerson($data){
-		return $this->fpdo
-			->insertInto('page_person')
-			->values($data)
-			->execute();
+		return $this->dsql->dsql()
+			->table('page_person')
+			->set($data)
+			->insert();
 	}
 	
 	/**
@@ -110,11 +112,13 @@ class Page{
 	 * @return boolean update succesfull
 	 */
 	public function updatePerson($record, $data){
-		return $this->fpdo
-			->update('page_person')
-			->set($data)
-			->where($record)
-			->execute();
+		$q = $this->dsql->dsql()
+			->table('page_person');
+		foreach($record as $key=>$val){
+			$q->where($key, $val);
+		}
+		$q->set($data)
+			->update();
 	}
 	
 	/**
@@ -125,9 +129,9 @@ class Page{
 	 * @return boolean update succesfull
 	 */
 	public function deletePerson($page, $persons){
-		$q = $this->fpdo
-			->deleteFrom('page_person')
-			->where('page_id = ?', $page);
+		$q = $this->dsql->dsql()
+			->table('page_person')
+			->where('page_id', $page);
 		if(count($persons) > 0){
 			foreach($persons as $person){
 				if(!is_numeric($person)){
@@ -136,7 +140,7 @@ class Page{
 			}
 			$q->where('person_id NOT IN ('.implode(',', $persons).')');
 		}
-		return $q->execute();
+		return $q->delete();
 	}
 	
 	
@@ -147,10 +151,10 @@ class Page{
 	 * @return boolean succesfully inserted
 	 */
 	public function insertLink($data){
-		return $this->fpdo
-			->insertInto('page_link')
-			->values($data)
-			->execute();
+		return $this->dsql->dsql()
+			->table('page_link')
+			->set($data)
+			->insert();
 	}
 	
 	/**
@@ -161,9 +165,11 @@ class Page{
 	 * @return boolean update succesfull
 	 */
 	public function updateLink($id, $data){
-		return $this->fpdo
-			->update('page_link', $data, $id)
-			->execute();
+		return $this->dsql->dsql()
+			->table('page_link')
+			->where('page_link_id', $id)
+			->set($data)
+			->update();
 	}
 	
 	/**
@@ -174,8 +180,8 @@ class Page{
 	 * @return boolean update succesfull
 	 */
 	public function deleteLink($page_id, $keep){
-		$q = $this->fpdo
-			->deleteFrom('page_link')
+		$q = $this->dsql->dsql()
+			->table('page_link')
 			->where('page_id', $page_id);
 		if(is_array($keep) && count($keep) > 0){
 			foreach($keep as $id){
@@ -185,6 +191,6 @@ class Page{
 			}
 			$q->where('page_link_id NOT IN ('.implode(',', $keep).')');
 		}
-		$q->execute();
+		$q->delete();
 	}
 }

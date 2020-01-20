@@ -11,6 +11,7 @@ namespace npdc\model;
 
 class Publication{
 	private $fpdo;
+	private $dsql;
 
 	/**
 	 * Constructor

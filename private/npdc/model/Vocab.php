@@ -10,13 +10,13 @@
 namespace npdc\model;
 
 class Vocab {
-	protected $fpdo;
-	
+	private $dsql;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct(){
-		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/** 
@@ -30,11 +30,14 @@ class Vocab {
 	 * @return array vocab details
 	 */
 	public function getVocab($id){
+		$q = $this->dsql->dsql()
+			->table('vocab');
 		if(is_numeric($id)){
-			return $this->fpdo->from('vocab', $id)->fetch();
+			$q->where('vocab_id', $id);
 		} else {
-			return $this->fpdo->from('vocab')->where('vocab_name', $id)->fetch();
+			$q->where('vocab_name', $id);
 		}
+		return $q->get()[0];
 	}
 	
 	/**
@@ -43,12 +46,12 @@ class Vocab {
 	 * @return array list of vocabs
 	 */
 	public function getUpdatable(){
-		return $this->fpdo
-			->from('vocab')
+		return $this->dsql->dsql()
+			->table('vocab')
 			->where('sync')
-			->where('last_update_local <= last_update_date')
-			->where('last_update_local < ?', date('Y-m-d'))
-			->fetchAll();
+			->where('last_update_local', '<=', 'last_update_date')
+			->where('last_update_local', '<', date('Y-m-d'))
+			->get();
 	}
 
 	/**
@@ -59,7 +62,10 @@ class Vocab {
 	 * @return array term details
 	 */
 	public function getTermById($tbl, $id){
-		return $this->fpdo->from($tbl, $id)->fetch();
+		return $this->dsql->dsql()
+			->table($tbl)
+			->where($tbl.'_id', $id)
+			->get()[0];
 	}
 
 	/**
@@ -70,7 +76,10 @@ class Vocab {
 	 * @return array term details
 	 */
 	public function getTermByUUID($tbl, $uuid){
-		return $this->fpdo->from($tbl)->where('uuid', $uuid)->fetch();
+		return $this->dsql->dsql()
+			->table($tbl)
+			->where('uuid', $uuid)
+			->get()[0];
 	}
 	
 	/**
@@ -81,54 +90,82 @@ class Vocab {
 	 * @return array list of terms (matching filter)
 	 */
 	public function listTerms($vocab, $filter = null){
-		$q = $this->fpdo->from($vocab)->where('visible');
+		$q = $this->dsql->dsql()
+			->table($vocab)
+			->where('visible');
+		$regexp = \npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP';
 		switch($vocab){
 			case 'vocab_chronounit':
-				$q->orderBy('sort');
+				$q->order('sort');
 				if(!empty($filter)){
-					$q->where('(eon '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter1 OR era '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter2 OR period '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter3 OR epoch '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter4 OR stage '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter5)', [':filter1'=>$filter, ':filter2'=>$filter, ':filter3'=>$filter, ':filter4'=>$filter, ':filter5'=>$filter]);
+					$f = $q->orExpr();
+					foreach(['eon', 'era', 'period', 'epoch', 'stage'] as $var){
+						$f->where($var, $regexp, $filter);
+					}
+					$q->where($f);
 				}
 				break;
 			case 'vocab_instrument':
-				$q->orderBy('CASE WHEN category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' ELSE category END, coalesce(class, \'0\'), coalesce(type, \'0\'), coalesce(subtype, \'0\'), coalesce(short_name, \'0\')');
+				$q->order($q->expr('CASE WHEN category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' ELSE category END, coalesce(class, \'0\'), coalesce(type, \'0\'), coalesce(subtype, \'0\'), coalesce(short_name, \'0\')'));
 				if(!empty($filter)){
-					$q->where('(category '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter1 OR class '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter2 OR type '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter3 OR subtype '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter4 OR short_name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter5 OR long_name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter6)', [':filter1'=>$filter, ':filter2'=>$filter, ':filter3'=>$filter, ':filter4'=>$filter, ':filter5'=>$filter, ':filter6'=>$filter]);
+					$f = $q->orExpr();
+					foreach(['category', 'class', 'type', 'subtype', 'short_name', 'long_name'] as $var){
+						$f->where($var, $regexp, $filter);
+					}
+					$q->where($f);
 				}
 				break;
 			case 'vocab_location':
-				$q->orderBy('CASE WHEN location_category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' ELSE location_category END, coalesce(location_type, \'0\'), coalesce(location_subregion1, \'0\'), coalesce(location_subregion2, \'0\'), coalesce(location_subregion3, \'0\')');
+				$q->order($q->expr('CASE WHEN location_category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' ELSE location_category END, coalesce(location_type, \'0\'), coalesce(location_subregion1, \'0\'), coalesce(location_subregion2, \'0\'), coalesce(location_subregion3, \'0\')'));
 				if(!empty($filter)){
-					$q->where('(location_category '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter1 OR location_type '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter2 OR location_subregion1 '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter3 OR location_subregion2 '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter4 OR location_subregion3 '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter5)', [':filter1'=>$filter, ':filter2'=>$filter, ':filter3'=>$filter, ':filter4'=>$filter, ':filter5'=>$filter]);
+					$f = $q->orExpr();
+					foreach(['location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3'] as $var){
+						$f->where($var, $regexp, $filter);
+					}
+					
+					$q->where($f);
 				}
 				break;
 			case 'vocab_platform':
-				$q->orderBy('CASE WHEN category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' ELSE category END, coalesce(series_entity, \'0\'), coalesce(short_name, \'0\')');
+				$q->order($q->expr('CASE WHEN category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' ELSE category END, coalesce(series_entity, \'0\'), coalesce(short_name, \'0\')'));
 				if(!empty($filter)){
-					$q->where('(category '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter1 OR series_entity '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter2 OR short_name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter3 OR long_name '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter4)', [':filter1'=>$filter, ':filter2'=>$filter, ':filter3'=>$filter, ':filter4'=>$filter]);
+					$f = $q->orExpr();
+					foreach(['category', 'series_entity', 'short_name', 'long_name'] as $var){
+						$f->where($var, $regexp, $filter);
+					}
+					$q->where($f);
 				}
 				break;
 			case 'vocab_res_hor':
 			case 'vocab_res_vert':
 			case 'vocab_res_time':
-				$q->orderBy('sort');
+				$q->order('sort');
 				if(!empty($filter)){
-					$q->where('range '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter', [':filter'=>$filter]);
+					$q->where('range', $regexp, $filter);
 				}
 				break;
 			case 'vocab_science_keyword':
-				$q->orderBy('category, coalesce(topic, \'0\'), coalesce(term, \'0\'), coalesce(var_lvl_1, \'0\'), coalesce(var_lvl_2, \'0\'), coalesce(var_lvl_3, \'0\'), coalesce(detailed_variable, \'0\')');
+				$q->order($q->expr('category, coalesce(topic, \'0\'), coalesce(term, \'0\'), coalesce(var_lvl_1, \'0\'), coalesce(var_lvl_2, \'0\'), coalesce(var_lvl_3, \'0\'), coalesce(detailed_variable, \'0\')'));
 				if(!empty($filter)){
-					$q->where('(category '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter1 OR topic '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter2 OR term '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter3 OR var_lvl_1 '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter4 OR var_lvl_2 '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter5 OR var_lvl_3 '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter6 OR detailed_variable '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter7)', [':filter1'=>$filter, ':filter2'=>$filter, ':filter3'=>$filter, ':filter4'=>$filter, ':filter5'=>$filter, ':filter6'=>$filter, ':filter7'=>$filter]);
+					$f = $q->orExpr();
+					foreach(['category', 'topic', 'term', 'var_lvl_1', 'var_lvl_2', 'var_lvl_3', 'detailed_variable'] as $var){
+						$f->where($var, $regexp, $filter);
+					}
+					$q->where($f);
 				}
 				break;
 			case 'vocab_url_type':
-				$q->orderBy('type, coalesce(subtype, \'0\')');	
+				$q->order($q->expr('type, coalesce(subtype, \'0\')'));
 				if(!empty($filter)){
-					$q->where('(type '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter1 OR subtype '.(\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP').' :filter2)', [':filter1'=>$filter, ':filter2'=>$filter]);
+					$f = $q->orExpr();
+					foreach(['type', 'subtype'] as $var){
+						$f->where($var, $regexp, $filter);
+					}
+					$q->where($f);
 				}
 				break;
 		}
-		return $q->fetchAll();
+		return $q->get();
 	}
 
 	/**
@@ -138,11 +175,11 @@ class Vocab {
 	 * @return array list of IDN nodes
 	 */
 	public function getIDNNode($location_id){
-		return $this->fpdo
-			->from('vocab_idn_node')
-			->join('vocab_location_vocab_idn_node USING(vocab_idn_node_id)')
+		return $this->dsql->dsql()
+			->table('vocab_idn_node')
+			->join('vocab_location_vocab_idn_node.vocab_idn_node_id','vocab_idn_node_id')
 			->where('vocab_location_id', $location_id)
-			->fetchAll();
+			->get();
 	}
 	
 	/**
@@ -156,7 +193,10 @@ class Vocab {
 	 * @return boolean insert succesfull
 	 */
 	public function addVocab($data){
-		return $this->fpdo->insertInto('vocab', $data)->execute();
+		return $this->dsql->dsql()
+			->table('vocab')
+			->set($data)
+			->insert();
 	}
 	
 	/**
@@ -167,15 +207,13 @@ class Vocab {
 	 * @return boolean update successfull
 	 */
 	public function updateVocab($id, $data){
+		$q = $this->dsql->dsql()->table('vocab');
 		if(is_numeric($id)){
-			return $this->fpdo->update('vocab', $data, $id)->execute();
+			$q->where('vocab_id', $id);
 		} else {
-			return $this->fpdo
-				->update('vocab')
-				->where('vocab_name', $id)
-				->set($data)
-				->execute();
+			$q->where('vocab_name', $id);
 		}
+		return $q->set($data)->update();
 	}
 	
 	/**
@@ -186,7 +224,7 @@ class Vocab {
 	 * @return boolean insert succesfull
 	 */
 	public function insertTerm($tbl, $values){
-		return $this->fpdo->insertInto($tbl, $values)->execute();
+		return $this->dsql->dsql()->table($tbl)->set($values)->insert();
 	}
 	
 	/**
@@ -198,6 +236,6 @@ class Vocab {
 	 * @return boolean update succesfull
 	 */
 	public function updateTerm($tbl, $id, $values){
-		return $this->fpdo->update($tbl, $values, $id)->execute();
+		$this->dsql->dsql->table($tbl)->where($tbl.'_id', $id)->set($values)->update();
 	}
 }

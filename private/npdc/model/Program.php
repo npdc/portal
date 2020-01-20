@@ -10,13 +10,13 @@
 namespace npdc\model;
 
 class Program {
-	protected $fpdo;
-	
+	private $dsql;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct(){
-		$this->fpdo = \npdc\lib\Db::getFPDO();
+		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
 	/**
@@ -26,37 +26,32 @@ class Program {
 	 * @return array list of programs
 	 */
 	public function getList($filter = null){
-		$q = $this->fpdo
-			->from('program')
-			->orderBy('sort');
+		$q = $this->dsql->dsql()
+			->table('program')
+			->order('sort');
 		if(!is_null($filter)){
 			$q2 = null;
 			switch($filter){
 				case 'project':
-					$q2 = $this->fpdo
-						->from('project a');
+					$q2 = $q->dsql()
+						->table('project','a');
 					break;
 				case 'publication':
-					$q2 = $this->fpdo
-						->from('project_publication')
-						->join('publication a')
-						->join('project b')
+					$q2 = $q->dsql()
+						->table('project_publication')
+						->join('publication.publication_id a','publication_id', 'inner')
+						->join('project.project_id b','project_id', 'inner')
 						->where('b.record_status', 'published');
 					
 					break;
 			}
 			if(!is_null($q2)){
-				$q2->select('DISTINCT(program_id)')
+				$q2->field('DISTINCT(program_id)')
 					->where('a.record_status', 'published');
-				$res = $q2->fetchAll('program_id', 'program_id');
-				if(count($res) > 0){
-					$q->where('program_id', array_keys($res));
-				} else {
-					return null;
-				}
+				$q->where('program_id', $q2);
 			}
 		}
-		return $q->fetchAll();
+		return $q->get();
 	}
 	
 	/**
@@ -66,9 +61,7 @@ class Program {
 	 * @return array program details
 	 */
 	public function getById($id){
-		return $this->fpdo
-			->from('program', $id)
-			->fetch();
+		return $this->dsql->dsql()->table('program')->where('program_id', $id)->get()[0];
 	}
 
 	/**
@@ -78,10 +71,10 @@ class Program {
 	 * @return boolean insert succesfull
 	 */
 	public function insertProgram($data){
-		return $this->fpdo
-			->insertInto('program')
-			->values($data)
-			->execute();
+		return $this->dsql->dsql()
+			->table('program')
+			->set($data)
+			->insert();
 	}
 	
 	/**
@@ -92,8 +85,10 @@ class Program {
 	 * @return boolean update successfull
 	 */
 	public function updateProgram($data, $id){
-		return $this->fpdo
-			->update('program', $data, $id)
+		return $this->dsql->dsql()
+			->table('program')
+			->set($data)
+			->where('program_id', $id)
 			->execute();
 	}
 }

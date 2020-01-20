@@ -9,7 +9,7 @@
 namespace npdc\model;
 
 class News {
-	protected $dsql;
+	private $dsql;
 	
 	/**
 	 * Constructor
