@@ -10,14 +10,12 @@
 namespace npdc\model;
 
 class Zip {
-	private $fpdo;
 	private $dsql;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct(){
-		$this->fpdo = \npdc\lib\Db::getFPDO();
 		$this->dsql = \npdc\lib\Db::getDSQLcon();
 	}
 	
@@ -32,7 +30,7 @@ class Zip {
 	 * @return array zip details
 	 */
 	public function getById($id){
-		return $this->fpdo->from('zip', $id)->fetch();
+		return $this->dsql->dsql()->table('zip')->where('zip_id', $id)->get()[0];
 	}
 
 	/**
@@ -42,7 +40,7 @@ class Zip {
 	 * @return array zip details
 	 */
 	public function getByName($name){
-		return $this->fpdo->from('zip')->where('filename', $name)->fetch();
+		return $this->dsql->dsql()->table('zip')->where('filename', $name)->get()[0];
 	}
 
 	/**
@@ -67,7 +65,11 @@ class Zip {
 	 * @return voi
 	 */
 	public function updateZip($id, $data){
-		$this->fpdo->update('zip', $data, $id)->execute();
+		$this->dsql->dsql()
+			->table('zip')
+			->where('zip_id', $id)
+			->set($data)
+			->updated();
 	}
 	
 	/**
@@ -77,9 +79,10 @@ class Zip {
 	 * @return void
 	 */
 	public function insertFile($data){
-		$this->fpdo
-			->insertInto('zip_files', $data)
-			->execute();
+		$this->dsql->dsql
+			->table('zip_files')
+			->set($data)
+			->insert();
 	}
 
 }
