@@ -1,3 +1,6 @@
+## v2.8.1 - 2020-01-20
+Fix missing search icon in icomoon
+
 ## v2.8.0 - 2020-01-15
 * Allow partial sitemaps
 * Permission/account takeover by admins
