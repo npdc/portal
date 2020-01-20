@@ -123,6 +123,22 @@ class Db {
 		return $q->order($tbl.'_id DESC')->get()[0][$tbl.'_id'];
 	}
 	
+		/**
+	 * Perform update query
+	 *
+	 * @param string $table the table
+	 * @param integer $id the primary key value
+	 * @param array $data the new data
+	 * @return void
+	 */
+	public static function update($table, $id, $data){
+		return self::getDSQLcon()
+			->table($table)
+			->where($table.'_id', $id)
+			->set($data)
+			->update();
+	}
+	
 	/**
 	 * Execute arbitrary query
 	 * 
@@ -152,5 +168,4 @@ class Db {
 				->where($ctype.'_version_max >= '.$ctype.'.'.$ctype.'_version')
 		);
 	}
-	
 }
