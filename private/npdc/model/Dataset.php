@@ -165,15 +165,7 @@ class Dataset{
 	 * @return array a dataset
 	 */
 	public function getById($id, $version = 'published'){
-		if(!is_numeric($id)){
-			$return = false;
-		} else {
-			$return = $this->fpdo
-				->from('dataset', $id)
-				->where(is_numeric($version) ? 'dataset_version' : 'record_status', $version)
-				->fetch();
-		}
-		return $return;
+		return \npdc\lib\Db::get('dataset', ['dataset_id'=>$id, (is_numeric($version) ? 'dataset_version' : 'record_status')=>$version]);
 	}
 
 	/**
@@ -183,7 +175,7 @@ class Dataset{
 	 * @return array a dataset
 	 */
 	public function getByUUID($uuid){
-		return $this->fpdo->from('dataset')->where('uuid', $uuid)->fetch();
+		return \npdc\lib\Db::get('dataset', ['uuid'=>$uuid]);
 	}
 	
 	/**
@@ -195,23 +187,22 @@ class Dataset{
 	 * @return array list of publications
 	 */
 	public function getPublications($id, $version, $published = true){
-		$q = $this->fpdo
-			->from('dataset_publication')
-			->join('publication '
-				. 'ON publication.publication_id=dataset_publication.publication_id '
-				. 'AND publication.publication_version >= dataset_publication.publication_version_min '
-				. 'AND (dataset_publication.publication_version_max IS NULL OR publication.publication_version <= dataset_publication.publication_version_max)')
-			->select('publication.*, EXTRACT(year FROM date) AS year')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->orderBy('date DESC, publication.publication_id, '.\npdc\lib\Db::$sortByRecordStatus);
+		$q = $this->dsql->dsql()
+			->table('dataset_publication')
+			->join('publication', \npdc\lib\Db::joinVersion('publication', 'dataset_publication'), 'inner')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version));
+		$q->order($q->expr('date DESC, publication.publication_id, '.\npdc\lib\Db::$sortByRecordStatus));
 		if($published){
 			$q->where('record_status', 'published');
 		} else {
-			$q->join('(SELECT publication_id, MAX(publication_version) publication_version FROM publication GROUP BY publication_id) AS a ON a.publication_id=publication.publication_id AND a.publication_version=publication.publication_version');
+			$q->where('publication_version',
+				$q->dsql()
+					->table('publication', 'a')
+					->field('max(publication_version)')
+					->where('a.publication_id=publication.publication_id')
+				);
 		}
-		return $q->fetchAll();
+		return $q->get();
 	}
 
 	/**
@@ -224,23 +215,24 @@ class Dataset{
 	 */
 	
 	public function getProjects($id, $version, $published = true){
-		$q = $this->fpdo
-			->from('dataset_project')
-			->join('project '
-				. 'ON project.project_id=dataset_project.project_id '
-				. 'AND project.project_version >= dataset_project.project_version_min '
-				. 'AND (dataset_project.project_version_max IS NULL OR project.project_version <= dataset_project.project_version_max)')
-			->select('project.*, date_start || \' - \' || date_end period')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->orderBy('date_start DESC, project.project_id, '.\npdc\lib\Db::$sortByRecordStatus);
+		$q = $this->dsql->dsql()
+			->table('dataset_project')
+			->join('project', \npdc\lib\Db::joinVersion('project', 'dataset_project'), 'inner')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version));
+		$q->field('*')
+			->field($q->expr('date_start || \' - \' || date_end period'))
+			->order($q->expr('date_start DESC, project.project_id, '.\npdc\lib\Db::$sortByRecordStatus));
 		if($published){
 			$q->where('record_status', 'published');
 		} else {
-			$q->join('(SELECT project_id, MAX(project_version) project_version FROM project GROUP BY project_id) AS a ON a.project_id=project.project_id AND a.project_version=project.project_version');
+			$q->where('project_version',
+				$q->dsql()
+					->table('project', 'a')
+					->field('MAX(project_version)')
+					->where('a.project_id=project.project_id')
+			);
 		}
-		return $q->fetchAll();
+		return $q->get();
 	}
 
 	/**
@@ -251,13 +243,11 @@ class Dataset{
 	 * @return array list of locations
 	 */
 	public function getLocations($id, $version){
-		return $this->fpdo
-			->from('location')
-			->join('vocab_location')->select('vocab_location.*')
-			->where('dataset_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('location')
+			->join('vocab_location.vocab_location_id', 'vocab_location_id', 'inner')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->get();
 	}
 
 	/**
@@ -269,12 +259,10 @@ class Dataset{
 	 */
 	public function getSpatialCoverages($id, $version){
 		//WKT and GEOM are kept in sync with a trigger
-		return $this->fpdo
-			->from('spatial_coverage')
-			->where('dataset_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('spatial_coverage')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->get();
 	}
 	
 	/**
@@ -285,12 +273,10 @@ class Dataset{
 	 * @return array list of temporal coverages
 	 */
 	public function getTemporalCoverages($id, $version){
-		return $this->fpdo
-			->from('temporal_coverage')
-			->where('dataset_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('temporal_coverage')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->get();
 	}
 	
 	/**
@@ -302,12 +288,11 @@ class Dataset{
 	 * @return array groups of temporal coverage
 	 */
 	public function getTemporalCoveragesGroup($group, $id, $version){
-		return $this->fpdo
-			->from('temporal_coverage_'.$group)
-			->where('temporal_coverage_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('temporal_coverage_'.$group)
+			->where('temporal_coverage_id', $id)
+			->where(\npdc\lib\Db::selectVersion('dataset', $version))
+			->get();
 	}
 
 	/**
@@ -318,14 +303,13 @@ class Dataset{
 	 * @return array
 	 */
 	public function getTemporalCoveragePaleoChronounit($id, $version){
-		return $this->fpdo
-			->from('temporal_coverage_paleo_chronounit')
-			->leftJoin('vocab_chronounit')->select('vocab_chronounit.*')
-			->where('temporal_coverage_paleo_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->orderBy('sort')
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('temporal_coverage_paleo_chronounit')
+			->join('vocab_chronounit.vocab_chronounit_id', 'vocab_chronounit_id', 'left')
+			->where('temporal_coverage_paleo_id', $id)
+			->where(\npdc\lib\Db::selectVersion('dataset', $version))
+			->order('sort')
+			->get();
 	}
 	
 	/**
@@ -336,15 +320,13 @@ class Dataset{
 	 * @return void
 	 */
 	public function getResolution($id, $version){
-		return $this->fpdo
-			->from('data_resolution')
-			->leftJoin('vocab_res_hor')->select('vocab_res_hor.range hor_range')
-			->leftJoin('vocab_res_vert')->select('vocab_res_vert.range vert_range')
-			->leftJoin('vocab_res_time')->select('vocab_res_time.range time_range')
-			->where('dataset_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('data_resolution')->field('data_resolution.*')
+			->join('vocab_res_hor.vocab_res_hor_id', 'vocab_res_hor_id', 'left')->field('vocab_res_hor.range','hor_range')
+			->join('vocab_res_vert.vocab_res_vert_id', 'vocab_res_vert_id', 'left')->field('vocab_res_vert.range','vert_range')
+			->join('vocab_res_time.vocab_res_time_id', 'vocab_res_time_id', 'left')->field('vocab_res_time.range','time_range')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->get();
 	}
 	
 	/**
@@ -356,15 +338,13 @@ class Dataset{
 	 * @return array list of platforms
 	 */
 	public function getPlatform($id, $version, $join=true){
-		$q = $this->fpdo
-			->from('platform');
+		$q = $this->dsql->dsql()
+			->table('platform');
 		if($join){
-			$q->join('vocab_platform')->select('vocab_platform.*');
+			$q->join('vocab_platform.vocab_platform_id', 'vocab_platform_id', 'inner');
 		}
-		return $q->where('dataset_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $q->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->get();
 	}
 	
 	/**
@@ -376,15 +356,14 @@ class Dataset{
 	 * @return array list of instruments
 	 */
 	public function getInstrument($id, $version, $join = true){
-		$q = $this->fpdo
-			->from('instrument');
+		$q = $this->dsql->dsql()
+			->table('instrument');
 		if($join){
-			$q->join('vocab_instrument')->select('vocab_instrument.*');
+			$q->join('vocab_instrument.vocab_instrument_id', 'vocab_instrument_id', 'inner');
 		}
-		return $q->where('platform_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $q->where('platform_id', $id)
+			->where(\npdc\lib\Db::selectVersion('dataset', $version))
+			->get();
 	}
 	
 /**
@@ -396,15 +375,14 @@ class Dataset{
 	 * @return array list of sensors
 	 */
 	public function getSensor($id, $version, $join = true){
-		$q =$this->fpdo
-			->from('sensor');
+		$q =$this->dsql->dsql()
+			->table('sensor');
 		if($join){
-			$q->join('vocab_instrument')->select('vocab_instrument.*');
+			$q->join('vocab_instrument.vocab_instrument_id', 'vocab_instrument_id', 'inner');
 		}
-		return $q->where('instrument_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $q->where('instrument_id', $id)
+			->where(\npdc\lib\Db::selectVersion('dataset', $version))
+			->get();
 	}
 	
 	/**
@@ -416,12 +394,11 @@ class Dataset{
 	 * @return array list of characteristics
 	 */
 	public function getCharacteristics($type, $id, $version){
-		return $this->fpdo
-			->from('characteristics')
-			->where($type.'_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('characteristics')
+			->where($type.'_id', $id)
+			->where(\npdc\lib\Db::selectVersion('dataset', $version))
+			->get();
 	}
 	
 	/**
@@ -432,15 +409,13 @@ class Dataset{
 	 * @return array list of persons
 	 */
 	public function getPersons($id, $version){
-		return $this->fpdo
-			->from('dataset_person')
-			->join('person USING(person_id)')->select('name')
-			->leftJoin('organization ON dataset_person.organization_id=organization.organization_id')->select('organization_name')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->orderBy('sort')
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('dataset_person')->field('dataset_person.*')
+			->join('person.person_id', 'person_id', 'inner')->field('name')
+			->join('organization.organization_id', 'organization_id', 'left')->field('organization_name')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->order('sort')
+			->get();
 	}
 
 	/**
@@ -452,14 +427,12 @@ class Dataset{
 	 * @return string formatted list of names
 	 */
 	public function getAuthors($dataset_id, $dataset_version, $names=2){
-		$res = $this->fpdo
-			->from('dataset_person')
-			->leftJoin('person')->select('COALESCE(surname || \', \' || COALESCE(initials, given_name), name) AS name')
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_min <= ?', $dataset_version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $dataset_version)
-			->orderBy('sort')
-			->fetchAll();
+		$q = $this->dsql->dsql()
+			->table('dataset_person');
+		$res = $q->join('person.person_id', 'person_id', 'left')->field($q->expr('COALESCE(surname || \', \' || COALESCE(initials, given_name), name)'), 'name')
+			->where(\npdc\lib\Db::selectVersion('dataset', $dataset_id, $dataset_version))
+			->order('sort')
+			->get();
 		$c = count($res);
 		if($c === 1){
 			$return = $res[0]['name'];
@@ -491,15 +464,13 @@ class Dataset{
 	 * @return array list of organizations
 	 */
 	public function getDataCenter($id, $version, $join = true){
-		$q = $this->fpdo
-			->from('dataset_data_center');
+		$q = $this->dsql->dsql()
+			->table('dataset_data_center');
 		if($join){
-			$q->join('organization')->select('organization.*');
+			$q->join('organization.organization_id', 'organization_id', 'inner');
 		}
-		return $q->where('dataset_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $q->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->get();
 	}
 	
 	/**
@@ -511,15 +482,14 @@ class Dataset{
 	 * @return array list of people
 	 */
 	public function getDataCenterPerson($id, $version, $join = true){
-		$q =$this->fpdo
-			->from('dataset_data_center_person');
+		$q =$this->dsql
+			->table('dataset_data_center_person');
 		if($join){
-			$q->join('person')->select('person.*');
+			$q->join('person.person_person_id', 'person_id', 'inner');
 		}
-		return $q->where('dataset_data_center_id=?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $q->where('dataset_data_center_id', $id)
+			->where(\npdc\lib\Db::selectVersion('dataset', $version))
+			->get();
 	}
 	
 	/**
@@ -531,15 +501,13 @@ class Dataset{
 	 * @return array list of citations
 	 */
 	public function getCitations($id, $version, $type = null){
-		$q = $this->fpdo
-			->from('dataset_citation')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version);
+		$q = $this->dsql->dsql()
+			->table('dataset_citation')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version));
 		if(!is_null($type)){
-			$q->where('type = ?', $type);
+			$q->where('type', $type);
 		}
-		return $q->fetchAll();
+		return $q->get();
 	}
 	
 	/**
@@ -550,12 +518,10 @@ class Dataset{
 	 * @return array list of related datasets
 	 */
 	public function getRelatedDatasets($id, $version){
-		return $this->fpdo
-			->from('related_dataset')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?', $version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max>= ?)', $version)
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('related_dataset')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->get();
 	}
 	/**
 	 * Get science keywords
@@ -565,14 +531,12 @@ class Dataset{
 	 * @return array List of keywords
 	 */
 	public function getKeywords($id, $version){
-		return $this->fpdo
-			->from('dataset_keyword')
-			->join('vocab_science_keyword')->select('category,topic, term, var_lvl_1, var_lvl_2, var_lvl_3')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?',$version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $version)
-			->orderBy('category, coalesce(topic, \'0\'), coalesce(term, \'0\'), coalesce(var_lvl_1, \'0\'), coalesce(var_lvl_2, \'0\'), coalesce(var_lvl_3, \'0\'), coalesce(dataset_keyword.detailed_variable, \'0\')')
-			->fetchAll();
+		$q = $this->dsql->dsql()
+			->table('dataset_keyword')
+			->join('vocab_science_keyword.vocab_science_keyword_id', 'vocab_science_keyword_id', 'inner')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version));
+		return $q->order($q->expr('category, coalesce(topic, \'0\'), coalesce(term, \'0\'), coalesce(var_lvl_1, \'0\'), coalesce(var_lvl_2, \'0\'), coalesce(var_lvl_3, \'0\'), coalesce(dataset_keyword.detailed_variable, \'0\')'))
+			->get();
 	}
 	
 	/**
@@ -583,13 +547,11 @@ class Dataset{
 	 * @return array List of keywords
 	 */
 	public function getAncillaryKeywords($id, $version){
-		return $this->fpdo
-			->from('dataset_ancillary_keyword')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?',$version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $version)
-			->orderBy('keyword')
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('dataset_ancillary_keyword')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->order('keyword')
+			->get();
 	}
 	
 	/**
@@ -600,14 +562,12 @@ class Dataset{
 	 * @return array List of ISO topics
 	 */
 	public function getTopics($id, $version){
-		return $this->fpdo
-			->from('dataset_topic')
-			->join('vocab_iso_topic_category')->select('description')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?',$version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $version)
-			->orderBy('topic')
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('dataset_topic')
+			->join('vocab_iso_topic_category.vocab_iso_topic_category_id', 'vocab_iso_topic_category_id', 'inner')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->order('topic')
+			->get();
 	}
 	
 	/**
@@ -619,18 +579,16 @@ class Dataset{
 	 * @return array list of links
 	 */
 	public function getLinks($id, $version, $getData = false){
-		$q =$this->fpdo
-			->from('dataset_link')
-			->join('vocab_url_type USING(vocab_url_type_id)')->select('vocab_url_type.*')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?',$version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $version);
+		$q =$this->dsql->dsql()
+			->table('dataset_link')
+			->join('vocab_url_type.vocab_url_type_id', 'vocab_url_type_id', 'inner')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version));
 		if($getData){
-			$q->where('vocab_url_type_id = ?', 4);
+			$q->where('dataset_link.vocab_url_type_id', 4);
 		} else {
-			$q->where('vocab_url_type_id <> ?', 4);
+			$q->where('dataset_link.vocab_url_type_id', '<>', 4);
 		}
-		return $q->fetchAll();
+		return $q->get();
 	}
 	
 	/**
@@ -641,12 +599,11 @@ class Dataset{
 	 * @return array list of urls
 	 */
 	public function getLinkUrls($id, $version){
-		return $this->fpdo
-			->from('dataset_link_url')
-			->where('dataset_link_id = ?', $id)
-			->where('dataset_version_min <= ?',$version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $version)
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('dataset_link_url')
+			->where('dataset_link_id', $id)
+			->where(\npdc\lib\Db::selectVersion('dataset', $version))
+			->get();
 	}
 	
 	/**
@@ -657,12 +614,11 @@ class Dataset{
 	 * @return array list of files
 	 */
 	public function getFiles($id, $version){
-		return $this->fpdo
-			->from('dataset_file')->join('file')->select('file.*')
-			->where('dataset_id = ?', $id)
-			->where('dataset_version_min <= ?',$version)
-			->where('(dataset_version_max IS NULL OR dataset_version_max >= ?)', $version)
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('dataset_file')
+			->join('file.file_id', 'file_id', 'inner')
+			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
+			->get();
 	}
 	
 	/**
@@ -675,20 +631,20 @@ class Dataset{
 	public function isEditor($dataset_id, $person_id){
 		return is_numeric($dataset_id) && is_numeric($person_id)
 			? (
-				$this->fpdo
-				->from('dataset_person')
+				count($this->dsql->dsql()
+				->table('dataset_person')
 				->where('dataset_id', $dataset_id)
 				->where('person_id', $person_id)
 				->where('dataset_version_max IS NULL')
 				->where('editor')
-				->count() > 0
+				->get()) > 0
 			) || (
-				$this->fpdo
-				->from('dataset')
+				count($this->dsql
+				->table('dataset')
 				->where('dataset_id', $dataset_id)
 				->where('creator', $person_id)
 				->where('record_status IN (\'draft\', \'published\')')
-				->count() > 0
+				->get()) > 0
 			)
 			: false;
 	}
@@ -700,11 +656,12 @@ class Dataset{
 	 * @return array list of available versions with status of each version
 	 */
 	public function getVersions($dataset_id){
-		return $this->fpdo
-			->from('dataset', $dataset_id)->select(null)
-			->select('dataset_version, record_status, uuid')
-			->orderBy('dataset_version DESC')
-			->fetchAll();
+		return $this->dsql->dsql()
+			->table('dataset')
+			->where('dataset_id', $dataset_id)
+			->field('dataset_version, record_status, uuid')
+			->order('dataset_version DESC')
+			->get();
 	}
 	
 	/**
@@ -718,30 +675,31 @@ class Dataset{
 	 */
 	public function search($string, $summary = false, $exclude = null, $includeDraft = false){
 		$string = '%'.$string.'%';
-		$q = $this->fpdo
-			->from('dataset')
-			->select('dataset_id, date_start || \' - \' || date_end AS date')
-			->select('\'Dataset\' AS content_type')
-			->orderBy('date DESC');
+		$q = $this->dsql->dsql()
+			->table('dataset')
+			->field('*');
+		$q->field($q->expr('dataset_id, date_start || \' - \' || date_end'), 'date')
+			->field($q->expr('\'Dataset\''), 'content_type')
+			->order('date DESC');
 		if(!empty($string)){
 			$operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
+			$s = $q->orExpr()
+				->where('title', $operator, $string)
+				->where('dif_id', $operator, str_replace(' ', '_', $string));
 			if($summary){
-				$q->where('(title '.$operator.' :search1 OR dif_id '.$operator.' :search2 OR summary '.$operator.' :search3)'
-					, [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string), ':search3'=>$string]);
-			} else {
-				$q->where('(title '.$operator.' :search1 OR dif_id '.$operator.' :search2)'
-					, [':search1'=>$string, ':search2'=>str_replace(' ', '_', $string)]);
+				$s->where('summary', $operator, $string);
 			}
+			$q->where($s);
 		}
 		if(is_array($exclude) && count($exclude) > 0){
-			$q->where('dataset_id NOT', $exclude);
+			$q->where('dataset_id','NOT', $exclude);
 		}
 		if($includeDraft) {
-			$q->join('(SELECT dataset_id, MAX(dataset_version) as dataset_version FROM dataset GROUP BY dataset_id) a USING (dataset_id, dataset_version)');
+			$q->where('dataset_version', $q->dsql()->table('dataset', 'a')->field('max(dataset_version)')->where('a.dataset_id=dataset.dataset_id'));
 		} else {
-			$q->where('record_status = \'published\'');	
+			$q->where('record_status', 'published');	
 		}
-		return $q->fetchAll();
+		return $q->get();
 	}
 	
 	/**
@@ -753,16 +711,16 @@ class Dataset{
 	 * @return array status change with person
 	 */
 	public function getLastStatusChange($dataset_id, $version, $state = null){
-		$q = $this->fpdo
-			->from('record_status_change')
-			->join('person')->select('person.*')
+		$q = $this->dsql
+			->table('record_status_change')
+			->join('person.person_id', 'person_id', 'inner')
 			->where('dataset_id', $dataset_id)
 			->where('version', $version)
-			->orderBy('datetime DESC');
+			->order('datetime DESC');
 		if($state !== null){
 			$q->where('new_state', $state);
 		}
-		return $q->fetch();
+		return $q->get()[0];
 	}
 	
 	/**
@@ -773,13 +731,13 @@ class Dataset{
 	 * @return array list of status changes with persons details
 	 */
 	public function getStatusChanges($dataset_id, $version){
-		return $this->fpdo
-			->from('record_status_change')
-			->join('person')->select('person.*')
+		return $this->dsql->dsql()
+			->table('record_status_change')
+			->join('person.person_id', 'person_id', 'inner')
 			->where('dataset_id', $dataset_id)
 			->where('version', $version)
-			->orderBy('datetime DESC')
-			->fetchAll();
+			->order('datetime DESC')
+			->get();
 	}
 	
 	/**
@@ -841,50 +799,38 @@ class Dataset{
 		return $values;
 	}
 	
-
+	/**
+	 * Insert data set
+	 *
+	 * @param array $data The record to insert
+	 * @return integer id of new data set
+	 */
 	public function insertGeneral($data){
 		$values = $this->parseData($data, 'insert');
-		$r = $this->fpdo->from('dataset')->where($values)->fetch();
-		if($r === false){
-			$this->fpdo->insertInto('dataset', $values)->execute();
-			$r = $this->fpdo->from('dataset')->where($values)->fetch();
-		}
-		$this->fpdo
-			->update('dataset')
-			->set(['uuid'=>\Lootils\Uuid\Uuid::createV5(\npdc\config::$UUIDNamespace ?? \Lootils\Uuid\Uuid::createV4(), 'dataset/'.$r['dataset_id'].'/'.$r['dataset_version'])->getUUID()])
-			->where('dataset_id', $r['dataset_id'])
-			->where('dataset_version', $r['dataset_version'])
-			->execute();
-		return $r['dataset_id'];
+		$id = \npdc\lib\Db::insert('dataset', $values, true);
+		$uuid = \Lootils\Uuid\Uuid::createV5(
+			\npdc\config::$UUIDNamespace ?? \Lootils\Uuid\Uuid::createV4(),
+			'dataset/'.$id.'/'.$values['dataset_version']
+		)->getUUID();
+		\npdc\lib\Db::update('dataset', ['dataset_id'=>$id, 'dataset_version'=>$values['dataset_version']], ['uuid'=>$uuid]);
+		return $id;
 	}
 	
+	/**
+	 * Update a data set
+	 *
+	 * @param array $data the new data
+	 * @param integer $id data set id
+	 * @param integer $version data set version
+	 * @return void
+	 */
 	public function updateGeneral($data, $id, $version){
-		$values = $this->parseData($data, 'update');
-		return $this->fpdo
-			->update('dataset')
-			->set($values)
-			->where('dataset_id', $id)
-			->where('dataset_version', $version)
-			->execute();
+		return \npdc\lib\Db::update('dataset', ['dataset_id'=>$id, 'dataset_version'=>$version], $this->parseData($data, 'update'));
 	}
 	
-	public function insertSpatialCoverage($data){
-		//WKT and GEOM are kept in sync with a trigger
-		$this->fpdo
-			->insertInto('spatial_coverage', $data)
-			->execute();
-		return $this->fpdo
-			->from('spatial_coverage')
-			->where($data)
-			->fetch()['spatial_coverage_id'];
-	}
-	
-	public function updateSpatialCoverage($record, $data, $version){
-		//WKT and GEOM are kept in sync with a trigger
-		$oldRecord = $this->fpdo
-			->from('spatial_coverage', $record)
-			->fetch();
-		$createNew = false;
+	private function _updateSub($tbl, $record, $data, $version){
+		$oldRecord = \npdc\lib\Db::get($tbl, $record);
+		$createnew = false;
 		if($oldRecord['dataset_version_min'] != $version){
 			foreach($data as $key=>$val){
 				if($val != $oldRecord[$key]){
@@ -893,91 +839,66 @@ class Dataset{
 			}
 		}
 		if($createNew){
-			$this->fpdo
-				->update('spatial_coverage', ['dataset_version_max'=>$version-1], $record)
-				->execute();
+			\npdc\lib\Db::update($tbl, $record, ['dataset_version_max'=>$version-1]);
 			$data['dataset_version_min'] = $version;
-			$return = $this->insertSpatialCoverage($data);
+			return \npdc\lib\Db::insert($tbl, $data, true);
 		} else {
-			$return = $this->fpdo
-				->update('spatial_coverage', $data, $record)
-				->execute() === 1;
+			return \npdc\lib\Db::update($tbl, $record, $data);
 		}
-		return $return;
+	}
+
+	private function _deleteSub($tbl, $dataset_id, $version, $current, $parent = 'dataset'){
+		$q = $this->dsql->dsql()
+			->table($tbl)
+			->where($parent.'_id', $dataset_id)
+			->where('dataset_version_max', NULL);
+		if(count($current) > 0){
+			$q->where($tbl.'_id', 'NOT', $current);
+		}
+		$q->set('dataset_version_max', $version)
+			->update();
+		$this->dsql->dsql()
+			->table($tbl)
+			->where($this->dsql->expr('dataset_version_min > dataset_version_max'))
+			->delete();
+	}
+
+	/**
+	 * Insert spatial coverage
+	 *
+	 * @param array $data the data to insert
+	 * @return void
+	 */
+	public function insertSpatialCoverage($data){
+		return \npdc\lib\Db::insert('spatial_coverage', $data, true);
+	}
+	
+	/**
+	 * Update spatial coverage
+	 *
+	 * @param int $record record id
+	 * @param array $data the data
+	 * @param int $version data set versopm
+	 * @return void
+	 */
+	public function updateSpatialCoverage($record, $data, $version){
+		return $this->_updateSub('spatial_coverage', $record, $data, $version);
 	}
 
 	public function deleteSpatialCoverage($dataset_id, $version, $current){
-		$q = $this->fpdo
-			->update('spatial_coverage')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', NULL);
-		if(count($current) === 1){
-			$q->where('spatial_coverage_id <> ?', $current[0]);	
-		} elseif(count($current) > 1){
-			$q->where('spatial_coverage_id NOT ', $current);
-		}
-		$q->execute();
-		$this->fpdo
-			->deleteFrom('spatial_coverage')
-			->where('dataset_version_min > dataset_version_max')
-			->execute();
+		$this->_deleteSub('spatial_coverage', $dataset_id, $version, $current);
 	}
 
 	public function insertResolution($data){
-		//WKT and GEOM are kept in sync with a trigger
-		$this->fpdo
-			->insertInto('data_resolution', $data)
-			->execute();
-		return $this->fpdo
-			->from('data_resolution')
-			->where($data)
-			->fetch()['data_resolution_id'];
+		return \npdc\lib\Db::insert('data_resolution', $data, true);
 	}
 	
 	public function updateResolution($record, $data, $version){
-		//WKT and GEOM are kept in sync with a trigger
-		$oldRecord = $this->fpdo
-			->from('data_resolution', $record)
-			->fetch();
-		$createNew = false;
-		if($oldRecord['dataset_version_min'] != $version){
-			foreach($data as $key=>$val){
-				if($val != $oldRecord[$key]){
-					$createNew = true;
-				}
-			}
-		}
-		if($createNew){
-			$this->fpdo
-				->update('data_resolution', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$data['dataset_version_min'] = $version;
-			$return = $this->insertResolution($data);
-		} else {
-			$return = $this->fpdo
-				->update('data_resolution', $data, $record)
-				->execute() === 1;
-		}
-		return $return;
+		return $this->_updateSub('data_resolution', $record, $data, $version);
 	}
 
 	public function deleteResolution($dataset_id, $version, $current){
-		$q = $this->fpdo
-			->update('data_resolution')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', NULL);
-		if(count($current) === 1){
-			$q->where('data_resolution_id <> ?', $current[0]);	
-		} elseif(count($current) > 1){
-			$q->where('data_resolution_id NOT ', $current);
-		}
-		$q->execute();
-		$this->fpdo
-			->deleteFrom('data_resolution')
-			->where('dataset_version_min > dataset_version_max')
-			->execute();
+		$this->_deleteSub('data_resolution', $dataset_id, $version, $current);
 	}
 	
 	public function insertLocation($data){
@@ -985,48 +906,11 @@ class Dataset{
 	}
 
 	public function updateLocation($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('location', $record)
-			->fetch();
-		$createNew = false;
-		if($oldRecord['dataset_version_min'] != $version){
-			foreach($data as $key=>$val){
-				if($val != $oldRecord[$key]){
-					$createNew = true;
-				}
-			}
-		}
-		if($createNew){
-			$this->fpdo
-				->update('location', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$data['dataset_version_min'] = $version;
-			$return = $this->insertLocation($data);
-		} else {
-			$return = $this->fpdo
-				->update('location', $data, $record)
-				->execute()
-					=== false
-					? false
-					: $record;
-		}
-		return $return;	
+		return $this->_updateSub('location', $record, $data, $version);
 	}
 
 	public function deleteLocation($dataset_id, $version, $current){
-		$q = $this->fpdo
-			->update('location')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', NULL);
-		if(count($current) > 0){
-			$q->where('location_id NOT', $current);
-		}
-		$q->execute();
-		$this->fpdo
-			->deleteFrom('location')
-			->where('dataset_version_min > dataset_version_max')
-			->execute();
+		$this->_deleteSub('location', $dataset_id, $version, $current);
 	}
 	
 	public function insertTemporalCoverage($data){
@@ -1034,19 +918,7 @@ class Dataset{
 	}
 	
 	public function deleteTemporalCoverage($dataset_id, $version, $current){
-		$q = $this->fpdo
-			->update('temporal_coverage')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', NULL);
-		if(count($current) > 0){
-			$q->where('temporal_coverage_id NOT', $current);
-		}
-		$q->execute();
-		/*$this->fpdo
-			->deleteFrom('temporal_coverage')
-			->where('dataset_version_min > dataset_version_max')
-			->execute();*/
+		$this->_deleteSub('temporal_coverage', $dataset_id, $version, $current);
 	}
 
 	
@@ -1055,45 +927,11 @@ class Dataset{
 	}
 	
 	public function updateTemporalCoveragePeriod($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('temporal_coverage_period', $record)
-			->fetch();
-		$createNew = false;
-		if($oldRecord['dataset_version_min'] != $version){
-			foreach($data as $key=>$val){
-				if($val != $oldRecord[$key]){
-					$createNew = true;
-				}
-			}
-		}
-		if($createNew){
-			$this->fpdo
-				->update('temporal_coverage_period', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$data['dataset_version_min'] = $version;
-			$return = $this->insertTemporalCoveragePeriod($data);
-		} else {
-			$return = $this->fpdo
-				->update('temporal_coverage_period', $data, $record)
-				->execute()
-					=== false
-					? false
-					: $record;
-		}
-		return $return;	
+		return $this->_updateSub('temporal_coverage_period', $record, $data, $version, 'parent');
 	}
 	
 	public function deleteTemporalCoveragePeriod($temporal_coverage_id, $version, $current){
-		$q = $this->fpdo
-			->update('temporal_coverage_period')
-			->set('dataset_version_max', $version)
-			->where('temporal_coverage_id', $temporal_coverage_id)
-			->where('dataset_version_max', NULL);
-		if(count($current) > 0){
-			$q->where('temporal_coverage_period_id NOT', $current);
-			
-		}
-		$q->execute();
+		$this->_deleteSub('temporal_coverage_period', $dataset_id, $version, $current, 'temporal_coverage');
 	}
 	
 	public function insertTemporalCoverageCycle($data){
@@ -1101,44 +939,11 @@ class Dataset{
 	}
 	
 	public function updateTemporalCoverageCycle($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('temporal_coverage_cycle', $record)
-			->fetch();
-		$createNew = false;
-		if($oldRecord['dataset_version_min'] != $version){
-			foreach($data as $key=>$val){
-				if($val != $oldRecord[$key]){
-					$createNew = true;
-				}
-			}
-		}
-		if($createNew){
-			$this->fpdo
-				->update('temporal_coverage_cycle', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$data['dataset_version_min'] = $version;
-			$return = $this->insertTemporalCoverageCycle($data);
-		} else {
-			$return = $this->fpdo
-				->update('temporal_coverage_cycle', $data, $record)
-				->execute()
-					=== false
-					? false
-					: $record;
-		}
-		return $return;	
+		return $this->_updateSub('temporal_coverage_cycle', $record, $data, $version);
 	}
 	
 	public function deleteTemporalCoverageCycle($temporal_coverage_id, $version, $current){
-		$q = $this->fpdo
-			->update('temporal_coverage_cycle')
-			->set('dataset_version_max', $version)
-			->where('temporal_coverage_id', $temporal_coverage_id)
-			->where('temporal_coverage_cycle.dataset_version_max', NULL);
-		if(count($current) > 0){
-			$q->where('temporal_coverage_cycle_id NOT', $current);
-		}
-		$q->execute();
+		$this->_deleteSub('temporal_coverage_cycle', $dataset_id, $version, $current, 'temporal_coverage');
 	}
 	
 	public function insertTemporalCoverageAncillary($data){
@@ -1146,43 +951,11 @@ class Dataset{
 	}
 	
 	public function updateTemporalCoverageAncillary($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('temporal_coverage_ancillary', $record)
-			->fetch();
-		$createNew = false;
-		if($oldRecord['dataset_version_min'] != $version){
-			foreach($data as $key=>$val){
-				if($val != $oldRecord[$key]){
-					$createNew = true;
-				}
-			}
-		}
-		if($createNew){
-			$this->fpdo
-				->update('temporal_coverage_ancillary', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$return = $this->insertTemporalCoverageAncillary($data);
-		} else {
-			$return = $this->fpdo
-				->update('temporal_coverage_ancillary', $data, $record)
-				->execute()
-					=== false
-					? false
-					: $record;
-		}
-		return $return;	
+		return $this->_updateSub('temporal_coverage_ancillary', $record, $data, $version);
 	}
 	
 	public function deleteTemporalCoverageAncillary($temporal_coverage_id, $version, $current){
-		$q = $this->fpdo
-			->update('temporal_coverage_ancillary')
-			->set('dataset_version_max', $version)
-			->where('temporal_coverage_id', $temporal_coverage_id)
-			->where('temporal_coverage_ancillary.dataset_version_max', NULL);
-		if(count($current) > 0){
-			$q->where('temporal_coverage_ancillary_id NOT', $current);
-		}
-		$q->execute();
+		$this->_deleteSub('temporal_coverage_ancillary', $dataset_id, $version, $current, 'temporal_coverage');
 	}
 	
 	public function insertTemporalCoveragePaleo($data){
@@ -1190,43 +963,11 @@ class Dataset{
 	}
 	
 	public function updateTemporalCoveragePaleo($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('temporal_coverage_paleo', $record)
-			->fetch();
-		$createNew = false;
-		if($oldRecord['dataset_version_min'] != $version){
-			foreach($data as $key=>$val){
-				if($val != $oldRecord[$key]){
-					$createNew = true;
-				}
-			}
-		}
-		if($createNew){
-			$this->fpdo
-				->update('temporal_coverage_paleo', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$return = $this->insertTemporalCoveragePaleo($data);
-		} else {
-			$return = $this->fpdo
-				->update('temporal_coverage_paleo', $data, $record)
-				->execute()
-					=== false
-					? false
-					: $record;
-		}
-		return $return;	
+		return $this->_updateSub('temporal_coverage_paleo', $record, $data, $version);
 	}
 	
 	public function deleteTemporalCoveragePaleo($temporal_coverage_id, $version, $current){
-		$q = $this->fpdo
-			->update('temporal_coverage_paleo')
-			->set('dataset_version_max', $version)
-			->where('temporal_coverage_id', $temporal_coverage_id)
-			->where('temporal_coverage_paleo.dataset_version_max', NULL);
-		if(count($current) > 0){
-			$q->where('temporal_coverage_paleo_id NOT', $current);
-		}
-		$q->execute();
+		$this->_deleteSub('temporal_coverage_paleo', $dataset_id, $version, $current, 'temporal_coverage');
 	}
 	
 	public function insertTemporalCoveragePaleoChronounit($data){
@@ -1234,111 +975,57 @@ class Dataset{
 	}
 
 	public function deleteTemporalCoveragePaleoChronounit($id, $coverage, $version){
-		$q = $this->fpdo
-			->update('temporal_coverage_paleo_chronounit')
-			->set('dataset_version_max', $version)
+		$q = $this->dsql->dsql()
+			->table('temporal_coverage_paleo_chronounit')
 			->where('temporal_coverage_paleo_id', $coverage)
 			->where('dataset_version_max', null)
 			->where('vocab_chronounit_id', $id)
-			->execute();
+			->set('dataset_version_max', $version)
+			->update();
 	}
 
 	public function insertTopic($topic_id, $dataset_id, $dataset_version){
-		return $this->fpdo
-			->insertInto('dataset_topic', ['dataset_id'=>$dataset_id, 'dataset_version_min'=>$dataset_version, 'vocab_iso_topic_category_id'=>$topic_id])
-			->execute();
+		return \npdc\lib\Db::insert('dataset_topic', ['dataset_id'=>$dataset_id, 'dataset_version_min'=>$dataset_version, 'vocab_iso_topic_category_id'=>$topic_id], true);
 	}
 
 	public function deleteTopic($topic_id, $dataset_id, $dataset_version){
-		$this->fpdo
-			->update('dataset_topic')
-			->set('dataset_version_max', $dataset_version)
+		$this->dsql->dsql()
+			->table('dataset_topic')
 			->where('vocab_iso_topic_category_id', $topic_id)
 			->where('dataset_id', $dataset_id)
 			->where('dataset_version_max IS NULL')
-			->execute();
-		return $this->fpdo
-			->deleteFrom('dataset_topic')
-			->where('dataset_version_min > dataset_version_max')
-			->execute();
+			->set('dataset_version_max', $dataset_version)
+			->update();
 	}
 	
 	public function insertScienceKeyword($data){
-		$r = $this->fpdo->from('dataset_keyword')->where($data)->fetch();
-		if($r === false){
-			$this->fpdo->insertInto('dataset_keyword', $data)->execute();
-			$r = $this->fpdo->from('dataset_keyword')->where($data)->fetch();
-		}
-		return $r['dataset_keyword_id'];
+		return \npdc\lib\Db::insert('dataset_keyword', $data, true);
 	}
 	
 	public function updateScienceKeyword($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('dataset_keyword',$record)
-			->fetch();
-		
-		$createNew = false;
-		foreach($data as $key=>$val){
-			if($val != $oldRecord[$key]){
-				$createNew = true;
-			}
-		}
-		if($oldRecord['dataset_version_min'] === $version && $createNew){
-			$return = $this->fpdo
-				->update('dataset_keyword', $data, $record)
-				->execute() === 1;
-		} elseif($createNew){
-			$this->fpdo
-				->update('dataset_keyword', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$return = $this->insertScienceKeyword(array_merge($data,['dataset_version_min'=>$version, 'dataset_id'=>$oldRecord['dataset_id']]));
-		} else {
-			$return = true;
-		}
-		return $return;
+		return $this->_updateSub('dataset_keyword', $record, $data, $version);
 	}
 	
 	public function deleteScienceKeyword($dataset_id, $version, $current){
-		$this->fpdo
-			->update('dataset_keyword')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max IS NULL')
-			->where('dataset_keyword_id NOT', $current)
-			->execute();
-		return $this->fpdo
-			->deleteFrom('dataset_keyword')
-			->where('dataset_version_min > dataset_version_max')
-			->execute();
+		$this->_deleteSub('dataset_keyword', $dataset_id, $version, $current);
 	}
 	
 	public function insertAncillaryKeyword($word, $id, $version){
-		return $this->fpdo
-			->insertInto('dataset_ancillary_keyword')
-			->values(['dataset_id'=>$id,
-				'dataset_version_min'=>$version,
-				'keyword'=>$word])
-			->execute();
+		return \npdc\lib\Db::insert('dataset_ancillary_keyword', ['dataset_id'=>$id,'dataset_version_min'=>$version,'keyword'=>$word], true);
 	}
 	
 	public function deleteAncillaryKeyword($word, $id, $version){
-		$this->fpdo
-			->update('dataset_ancillary_keyword')
-			->set('dataset_version_max', $version)
+		$this->dsql
+			->table('dataset_ancillary_keyword')
 			->where('dataset_id', $id)
 			->where('keyword', $word)
 			->where('dataset_version_max', null)
-			->execute();
-		$this->fpdo
-			->deleteFrom('dataset_ancillary_keyword')
-			->where('dataset_version_max < dataset_version_min')
-			->execute();
+			->set('dataset_version_max', $version)
+			->update();
 	}
 	
 	public function insertPerson($data){
-		return $this->fpdo
-			->insertInto('dataset_person', $data)
-			->execute();
+		return \npdc\lib\Db::insert('dataset_person', $data, true);
 	}
 	
 	public function updatePerson($record, $data, $version){

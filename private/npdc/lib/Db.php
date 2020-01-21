@@ -154,7 +154,7 @@ class Db {
 	 * @return array record
 	 */
 	public static function get($tbl, $record){
-		return self::_getRecord($tbl, $record)->get()[0];
+		return self::_getRecord($tbl, $record)->get()[0] ?? false;
 	}
 
 	/**
@@ -185,5 +185,28 @@ class Db {
 				->where($ctype.'_version_max IS null')
 				->where($ctype.'_version_max >= '.$ctype.'.'.$ctype.'_version')
 		);
+	}
+
+	/**
+	 * Provide version selector
+	 *
+	 * @param string $ctype content type
+	 * @param integer $id id of the record (can be ommitted, actually version can be ommitted, in that case id will be used as version)
+	 * @param integer $version version number
+	 * @return void
+	 */
+	public static function selectVersion($ctype, $id, $version = null){
+		$q = self::getDSQLcon()->andExpr();
+		if(empty($version)){
+			$version = $id;
+		} else {
+			$q->where($ctype.'_id', $id);
+		}
+		$q->where($ctype.'_version_min', '<=', $version)
+			->where(self::getDSQLcon()->orExpr()
+				->where($ctype.'_version_max IS null')
+				->where($ctype.'_version_max', '>=', $version)
+		);
+		return $q;
 	}
 }

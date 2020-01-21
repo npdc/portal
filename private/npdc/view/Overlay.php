@@ -65,7 +65,7 @@ class Overlay{
 	 */
 	private function editorTools(){
 		$this->title = ucfirst(\npdc\lib\Args::get('action'));
-		$editUrl = null;
+		/*$editUrl = null;
 		
 		$url = parse_url($_GET['u']);
 		$path = trim(str_replace(BASE_URL, '', $url['path']), '/');
@@ -103,7 +103,7 @@ class Overlay{
 				)){
 				$editUrl = BASE_URL.'/'.implode('/', array_slice($parts, 0, $n)).'/edit';
 			}
-		}
+		}*/
 		ob_start();
 		include 'template/overlay_'.\npdc\lib\Args::get('action').'.php';
 		$this->mid = ob_get_clean();
