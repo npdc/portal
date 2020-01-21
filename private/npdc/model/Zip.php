@@ -10,15 +10,6 @@
 namespace npdc\model;
 
 class Zip {
-	private $dsql;
-
-	/**
-	 * Constructor
-	 */
-	public function __construct(){
-		$this->dsql = \npdc\lib\Db::getDSQLcon();
-	}
-	
 	/**
 	 * GETTERS
 	 */
