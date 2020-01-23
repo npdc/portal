@@ -177,7 +177,7 @@ class Project extends Base{
 				$keep[] = $_SESSION[$this->formId]['data'][$key];
 			}
 		}
-		$this->model->deleteLink($this->id, $keep, $this->version-1);
+		$this->model->deleteLink($this->id, $this->version-1, $keep);
 		
 		$loopId = 'links_url_';
 		foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
@@ -187,7 +187,7 @@ class Project extends Base{
 				$data['text'] = $_SESSION[$this->formId]['data']['links_label_'.substr($key, strlen($loopId))];
 				if(strpos($key, '_new_') === false){
 					$recordId = $_SESSION[$this->formId]['data']['links_id_'.substr($key, strlen($loopId))];
-					$this->model->updateLink($recordId, $data);
+					$this->model->updateLink($recordId, $data, $this->version);
 				} else {
 					$data['project_id'] = $this->id;
 					$data['project_version_min'] = $this->version;

@@ -57,7 +57,7 @@ class Page{
 	 * @return array list of urls
 	 */
 	public function getUrls($id){
-		return $this->dsql
+		return $this->dsql->dsql()
 			->table('page_link')
 			->where('page_id', $id)
 			->order('sort')

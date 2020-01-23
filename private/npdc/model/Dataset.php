@@ -9,17 +9,8 @@
 
 namespace npdc\model;
 
-class Dataset{
-	private $fpdo;
-	private $dsql;
-
-	/**
-	 * Constructor
-	 */
-	public function __construct(){
-		$this->fpdo = \npdc\lib\Db::getFPDO();
-		$this->dsql = \npdc\lib\Db::getDSQLcon();
-	}
+class Dataset extends Base{
+	protected $baseTbl = 'dataset';
 
 	/**
 	 * GETTERS
@@ -88,8 +79,8 @@ class Dataset{
 				}
 			}
 		}
-		$q->order('(CASE WHEN date_start IS NULL THEN 0 ELSE 1 END), date_start DESC, date_end DESC');
-		$q->field('dataset.*')
+		$q->order('(CASE WHEN date_start IS NULL THEN 0 ELSE 1 END), date_start DESC, date_end DESC')
+			->field('dataset.*')
 			->field($q->dsql()->expr('"Dataset"'), 'content_type')
 			->field($q->dsql()
 				->expr('CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}', ['draft', 'hasDraft'])
@@ -482,7 +473,7 @@ class Dataset{
 	 * @return array list of people
 	 */
 	public function getDataCenterPerson($id, $version, $join = true){
-		$q =$this->dsql
+		$q =$this->dsql->dsql()
 			->table('dataset_data_center_person');
 		if($join){
 			$q->join('person.person_person_id', 'person_id', 'inner');
@@ -622,49 +613,6 @@ class Dataset{
 	}
 	
 	/**
-	 * Check if person is allowed to edit record
-	 *
-	 * @param integer $dataset_id id of dataset
-	 * @param integer $person_id id of person
-	 * @return boolean user is allowed to edit
-	 */
-	public function isEditor($dataset_id, $person_id){
-		return is_numeric($dataset_id) && is_numeric($person_id)
-			? (
-				count($this->dsql->dsql()
-				->table('dataset_person')
-				->where('dataset_id', $dataset_id)
-				->where('person_id', $person_id)
-				->where('dataset_version_max IS NULL')
-				->where('editor')
-				->get()) > 0
-			) || (
-				count($this->dsql
-				->table('dataset')
-				->where('dataset_id', $dataset_id)
-				->where('creator', $person_id)
-				->where('record_status IN (\'draft\', \'published\')')
-				->get()) > 0
-			)
-			: false;
-	}
-	
-	/**
-	 * Get all available versions of dataset
-	 *
-	 * @param integer $dataset_id dataset id
-	 * @return array list of available versions with status of each version
-	 */
-	public function getVersions($dataset_id){
-		return $this->dsql->dsql()
-			->table('dataset')
-			->where('dataset_id', $dataset_id)
-			->field('dataset_version, record_status, uuid')
-			->order('dataset_version DESC')
-			->get();
-	}
-	
-	/**
 	 * Search for datasets
 	 *
 	 * @param string $string String to search for
@@ -674,7 +622,6 @@ class Dataset{
 	 * @return array list of datasets matching the filters
 	 */
 	public function search($string, $summary = false, $exclude = null, $includeDraft = false){
-		$string = '%'.$string.'%';
 		$q = $this->dsql->dsql()
 			->table('dataset')
 			->field('*');
@@ -682,6 +629,7 @@ class Dataset{
 			->field($q->expr('\'Dataset\''), 'content_type')
 			->order('date DESC');
 		if(!empty($string)){
+			$string = '%'.$string.'%';
 			$operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
 			$s = $q->orExpr()
 				->where('title', $operator, $string)
@@ -700,44 +648,6 @@ class Dataset{
 			$q->where('record_status', 'published');	
 		}
 		return $q->get();
-	}
-	
-	/**
-	 * Get last status change of the dataset version
-	 *
-	 * @param integer $dataset_id dataset id
-	 * @param integer $version dataset version
-	 * @param string|null $state new state to look for
-	 * @return array status change with person
-	 */
-	public function getLastStatusChange($dataset_id, $version, $state = null){
-		$q = $this->dsql
-			->table('record_status_change')
-			->join('person.person_id', 'person_id', 'inner')
-			->where('dataset_id', $dataset_id)
-			->where('version', $version)
-			->order('datetime DESC');
-		if($state !== null){
-			$q->where('new_state', $state);
-		}
-		return $q->get()[0];
-	}
-	
-	/**
-	 * Get list of status changes of the dataset version
-	 *
-	 * @param integer $dataset_id dataset id
-	 * @param integer $version dataset version
-	 * @return array list of status changes with persons details
-	 */
-	public function getStatusChanges($dataset_id, $version){
-		return $this->dsql->dsql()
-			->table('record_status_change')
-			->join('person.person_id', 'person_id', 'inner')
-			->where('dataset_id', $dataset_id)
-			->where('version', $version)
-			->order('datetime DESC')
-			->get();
 	}
 	
 	/**
@@ -779,7 +689,7 @@ class Dataset{
 	 * @param string $action will record be inserted or updated
 	 * @return array reformatted data
 	 */
-	private function parseData($data, $action){
+	protected function parseGeneral($data, $action){
 		$fields = ['dif_id','title','summary','purpose','region','date_start','date_end','quality','access_constraints','use_constraints','dataset_progress', 'originating_center', 'dif_revision_history', 'version_description', 'product_level_id', 'collection_data_type', 'extended_metadata', 'record_status', 'creator', 'duplicate_of'];
 		if($action === 'insert'){
 			array_push($fields, 'dataset_version');
@@ -797,70 +707,6 @@ class Dataset{
 			}
 		}
 		return $values;
-	}
-	
-	/**
-	 * Insert data set
-	 *
-	 * @param array $data The record to insert
-	 * @return integer id of new data set
-	 */
-	public function insertGeneral($data){
-		$values = $this->parseData($data, 'insert');
-		$id = \npdc\lib\Db::insert('dataset', $values, true);
-		$uuid = \Lootils\Uuid\Uuid::createV5(
-			\npdc\config::$UUIDNamespace ?? \Lootils\Uuid\Uuid::createV4(),
-			'dataset/'.$id.'/'.$values['dataset_version']
-		)->getUUID();
-		\npdc\lib\Db::update('dataset', ['dataset_id'=>$id, 'dataset_version'=>$values['dataset_version']], ['uuid'=>$uuid]);
-		return $id;
-	}
-	
-	/**
-	 * Update a data set
-	 *
-	 * @param array $data the new data
-	 * @param integer $id data set id
-	 * @param integer $version data set version
-	 * @return void
-	 */
-	public function updateGeneral($data, $id, $version){
-		return \npdc\lib\Db::update('dataset', ['dataset_id'=>$id, 'dataset_version'=>$version], $this->parseData($data, 'update'));
-	}
-	
-	private function _updateSub($tbl, $record, $data, $version){
-		$oldRecord = \npdc\lib\Db::get($tbl, $record);
-		$createnew = false;
-		if($oldRecord['dataset_version_min'] != $version){
-			foreach($data as $key=>$val){
-				if($val != $oldRecord[$key]){
-					$createNew = true;
-				}
-			}
-		}
-		if($createNew){
-			\npdc\lib\Db::update($tbl, $record, ['dataset_version_max'=>$version-1]);
-			$data['dataset_version_min'] = $version;
-			return \npdc\lib\Db::insert($tbl, $data, true);
-		} else {
-			return \npdc\lib\Db::update($tbl, $record, $data);
-		}
-	}
-
-	private function _deleteSub($tbl, $dataset_id, $version, $current, $parent = 'dataset'){
-		$q = $this->dsql->dsql()
-			->table($tbl)
-			->where($parent.'_id', $dataset_id)
-			->where('dataset_version_max', NULL);
-		if(count($current) > 0){
-			$q->where($tbl.'_id', 'NOT', $current);
-		}
-		$q->set('dataset_version_max', $version)
-			->update();
-		$this->dsql->dsql()
-			->table($tbl)
-			->where($this->dsql->expr('dataset_version_min > dataset_version_max'))
-			->delete();
 	}
 
 	/**
@@ -1015,7 +861,7 @@ class Dataset{
 	}
 	
 	public function deleteAncillaryKeyword($word, $id, $version){
-		$this->dsql
+		$this->dsql->dsql()
 			->table('dataset_ancillary_keyword')
 			->where('dataset_id', $id)
 			->where('keyword', $word)
@@ -1024,346 +870,107 @@ class Dataset{
 			->update();
 	}
 	
-	public function insertPerson($data){
-		return \npdc\lib\Db::insert('dataset_person', $data, true);
-	}
-	
-	public function updatePerson($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('dataset_person')
-			->where($record)
-			->fetch();
-		
-		$createNew = false;
-		$updateEditor = false;
-		foreach($data as $key=>$val){
-			if($val != $oldRecord[$key]){
-				if($key === 'editor'){
-					$updateEditor = true;
-				} else {
-					$createNew = true;
-				}
-			}
-		}
-		if($oldRecord['dataset_version_min'] === $version && ($createNew || $updateEditor)){
-			$return = $this->fpdo
-				->update('dataset_person')
-				->set($data)
-				->where($record)
-				->execute() === 1;
-		} elseif($createNew){
-			$this->fpdo
-				->update('dataset_person')
-				->set('dataset_version_max', $version-1)
-				->where($record)
-				->execute();
-			$return = $this->insertPerson(array_merge($data, $record, ['dataset_version_min'=>$version, 'dataset_id'=>$oldRecord['dataset_id']]));
-		} elseif($updateEditor) {
-			$return = $this->fpdo
-				->update('dataset_person')
-				->set('editor', $data['editor'])
-				->where($record)
-				->execute();
-		} else {
-			$return = true;
-		}
-		return $return;
-	}
-	
-	public function deletePerson($dataset_id, $version, $currentPersons){
-		$q = $this->fpdo
-			->update('dataset_person')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', null);
-		if(count($currentPersons) > 0){
-			foreach($currentPersons as $person){
-				if(!is_numeric($person)){
-					die('Something went wrong! (e_deletePerson '.$person.')');
-				}
-			}
-			if(count($currentPersons) === 1){
-				$q->where('person_id <> ?',$currentPersons[0]);
-			} else {
-				$q->where('person_id NOT IN ('.implode(',',$currentPersons).')');
-			}
-		}
-		$q->execute();
-		$this->fpdo
-			->deleteFrom('dataset_person')
-			->where('dataset_version_max < dataset_version_min')
-			->execute();
-		return true;
-	}
-	
 	public function insertDataCenter($data){
-		return $this->fpdo
-			->insertInto('dataset_data_center', $data)
-			->execute();
+		\npdc\lib\Db::insert('dataset_data_center', $data, true);
 	}
 	
 	public function updateDataCenter($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('dataset_data_center', $record)
-			->fetch();
-		
-		$createNew = false;
-		foreach($data as $key=>$val){
-			if($val != $oldRecord[$key]){
-				$createNew = true;
-			}
-		}
-		if($oldRecord['dataset_version_min'] === $version && $createNew){
-			$return = $this->fpdo
-				->update('dataset_data_center', $data, $record)
-				->execute() === 1;
-		} elseif($createNew){
-			$this->fpdo
-				->update('dataset_data_center', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$return = $this->insertDataCenter(array_merge($data, ['dataset_version_min'=>$version]));
-		} else {
-			$return = true;
-		}
-		return $return;
+		return $this->_updateSub('dataset_data_center', $record, $data, $version);
 	}
 	
 	public function deleteDataCenter($dataset_id, $version, $currentDataCenters){
-		$q = $this->fpdo
-			->update('dataset_data_center')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', null);
-		if(count($currentDataCenters) > 0){
-			foreach($currentDataCenters as $dataset_data_center){
-				if(!is_numeric($dataset_data_center)){
-					die('Something went wrong! (e_deleteDataCenter '.$dataset_data_center.')');
-				}
-			}
-			if(count($currentDataCenters) === 1){
-				$q->where('dataset_data_center_id <> ?',$currentDataCenters[0]);
-			} else {
-				$q->where('dataset_data_center_id NOT IN ('.implode(',',$currentDataCenters).')');
-			}
-		}
-		$q->execute();
-		$this->fpdo
-			->deleteFrom('dataset_data_center')
-			->where('dataset_version_max < dataset_version_min')
-			->execute();
-		return true;
+		$this->_deleteSub('dataset_data_center', $dataset_id, $version, $currentDataCenters);
 	}
 	
 	public function insertDataCenterPerson($data){
-		return $this->fpdo
-			->insertInto('dataset_data_center_person', $data)
-			->execute();
+		return \npdc\lib\Db::insert('dataset_data_center_person', $data, true);
 	}
 	
 	public function deleteDataCenterPerson($person_id, $dataCenterId, $version){
-		$q = $this->fpdo
-			->update('dataset_data_center_person')
-			->set('dataset_version_max', $version)
+		$q = $this->dsql->dsql()
+			->table('dataset_data_center_person')
 			->where('dataset_data_center_id', $dataCenterId)
 			->where('person_id', $person_id)
 			->where('dataset_version_max', null)
-			->execute();
-		$this->fpdo
-			->deleteFrom('dataset_data_center_person')
-			->where('dataset_version_max < dataset_version_min')
-			->execute();
+			->set('dataset_version_max', $version)
+			->update();
 	}
 	
 	public function insertProject($data){
-		$this->fpdo
-			->insertInto('dataset_project')
-			->values($data)
-			->execute();
+		return \npdc\lib\Db::insert('dataset_project', $data, true);
 	}
 
 	public function deleteProject($dataset_id, $version, $currentProjects){
-		$q = $this->fpdo
-			->update('dataset_project')
-			->set('dataset_version_max', $version)
+		$q = $this->dsql->dsql()
+			->table('dataset_project')
 			->where('dataset_id', $dataset_id)
 			->where('dataset_version_max', null);
 		if(count($currentProjects) > 0){
-			if(count($currentProjects) === 1){
-				$q->where('project_id <> ?',$currentProjects[0]);
-			} else {
-				$q->where('project_id NOT', $currentProjects);
-			}
+			$q->where('project_id', 'NOT', $currentProjects);
 		}
-		$q->execute();
-		/*\npdc\lib\Db::executeQuery('UPDATE dataset_project SET project_version_max=project_version FROM project WHERE dataset_version_max IS NOT NULL AND project.project_id=dataset_project.project_id AND record_status=\'published\'');		
-		\npdc\lib\Db::executeQuery('UPDATE dataset_project SET dataset_version_max=dataset_version FROM dataset WHERE project_version_max IS NOT NULL AND dataset.dataset_id=dataset_project.dataset_id AND record_status=\'published\'');
-		$this->fpdo
-			->deleteFrom('dataset_project')
-			->where('dataset_version_max < dataset_version_min')
-			->execute();*/
+		$q->set('dataset_version_max', $version)
+			->update();
 		return true;
 	}
 
 	public function insertPublication($data){
-		$this->fpdo
-			->insertInto('dataset_publication')
-			->values($data)
-			->execute();
+		return \npdc\lib\Db::insert('dataset_publication', $data, true);
 	}
 
 	public function deletePublication($dataset_id, $version, $currentPublications){
-		$q = $this->fpdo
-			->update('dataset_publication')
-			->set('dataset_version_max', $version)
+		$q = $this->dsql->dsql()
+			->table('dataset_publication')
 			->where('dataset_id', $dataset_id)
 			->where('dataset_version_max', null);
 		if(count($currentPublications) > 0){
-			if(count($currentPublications) === 1){
-				$q->where('publication_id <> ?',$currentPublications[0]);
-			} else {
-				$q->where('publication_id NOT', $currentPublications);
-			}
+			$q->where('publication_id', 'NOT', $currentPublications);
 		}
-		$q->execute();
-		/*\npdc\lib\Db::executeQuery('UPDATE dataset_publication SET publication_version_max=publication_version FROM publication WHERE dataset_version_max IS NOT NULL AND publication.publication_id=dataset_publication.publication_id AND record_status=\'published\'');		
-		\npdc\lib\Db::executeQuery('UPDATE dataset_publication SET dataset_version_max=dataset_version FROM dataset WHERE publication_version_max IS NOT NULL AND dataset.dataset_id=dataset_publication.dataset_id AND record_status=\'published\'');
-		$this->fpdo
-			->deleteFrom('dataset_publication')
-			->where('dataset_version_max < dataset_version_min')
-			->execute();*/
+		$q->set('dataset_version_max', $version)
+			->update();
 		return true;
 	}
 
 	public function insertCitation($data){
-		return $this->fpdo
-			->insertInto('dataset_citation', $data)
-			->execute();
+		return \npdc\lib\Db::insert('dataset_citation', $data, true);
 	}
 	
 	public function updateCitation($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('dataset_citation', $record)
-			->fetch();
-		
-		$createNew = false;
-		foreach($data as $key=>$val){
-			if($val != $oldRecord[$key]){
-				$createNew = true;
-			}
-		}
-		if($oldRecord['dataset_version_min'] === $version && $createNew){
-			$return = $this->fpdo
-				->update('dataset_citation', $data, $record)
-				->execute() === 1;
-		} elseif($createNew){
-			$this->fpdo
-				->update('dataset_citation', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$return = $this->insertCitation(array_merge($data, ['dataset_version_min'=>$version, 'dataset_id'=>$oldRecord['dataset_id']]));
-		} else {
-			$return = true;
-		}
-		return $return;
+		return $this->_updateSub('dataset_citation', $record, $data, $version);
 	}
 	
 	public function deleteCitation($dataset_id, $version, $currentCitations, $type = null){
-		$q = $this->fpdo
-			->update('dataset_citation')
-			->set('dataset_version_max', $version)
+		$q = $this->dsql->dsql()
+			->table('dataset_citation')
 			->where('dataset_id', $dataset_id)
 			->where('dataset_version_max', null);
 		if(count($currentCitations) > 0){
-			foreach($currentCitations as $citation){
-				if(!is_numeric($citation)){
-					die('Something went wrong! (e_deleteCitation '.$citation.')');
-				}
-			}
-			if(count($currentCitations) === 1){
-				$q->where('dataset_citation_id <> ?',$currentCitations[0]);
-			} else {
-				$q->where('dataset_citation_id NOT IN ('.implode(',',$currentCitations).')');
-			}
+			$q->where('dataset_citation_id', 'NOT', $currentCitations);
 		}
 		if(!is_null($type)){
-			$q->where('type = ?', $type);
+			$q->where('type', $type);
 		}
-		$q->execute();
-		$this->fpdo
-			->deleteFrom('dataset_citation')
-			->where('dataset_version_max < dataset_version_min')
-			->execute();
-		return true;
+		$q->set('dataset_version_max', $version)
+			->update();
 	}
 
 	public function insertRelatedDataset($data){
-		return $this->fpdo
-			->insertInto('related_dataset', $data)
-			->execute();
+		return \npdc\lib\Db::insert('related_dataset', $data, true);
 	}
 	
 	public function updateRelatedDataset($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('related_dataset', $record)
-			->fetch();
-		
-		$createNew = false;
-		foreach($data as $key=>$val){
-			if($val != $oldRecord[$key]){
-				$createNew = true;
-			}
-		}
-		if($oldRecord['dataset_version_min'] === $version && $createNew){
-			$return = $this->fpdo
-				->update('related_dataset', $data, $record)
-				->execute() === 1;
-		} elseif($createNew){
-			$this->fpdo
-				->update('related_dataset', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$return = $this->insertRelatedDataset(array_merge($data, ['dataset_version_min'=>$version, 'dataset_id'=>$oldRecord['dataset_id']]));
-		} else {
-			$return = true;
-		}
-		return $return;
+		return $this->_updateSub('related_dataset', $record, $data, $version);
 	}
 	
 	public function deleteRelatedDataset($dataset_id, $version, $currentRelatedDatasets){
-		$q = $this->fpdo
-			->update('related_dataset')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', null);
-		if(count($currentRelatedDatasets) > 0){
-			foreach($currentRelatedDatasets as $related_dataset){
-				if(!is_numeric($related_dataset)){
-					die('Something went wrong! (e_deleteRelatedDataset '.$related_dataset.')');
-				}
-			}
-			if(count($currentRelatedDatasets) === 1){
-				$q->where('related_dataset_id <> ?',$currentRelatedDatasets[0]);
-			} else {
-				$q->where('related_dataset_id NOT IN ('.implode(',',$currentRelatedDatasets).')');
-			}
-		}
-		$q->execute();
-		$this->fpdo
-			->deleteFrom('related_dataset')
-			->where('dataset_version_max < dataset_version_min')
-			->execute();
-		return true;
+		$this->_deleteSub('related_dataset', $dataset_id, $version, $currentRelatedDatasets);
 	}
 
 	public function insertPlatform($data){
-		return $this->fpdo
-			->insertInto('platform', $data)
-			->execute();
+		return \npdc\lib\Db::insert('platform', $data, true);
 	}
 	
 	public function updatePlatform($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('platform', $record)
-			->fetch();
-		
+		$oldRecord = \npdc\lib\Db::get('platform', $record);
 		$createNew = false;
 		foreach($data as $key=>$val){
 			if($val != $oldRecord[$key]){
@@ -1371,13 +978,9 @@ class Dataset{
 			}
 		}
 		if($oldRecord['dataset_version_min'] === $version && $createNew){
-			$return = $this->fpdo
-				->update('platform', $data, $record)
-				->execute() === 1;
+			$return = \npdc\lib\Db::update('platform', $record, $data);
 		} elseif($createNew){
-			$this->fpdo
-				->update('platform', ['dataset_version_max'=>$version-1], $record)
-				->execute();
+			$return = \npdc\lib\Db::update('platform', $record, ['dataset_version_max'=>$version-1]);
 			$instruments = $this->getInstrument($oldRecord['platform_id'], $version, false);
 			$return = $this->insertPlatform(array_merge($data, ['dataset_version_min'=>$version, 'dataset_id'=>$oldRecord['dataset_id']]));
 			foreach($instruments as $instrument){
@@ -1403,42 +1006,16 @@ class Dataset{
 	}
 	
 	public function deletePlatform($dataset_id, $version, $currentPlatforms){
-		$q = $this->fpdo
-			->update('platform')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', null);
-		if(count($currentPlatforms) > 0){
-			foreach($currentPlatforms as $platform){
-				if(!is_numeric($platform)){
-					die('Something went wrong! (e_deletePlatform '.$platform.')');
-				}
-			}
-			if(count($currentPlatforms) === 1){
-				$q->where('platform_id <> ?',$currentPlatforms[0]);
-			} else {
-				$q->where('platform_id NOT IN ('.implode(',',$currentPlatforms).')');
-			}
-		}
-		$q->execute();
-//		$this->fpdo
-//			->deleteFrom('platform')
-//			->where('dataset_version_max < dataset_version_min')
-//			->execute();
+		$this->_deleteSub('platform', $dataset_id, $version, $currentPlatforms);
 		return true;
 	}
 
 	public function insertInstrument($data){
-		return $this->fpdo
-			->insertInto('instrument', $data)
-			->execute();
+		return \npdc\lib\Db::insert('instrument', $data, true);
 	}
 	
 	public function updateInstrument($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('instrument', $record)
-			->fetch();
-		
+		$oldRecord = \npdc\lib\Db::get('instrument', $record);
 		$createNew = false;
 		foreach($data as $key=>$val){
 			if($val != $oldRecord[$key]){
@@ -1446,13 +1023,9 @@ class Dataset{
 			}
 		}
 		if($oldRecord['dataset_version_min'] === $version && $createNew){
-			$return = $this->fpdo
-				->update('instrument', $data, $record)
-				->execute() === 1;
+			$return = \npdc\lib\Db::update('instrument', $record, $data);
 		} elseif($createNew){
-			$this->fpdo
-				->update('instrument', ['dataset_version_max'=>$version-1], $record)
-				->execute();
+			$return = \npdc\lib\Db::update('instrument', $record, ['dataset_version_max'=>$version-1]);
 			$sensors = $this->getSensor($oldRecord['instrument_id'], $version, false);
 			$return = $this->insertInstrument(array_merge($data, ['dataset_version_min'=>$version]));
 			if(count($sensors) > 0){
@@ -1471,164 +1044,48 @@ class Dataset{
 	}
 	
 	public function deleteInstrument($platform_id, $version, $currentInstruments){
-		$q = $this->fpdo
-			->update('instrument')
-			->set('dataset_version_max', $version)
-			->where('platform_id', $platform_id)
-			->where('dataset_version_max', null);
-		if(count($currentInstruments) > 0){
-			foreach($currentInstruments as $instrument){
-				if(!is_numeric($instrument)){
-					die('Something went wrong! (e_deleteInstrument '.$instrument.')');
-				}
-			}
-			if(count($currentInstruments) === 1){
-				$q->where('instrument_id <> ?',$currentInstruments[0])
-					->where('old_instrument_id <> ?',$currentInstruments[0]);
-			} else {
-				$q->where('instrument_id NOT IN ('.implode(',',$currentInstruments).')')
-					->where('old_instrument_id NOT IN ('.implode(',',$currentInstruments).')');
-			}
-		}
-		$q->execute();
-//		$this->fpdo
-//			->deleteFrom('instrument')
-//			->where('dataset_version_max < dataset_version_min')
-//			->execute();
-		return true;
+		$this->_deleteSub('instrument', $dataset_id, $version, $current, 'platform');
 	}
 
 	public function insertSensor($data){
-		return $this->fpdo
-			->insertInto('sensor', $data)
-			->execute();
+		return \npdc\lib\Db::insert('sensor', $data, true);
 	}
 	
 	public function updateSensor($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('sensor', $record)
-			->fetch();
-		
-		$createNew = false;
-		foreach($data as $key=>$val){
-			if($val != $oldRecord[$key]){
-				$createNew = true;
-			}
-		}
-		if($oldRecord['dataset_version_min'] === $version && $createNew){
-			$return = $this->fpdo
-				->update('sensor', $data, $record)
-				->execute() === 1;
-		} elseif($createNew){
-			$this->fpdo
-				->update('sensor', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$return = $this->insertSensor(array_merge($data, ['dataset_version_min'=>$version]));
-		} else {
-			$return = true;
-		}
-		return $return;
+		return $this->_updateSub('sensor', $record, $data, $version);
 	}
 	
 	public function deleteSensor($instrument_id, $version, $currentSensors){
-		$q = $this->fpdo
-			->update('sensor')
-			->set('dataset_version_max', $version)
-			->where('instrument_id', $instrument_id)
-			->where('dataset_version_max', null);
-		if(count($currentSensors) > 0){
-			foreach($currentSensors as $sensor){
-				if(!is_numeric($sensor)){
-					die('Something went wrong! (e_deleteSensor '.$sensor.')');
-				}
-			}
-			if(count($currentSensors) === 1){
-				$q->where('sensor_id <> ?',$currentSensors[0])
-					->where('old_sensor_id <> ?',$currentSensors[0]);
-			} else {
-				$q->where('sensor_id NOT IN ('.implode(',',$currentSensors).')')
-					->where('old_sensor_id NOT IN ('.implode(',',$currentSensors).')');
-			}
-		}
-		$q->execute();
-//		$this->fpdo
-//			->deleteFrom('sensor')
-//			->where('dataset_version_max < dataset_version_min')
-//			->execute();
-		return true;
+		$this->_deleteSub('sensor', $dataset_id, $version, $current, 'instrument');
 	}
 
 	public function insertCharacteristics($data){
-		return $this->fpdo
-			->insertInto('characteristics')
-			->values($data)
-			->execute();
+		return \npdc\lib\Db::insert('characteristics', $data, true);
 	}
 	
 	public function updateCharacteristics($record_id, $data, $dataset_version){
-		$oldRecord = $this->fpdo
-			->from('characteristics', $record_id)
-			->fetch();
-		
-		$createNew = false;
-		foreach($data as $key=>$val){
-			if($val != $oldRecord[$key]){
-				$createNew = true;
-			}
-		}
-		if($oldRecord['dataset_version_min'] === $dataset_version && $createNew){
-			$return = $this->fpdo
-				->update('characteristics', $data, $record_id)
-				->execute() === 1;
-		} elseif($createNew){
-			$this->fpdo
-				->update('characteristics', ['dataset_version_max'=>$dataset_version-1],$record_id)
-				->execute();
-			$return = $this->insertCharacteristics(array_merge($data, ['dataset_version_min'=>$dataset_version]));
-		} else {
-			$return = true;
-		}
-		return $return;
+		return $this->_updateSub('characteristics', $record_id, $data, $dataset_version);
 	}
 	
 	public function deleteCharacteristics($record, $dataset_version, $currentCharacteristics){
 		list($type, $record_id) = $record;
-		$q = $this->fpdo
-			->update('characteristics')
-			->set('dataset_version_max', $dataset_version)
+		$q = $this->dsql->dsql()
+			->table('characteristics')
 			->where($type.'_id', $record_id)
 			->where('dataset_version_max', null);
 		if(count($currentCharacteristics) > 0){
-			foreach($currentCharacteristics as $characteristic){
-				if(!is_numeric($characteristic)){
-					die('Something went wrong! (e_deleteCharacteristic '.$characteristic.')');
-				}
-			}
-			if(count($currentCharacteristics) === 1){
-				$q->where('characteristics_id <> ?',$currentCharacteristics[0]);
-			} else {
-				$q->where('characteristics_id NOT IN ('.implode(',',$currentCharacteristics).')');
-			}
+			$q->where('characteristics_id', 'NOT', $currentCharacteristics);
 		}
-		$q->execute();
-		$this->fpdo
-			->deleteFrom('characteristics')
-			->where('dataset_version_max < dataset_version_min')
-			->execute();
-		return true;
+		$q->set('dataset_version_max', $dataset_version)
+			->update();
 	}
 	
 	public function insertLink($data){
-		return $this->fpdo
-			->insertInto('dataset_link', $data)
-			->execute();
+		return \npdc\lib\Db::insert('dataset_link', $data, true);
 	}
 	
 	public function updateLink($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('dataset_link', $record)
-			->fetch();
-		
+		$oldRecord = \npdc\lib\Db::get('dataset_link', $record);
 		$createNew = false;
 		foreach($data as $key=>$val){
 			if($val != $oldRecord[$key]){
@@ -1636,13 +1093,9 @@ class Dataset{
 			}
 		}
 		if($oldRecord['dataset_version_min'] === $version && $createNew){
-			$return = $this->fpdo
-				->update('dataset_link', $data, $record)
-				->execute() === 1;
+			$return = \npdc\lib\Db::update('dataset_link', $record, $data);
 		} elseif($createNew){
-			$this->fpdo
-				->update('dataset_link', ['dataset_version_max'=>$version-1], $record)
-				->execute();
+			$return = \npdc\lib\Db::update('dataset_link', $record, ['dataset_version_max'=>$version-1]);
 			$urls = $this->getLinkUrls($oldRecord['dataset_link_id'], $version);
 			$return = $this->insertLink(array_merge($data, ['dataset_version_min'=>$version, 'dataset_id'=>$oldRecord['dataset_id']]));
 			if(count($urls) > 0){
@@ -1661,67 +1114,20 @@ class Dataset{
 	}
 	
 	public function deleteLink($dataset_id, $version, $currentLinks){
-		$q = $this->fpdo
-			->update('dataset_link')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', null);
-		if(count($currentLinks) > 0){
-			foreach($currentLinks as $dataset_link){
-				if(!is_numeric($dataset_link)){
-					die('Something went wrong! (e_deleteLink '.$dataset_link.')');
-				}
-			}
-			if(count($currentLinks) === 1){
-				$q->where('dataset_link_id <> ?',$currentLinks[0]);
-			} else {
-				$q->where('dataset_link_id NOT IN ('.implode(',',$currentLinks).')');
-			}
-		}
-		$q->execute();
-//		$this->fpdo
-//			->deleteFrom('dataset_link')
-//			->where('dataset_version_max < dataset_version_min')
-//			->execute();
-		return true;
+		$this->_deleteSub('dataset_link', $dataset_id, $version, $currentLinks);
 	}
 
 	public function insertLinkUrl($data){
-		return $this->fpdo
-			->insertInto('dataset_link_url', $data)
-			->execute();
+		return \npdc\lib\Db::insert('dataset_link_url', $data, true);
 	}
 	
 	public function updateLinkUrl($record, $data, $version){
-		$oldRecord = $this->fpdo
-			->from('dataset_link_url', $record)
-			->fetch();
-		
-		$createNew = false;
-		foreach($data as $key=>$val){
-			if($val != $oldRecord[$key]){
-				$createNew = true;
-			}
-		}
-		if($oldRecord['dataset_version_min'] === $version && $createNew){
-			$return = $this->fpdo
-				->update('dataset_link_url', $data, $record)
-				->execute() === 1;
-		} elseif($createNew){
-			$this->fpdo
-				->update('dataset_link_url', ['dataset_version_max'=>$version-1], $record)
-				->execute();
-			$return = $this->insertLinkUrl(array_merge($data, ['dataset_version_min'=>$version]));
-		} else {
-			$return = true;
-		}
-		return $return;
+		return $this->_updateSub('dataset_link_url', $record, $data, $version);
 	}
 	
 	public function deleteLinkUrl($link_id, $version, $currentLinkUrls){
-		$q = $this->fpdo
-			->update('dataset_link_url')
-			->set('dataset_version_max', $version)
+		$q = $this->dsql->dsql()
+			->table('dataset_link_url')
 			->where('dataset_link_id', $link_id)
 			->where('dataset_version_max', null);
 		if(count($currentLinkUrls) > 0){
@@ -1730,56 +1136,19 @@ class Dataset{
 					die('Something went wrong! (e_deleteLinkUrl '.$dataset_link_url.')');
 				}
 			}
-			if(count($currentLinkUrls) === 1){
-				$q->where('dataset_link_url_id <> ?',$currentLinkUrls[0]);
-				$q->where('old_dataset_link_url_id <> ?',$currentLinkUrls[0]);
-			} else {
-				$q->where('dataset_link_url_id NOT IN ('.implode(',',$currentLinkUrls).')');
-				$q->where('old_dataset_link_url_id NOT IN ('.implode(',',$currentLinkUrls).')');
-			}
+			$q->where('dataset_link_url_id', 'NOT', $currentLinkUrls);
+			$q->where('old_dataset_link_url_id', 'NOT', $currentLinkUrls);
 		}
-		$q->execute();
-//		$this->fpdo
-//			->deleteFrom('dataset_link_url')
-//			->where('dataset_version_max < dataset_version_min')
-//			->execute();
+		$q->set('dataset_version_max', $version)
+			->update();
 		return true;
 	}
 	
 	public function insertFile($data){
-		$this->fpdo->insertInto('dataset_file', $data)->execute();
+		return \npdc\lib\Db::insert('dataset_file', $data, true);
 	}
 	
 	public function deleteFile($dataset_id, $version, $current){
-		$q = $this->fpdo
-			->update('dataset_file')
-			->set('dataset_version_max', $version)
-			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', null);
-		if(count($current) > 0){
-			$q->where('file_id NOT', $current);
-		}
-		$q->execute();
-	}
-
-	public function setStatus($dataset_id, $old, $new, $comment = null){
-		$r = $this->fpdo->from('dataset')
-			->where('dataset_id', $dataset_id)
-			->where('record_status', $old)
-			->fetch();
-		if($r !== false){
-			$q = $this->fpdo
-				->update('dataset')
-				->set('record_status', $new);
-			if($new === 'published'){
-				$q->set('published', date("Y-m-d H:i:s", time()));
-			}
-			$return = $q
-				->where('dataset_id', $dataset_id)
-				->where('record_status', $old)
-				->execute();
-			$this->fpdo->insertInto('record_status_change', ['dataset_id'=>$dataset_id, 'version'=>$r['dataset_version'], 'old_state'=>$old, 'new_state'=>$new, 'person_id'=>$_SESSION['user']['id'], 'comment'=>$comment])->execute();
-		}
-		return $return;
+		$this->_deleteSub('dataset_file', $dataset_id, $version, $current);
 	}
 }

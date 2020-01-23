@@ -12,7 +12,6 @@ namespace npdc\lib;
 use \PDO;
 
 class Db {
-	private static $fpdo = NULL;
 	private static $dsql = NULL;
 	private static $instance = NULL;
 	
@@ -67,29 +66,6 @@ class Db {
 		return self::$instance;
 	}
 	
-	/**
-	 * Get FPDO connection to database
-	 *
-	 * @return object FPDO type connection
-	 */
-	public static function getFPDO(){
-		if(!isset(self::$fpdo)){
-			$instance = self::getInstance();
-			
-			$structure = new \FluentStructure('%s_id');
-			self::$fpdo = new \FluentPDO($instance, $structure);
-			
-			if(NPDC_DEV && NPDC_DB_DEBUG){
-				self::$fpdo->debug = function($BaseQuery) {
-					echo "query: " . $BaseQuery->getQuery(false) . "<br/>";
-					echo "parameters: " . implode(', ', $BaseQuery->getParameters()) . "<br/>";
-					echo "rowCount: " . $BaseQuery->getResult()->rowCount() . "<br/><br/>";
-				};
-			}
-		}
-		return self::$fpdo;
-	}
-
 	public static function getDSQLcon(){
 		if(!isset(self::$dsql)){
 			self::$dsql = \atk4\dsql\Connection::connect(self::getInstance());

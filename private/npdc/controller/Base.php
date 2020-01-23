@@ -393,11 +393,13 @@ class Base {
 	 * @return boolean Indicates if record is changed
 	 */
 	protected function tblHasChanged($tbl, $id, $version){
-		$res = \npdc\lib\Db::getFPDO()
-				->from($tbl)
-				->where($this->name.'_id = :id', [':id'=>$id])
-				->where('('.$this->name.'_version_min = :version OR '.$this->name.'_version_max = :oldversion)', [':version'=>$version, ':oldversion'=>$version-1])
-				->fetchAll();
-		return count($res) > 0;
+		$q = \npdc\lib\Db::getDSQLcon()
+				->table($tbl)
+				->where($this->name.'_id', $id);
+		$q->where($q->orExpr()
+			->where($this->name.'_version_min', $version)
+			->where($this->name.'_version_max', $version-1)
+		);
+		return count($q->get()) > 0;
 	}
 }

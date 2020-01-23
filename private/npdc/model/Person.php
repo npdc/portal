@@ -196,7 +196,7 @@ class Person{
 	 * @return void
 	 */
 	public function usePasswordNew($id){
-		return $this->dsql->dsql->table('account_new')
+		return $this->dsql->dsql()->table('account_new')
 			->set(['used_time'=>date('Y-m-d h:i:s'), 'expire_reason'=>'Used'])
 			->where('account_new_id', $id)
 			->update();
@@ -371,7 +371,7 @@ class Person{
 	 * @return boolean
 	 */
 	public function checkMail($mail, $ownId){
-		return count($this->dsql->dsql
+		return count($this->dsql->dsql()
 			->table('person')
 			->where('mail', $mail)
 			->where('person_id', '<>', $ownId)
