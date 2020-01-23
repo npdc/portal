@@ -36,9 +36,9 @@ class Organization {
 			}
 			if(is_array($filter['type']) && count($filter['type']) > 0){
 				if($filter['combine'] === 'all'){
-					$qf = $this->dsql->andExpr();
+					$qf = $org->andExpr();
 				} else {
-					$qf = $this->dsql->orExpr();
+					$qf = $org->orExpr();
 				}
 				if(in_array('project', $filter['type'])){
 					//Filter on having a project
@@ -58,7 +58,7 @@ class Organization {
 					$inOc = $this->dsql->dsql()
 						->table('dataset')->field('originating_center', 'organization_id')
 						->where('record_status', 'published');
-					$inDs = $this->dsql->table($this->dsql->expr("( [] union [] )", [$inDa, $inOc]), 'ds');
+					$inDs = $this->dsql->dsql()->table($this->dsql->expr("( [] union [] )", [$inDa, $inOc]), 'ds');
 					$qf->where('organization_id', $inDs);
 				}
 	
@@ -147,7 +147,7 @@ class Organization {
 	 */
 	public function getPersons($organization_id){
 		$l = $this->dsql->dsql()->table('person')->order('name');
-		$l->where($this->dsql->orExpr()
+		$l->where($l->orExpr()
 			->where('organization_id', $organization_id)
 			->where('person_id', 
 				$this->dsql->dsql()
