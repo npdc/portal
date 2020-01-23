@@ -36,12 +36,10 @@ class Organization extends Base {
 				$this->formController->doCheck();
 				if($this->formController->ok){
 					$data = $_SESSION[$this->formId]['data'];
-					foreach($data as $key=>$value){
-						if(substr($key, 0, 8) === 'address_'){
-							$data[substr($key, 8)] = $data[$key];
-							unset($data[$key]);
-						}
-					}
+					$data['dif_code'] = $data['gcmd_dif_code'];
+					$data['dif_name'] = $data['gcmd_dif_name'];
+					unset($data['gcmd_dif_code']);
+					unset($data['gcmd_dif_name']);
 					if(\npdc\lib\Args::get('action') === 'new'){
 						$id = $this->model->insertOrganization($data);
 					} else {
@@ -57,6 +55,10 @@ class Organization extends Base {
 				$_SESSION[$this->formId]['data']['country_id'] = 'NL';
 			} else {
 				$_SESSION[$this->formId]['data'] = $this->model->getById($id);
+				$_SESSION[$this->formId]['data']['gcmd_dif_code'] = $_SESSION[$this->formId]['data']['dif_code'];
+				$_SESSION[$this->formId]['data']['gcmd_dif_name'] = $_SESSION[$this->formId]['data']['dif_name'];
+				unset($_SESSION[$this->formId]['data']['dif_code']);
+				unset($_SESSION[$this->formId]['data']['dif_name']);
 			}
 		} elseif(!\npdc\lib\Args::exists('id')) {
 			unset($_SESSION[$this->formId]['data']);
