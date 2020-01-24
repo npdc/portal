@@ -526,7 +526,7 @@ class Dataset extends Base{
 			->table('dataset_keyword')
 			->join('vocab_science_keyword.vocab_science_keyword_id', 'vocab_science_keyword_id', 'inner')
 			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version));
-		return $q->order($q->expr('category, coalesce(topic, \'0\'), coalesce(term, \'0\'), coalesce(var_lvl_1, \'0\'), coalesce(var_lvl_2, \'0\'), coalesce(var_lvl_3, \'0\'), coalesce(dataset_keyword.detailed_variable, \'0\')'))
+		return $q->order($q->expr('category, coalesce(topic, \'0\'), coalesce(term, \'0\'), coalesce(var_lvl_1, \'0\'), coalesce(var_lvl_2, \'0\'), coalesce(var_lvl_3, \'0\'), coalesce(free_text, \'0\')'))
 			->get();
 	}
 	
@@ -777,7 +777,7 @@ class Dataset extends Base{
 	}
 	
 	public function deleteTemporalCoveragePeriod($temporal_coverage_id, $version, $current){
-		$this->_deleteSub('temporal_coverage_period', $dataset_id, $version, $current, 'temporal_coverage');
+		$this->_deleteSub('temporal_coverage_period', $temporal_coverage_id, $version, $current, 'temporal_coverage');
 	}
 	
 	public function insertTemporalCoverageCycle($data){
@@ -789,7 +789,7 @@ class Dataset extends Base{
 	}
 	
 	public function deleteTemporalCoverageCycle($temporal_coverage_id, $version, $current){
-		$this->_deleteSub('temporal_coverage_cycle', $dataset_id, $version, $current, 'temporal_coverage');
+		$this->_deleteSub('temporal_coverage_cycle', $temporal_coverage_id, $version, $current, 'temporal_coverage');
 	}
 	
 	public function insertTemporalCoverageAncillary($data){
@@ -801,7 +801,7 @@ class Dataset extends Base{
 	}
 	
 	public function deleteTemporalCoverageAncillary($temporal_coverage_id, $version, $current){
-		$this->_deleteSub('temporal_coverage_ancillary', $dataset_id, $version, $current, 'temporal_coverage');
+		$this->_deleteSub('temporal_coverage_ancillary', $temporal_coverage_id, $version, $current, 'temporal_coverage');
 	}
 	
 	public function insertTemporalCoveragePaleo($data){
@@ -813,7 +813,7 @@ class Dataset extends Base{
 	}
 	
 	public function deleteTemporalCoveragePaleo($temporal_coverage_id, $version, $current){
-		$this->_deleteSub('temporal_coverage_paleo', $dataset_id, $version, $current, 'temporal_coverage');
+		$this->_deleteSub('temporal_coverage_paleo', $temporal_coverage_id, $version, $current, 'temporal_coverage');
 	}
 	
 	public function insertTemporalCoveragePaleoChronounit($data){
@@ -824,7 +824,7 @@ class Dataset extends Base{
 		$q = $this->dsql->dsql()
 			->table('temporal_coverage_paleo_chronounit')
 			->where('temporal_coverage_paleo_id', $coverage)
-			->where('dataset_version_max', null)
+			->where('dataset_version_max IS NULL')
 			->where('vocab_chronounit_id', $id)
 			->set('dataset_version_max', $version)
 			->update();
@@ -865,7 +865,7 @@ class Dataset extends Base{
 			->table('dataset_ancillary_keyword')
 			->where('dataset_id', $id)
 			->where('keyword', $word)
-			->where('dataset_version_max', null)
+			->where('dataset_version_max IS NULL')
 			->set('dataset_version_max', $version)
 			->update();
 	}
@@ -891,20 +891,20 @@ class Dataset extends Base{
 			->table('dataset_data_center_person')
 			->where('dataset_data_center_id', $dataCenterId)
 			->where('person_id', $person_id)
-			->where('dataset_version_max', null)
+			->where('dataset_version_max IS NULL')
 			->set('dataset_version_max', $version)
 			->update();
 	}
 	
 	public function insertProject($data){
-		return \npdc\lib\Db::insert('dataset_project', $data, true);
+		return \npdc\lib\Db::insert('dataset_project', $data);
 	}
 
 	public function deleteProject($dataset_id, $version, $currentProjects){
 		$q = $this->dsql->dsql()
 			->table('dataset_project')
 			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', null);
+			->where('dataset_version_max IS NULL');
 		if(count($currentProjects) > 0){
 			$q->where('project_id', 'NOT', $currentProjects);
 		}
@@ -914,14 +914,14 @@ class Dataset extends Base{
 	}
 
 	public function insertPublication($data){
-		return \npdc\lib\Db::insert('dataset_publication', $data, true);
+		return \npdc\lib\Db::insert('dataset_publication', $data);
 	}
 
 	public function deletePublication($dataset_id, $version, $currentPublications){
 		$q = $this->dsql->dsql()
 			->table('dataset_publication')
 			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', null);
+			->where('dataset_version_max IS NULL');
 		if(count($currentPublications) > 0){
 			$q->where('publication_id', 'NOT', $currentPublications);
 		}
@@ -942,7 +942,7 @@ class Dataset extends Base{
 		$q = $this->dsql->dsql()
 			->table('dataset_citation')
 			->where('dataset_id', $dataset_id)
-			->where('dataset_version_max', null);
+			->where('dataset_version_max IS NULL');
 		if(count($currentCitations) > 0){
 			$q->where('dataset_citation_id', 'NOT', $currentCitations);
 		}
@@ -1044,7 +1044,7 @@ class Dataset extends Base{
 	}
 	
 	public function deleteInstrument($platform_id, $version, $currentInstruments){
-		$this->_deleteSub('instrument', $dataset_id, $version, $current, 'platform');
+		$this->_deleteSub('instrument', $platform_id, $version, $currentInstruments, 'platform');
 	}
 
 	public function insertSensor($data){
@@ -1056,7 +1056,7 @@ class Dataset extends Base{
 	}
 	
 	public function deleteSensor($instrument_id, $version, $currentSensors){
-		$this->_deleteSub('sensor', $dataset_id, $version, $current, 'instrument');
+		$this->_deleteSub('sensor', $instrument_id, $version, $currentSensors, 'instrument');
 	}
 
 	public function insertCharacteristics($data){
@@ -1072,7 +1072,7 @@ class Dataset extends Base{
 		$q = $this->dsql->dsql()
 			->table('characteristics')
 			->where($type.'_id', $record_id)
-			->where('dataset_version_max', null);
+			->where('dataset_version_max IS NULL');
 		if(count($currentCharacteristics) > 0){
 			$q->where('characteristics_id', 'NOT', $currentCharacteristics);
 		}
@@ -1129,7 +1129,7 @@ class Dataset extends Base{
 		$q = $this->dsql->dsql()
 			->table('dataset_link_url')
 			->where('dataset_link_id', $link_id)
-			->where('dataset_version_max', null);
+			->where('dataset_version_max IS NULL');
 		if(count($currentLinkUrls) > 0){
 			foreach($currentLinkUrls as $dataset_link_url){
 				if(!is_numeric($dataset_link_url)){

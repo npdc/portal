@@ -39,8 +39,8 @@ abstract class Base {
 		$q = $this->dsql->dsql()
 			->table($tbl)
 			->where($parent.'_id', $id)
-			->where($this->baseTbl.'_version_max', NULL);
-		if(count($current) > 0){
+			->where($this->baseTbl.'_version_max IS NULL');
+		if(!empty($current) && !(count($current) === 1 && empty($current[0]))){
 			$q->where($tbl.'_id', 'NOT', $current);
 		}
 		$q->set($this->baseTbl.'_version_max', $version)
@@ -190,7 +190,7 @@ abstract class Base {
 	}
 	
 	public function updateGeneral($data, $id, $version){
-		\npdc\lib\Db::updateGeneral($this->baseTbl,
+		\npdc\lib\Db::update($this->baseTbl,
 			[
 				$this->baseTbl.'_id'=>$id,
 				$this->baseTbl.'_version'=>$version
@@ -200,11 +200,11 @@ abstract class Base {
 	}
 
 	public function insertPerson($data){
-		return \npdc\lib\Db::insert($this->baseTbl.'_person', $data, true);
+		return \npdc\lib\Db::insert($this->baseTbl.'_person', $data);
 	}
 	
 	public function deletePerson($id, $version, $currentPersons){
-		$this->_deleteSub($this->baseTbl.'_person', $id, $version, $currentPersons);
+		$this->_deleteSub($this->baseTbl.'_person', $id, $version, $currentPersons, 'dataset');
 	}
 
 	public function insertKeyword($word, $id, $version){
@@ -223,7 +223,7 @@ abstract class Base {
 			->table($this->baseTbl.'_keyword')
 			->where($this->baseTbl.'_id', $id)
 			->where('keyword', $word)
-			->where($this->baseTbl.'_version_max', null)
+			->where($this->baseTbl.'_version_max IS NULL')
 			->set($this->baseTbl.'_version_max', $version)
 			->update();
 		$this->dsql->dsql()

@@ -57,6 +57,22 @@ class Project extends Base{
 					case 'program':
 						$q->where('program_id', $values);
 						break;
+					case 'search':
+						$idString = implode('[.]?', preg_replace("/[^. \-0-9a-zA-Z]/", " ", str_split($values['string'])));
+						$string = '%'.$values['string'].'%';
+						$operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
+						$s = $q->orExpr()
+							->where('title', $operator, $string)
+							->where('acronym', $operator, $string)
+							->where('nwo_project_id', $operator, $idString);
+						if($values['summary']){
+							$s->where('summary', $operator, $string);
+						}
+						$q->where($s);
+						break;
+					case 'exclude':
+						$q->where('project_id', 'not', $values);
+					break;
 				}
 			}
 		}
@@ -293,6 +309,7 @@ class Project extends Base{
 	 * @return array projects matching $string
 	 */
 	public function search($string, $summary = false, $exclude = null, $includeDraft = false){
+		return $this->getList(['search'=>['string'=>$string, 'summary'=>$summary], 'exclude'=>$exclude]);
 		$q = $this->dsql->dsql()
 			->table('project')
 			->field('*');
@@ -331,22 +348,22 @@ class Project extends Base{
 	}
 	
 	public function updateLink($id, $data, $version){
-		return $this->_updateSub('table', $id, $data, $version);
+		return $this->_updateSub('project_link', $id, $data, $version);
 	}
 	
 	public function deleteLink($project_id, $version, $keep){
-		$this->_deleteSub('table', $project_id, $version, $keep);
+		$this->_deleteSub('project_link', $project_id, $version, $keep);
 	}
 	
 	public function insertPublication($data){
-		return \npdc\lib\Db::insert('project_publication', $data, true);
+		return \npdc\lib\Db::insert('project_publication', $data);
 	}
 
 	public function deletePublication($project_id, $version, $currentPublications){
 		$q = $this->dsql->dsql()
 			->table('project_publication')
 			->where('project_id', $project_id)
-			->where('project_version_max', null);
+			->where('project_version_max IS NULL');
 		if(count($currentPublications) > 0){
 			$q->where('publication_id', 'NOT', $currentPublications);
 		}
@@ -356,14 +373,14 @@ class Project extends Base{
 	}
 	
 	public function insertDataset($data){
-		return \npdc\lib\Db::insert('dataset_project', $data, true);
+		return \npdc\lib\Db::insert('dataset_project', $data);
 	}
 
 	public function deleteDataset($project_id, $version, $currentDatasets){
 		$q = $this->dsql->dsql()
 			->table('dataset_project')
 			->where('project_id', $project_id)
-			->where('project_version_max', null);
+			->where('project_version_max IS NULL');
 		if(count($currentDatasets) > 0){
 			$q->where('project_id', 'NOT', $currentDatasets);
 		}

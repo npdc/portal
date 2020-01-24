@@ -28,7 +28,6 @@ class Person{
 	 * @return array list of persons
 	 */
 	public function getList($filters){
-		//var_dump($filters);die();
 		$q = $this->dsql->dsql()->table('person')
 			->join('organization.organization_id', 'organization_id', 'left')
 			->order('name')->field('person.*, organization_name');
@@ -183,7 +182,7 @@ class Person{
 		$q = $this->dsql->dsql()
 			->table('account_new')
 			->where('account_new_id', $id);
-		return $q->where($q-expr('used_time IS NULL'))
+		return $q->where($q->expr('used_time IS NULL'))
 			->where($q->expr('expire_reason IS NULL'))
 			->where($q->expr('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR')))
 			->get()[0];
@@ -359,7 +358,6 @@ class Person{
 			}
 			$q->where('person_id', 'NOT', $exclude);
 		}
-		//var_dump($q->render());
 		return $q->get();
 	}
 	

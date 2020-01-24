@@ -1,0 +1,1 @@
+ALTER TABLE dataset_keyword CHANGE detailed_variable free_text longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL;

@@ -65,7 +65,7 @@ class Register extends Login{
 		if(array_key_exists('formid', $_POST) && $_POST['formid'] === $this->formId){
 			$this->formController->doCheck();
 			if($this->formController->ok){
-				$person = $this->model->getUser($_SESSION[$this->formId]['data']['mail']);
+				$person = isset($_SESSION[$this->formId]['data']['mail']) ? $this->model->getUser($_SESSION[$this->formId]['data']['mail']) : null;
 				switch($this->formId){
 					case 'register':
 						if(!empty($person)){

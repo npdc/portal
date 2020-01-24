@@ -119,8 +119,8 @@ class Dataset extends Base{
 		$vocabModel = new \npdc\model\Vocab();
 		switch ($this->screen){
 			case 'general':
-				if($this->id === 'new'){
-					unset($_SESSION[$this->formId]);				
+				if(\npdc\lib\Args::get('action') === 'new'){
+					unset($_SESSION[$this->formId]);
 				} else {
 					$iso_topics = $this->model->getTopics($this->id, $this->version);
 					$_SESSION[$this->formId]['data']['iso_topic'] = [];
@@ -132,7 +132,7 @@ class Dataset extends Base{
 						$_SESSION[$this->formId]['data']['science_keywords'][] = ['id'=>$keyword['dataset_keyword_id']
 							, 'keyword_id'=>$keyword['vocab_science_keyword_id']
 							, 'keyword'=>$vocab->formatTerm('vocab_science_keyword', $keyword, false, true)
-							, 'detailed_variable'=>$keyword['detailed_variable']];
+							, 'detailed_variable'=>$keyword['free_text']];
 					}
 					$keywords = $this->model->getAncillaryKeywords($this->id, $this->version);
 					$words = [];
@@ -381,7 +381,7 @@ class Dataset extends Base{
 	 * @return void
 	 */
 	protected function doSave(){
-		if($this->id === 'new'){
+		if(\npdc\lib\Args::get('action') === 'new'){
 			$_SESSION[$this->formId]['data']['dataset_version'] = 1;
 			$_SESSION[$this->formId]['data']['record_status'] = 'draft';
 			$_SESSION[$this->formId]['data']['creator'] = $this->session->userId;
@@ -828,7 +828,7 @@ class Dataset extends Base{
 				$data = [
 					'dataset_id'=>$this->id, 
 					'vocab_science_keyword_id'=>$_SESSION[$this->formId]['data'][$key],
-					'detailed_variable' => $_SESSION[$this->formId]['data']['science_keywords_detailed_variable_'.substr($key, strlen($loopId))]
+					'free_text' => $_SESSION[$this->formId]['data']['science_keywords_detailed_variable_'.substr($key, strlen($loopId))]
 				];
 				if(strpos($key, '_new_') !== false){
 					$data = array_merge($data, ['dataset_version_min'=>$this->version]);
@@ -1468,8 +1468,9 @@ class Dataset extends Base{
 			}
 			$current[] = $instrument_id;
 			$this->saveCharacteristics('instrument', $instrument_id, $loopId.$serial);
-			$this->saveSensor($loopId.$serial, $instrument_id);
+			//$this->saveSensor($loopId.$serial, $instrument_id);
 		}
+		//var_dump($current);die();
 		$this->model->deleteInstrument($platform_id, $this->version-1, $current);
 	}
 	

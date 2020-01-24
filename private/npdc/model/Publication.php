@@ -10,7 +10,7 @@
 namespace npdc\model;
 
 class Publication extends Base{
-	protected $baseTbl = 'project';
+	protected $baseTbl = 'publication';
 
 	/**
 	 * GETTERS
@@ -299,7 +299,7 @@ class Publication extends Base{
 		$q = $this->dsql->dsql()
 			->table('publication')
 			->field('*');
-		$q->select($q->expr('\'Publication\''), 'content_type')
+		$q->field($q->expr('\'Publication\''), 'content_type')
 			->order('date DESC');
 		if(!empty($string)){
 			$string = '%'.$string.'%';
@@ -437,7 +437,7 @@ class Publication extends Base{
 		$q = $this->dsql->dsql()
 			->table('project_publication')
 			->where('publication_id', $publication_id)
-			->where('publication_version_max', null);
+			->where('publication_version_max IS NULL');
 		if(count($currentProjects) > 0){
 			$q->where('project_id', 'NOT', $currentProjects);
 		}
@@ -454,7 +454,7 @@ class Publication extends Base{
 		$q = $this->dsql->dsql()
 			->table('dataset_publication')
 			->where('publication_id', $publication_id)
-			->where('publication_version_max', null);
+			->where('publication_version_max IS NULL');
 		if(count($currentDatasets) > 0){
 			$q->where('dataset_id', 'NOT', $currentDatasets);
 		}

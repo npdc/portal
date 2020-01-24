@@ -82,13 +82,18 @@ class Db {
 	 * @return integer the id of the new record
 	 */
 	public static function insert($tbl, $data, $returnId = false){
+		var_dump(func_get_args());
 		$r = self::getDSQLcon()->dsql()->table($tbl)->set($data)->insert();
 		if($returnId){
 			$q = self::getDSQLcon()->dsql()->table($tbl);
 			foreach($data as $key=>$val){
-				$q->where($key,$val);
+				if(empty($val)){
+					$q->where($key.' IS NULL');
+				} else {
+					$q->where($key, $val);
+				}
 			}
-			return $q->order($tbl.'_id DESC')->get()[0][$tbl.'_id'];	
+			return intval($q->order($tbl.'_id DESC')->get()[0][$tbl.'_id']);
 		} else {
 			return $r;
 		}

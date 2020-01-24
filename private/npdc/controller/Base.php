@@ -157,6 +157,11 @@ class Base {
 							}
 							header('Location: '.BASE_URL.'/'.$this->name.'/'.\npdc\lib\Args::get('id').'/'.$data[$his->name.'_version']);
 							die();
+						case 'new':
+							$this->screen = 'general';
+							$this->page();
+							$this->display = 'edit_form';
+							break;
 						case 'edit':
 						default:
 							$data = $this->model->getById(\npdc\lib\Args::get('id'), 'submitted');
