@@ -76,6 +76,6 @@ class Mailer {
 	 * @return void
 	 */
 	public function send(){
-		$this->mail->send();
+		//$this->mail->send();
 	}
 }

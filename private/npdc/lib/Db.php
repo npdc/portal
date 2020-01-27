@@ -82,7 +82,6 @@ class Db {
 	 * @return integer the id of the new record
 	 */
 	public static function insert($tbl, $data, $returnId = false){
-		var_dump(func_get_args());
 		$r = self::getDSQLcon()->dsql()->table($tbl)->set($data)->insert();
 		if($returnId){
 			$q = self::getDSQLcon()->dsql()->table($tbl);
@@ -158,10 +157,12 @@ class Db {
 	 * @param string $joined other table in join
 	 * @return Query 
 	 */
-	public static function joinVersion($ctype, $joined){
-		return self::getDSQLcon()->andExpr()
-			->where($ctype.'.'.$ctype.'_id = '.$joined.'.'.$ctype.'_id')
-			->where($ctype.'.'.$ctype.'_version >= '.$ctype.'_version_min')
+	public static function joinVersion($ctype, $joined, $includeId = true){
+		$q =self::getDSQLcon()->andExpr();
+		if($includeId){
+			$q->where($ctype.'.'.$ctype.'_id = '.$joined.'.'.$ctype.'_id');
+		}
+		return $q->where($ctype.'.'.$ctype.'_version >= '.$ctype.'_version_min')
 			->where(self::getDSQLcon()->orExpr()
 				->where($ctype.'_version_max IS null')
 				->where($ctype.'_version_max >= '.$ctype.'.'.$ctype.'_version')

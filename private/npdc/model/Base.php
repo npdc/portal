@@ -204,7 +204,15 @@ abstract class Base {
 	}
 	
 	public function deletePerson($id, $version, $currentPersons){
-		$this->_deleteSub($this->baseTbl.'_person', $id, $version, $currentPersons, 'dataset');
+		$q = $this->dsql->dsql()
+			->table($this->baseTbl.'_person')
+			->where($this->baseTbl.'_id', $id)
+			->where($this->baseTbl.'_version_max IS NULL');
+		if(count($currentPersons) > 0){
+			$q->where('person_id', 'NOT', $currentPersons);
+		}
+		$q->set($this->baseTbl.'_version_max', $version)
+			->update();
 	}
 
 	public function insertKeyword($word, $id, $version){

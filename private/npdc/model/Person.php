@@ -208,7 +208,7 @@ class Person{
 	 * @return string reset code
 	 */
 	public function requestPasswordReset($data){
-		$this->dsql->dsql()
+		$q = $this->dsql->dsql()
 			->table('account_reset')
 			->where('expire_reason IS NULL');
 			foreach($data as $key=>$val){
@@ -217,7 +217,7 @@ class Person{
 		$q->set('expire_reason', 'new link')->update();
 		$code = bin2hex(random_bytes(16));
 		$data['code'] = password_hash($code, PASSWORD_DEFAULT);
-		if(is_numeric(\npdc\lib\Db::insert('account_reset', $data), true)){
+		if(is_numeric(\npdc\lib\Db::insert('account_reset', $data, true))){
 			return $code;
 		} else {
 			return false;
@@ -234,10 +234,10 @@ class Person{
 		$q = $this->dsql->dsql()
 			->table('account_reset')
 			->where('person_id', $person_id);
-		return $q->where($q-expr('used_time IS NULL'))
+		return $q->where($q->expr('used_time IS NULL'))
 			->where($q->expr('expire_reason IS NULL'))
 			->where($q->expr('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR')))
-			->get();
+			->get()[0];
 	}
 	
 	/**

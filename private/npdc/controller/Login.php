@@ -29,6 +29,7 @@ class Login {
 					$key = $this->model->getPasswordReset(\npdc\lib\Args::get('loginid'));
 					if($key === false || !password_verify(\npdc\lib\Args::get('loginkey'), $key['code'])){
 						return;
+					} else {
 					}
 					$this->formId = 'login_new_password';
 				}
@@ -52,7 +53,9 @@ class Login {
 		if(array_key_exists('formid', $_POST) && $_POST['formid'] === $this->formId){
 			$this->formController->doCheck();
 			if($this->formController->ok){
-				$person = $this->model->getUser($_SESSION[$this->formId]['data']['mail']);
+				if(isset($_SESSION[$this->formId]['data']['mail'])){
+					$person = $this->model->getUser($_SESSION[$this->formId]['data']['mail']);
+				}
 				switch($this->formId){
 					case 'login':
 						if(is_null($person) || !password_verify($_SESSION[$this->formId]['data']['password'], $person['password'])){

@@ -1470,7 +1470,6 @@ class Dataset extends Base{
 			$this->saveCharacteristics('instrument', $instrument_id, $loopId.$serial);
 			//$this->saveSensor($loopId.$serial, $instrument_id);
 		}
-		//var_dump($current);die();
 		$this->model->deleteInstrument($platform_id, $this->version-1, $current);
 	}
 	

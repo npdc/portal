@@ -82,7 +82,7 @@ class Person extends Base{
 	public function showItem($id){
 		$this->canEdit = isset($this->session->userId) 
 			&& ($this->session->userLevel === NPDC_ADMIN);
-		if(\npdc\lib\Args::get('action')){
+		if(\npdc\lib\Args::get('action') === 'new'){
 			$this->title = 'Add person';
 		} else {
 			$person = $this->model->getById($id);

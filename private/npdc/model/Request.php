@@ -42,7 +42,16 @@ class Request {
 				//no filter
 				break;
 			case NPDC_EDITOR:
-				$q->where($q->expr('person_id=:person_id OR dataset_id IN (SELECT dataset_id FROM dataset INNER JOIN dataset_person USING (dataset_id) WHERE record_status=\'published\' AND person_id=:person_id AND dataset_version<=dataset_version AND editor)', [':person_id'=>$person_id]));
+				$q->where($q->orExpr()
+					->where('person_id', $person_id)
+					->where('dataset_id', 'IN', $q->dsql()
+						->table('dataset')->field('dataset.dataset_id')
+						->where('record_status', 'published')
+						->join('dataset_person.dataset_id', 'dataset_id', 'inner')
+						->where(\npdc\lib\Db::joinVersion('dataset', 'dataset_person',false))
+						->where('editor')
+						->where('person_id', $person_id)
+				));
 				//see own requests and all request of own datasets
 				break;
 			case NPDC_USER:
