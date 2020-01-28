@@ -1,6 +1,6 @@
 {
     "require": {
-        "phpmailer/phpmailer": "^5.2",
+        "phpmailer/phpmailer": "^6.0",
         "fpdo/fluentpdo": "^1.1",
         "symm/gisconverter": "^1.0",
         "moxiecode/plupload": "^2.3",

@@ -19,7 +19,7 @@ class Mailer {
 	 * @param string $replyMail Mailaddress where replies have to be sent
 	 */
 	public function __construct($fromName = null, $replyMail = null) {
-		$this->mail = new \PHPMailer();
+		$this->mail = new \PHPMailer\PHPMailer\PHPMailer();
 		$this->mail->setFrom(\npdc\config::$mail['from'], is_null($fromName) ? \npdc\config::$siteName : $fromName .' through '. \npdc\config::$siteDomain);
 		$this->mail->addReplyTo(is_null($replyMail) ? \npdc\config::$mail['contact'] : $replyMail);
 		if(!empty(\npdc\config::$mail['host'])){
@@ -76,6 +76,8 @@ class Mailer {
 	 * @return void
 	 */
 	public function send(){
-		$this->mail->send();
+		if(!NPDC_DEV){
+			$this->mail->send();
+		}
 	}
 }
