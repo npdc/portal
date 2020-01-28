@@ -309,10 +309,11 @@ class Publication extends Base{
 				$data['sort'] = $sort;
 				if(empty($id)){
 					$data = array_merge($data, ['publication_version_min'=>$this->version]);
-					$persons[] = $this->model->insertPerson($data);
+					$this->model->insertPerson($data);
 				} else {
-					$persons[] = $this->model->updatePerson($id, $data, $this->version);
+					$this->model->updatePerson($id, $data, $this->version);
 				}
+				$persons[] = $person_id;
 				$sort++;
 			}
 		}
