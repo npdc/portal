@@ -103,7 +103,11 @@ class Db {
 			->table($table);
 		if(is_array($record)){
 			foreach($record as $key=>$val){
-				$q->where($key, $val);
+				if(is_null($val)){
+					$q->where($key.' IS NULL');	
+				} else {
+					$q->where($key, $val);
+				}
 			}
 		} elseif(is_numeric($record)) {
 			$q->where($table.'_id', $record);
