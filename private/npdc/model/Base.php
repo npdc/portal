@@ -106,7 +106,7 @@ abstract class Base {
 		$q = $this->dsql->dsql()
 			->table('record_status_change')
 			->join('person.person_id', 'person_id', 'inner')
-			->where($this->baseTbl.'_id', $_id)
+			->where($this->baseTbl.'_id', $id)
 			->where('version', $version)
 			->order('datetime DESC');
 		if($state !== null){

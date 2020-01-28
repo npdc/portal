@@ -482,7 +482,7 @@ class Dataset extends Base{
 		$this->version = \npdc\lib\Args::get('version');
 		$data = $this->model->getById($this->id, $this->version);
 
-		$data['duplicate_of'] = $data['uuid'];
+		$data['created_from'] = $data['uuid'];
 		foreach(['dataset_id','published','insert_timestamp','uuid'] as $key){
 			unset($data[$key]);
 		}
@@ -521,7 +521,7 @@ class Dataset extends Base{
 				'dataset_id'=>$this->newId, 
 				'dataset_version_min'=>1,
 				'vocab_science_keyword_id'=>$keyword['vocab_science_keyword_id'],
-				'detailed_variable' =>$keyword['detailed_variable']
+				'free_text' =>$keyword['free_text']
 			];
 			$this->model->insertScienceKeyword($data);
 		}
@@ -620,8 +620,8 @@ class Dataset extends Base{
 						case 'cycle':
 							$this->model->insertTemporalCoverageCycle([
 								'name'=>$tcg['name'],
-								'date_start'=>$tcg['data_start'],
-								'date_end'=>$tcg['data_end'],
+								'date_start'=>$tcg['date_start'],
+								'date_end'=>$tcg['date_end'],
 								'sampling_frequency'=>$tcg['sampling_frequency'],
 								'sampling_frequency_unit'=>$tcg['sampling_frequency_unit'],
 								'temporal_coverage_id'=>$temporalCoverageId,
@@ -1315,7 +1315,7 @@ class Dataset extends Base{
 			} else {
 				$data_center_id = $_SESSION[$this->formId]['data'][$loopId.$serial.'_id'];
 				$return = $this->model->updateDataCenter($data_center_id, $data, $this->version);
-				if(!is_bool($return)) {
+				if(is_numeric($return)) {
 					$data_center_id = $return;
 				}
 				$currentPersons = $this->model->getDataCenterPerson($data_center_id, $this->version);

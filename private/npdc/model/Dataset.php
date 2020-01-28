@@ -476,7 +476,7 @@ class Dataset extends Base{
 		$q =$this->dsql->dsql()
 			->table('dataset_data_center_person');
 		if($join){
-			$q->join('person.person_person_id', 'person_id', 'inner');
+			$q->join('person.person_id', 'person_id', 'inner');
 		}
 		return $q->where('dataset_data_center_id', $id)
 			->where(\npdc\lib\Db::selectVersion('dataset', $version))
@@ -831,7 +831,7 @@ class Dataset extends Base{
 	}
 
 	public function insertTopic($topic_id, $dataset_id, $dataset_version){
-		return \npdc\lib\Db::insert('dataset_topic', ['dataset_id'=>$dataset_id, 'dataset_version_min'=>$dataset_version, 'vocab_iso_topic_category_id'=>$topic_id], true);
+		return \npdc\lib\Db::insert('dataset_topic', ['dataset_id'=>$dataset_id, 'dataset_version_min'=>$dataset_version, 'vocab_iso_topic_category_id'=>$topic_id]);
 	}
 
 	public function deleteTopic($topic_id, $dataset_id, $dataset_version){
@@ -871,7 +871,7 @@ class Dataset extends Base{
 	}
 	
 	public function insertDataCenter($data){
-		\npdc\lib\Db::insert('dataset_data_center', $data, true);
+		return \npdc\lib\Db::insert('dataset_data_center', $data, true);
 	}
 	
 	public function updateDataCenter($record, $data, $version){
@@ -883,7 +883,7 @@ class Dataset extends Base{
 	}
 	
 	public function insertDataCenterPerson($data){
-		return \npdc\lib\Db::insert('dataset_data_center_person', $data, true);
+		return \npdc\lib\Db::insert('dataset_data_center_person', $data);
 	}
 	
 	public function deleteDataCenterPerson($person_id, $dataCenterId, $version){
