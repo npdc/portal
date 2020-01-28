@@ -39,8 +39,7 @@
 			"lookup":{
 				"sourceField": "publications_title",
 				"targetField": "publications_publication_id",
-				"lookupUrl": "publication",
-				"newUrl": "add/publication"
+				"lookupUrl": "publication"
 			},
 			"noSort":true,
 			"nLabel": 3,
