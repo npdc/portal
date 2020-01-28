@@ -1,3 +1,7 @@
+## v3.0.0 - 2020-01-28
+Move from fpdo to dsql
+Many bugfixes
+
 ## v2.8.1 - 2020-01-20
 Fix missing search icon in icomoon
 
