@@ -79,7 +79,7 @@ class Person{
 			->join('organization.organization_id', 'organization_id', 'left')
 			->where('person_id', $id)
 			->get()[0];
-		if($data !== false){
+		if(!empty($data)){
 			if(!empty($data['orcid'])){
 				$data['orcid'] = implode('-', str_split($data['orcid'], 4));
 			}

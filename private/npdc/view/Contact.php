@@ -74,7 +74,7 @@ class Contact extends Base{
 	 * @return void
 	 */
 	public function showItem($id){
-		if($this->controller->person === false){
+		if(empty($this->controller->person)){
 			$this->mid = 'Person not found';
 		} else {
 			$this->takeover = $this->session->userLevel === NPDC_ADMIN;

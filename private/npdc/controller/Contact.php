@@ -26,7 +26,7 @@ class Contact {
 		if(\npdc\lib\Args::exists('id')){
 			$this->model = new \npdc\model\Person;
 			$this->person = $this->model->getById(\npdc\lib\Args::get('id'));
-			if($this->person !== false) {
+			if(!empty($this->person)) {
 				$this->name = $this->person['name'];
 				$this->to = $this->person['mail'];
 				$this->formId = str_replace('/', '_', $_SERVER['REQUEST_URI']);	
