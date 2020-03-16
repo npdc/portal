@@ -50,7 +50,11 @@ class Person{
 						break;
 					case 'type':
 						foreach($values as $value){
-							$q->where($q->expr('person_id IN (SELECT person_id FROM '.$value.'_person)'));
+							$q->where(
+								$q->expr(
+									'person_id IN (SELECT person_id FROM '
+									.$value.'_person)')
+								);
 						}
 						break;
 					case 'userLevel':
@@ -99,7 +103,10 @@ class Person{
 	 * @return array levels
 	 */
 	public function getUserLevels(){
-		return $this->dsql->dsql()->table('user_level')->order('user_level_id')->get();
+		return $this->dsql->dsql()
+			->table('user_level')
+			->order('user_level_id')
+			->get();
 	}
 	
 	/**
@@ -114,7 +121,11 @@ class Person{
 		if(is_numeric($level)){
 			$q->where('user_level_id', '<=', $level);
 		} else {
-			$q->where('user_level_id', '<=', $q->dsql()->table('user_level')->field('user_level_id')->where('label', $level));
+			$q->where('user_level_id', '<=', 
+				$q->dsql()->table('user_level')
+					->field('user_level_id')
+					->where('label', $level)
+			);
 		}
 		$rows = $q->order('user_level_id')
 			->get();
@@ -122,7 +133,9 @@ class Person{
 		foreach($rows as $row){
 			$description .= $row['description']."\r\n";
 		}
-		$description = '<ul>'. str_replace(['- ', "\r\n"], ['<li>', '</li>'], $description).'</ul>';
+		$description = '<ul>'
+			.str_replace(['- ', "\r\n"], ['<li>', '</li>'], $description)
+			.'</ul>';
 		return ['name'=>$row['name'], 'description'=>$description];
 	}
 	
@@ -161,7 +174,9 @@ class Person{
 	 * @return array id and request code
 	 */
 	public function requestPassword($data){
-		$q = $this->dsql->dsql()->table('account_new')->where('expire_reason IS NULL');
+		$q = $this->dsql->dsql()
+			->table('account_new')
+			->where('expire_reason IS NULL');
 		foreach($data as $key=>$val){
 			$q->where($key, $val);
 		}
@@ -184,7 +199,14 @@ class Person{
 			->where('account_new_id', $id);
 		return $q->where($q->expr('used_time IS NULL'))
 			->where($q->expr('expire_reason IS NULL'))
-			->where($q->expr('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR')))
+			->where(
+				$q->expr('request_time > NOW() - INTERVAL '
+					.(\npdc\config::$db['type']==='pgsql' 
+						? '\''.\npdc\config::$resetExpiryHours.' hours\'' 
+						: \npdc\config::$resetExpiryHours.' HOUR'
+					)
+				)
+			)
 			->get()[0];
 	}
 	
@@ -236,8 +258,14 @@ class Person{
 			->where('person_id', $person_id);
 		return $q->where($q->expr('used_time IS NULL'))
 			->where($q->expr('expire_reason IS NULL'))
-			->where($q->expr('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR')))
-			->get()[0];
+			->where(
+				$q->expr('request_time > NOW() - INTERVAL '
+					.(\npdc\config::$db['type']==='pgsql' 
+						? '\''.\npdc\config::$resetExpiryHours.' hours\'' 
+						: \npdc\config::$resetExpiryHours.' HOUR'
+					)
+				)
+			)->get()[0];
 	}
 	
 	/**
@@ -252,7 +280,14 @@ class Person{
 			->where('person_id', $person_id);
 		$q->where($q->expr('used_time IS NULL'))
 			->where($q->expr('expire_reason IS NULL'))
-			->where($q->expr('request_time > NOW() - INTERVAL '.(\npdc\config::$db['type']==='pgsql' ? '\''.\npdc\config::$resetExpiryHours.' hours\'' : \npdc\config::$resetExpiryHours.' HOUR')))
+			->where(
+				$q->expr('request_time > NOW() - INTERVAL '
+					.(\npdc\config::$db['type']==='pgsql' 
+						? '\''.\npdc\config::$resetExpiryHours.' hours\'' 
+						: \npdc\config::$resetExpiryHours.' HOUR'
+					)
+				)
+			)
 			->set(['expire_reason'=>'User logged in'])
 			->update();
 	}
@@ -280,7 +315,9 @@ class Person{
 	public function getProjects($id){
 		return $this->dsql->dsql()
 			->table('project_person')
-			->join('project', \npdc\lib\Db::joinVersion('project', 'project_person'), 'inner')
+			->join('project',
+				\npdc\lib\Db::joinVersion('project', 'project_person'),
+				'inner')
 			->where('person_id', $id)
 			->where('record_status', 'published')
 			->order('date_start DESC, date_end DESC')
@@ -296,7 +333,9 @@ class Person{
 	public function getPublications($id){
 		return $this->dsql->dsql()
 			->table('publication_person')
-			->join('publication', \npdc\lib\Db::joinVersion('publication', 'publication_person'), 'inner')
+			->join('publication',
+				\npdc\lib\Db::joinVersion('publication', 'publication_person'),
+				'inner')
 			->where('person_id', $id)
 			->where('record_status', 'published')
 			->order('date DESC')
@@ -312,7 +351,9 @@ class Person{
 	public function getDatasets($id, $published = true){
 		return $this->dsql->dsql()
 			->table('dataset_person')
-			->join('dataset', \npdc\lib\Db::joinVersion('dataset', 'dataset_person'), 'inner')
+			->join('dataset',
+				\npdc\lib\Db::joinVersion('dataset', 'dataset_person'),
+				'inner')
 			->where('person_id', $id)
 			->where('record_status', 'published')
 			->order('date_start DESC')
@@ -333,20 +374,33 @@ class Person{
 		if(strlen($string) > 0){
 			if($fuzzy){
 				if(strpos($string, ',') !== false){
-					$string = implode(' ', array_reverse(explode(',', $string)));
+					$string = implode(' ',
+						array_reverse(explode(',', $string)));
 				}
 				preg_match(\npdc\config::$surname_regex, $string, $parts);
-				$q->where($q->expr('levenshtein_ratio([], surname) >= []', [$parts['f'], \npdc\config::$levenshtein_ratio_person]));
+				$q->where(
+					$q->expr('levenshtein_ratio([], surname) >= []',
+						[$parts['f'],
+						\npdc\config::$levenshtein_ratio_person]
+					)
+				);
 				if($parts['f'] !== $parts['l']){
 					$subs = substr($string, strrpos($string, ' ')+1);
 					if(\npdc\config::$db['type'] === 'mysql'){
-						$q->where($q->expr('levenshtein_ratio([], surname) >= []', [$parts['l'], \npdc\config::$levenshtein_ratio_person]));
+						$q->where(
+							$q->expr('levenshtein_ratio([], surname) >= []',
+								[$parts['l'],
+								\npdc\config::$levenshtein_ratio_person]
+							)
+						);
 					}
-					//$q->where('levenshtein_ratio(?, regexp_replace(surname, \'^.*\', \'\')) >= '.\npdc\config::$levenshtein_ratio_person, $parts['l']);
 				}
-				//$q->order('levenshtein_ratio(?, surname) DESC', $string);
 			} else {
-				$q->where('name ', \npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP', $string);
+				$q->where('name ',
+					\npdc\config::$db['type']==='pgsql'
+						? '~*'
+						: 'REGEXP'
+					, $string);
 			}
 		}
 		$q->order('name');
