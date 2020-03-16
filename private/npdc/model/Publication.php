@@ -419,7 +419,7 @@ class Publication extends Base{
 				case 'record_status':
 				case 'creator':
 					if(empty($data[$field])){
-						continue;
+						break;
 					}
 				default:
 					$values[$field] = empty($data[$field]) ? null : $data[$field];

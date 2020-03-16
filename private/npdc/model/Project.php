@@ -414,7 +414,7 @@ class Project extends Base{
 				case 'creator':
 				case 'record_status':
 					if(empty($data[$field])){
-						continue;
+						break;
 					}
 				default:
 					$values[$field] = empty($data[$field]) ? null : $data[$field];
