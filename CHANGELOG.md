@@ -1,3 +1,6 @@
+## v3.0.1 - 2020-04-03
+Fix for body height when technical footer present
+
 ## v3.0.0 - 2020-01-28
 Move from fpdo to dsql
 Many bugfixes

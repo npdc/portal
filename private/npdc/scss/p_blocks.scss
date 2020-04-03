@@ -69,7 +69,7 @@
 	a:hover, a:active {
 		color: #b71f1c;
 	}
-	
+
 	#user {
 		.unpublished {
 			background: #b71f1c;
@@ -139,7 +139,7 @@
 	a:hover, a:active {
 		color: $color-accent-2;
 	}
-	
+
 	> ul {
 		margin: 0px;
 		margin-left: 0px;
@@ -148,7 +148,7 @@
 			float: left;
 			&:not(:first-child) {
 				> a, > span {
-					border-width: 0px;	
+					border-width: 0px;
 				}
 				margin-left: -1px;
 			}
@@ -175,7 +175,7 @@
 				background: $menu-bg-hover;
 				color: $color-accent-2;
 			}
-			
+
 			ul {
 				margin: 0px;
 				margin-left: 0px;
@@ -246,7 +246,7 @@
 		flex: 1 1 auto;
 	}
 }
-		
+
 .front{
 	.cols {
 		margin-top: 10px;
@@ -453,7 +453,7 @@
 	white-space: nowrap;
 }
 
-.detail{
+.base{
 	#mid {
 		flex: 2;
 		min-height: 250px;
@@ -526,6 +526,39 @@
 		display: none;
 	}
 }
+
+.page {
+	@extend .base;
+	#right {
+		font-size: 90%;
+	}
+}
+
+.contact {
+	@extend .page;
+	#right {
+		max-width: none;
+		h3 {
+			display: none;
+			margin: 0px;
+			cursor: pointer;
+			&:before {
+				content: '\25BC\0020';
+			}
+			&:hover {
+				color: $color-accent-2;
+			}
+		}
+	}
+}
+
+.detail {
+	@extend .base;
+	#main > h2 + .cols {
+		min-height: calc(100vh - 357px);
+	}
+}
+
 div.technical {
 	color: #777;
 	font-size: 80%;
@@ -563,31 +596,6 @@ div.technical {
 		&:hover {
 			span {
 				display: block;
-			}
-		}
-	}
-}
-
-.page {
-	@extend .detail;
-	#right {
-		font-size: 90%;
-	}
-}
-
-.contact {
-	@extend .page;
-	#right {
-		max-width: none;
-		h3 {
-			display: none;
-			margin: 0px;
-			cursor: pointer;
-			&:before {
-				content: '\25BC\0020';
-			}
-			&:hover {
-				color: $color-accent-2;
 			}
 		}
 	}
@@ -651,7 +659,7 @@ div.technical {
 		}
 		body:not(.no-touch) & {
 			overflow-y: scroll;
-			-webkit-overflow-scrolling: touch;	
+			-webkit-overflow-scrolling: touch;
 		}
 	}
 }
@@ -685,7 +693,7 @@ div.technical {
 		padding: 10px;
 		text-align: center;
 		button {
-			height: 50px;	
+			height: 50px;
 		}
 	}
 }
