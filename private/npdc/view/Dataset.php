@@ -16,7 +16,7 @@ class Dataset extends Base{
 	public $baseUrl;
 	public $versions;
 	public $allowDuplicate = true;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -31,7 +31,7 @@ class Dataset extends Base{
 		$this->model = new \npdc\model\Dataset();
 		parent::__construct();
 	}
-	
+
 	/**
 	 * List status changes of record
 	 *
@@ -40,13 +40,13 @@ class Dataset extends Base{
 	public function listStatusChanges(){
 		$version = $this->version;
 		if(\npdc\lib\Args::exists('action') && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit'])){
-			$version = $this->versions[0]['dataset_version']; 
+			$version = $this->versions[0]['dataset_version'];
 		} elseif (\npdc\lib\Args::exists('version')){
 			$version = \npdc\lib\Args::get('version');
 		}
 		return $this->doListStatusChanges(\npdc\lib\Args::get('id'), $version);
 	}
-	
+
 	/**
 	 * Show list of datasets
 	 *
@@ -54,8 +54,8 @@ class Dataset extends Base{
 	 */
 	public function showList(){
 		$this->left = parent::showFilters($this->controller->formId);
-		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data']) 
-				? $_SESSION[$this->controller->formId]['data'] 
+		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
+				? $_SESSION[$this->controller->formId]['data']
 				: null
 			, true);
 		switch(NPDC_OUTPUT){
@@ -71,7 +71,7 @@ class Dataset extends Base{
 								break;
 							default:
 								$value = $dataset[$field];
-	
+
 						}
 						$em->addChild($field, str_replace('&', '&amp;', strip_tags(html_entity_decode($value))));
 					}
@@ -93,8 +93,8 @@ class Dataset extends Base{
 				$list = array_slice($list, ($page-1)*\npdc\config::$rowsPerPage, min($page*\npdc\config::$rowsPerPage, $n));
 				$this->makePager($n, $page);
 				$this->mid = $this->displayTable('dataset', $list
-						, ['title'=>'Title', 
-							'date_start'=>'Start date', 
+						, ['title'=>'Title',
+							'date_start'=>'Start date',
 							'date_end'=>'End date']
 						, ['dataset', 'dataset_id']
 						, true
@@ -131,10 +131,10 @@ class Dataset extends Base{
 			} elseif (\npdc\lib\Args::exists('version')){
 				$v = \npdc\lib\Args::get('version');
 			}
-			$this->data = isset($v) 
+			$this->data = isset($v)
 				? $this->model->getById($dataset, $v)
 				: $this->model->getById($dataset);
-			
+
 			if(!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])){
 				$this->data = false;
 			}
@@ -203,7 +203,7 @@ class Dataset extends Base{
 		];
 		return $return;
 	}
-	
+
 	/**
 	 * Display data center personnel details
 	 *
@@ -264,6 +264,7 @@ class Dataset extends Base{
 		];
 		$content['keywords'] = [];
 		foreach ($this->model->getTopics($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$topic){
+			$cut = ':';
 			$content['keywords'][] = strpos($topic['description'], $cut) === false ? $topic['description'] : trim(substr($topic['description'],0,strpos($topic['description'], $cut)));
 		}
 		foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword){
@@ -272,7 +273,7 @@ class Dataset extends Base{
 		foreach($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $word){
 			$content['keywords'][] = $word['keyword'];
 		}
-		
+
 		if(!empty($this->data['dif_id'])){
 			$content['sameAs'] = 'https://gcmd.nasa.gov/r/d/'.$this->data['dif_id'];
 		}
@@ -290,7 +291,7 @@ class Dataset extends Base{
 	}
 	/**
 	 * Output formatted citation
-	 * 
+	 *
 	 * Based on url extension either bib or ris format is provided
 	 *
 	 * @return void
@@ -309,11 +310,11 @@ class Dataset extends Base{
 			}
 			$str .= str_replace('  ', ' ', str_replace('.', ' ', $first).' {'.$last.'}');
 		}
-		
-		$id = str_replace(' ', '', $aut.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).substr($citation['title'] ?? $this->data['title'], 0,5));		
+
+		$id = str_replace(' ', '', $aut.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).substr($citation['title'] ?? $this->data['title'], 0,5));
 		include('template/dataset/'.NPDC_OUTPUT.'.php');
 		header('Content-type: '.$content_type);
-		header("Content-Disposition: attachment; filename=\"" . $this->data['uuid'].'.'.NPDC_OUTPUT . "\""); 
+		header("Content-Disposition: attachment; filename=\"" . $this->data['uuid'].'.'.NPDC_OUTPUT . "\"");
 		echo strip_tags($output);
 		die();
 	}
@@ -378,7 +379,7 @@ class Dataset extends Base{
 				$cur = $this->model->getById($this->data['dataset_id']);
 				$_SESSION['notice'] .= ', the current can version can be found <a href="'.BASE_URL.'/dataset/'.$cur['uuid'].'">here</a>';
 			}
-		} 
+		}
 		$this->title = 'Dataset - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');
 		$this->class = 'detail';
 		if(\npdc\lib\Args::get('action') === 'files'){
@@ -404,7 +405,7 @@ class Dataset extends Base{
 			}
 		}
 	}
-	
+
 	/**
 	 * Display platform, instrument or sensor characteristics
 	 *
