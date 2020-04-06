@@ -1,7 +1,7 @@
 <?php
 /**
  * Dataset controller
- * 
+ *
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
@@ -12,7 +12,7 @@ class Dataset extends Base{
 	public $formId = 'datasetlist';
 	public $name = 'dataset';
 	public $userLevelAdd = NPDC_EDITOR;//minimum user level required to add a new dataset
-	
+
 	//list of pages in edit form
 	public $pages = [
 			'general'=>'General',
@@ -23,7 +23,7 @@ class Dataset extends Base{
 			'references'=>'References &amp; links',
 			'files'=>'Files',
 		];
-	
+
 	/**
 	 * Constructor
 	 *
@@ -40,7 +40,7 @@ class Dataset extends Base{
 			$this->duplicateDataset();
 		}
 	}
-	
+
 	/**
 	 * Check if dataset draft is different from published version
 	 *
@@ -144,7 +144,7 @@ class Dataset extends Base{
 				break;
 			case 'people':
 				$_SESSION[$this->formId]['data']['people'] = $this->model->getPersons($this->id, $this->version);
-				
+
 				foreach($this->model->getDataCenter($this->id, $this->version) as $rowid=>$row){
 					$basekey = 'data_center_'.$rowid;
 					$_SESSION[$this->formId]['data'][$basekey.'_id'] = $row['dataset_data_center_id'];
@@ -154,7 +154,7 @@ class Dataset extends Base{
 					foreach($people as $person){
 						$dc_people[] = $person['person_id'];
 					}
-					$_SESSION[$this->formId]['data'][$basekey.'_people'] = $dc_people;	
+					$_SESSION[$this->formId]['data'][$basekey.'_people'] = $dc_people;
 				}
 
 				break;
@@ -178,7 +178,7 @@ class Dataset extends Base{
 							$_SESSION[$this->formId]['data'][$basesubsubkey.'_sensor'] = $vocab->formatTerm('vocab_instrument', $vocabModel->getTermById('vocab_instrument', $subsubrow['vocab_instrument_id']),true,true);
 							$_SESSION[$this->formId]['data'][$basesubsubkey.'_technique'] = $subsubrow['technique'];
 						}
-					
+
 					}
 				}
 				break;
@@ -202,21 +202,21 @@ class Dataset extends Base{
 								$_SESSION[$this->formId]['data']['spatial_coverage_id_'.$rowid] = $row[$field];
 								break;
 							default:
-								$key = (substr($field, -5) === '_unit' 
-									? 'unit_spatial_coverage_'.substr($field, 0, -5).'_min' 
+								$key = (substr($field, -5) === '_unit'
+									? 'unit_spatial_coverage_'.substr($field, 0, -5).'_min'
 									: 'spatial_coverage_'.$field);
 								$_SESSION[$this->formId]['data'][$key.'_'.$rowid] = $row[$field];
 						}
 					}
 				}
-				
+
 				foreach($this->model->getTemporalCoverages($this->id, $this->version) as $rowid=>$row){
 					$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_id'] = $row['temporal_coverage_id'];
 					foreach($this->model->getTemporalCoveragesGroup('period', $row['temporal_coverage_id'], $this->version) as $subrowid=>$subrow){
 						$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_dates_'.$subrowid.'_id'] = $subrow['temporal_coverage_period_id'];
 						$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_dates_'.$subrowid.'_range'] = [$subrow['date_start'], $subrow['date_end']];
 					}
-					
+
 					foreach($this->model->getTemporalCoveragesGroup('cycle', $row['temporal_coverage_id'], $this->version) as $subrowid=>$subrow){
 						$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_periodic_'.$subrowid.'_id'] = $subrow['temporal_coverage_cycle_id'];
 						$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_periodic_'.$subrowid.'_name'] = $subrow['name'];
@@ -224,7 +224,7 @@ class Dataset extends Base{
 						$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_periodic_'.$subrowid.'_periodic_cycle'] = $subrow['sampling_frequency'];
 						$_SESSION[$this->formId]['data']['unit_temporal_coverage_'.$rowid.'_periodic_'.$subrowid.'_periodic_cycle'] = $subrow['sampling_frequency_unit'];
 					}
-					
+
 					foreach($this->model->getTemporalCoveragesGroup('paleo', $row['temporal_coverage_id'], $this->version) as $subrowid=>$subrow){
 						$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_paleo_'.$subrowid.'_id'] = $subrow['temporal_coverage_paleo_id'];
 						$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_paleo_'.$subrowid.'_start'] = $subrow['start_value'];
@@ -236,13 +236,13 @@ class Dataset extends Base{
 							$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_paleo_'.$subrowid.'_chronostratigraphic_unit'][] = $subsubrow['vocab_chronounit_id'];
 						}
 					}
-					
+
 					foreach($this->model->getTemporalCoveragesGroup('ancillary', $row['temporal_coverage_id'], $this->version) as $subrowid=>$subrow){
 						$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_ancillary_'.$subrowid.'_id'] = $subrow['temporal_coverage_ancillary_id'];
 						$_SESSION[$this->formId]['data']['temporal_coverage_'.$rowid.'_ancillary_'.$subrowid.'_keyword'] = $subrow['keyword'];
 					}
 				}
-				
+
 				$fields_resolution = ['latitude_resolution', 'longitude_resolution', 'vocab_res_hor_id', 'vertical_resolution', 'vocab_res_vert_id', 'temporal_resolution', 'vocab_res_time_id', 'data_resolution_id'];
 				foreach($this->model->getResolution($this->id, $this->version) as $rowid=>$row){
 					foreach($fields_resolution as $field){
@@ -257,15 +257,15 @@ class Dataset extends Base{
 				}
 				break;
 			case 'usage':
-				$fields = ['creator', 'editor', 'title', 'series_name', 'release_date', 'release_place', 'publisher', 'version', 'issue_identification', 'presentation_form', 'other', 'persistent_identifier_type', 'persistent_identifier_identifier', 'online_resource', 'type'];
+				$citation_fields = ['creator', 'editor', 'title', 'series_name', 'release_date', 'release_place', 'publisher', 'version', 'issue_identification', 'presentation_form', 'other', 'persistent_identifier_type', 'persistent_identifier_identifier', 'online_resource', 'type'];
 				$citation = $this->model->getCitations($this->id, $this->version, 'this')[0];
 				if(is_null($citation)){
 					$_SESSION[$this->formId]['data']['citation_this_creator'] = $this->model->getAuthors($this->id, $this->version);
 				} else {
 					$_SESSION[$this->formId]['data']['citation_this_id'] = $citation['dataset_citation_id'];
-					foreach($fields as $field){
+					foreach($citation_fields as $field){
 						$_SESSION[$this->formId]['data']['citation_this_'.$field] = $field === 'release_date' ? [$citation[$field]] : $citation[$field];
-					}	
+					}
 				}
 				break;
 			case 'references':
@@ -370,11 +370,11 @@ class Dataset extends Base{
 						$_SESSION[$this->formId]['data'][$key] = $file[$field];
 					}
 				}
-				
+
 				break;
 		}
 	}
-	
+
 	/**
 	 * insert record or save updated version of record
 	 *
@@ -399,7 +399,7 @@ class Dataset extends Base{
 			$this->savePeople();
 		} else {
 			switch($this->screen){
-				case 'general': 
+				case 'general':
 					if($_SESSION[$this->formId]['db_action'] !== 'insert'){
 						$saved = $this->model->updateGeneral($_SESSION[$this->formId]['data'], $this->id, $this->version) !== false;
 					}
@@ -408,7 +408,7 @@ class Dataset extends Base{
 					break;
 				case 'people':
 					$saved = $this->model->updateGeneral([
-						'originating_center'=>$_SESSION[$this->formId]['data']['originating_center'], 
+						'originating_center'=>$_SESSION[$this->formId]['data']['originating_center'],
 						'data_center'=>$_SESSION[$this->formId]['data']['data_center']
 						]
 						, $this->id, $this->version) !== false;
@@ -427,9 +427,10 @@ class Dataset extends Base{
 						[
 							'dataset_progress'=>$_SESSION[$this->formId]['data']['dataset_progress'],
 							'quality'=>$_SESSION[$this->formId]['data']['quality'],
+							'license'=>$_SESSION[$this->formId]['data']['license'],
 							'access_constraints'=>$_SESSION[$this->formId]['data']['access_constraints'],
 							'use_constraints'=>$_SESSION[$this->formId]['data']['use_constraints']
-						
+
 						], $this->id, $this->version) !== false;
 					$this->saveCitation('this');
 					break;
@@ -451,8 +452,8 @@ class Dataset extends Base{
 					$saved = true;
 			}
 		}
-		$_SESSION['notice'] = $saved 
-			? '<p>Your changes have been saved.</p>' 
+		$_SESSION['notice'] = $saved
+			? '<p>Your changes have been saved.</p>'
 			: 'Something went wrong when trying to save your record';
 		if($saved){
 			$url = BASE_URL.'/dataset/'.$this->id.'/';
@@ -509,7 +510,7 @@ class Dataset extends Base{
 		header('Location: '.BASE_URL.'/dataset/'.$data['uuid']);
 		die();
 	}
-	
+
 	/**
 	 * Copy keywords from original dataset to duplicate
 	 *
@@ -518,7 +519,7 @@ class Dataset extends Base{
 	private function duplicateKeywords(){
 		foreach($this->model->getKeywords($this->id, $this->version) as $keyword){
 			$data = [
-				'dataset_id'=>$this->newId, 
+				'dataset_id'=>$this->newId,
 				'dataset_version_min'=>1,
 				'vocab_science_keyword_id'=>$keyword['vocab_science_keyword_id'],
 				'free_text' =>$keyword['free_text']
@@ -575,7 +576,7 @@ class Dataset extends Base{
 	private function duplicateLocations(){
 		foreach($this->model->getLocations($this->id, $this->version) as $location){
 			$this->model->insertLocation([
-				'dataset_id'=>$this->newId, 
+				'dataset_id'=>$this->newId,
 				'dataset_version_min'=>1,
 				'vocab_location_id'=>$location['vocab_location_id'],
 				'detailed'=>$location['detailed']
@@ -585,7 +586,7 @@ class Dataset extends Base{
 
 	/**
 	 * Copy spatial coverages from original dataset to duplicate
-	 * 
+	 *
 	 * @return void
 	 */
 	private function duplicateSpatialCoverage(){
@@ -723,8 +724,8 @@ class Dataset extends Base{
 	private function duplicatePlatform(){
 		foreach($this->model->getPlatform($this->id, $this->version) as $platform){
 			$platform_id = $this->model->insertPlatform([
-				'dataset_id'=>$this->newId, 
-				'dataset_version_min'=>1, 
+				'dataset_id'=>$this->newId,
+				'dataset_version_min'=>1,
 				'vocab_platform_id'=>$platform['vocab_platform_id']
 			]);
 			foreach($this->model->getInstrument($platform['platform_id'], $this->version) as $instrument){
@@ -755,7 +756,7 @@ class Dataset extends Base{
 	private function duplicateProjects(){
 		foreach($this->model->getProjects($this->id, $this->version, false) as $project){
 			$this->model->insertProject([
-				'dataset_id'=>$this->newId, 
+				'dataset_id'=>$this->newId,
 				'project_id'=>$project['project_id'],
 				'project_version_min'=>$project['project_version_min'],
 				'dataset_version_min'=>1
@@ -771,7 +772,7 @@ class Dataset extends Base{
 	private function duplicatePublications(){
 		foreach($this->model->getPublications($this->id, $this->version, false) as $publication){
 			$this->model->insertPublication([
-				'dataset_id'=>$this->newId, 
+				'dataset_id'=>$this->newId,
 				'publication_id'=>$publication['publication_id'],
 				'publication_version_min'=>$publication['publication_version_min'],
 				'dataset_version_min'=>1
@@ -797,7 +798,7 @@ class Dataset extends Base{
 				'dataset_version_min'=>1
 			]);
 		}
-		
+
 		$this->model->insertRelatedDataset([
 			'same'=>0,
 			'relation'=>'Similar dataset',
@@ -826,7 +827,7 @@ class Dataset extends Base{
 		foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
 			if(substr($key, 0, strlen($loopId)) === $loopId){
 				$data = [
-					'dataset_id'=>$this->id, 
+					'dataset_id'=>$this->id,
 					'vocab_science_keyword_id'=>$_SESSION[$this->formId]['data'][$key],
 					'free_text' => $_SESSION[$this->formId]['data']['science_keywords_detailed_variable_'.substr($key, strlen($loopId))]
 				];
@@ -843,7 +844,7 @@ class Dataset extends Base{
 		}
 		$v = $this->version-1;
 		$this->model->deleteScienceKeyword($this->id, $v, $keyword);
-		
+
 		//Ancillary keywords
 		$currentKeywords = $this->model->getAncillaryKeywords($this->id, $this->version);
 		$words = [];
@@ -867,7 +868,7 @@ class Dataset extends Base{
 	/**
 	 * SAVE PARTS
 	 */
-	
+
 	/**
 	 * Save iso topics
 	 *
@@ -892,7 +893,7 @@ class Dataset extends Base{
 			}
 		}
 	}
-	
+
 	/**
 	 * Save (bi-directional) link to projects
 	 *
@@ -902,13 +903,13 @@ class Dataset extends Base{
 		$projects = [];
 		$loopId = 'projects_project_id_';
 		$projectModel = new \npdc\model\Project();
-		
+
 		foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
 			if(substr($key, 0, strlen($loopId)) === $loopId){
 				$projects[] = $_SESSION[$this->formId]['data'][$key];
 				if(strpos($key, '_new_') !== false){
 					$data = [
-						'dataset_id'=>$this->id, 
+						'dataset_id'=>$this->id,
 						'project_id'=>$_SESSION[$this->formId]['data'][$key],
 						'project_version_min'=>$projectModel->getVersions($_SESSION[$this->formId]['data'][$key])[0]['project_version'],
 						'dataset_version_min'=>$this->version
@@ -930,13 +931,13 @@ class Dataset extends Base{
 		$publications = [];
 		$loopId = 'publications_publication_id_';
 		$publicationModel = new \npdc\model\Publication();
-		
+
 		foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
 			if(substr($key, 0, strlen($loopId)) === $loopId){
 				$publications[] = $_SESSION[$this->formId]['data'][$key];
 				if(strpos($key, '_new_') !== false){
 					$data = [
-						'dataset_id'=>$this->id, 
+						'dataset_id'=>$this->id,
 						'publication_id'=>$_SESSION[$this->formId]['data'][$key],
 						'publication_version_min'=>$publicationModel->getVersions($_SESSION[$this->formId]['data'][$key])[0]['publication_version'],
 						'dataset_version_min'=>$this->version
@@ -982,13 +983,13 @@ class Dataset extends Base{
 			} else {
 				$record_id = $_SESSION[$this->formId]['data']['related_dataset_'.$serial.'_id'];
 				$return = $this->model->updateRelatedDataset($record_id, $data, $this->version);
-				$related[] = !is_bool($return) ? $return : $record_id;	
+				$related[] = !is_bool($return) ? $return : $record_id;
 			}
 		}
 		$v = $this->version-1;
 		$this->model->deleteRelatedDataset($this->id, $v, $related, $type);
 	}
-	
+
 	/**
 	 * Save locations
 	 *
@@ -1000,7 +1001,7 @@ class Dataset extends Base{
 		foreach(array_keys($_SESSION[$this->formId]['data']) as $key){
 			if(substr($key, 0, strlen($loopId)) === $loopId){
 				$data = [
-					'dataset_id'=>$this->id, 
+					'dataset_id'=>$this->id,
 					'vocab_location_id'=>$_SESSION[$this->formId]['data'][$key],
 					'detailed' => $_SESSION[$this->formId]['data']['location_detailed_'.substr($key, strlen($loopId))]
 				];
@@ -1017,7 +1018,7 @@ class Dataset extends Base{
 		$v = $this->version-1;
 		$this->model->deleteLocation($this->id, $v, $locations);
 	}
-	
+
 	/**
 	 * Save spatial coverage
 	 *
@@ -1032,12 +1033,12 @@ class Dataset extends Base{
 				$data = ['dataset_id'=> $this->id];
 				$nr = substr($key, strlen($loopId));
 				foreach($fields as $field){
-					$key = (substr($field, -5) === '_unit' 
-						? 'unit_spatial_coverage_'.substr($field, 0, -5).'_min' 
+					$key = (substr($field, -5) === '_unit'
+						? 'unit_spatial_coverage_'.substr($field, 0, -5).'_min'
 						: 'spatial_coverage_'.$field)
 						. '_'.$nr;
-					$data[$field] = $field === 'type' 
-						? explode('_', $_SESSION[$this->formId]['data'][$key])[2] 
+					$data[$field] = $field === 'type'
+						? explode('_', $_SESSION[$this->formId]['data'][$key])[2]
 						: $_SESSION[$this->formId]['data'][$key];
 				}
 				if(strpos($key, '_new') !== false){
@@ -1046,14 +1047,14 @@ class Dataset extends Base{
 				} else {
 					$record_id = $_SESSION[$this->formId]['data']['spatial_coverage_id_'.$nr];
 					$return = $this->model->updateSpatialCoverage($record_id, $data, $this->version);
-					$coverages[] = !is_bool($return) ? $return : $record_id;	
+					$coverages[] = !is_bool($return) ? $return : $record_id;
 				}
 			}
 		}
 		$v = $this->version-1;
 		$this->model->deleteSpatialCoverage($this->id, $v, $coverages);
 	}
-	
+
 	/**
 	 * Save temporal coverage
 	 *
@@ -1096,7 +1097,7 @@ class Dataset extends Base{
 					$current2[] = $this->saveTemporalCoverageGroup($group, $temporalCoverageId, $loopId3, $serial2);
 				}
 				$v = $this->version-1;
-				
+
 				switch ($group){
 					case 'dates':
 						$this->model->deleteTemporalCoveragePeriod($temporalCoverageId, $v, $current2);
@@ -1117,7 +1118,7 @@ class Dataset extends Base{
 		$v = $this->version-1;
 		$this->model->deleteTemporalCoverage($this->id, $v, $current);
 	}
-	
+
 	/**
 	 * Save subgroup of a temporal coverage
 	 *
@@ -1209,7 +1210,7 @@ class Dataset extends Base{
 				break;
 		}
 	}
-	
+
 	/**
 	 * Save the data resolution
 	 *
@@ -1243,7 +1244,7 @@ class Dataset extends Base{
 				$record_id = $_SESSION[$this->formId]['data']['resolution_id'.$nr];
 
 				$return = $this->model->updateResolution($record_id, $data, $this->version);
-				$resolutions[] = !is_bool($return) ? $return : $record_id;	
+				$resolutions[] = !is_bool($return) ? $return : $record_id;
 			}
 		}
 		$v = $this->version-1;
@@ -1263,7 +1264,7 @@ class Dataset extends Base{
 			if(substr($key, 0, strlen($loopId)) === $loopId){
 				$persons[] = $_SESSION[$this->formId]['data'][$key];
 				$record = [
-					'dataset_id'=>$this->id, 
+					'dataset_id'=>$this->id,
 					'person_id'=>$_SESSION[$this->formId]['data'][$key]
 				];
 				$data = [];
@@ -1281,9 +1282,9 @@ class Dataset extends Base{
 			}
 		}
 		$v = $this->version-1;
-		return $this->model->deletePerson($this->id, $v, $persons) !== false;	
+		return $this->model->deletePerson($this->id, $v, $persons) !== false;
 	}
-	
+
 	/**
 	 * Save data center
 	 *
@@ -1325,7 +1326,7 @@ class Dataset extends Base{
 				}
 				$new = array_diff($_SESSION[$this->formId]['data'][$loopId.$serial.'_people'], $persons);
 				$old = array_diff($persons, $_SESSION[$this->formId]['data'][$loopId.$serial.'_people'] ?? []);
-				
+
 				if(count($old) > 0){
 					foreach($old as $person){
 						$this->model->deleteDataCenterPerson($person, $data_center_id, $this->version-1);
@@ -1334,8 +1335,8 @@ class Dataset extends Base{
 				if(count($new) > 0){
 					foreach($new as $person){
 						$this->model->insertDataCenterPerson([
-							'person_id'=>$person, 
-							'dataset_data_center_id'=>$data_center_id, 
+							'person_id'=>$person,
+							'dataset_data_center_id'=>$data_center_id,
 							'dataset_version_min'=>$this->version
 						]);
 					}
@@ -1345,7 +1346,7 @@ class Dataset extends Base{
 		}
 		$this->model->deleteDataCenter($this->id, $this->version-1, $current);
 	}
-	
+
 	/**
 	 * Save citation
 	 *
@@ -1382,13 +1383,13 @@ class Dataset extends Base{
 			} else {
 				$record_id = $_SESSION[$this->formId]['data']['citation_'.$serial.'_id'];
 				$return = $this->model->updateCitation($record_id, $data, $this->version);
-				$citations[] = !is_bool($return) ? $return : $record_id;	
+				$citations[] = !is_bool($return) ? $return : $record_id;
 			}
 		}
 		$v = $this->version-1;
 		$this->model->deleteCitation($this->id, $v, $citations, $type);
 	}
-	
+
 	/**
 	 * Save the platform
 	 *
@@ -1427,7 +1428,7 @@ class Dataset extends Base{
 		}
 		$this->model->deletePlatform($this->id, $this->version-1, $current);
 	}
-	
+
 	/**
 	 * Save the instruments
 	 *
@@ -1453,7 +1454,7 @@ class Dataset extends Base{
 				'technique'=>$_SESSION[$this->formId]['data'][$loopId.$serial.'_technique'],
 				'number_of_sensors'=>$_SESSION[$this->formId]['data'][$loopId.$serial.'_number_of_sensors'],
 				'platform_id'=>$platform_id
-				
+
 			];
 			$return = null;
 			if(strpos($serial, 'new') !== false){
@@ -1472,7 +1473,7 @@ class Dataset extends Base{
 		}
 		$this->model->deleteInstrument($platform_id, $this->version-1, $current);
 	}
-	
+
 	/**
 	 * Save sensor
 	 *
@@ -1497,7 +1498,7 @@ class Dataset extends Base{
 				'vocab_instrument_id'=>$_SESSION[$this->formId]['data'][$loopId.$serial.'_sensor_id'],
 				'technique'=>$_SESSION[$this->formId]['data'][$loopId.$serial.'_technique'],
 				'instrument_id'=>$instrument_id
-				
+
 			];
 			if(strpos($serial, 'new') !== false){
 				$data['dataset_version_min'] = $this->version;
@@ -1506,7 +1507,7 @@ class Dataset extends Base{
 				$sensor_id = $_SESSION[$this->formId]['data'][$loopId.$serial.'_id'];
 				$return = $this->model->updateSensor($sensor_id, $data, $this->version);
 				if(!is_bool($return)){
-					$sensor_id = $return;	
+					$sensor_id = $return;
 				}
 			}
 			$current[] = $sensor_id;
@@ -1514,7 +1515,7 @@ class Dataset extends Base{
 		}
 		$this->model->deleteSensor($instrument_id, $this->version-1, $current);
 	}
-	
+
 	/**
 	 * Save characteristics of platform, instrument or sensor
 	 *
@@ -1603,10 +1604,10 @@ class Dataset extends Base{
 				$return = $this->model->updateLink($record_id, $data, $this->version);
 				if(!is_bool($return)){
 					$record_id = $return;
-				}	
+				}
 			}
 			$links[] = $record_id;
-			
+
 			$loopId2 = $loopId.$serial.'_url_';
 			$serials2 = [];
 			$current2 = [];
@@ -1637,7 +1638,7 @@ class Dataset extends Base{
 		$v = $this->version-1;
 		$this->model->deleteLink($this->id, $v, $links);
 	}
-	
+
 	/**
 	 * Save files to be attached to dataset
 	 *
@@ -1673,8 +1674,8 @@ class Dataset extends Base{
 		$this->model->deleteFile($this->id, $v, $files);
 		$fileModel->cancelDrafts('dataset:'. $this->id);
 	}
-	
-	/** 
+
+	/**
 	 * FILE ACCESS
 	 */
 
@@ -1726,9 +1727,9 @@ class Dataset extends Base{
 							$text = 'Dear data provider'.",\r\n\r"
 								. 'There is a new data request for data you provided at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease process this request.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
 							$mail->text($text);
-							$mail->send();	
+							$mail->send();
 						}
-						
+
 						$mail = new \npdc\lib\Mailer();
 						$mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
 						$mail->subject('New data request');

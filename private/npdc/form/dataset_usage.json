@@ -25,6 +25,17 @@
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/quality.html",
 			"hasSuggestions": true
 		},
+		"license": {
+			"type": "options",
+			"label": "License",
+			"options":{
+				"ccby": "CC-BY | Creative Commons Attribution",
+				"cc0": "CC0 | No rights reserved",
+				"other": "Other, please specifiy under access and use constraints"
+			},
+			"multiple": false,
+			"asList": true
+		},
 		"access_constraints": {
 			"type": "textarea",
 			"label": "Access Constraints",

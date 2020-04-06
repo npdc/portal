@@ -1,3 +1,6 @@
+## v3.1.0 - 2020-04-06
+Added license field with cc0, cc-by or other
+
 ## v3.0.1 - 2020-04-03
 Fix for body height when technical footer present
 
@@ -39,7 +42,9 @@ Change some css to mitigate the effect of removing the logo's from the footer
 Added bib and ris citation export to publication pages
 
 ## v2.5.0 - 2019-05-16
-Expanded search with organization and person search, including listing of project, publications and datasets in which a person or organization is involved
+Expanded search with organization and person search, including listing of
+    project, publications and datasets in which a person or organization is
+    involved
 
 ## v2.4.2 - 2019-05-01
 * Fix bug in lookup with underscore in vocab name
@@ -78,7 +83,8 @@ Lighten main background
 
 ## v2.2.2 - 2019-03-27
 * Remove head background and shadows from print view
-* Move technical footer outside columns to keep it on the bottom of the page on small screen/print
+* Move technical footer outside columns to keep it on the bottom of the page
+    on small screen/print
 
 ## v2.2.1 - 2019-03-27
 Add url to citation in metadata.txt when downloading data

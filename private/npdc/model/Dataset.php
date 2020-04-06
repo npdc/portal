@@ -2,7 +2,7 @@
 
 /**
  * Dataset model
- * 
+ *
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
@@ -15,7 +15,7 @@ class Dataset extends Base{
 	/**
 	 * GETTERS
 	 */
-	
+
 	/**
 	 * Get list of datasets
 	 *
@@ -88,7 +88,7 @@ class Dataset extends Base{
 		if($session->userLevel > NPDC_USER){
 			if($session->userLevel === NPDC_ADMIN) {
 				$q->field($q->dsql()->expr('TRUE {}', ['editor']))
-					->where('dataset.dataset_version', 
+					->where('dataset.dataset_version',
 					$q->dsql()->table(['ds2'=>'dataset'])
 						->field('MAX(dataset_version)')
 						->where('ds2.dataset_id=dataset.dataset_id')
@@ -100,23 +100,23 @@ class Dataset extends Base{
 				->where('person_id', $session->userId)
 				->where('editor');
 				$q->field($q->dsql()
-					->expr('CASE 
+					->expr('CASE
 						WHEN creator=[] THEN TRUE
 						WHEN EXISTS([]) THEN TRUE
-						ELSE FALSE 
+						ELSE FALSE
 						END {}', [$session->userId, $isEditor, 'editor']
 						)
-					)->where('dataset.dataset_version', 
+					)->where('dataset.dataset_version',
 						$q->dsql()->table(['ds2'=>'dataset'])
 							->field('MAX(dataset_version)')
 							->where('ds2.dataset_id=dataset.dataset_id')
 							->where($q->dsql()->andExpr()//ends with false, so inverts condition to: NOT (draft & NOT editor)
 								->where('record_status', 'draft')
 								->where($q->dsql()
-									->expr('CASE 
+									->expr('CASE
 										WHEN creator=[] THEN FALSE
 										WHEN EXISTS([]) THEN FALSE
-										ELSE TRUE 
+										ELSE TRUE
 										END', [$session->userId, $isEditor]
 										)
 									)
@@ -168,7 +168,7 @@ class Dataset extends Base{
 	public function getByUUID($uuid){
 		return \npdc\lib\Db::get('dataset', ['uuid'=>$uuid]);
 	}
-	
+
 	/**
 	 * Get the publications linked to a dataset
 	 *
@@ -204,7 +204,7 @@ class Dataset extends Base{
 	 * @param boolean $published only show published projects or also drafts
 	 * @return array list of projects
 	 */
-	
+
 	public function getProjects($id, $version, $published = true){
 		$q = $this->dsql->dsql()
 			->table('dataset_project')
@@ -255,10 +255,10 @@ class Dataset extends Base{
 			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
 			->get();
 	}
-	
+
 	/**
 	 * Get temporal coverages
-	 * 
+	 *
 	 * @param integer $id dataset id
 	 * @param integer $version dataset version
 	 * @return array list of temporal coverages
@@ -269,7 +269,7 @@ class Dataset extends Base{
 			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
 			->get();
 	}
-	
+
 	/**
 	 * Get temporal coverage subgroups
 	 *
@@ -302,7 +302,7 @@ class Dataset extends Base{
 			->order('sort')
 			->get();
 	}
-	
+
 	/**
 	 * Get data resolution
 	 *
@@ -319,7 +319,7 @@ class Dataset extends Base{
 			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
 			->get();
 	}
-	
+
 	/**
 	 * Get platform used for data collection
 	 *
@@ -337,7 +337,7 @@ class Dataset extends Base{
 		return $q->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
 			->get();
 	}
-	
+
 	/**
 	 * Get instruments used on platform
 	 *
@@ -356,7 +356,7 @@ class Dataset extends Base{
 			->where(\npdc\lib\Db::selectVersion('dataset', $version))
 			->get();
 	}
-	
+
 /**
 	 * Get sensors used in instrument
 	 *
@@ -375,7 +375,7 @@ class Dataset extends Base{
 			->where(\npdc\lib\Db::selectVersion('dataset', $version))
 			->get();
 	}
-	
+
 	/**
 	 * Get characteristics of platform, instrument or sensor
 	 *
@@ -391,10 +391,10 @@ class Dataset extends Base{
 			->where(\npdc\lib\Db::selectVersion('dataset', $version))
 			->get();
 	}
-	
+
 	/**
 	 * Get persons linked to dataset
-	 * 
+	 *
 	 * @param integer $id dataset id
 	 * @param integer $version dataset version
 	 * @return array list of persons
@@ -463,7 +463,7 @@ class Dataset extends Base{
 		return $q->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
 			->get();
 	}
-	
+
 	/**
 	 * Get details of people at data center
 	 *
@@ -482,7 +482,7 @@ class Dataset extends Base{
 			->where(\npdc\lib\Db::selectVersion('dataset', $version))
 			->get();
 	}
-	
+
 	/**
 	 * Get citations linked to dataset
 	 *
@@ -500,7 +500,7 @@ class Dataset extends Base{
 		}
 		return $q->get();
 	}
-	
+
 	/**
 	 * Get related datasets
 	 *
@@ -529,7 +529,7 @@ class Dataset extends Base{
 		return $q->order($q->expr('category, coalesce(topic, \'0\'), coalesce(term, \'0\'), coalesce(var_lvl_1, \'0\'), coalesce(var_lvl_2, \'0\'), coalesce(var_lvl_3, \'0\'), coalesce(free_text, \'0\')'))
 			->get();
 	}
-	
+
 	/**
 	 * Get free keywords
 	 *
@@ -544,7 +544,7 @@ class Dataset extends Base{
 			->order('keyword')
 			->get();
 	}
-	
+
 	/**
 	 * Get ISO topics
 	 *
@@ -560,7 +560,7 @@ class Dataset extends Base{
 			->order('topic')
 			->get();
 	}
-	
+
 	/**
 	 * Get links
 	 *
@@ -581,7 +581,7 @@ class Dataset extends Base{
 		}
 		return $q->get();
 	}
-	
+
 	/**
 	 * Get urls of links
 	 *
@@ -596,7 +596,7 @@ class Dataset extends Base{
 			->where(\npdc\lib\Db::selectVersion('dataset', $version))
 			->get();
 	}
-	
+
 	/**
 	 * Get files related to dataset
 	 *
@@ -611,7 +611,7 @@ class Dataset extends Base{
 			->where(\npdc\lib\Db::selectVersion('dataset', $id, $version))
 			->get();
 	}
-	
+
 	/**
 	 * Search for datasets
 	 *
@@ -645,11 +645,11 @@ class Dataset extends Base{
 		if($includeDraft) {
 			$q->where('dataset_version', $q->dsql()->table('dataset', 'a')->field('max(dataset_version)')->where('a.dataset_id=dataset.dataset_id'));
 		} else {
-			$q->where('record_status', 'published');	
+			$q->where('record_status', 'published');
 		}
 		return $q->get();
 	}
-	
+
 	/**
 	 * Generate metadata plain text file for use in data zip
 	 *
@@ -690,7 +690,7 @@ class Dataset extends Base{
 	 * @return array reformatted data
 	 */
 	protected function parseGeneral($data, $action){
-		$fields = ['dif_id','title','summary','purpose','region','date_start','date_end','quality','access_constraints','use_constraints','dataset_progress', 'originating_center', 'dif_revision_history', 'version_description', 'product_level_id', 'collection_data_type', 'extended_metadata', 'record_status', 'creator', 'duplicate_of'];
+		$fields = ['dif_id','title','summary','purpose','region','date_start','date_end','quality','license', 'access_constraints','use_constraints','dataset_progress', 'originating_center', 'dif_revision_history', 'version_description', 'product_level_id', 'collection_data_type', 'extended_metadata', 'record_status', 'creator', 'duplicate_of'];
 		if($action === 'insert'){
 			array_push($fields, 'dataset_version');
 			if(is_numeric($data['dataset_id'])){
@@ -718,7 +718,7 @@ class Dataset extends Base{
 	public function insertSpatialCoverage($data){
 		return \npdc\lib\Db::insert('spatial_coverage', $data, true);
 	}
-	
+
 	/**
 	 * Update spatial coverage
 	 *
@@ -738,7 +738,7 @@ class Dataset extends Base{
 	public function insertResolution($data){
 		return \npdc\lib\Db::insert('data_resolution', $data, true);
 	}
-	
+
 	public function updateResolution($record, $data, $version){
 		return $this->_updateSub('data_resolution', $record, $data, $version);
 	}
@@ -746,7 +746,7 @@ class Dataset extends Base{
 	public function deleteResolution($dataset_id, $version, $current){
 		$this->_deleteSub('data_resolution', $dataset_id, $version, $current);
 	}
-	
+
 	public function insertLocation($data){
 		return \npdc\lib\Db::insert('location', $data, true);
 	}
@@ -758,64 +758,64 @@ class Dataset extends Base{
 	public function deleteLocation($dataset_id, $version, $current){
 		$this->_deleteSub('location', $dataset_id, $version, $current);
 	}
-	
+
 	public function insertTemporalCoverage($data){
 		return \npdc\lib\Db::insert('temporal_coverage', $data, true);
 	}
-	
+
 	public function deleteTemporalCoverage($dataset_id, $version, $current){
 		$this->_deleteSub('temporal_coverage', $dataset_id, $version, $current);
 	}
 
-	
+
 	public function insertTemporalCoveragePeriod($data){
 		return \npdc\lib\Db::insert('temporal_coverage_period', $data, true);
 	}
-	
+
 	public function updateTemporalCoveragePeriod($record, $data, $version){
 		return $this->_updateSub('temporal_coverage_period', $record, $data, $version, 'parent');
 	}
-	
+
 	public function deleteTemporalCoveragePeriod($temporal_coverage_id, $version, $current){
 		$this->_deleteSub('temporal_coverage_period', $temporal_coverage_id, $version, $current, 'temporal_coverage');
 	}
-	
+
 	public function insertTemporalCoverageCycle($data){
 		return \npdc\lib\Db::insert('temporal_coverage_cycle', $data, true);
 	}
-	
+
 	public function updateTemporalCoverageCycle($record, $data, $version){
 		return $this->_updateSub('temporal_coverage_cycle', $record, $data, $version);
 	}
-	
+
 	public function deleteTemporalCoverageCycle($temporal_coverage_id, $version, $current){
 		$this->_deleteSub('temporal_coverage_cycle', $temporal_coverage_id, $version, $current, 'temporal_coverage');
 	}
-	
+
 	public function insertTemporalCoverageAncillary($data){
 		return \npdc\lib\Db::insert('temporal_coverage_ancillary', $data, true);
 	}
-	
+
 	public function updateTemporalCoverageAncillary($record, $data, $version){
 		return $this->_updateSub('temporal_coverage_ancillary', $record, $data, $version);
 	}
-	
+
 	public function deleteTemporalCoverageAncillary($temporal_coverage_id, $version, $current){
 		$this->_deleteSub('temporal_coverage_ancillary', $temporal_coverage_id, $version, $current, 'temporal_coverage');
 	}
-	
+
 	public function insertTemporalCoveragePaleo($data){
 		return \npdc\lib\Db::insert('temporal_coverage_paleo', $data, true);
 	}
-	
+
 	public function updateTemporalCoveragePaleo($record, $data, $version){
 		return $this->_updateSub('temporal_coverage_paleo', $record, $data, $version);
 	}
-	
+
 	public function deleteTemporalCoveragePaleo($temporal_coverage_id, $version, $current){
 		$this->_deleteSub('temporal_coverage_paleo', $temporal_coverage_id, $version, $current, 'temporal_coverage');
 	}
-	
+
 	public function insertTemporalCoveragePaleoChronounit($data){
 		return \npdc\lib\Db::insert('temporal_coverage_paleo_chronounit', $data, true);
 	}
@@ -843,23 +843,23 @@ class Dataset extends Base{
 			->set('dataset_version_max', $dataset_version)
 			->update();
 	}
-	
+
 	public function insertScienceKeyword($data){
 		return \npdc\lib\Db::insert('dataset_keyword', $data, true);
 	}
-	
+
 	public function updateScienceKeyword($record, $data, $version){
 		return $this->_updateSub('dataset_keyword', $record, $data, $version);
 	}
-	
+
 	public function deleteScienceKeyword($dataset_id, $version, $current){
 		$this->_deleteSub('dataset_keyword', $dataset_id, $version, $current);
 	}
-	
+
 	public function insertAncillaryKeyword($word, $id, $version){
 		return \npdc\lib\Db::insert('dataset_ancillary_keyword', ['dataset_id'=>$id,'dataset_version_min'=>$version,'keyword'=>$word], true);
 	}
-	
+
 	public function deleteAncillaryKeyword($word, $id, $version){
 		$this->dsql->dsql()
 			->table('dataset_ancillary_keyword')
@@ -869,23 +869,23 @@ class Dataset extends Base{
 			->set('dataset_version_max', $version)
 			->update();
 	}
-	
+
 	public function insertDataCenter($data){
 		return \npdc\lib\Db::insert('dataset_data_center', $data, true);
 	}
-	
+
 	public function updateDataCenter($record, $data, $version){
 		return $this->_updateSub('dataset_data_center', $record, $data, $version);
 	}
-	
+
 	public function deleteDataCenter($dataset_id, $version, $currentDataCenters){
 		$this->_deleteSub('dataset_data_center', $dataset_id, $version, $currentDataCenters);
 	}
-	
+
 	public function insertDataCenterPerson($data){
 		return \npdc\lib\Db::insert('dataset_data_center_person', $data);
 	}
-	
+
 	public function deleteDataCenterPerson($person_id, $dataCenterId, $version){
 		$q = $this->dsql->dsql()
 			->table('dataset_data_center_person')
@@ -895,7 +895,7 @@ class Dataset extends Base{
 			->set('dataset_version_max', $version)
 			->update();
 	}
-	
+
 	public function insertProject($data){
 		return \npdc\lib\Db::insert('dataset_project', $data);
 	}
@@ -933,11 +933,11 @@ class Dataset extends Base{
 	public function insertCitation($data){
 		return \npdc\lib\Db::insert('dataset_citation', $data, true);
 	}
-	
+
 	public function updateCitation($record, $data, $version){
 		return $this->_updateSub('dataset_citation', $record, $data, $version);
 	}
-	
+
 	public function deleteCitation($dataset_id, $version, $currentCitations, $type = null){
 		$q = $this->dsql->dsql()
 			->table('dataset_citation')
@@ -956,11 +956,11 @@ class Dataset extends Base{
 	public function insertRelatedDataset($data){
 		return \npdc\lib\Db::insert('related_dataset', $data, true);
 	}
-	
+
 	public function updateRelatedDataset($record, $data, $version){
 		return $this->_updateSub('related_dataset', $record, $data, $version);
 	}
-	
+
 	public function deleteRelatedDataset($dataset_id, $version, $currentRelatedDatasets){
 		$this->_deleteSub('related_dataset', $dataset_id, $version, $currentRelatedDatasets);
 	}
@@ -968,7 +968,7 @@ class Dataset extends Base{
 	public function insertPlatform($data){
 		return \npdc\lib\Db::insert('platform', $data, true);
 	}
-	
+
 	public function updatePlatform($record, $data, $version){
 		$oldRecord = \npdc\lib\Db::get('platform', $record);
 		$createNew = false;
@@ -985,7 +985,7 @@ class Dataset extends Base{
 			$return = $this->insertPlatform(array_merge($data, ['dataset_version_min'=>$version, 'dataset_id'=>$oldRecord['dataset_id']]));
 			foreach($instruments as $instrument){
 				$sensors = $this->getSensor($instrument['instrument_id'], $version, false);
-				
+
 				$instrument['dataset_version_min'] = $version;
 				$instrument['old_instrument_id'] = $instrument['instrument_id'];
 				$instrument['platform_id'] = $return;
@@ -996,7 +996,7 @@ class Dataset extends Base{
 					$sensor['old_sensor_id'] = $sensor['sensor_id'];
 					$sensor['instrument_id'] = $i;
 					unset($sensor['sensor_id']);
-					$this->insertSensor($sensor);	
+					$this->insertSensor($sensor);
 				}
 			}
 		} else {
@@ -1004,7 +1004,7 @@ class Dataset extends Base{
 		}
 		return $return;
 	}
-	
+
 	public function deletePlatform($dataset_id, $version, $currentPlatforms){
 		$this->_deleteSub('platform', $dataset_id, $version, $currentPlatforms);
 		return true;
@@ -1013,7 +1013,7 @@ class Dataset extends Base{
 	public function insertInstrument($data){
 		return \npdc\lib\Db::insert('instrument', $data, true);
 	}
-	
+
 	public function updateInstrument($record, $data, $version){
 		$oldRecord = \npdc\lib\Db::get('instrument', $record);
 		$createNew = false;
@@ -1042,7 +1042,7 @@ class Dataset extends Base{
 		}
 		return $return;
 	}
-	
+
 	public function deleteInstrument($platform_id, $version, $currentInstruments){
 		$this->_deleteSub('instrument', $platform_id, $version, $currentInstruments, 'platform');
 	}
@@ -1050,11 +1050,11 @@ class Dataset extends Base{
 	public function insertSensor($data){
 		return \npdc\lib\Db::insert('sensor', $data, true);
 	}
-	
+
 	public function updateSensor($record, $data, $version){
 		return $this->_updateSub('sensor', $record, $data, $version);
 	}
-	
+
 	public function deleteSensor($instrument_id, $version, $currentSensors){
 		$this->_deleteSub('sensor', $instrument_id, $version, $currentSensors, 'instrument');
 	}
@@ -1062,11 +1062,11 @@ class Dataset extends Base{
 	public function insertCharacteristics($data){
 		return \npdc\lib\Db::insert('characteristics', $data, true);
 	}
-	
+
 	public function updateCharacteristics($record_id, $data, $dataset_version){
 		return $this->_updateSub('characteristics', $record_id, $data, $dataset_version);
 	}
-	
+
 	public function deleteCharacteristics($record, $dataset_version, $currentCharacteristics){
 		list($type, $record_id) = $record;
 		$q = $this->dsql->dsql()
@@ -1079,11 +1079,11 @@ class Dataset extends Base{
 		$q->set('dataset_version_max', $dataset_version)
 			->update();
 	}
-	
+
 	public function insertLink($data){
 		return \npdc\lib\Db::insert('dataset_link', $data, true);
 	}
-	
+
 	public function updateLink($record, $data, $version){
 		$oldRecord = \npdc\lib\Db::get('dataset_link', $record);
 		$createNew = false;
@@ -1112,7 +1112,7 @@ class Dataset extends Base{
 		}
 		return $return;
 	}
-	
+
 	public function deleteLink($dataset_id, $version, $currentLinks){
 		$this->_deleteSub('dataset_link', $dataset_id, $version, $currentLinks);
 	}
@@ -1120,11 +1120,11 @@ class Dataset extends Base{
 	public function insertLinkUrl($data){
 		return \npdc\lib\Db::insert('dataset_link_url', $data, true);
 	}
-	
+
 	public function updateLinkUrl($record, $data, $version){
 		return $this->_updateSub('dataset_link_url', $record, $data, $version);
 	}
-	
+
 	public function deleteLinkUrl($link_id, $version, $currentLinkUrls){
 		$q = $this->dsql->dsql()
 			->table('dataset_link_url')
@@ -1143,11 +1143,11 @@ class Dataset extends Base{
 			->update();
 		return true;
 	}
-	
+
 	public function insertFile($data){
 		return \npdc\lib\Db::insert('dataset_file', $data, true);
 	}
-	
+
 	public function deleteFile($dataset_id, $version, $current){
 		$this->_deleteSub('dataset_file', $dataset_id, $version, $current);
 	}
