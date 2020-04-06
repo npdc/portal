@@ -1,3 +1,6 @@
+## v3.1.1 - 2020-04-06
+Fix for .cols height when statusChange present
+
 ## v3.1.0 - 2020-04-06
 Added license field with cc0, cc-by or other
 

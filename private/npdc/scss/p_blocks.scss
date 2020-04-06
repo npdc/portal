@@ -555,7 +555,10 @@
 .detail {
 	@extend .base;
 	#main > h2 + .cols {
-		min-height: calc(100vh - 357px);
+		min-height: calc(100vh - 358px);
+	}
+	#main > h2 + #statusChanges + .cols {
+		min-height: calc(100vh - 381px);
 	}
 }
 
