@@ -2,7 +2,7 @@
 
 /**
  * the view for projects
- * 
+ *
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
@@ -21,7 +21,7 @@ class Project extends Base{
 	public $canEdit = false;
 	public $baseUrl;
 	public $versions;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -36,7 +36,7 @@ class Project extends Base{
 		$this->model = new \npdc\model\Project();
 		parent::__construct();
 	}
-	
+
 	/**
 	 * List status changes of record
 	 *
@@ -45,16 +45,16 @@ class Project extends Base{
 	public function listStatusChanges(){
 		$version = $this->version;
 		if(\npdc\lib\Args::exists('action') && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit'])){
-			$version = $this->versions[0]['project_version']; 
+			$version = $this->versions[0]['project_version'];
 		} elseif (\npdc\lib\Args::exists('version')){
 			$version = \npdc\lib\Args::get('version');
 		}
 		return $this->doListStatusChanges(\npdc\lib\Args::get('id'), $version);
 	}
-	
+
 	/**
 	 * display list of projects
-	 * 
+	 *
 	 * @return void
 	 */
 	public function showList(){
@@ -62,7 +62,7 @@ class Project extends Base{
 		$this->title = 'Projects';
 		$this->left = parent::showFilters('projectlist');
 		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
-				? $_SESSION[$this->controller->formId]['data'] 
+				? $_SESSION[$this->controller->formId]['data']
 				: null
 			);
 		$list = array_values($list);
@@ -99,16 +99,16 @@ class Project extends Base{
 				, true
 			);
 	}
-	
+
 	/**
 	 * display single project
-	 * 
+	 *
 	 * @param string $project project id
 	 * @return void
 	 */
 	public function showItem($project){
 		if(\npdc\lib\Args::get('action') !== 'new'){
-			$this->canEdit = isset($this->session->userId) 
+			$this->canEdit = isset($this->session->userId)
 				&& ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($project, $this->session->userId));
 			if(\npdc\lib\Args::exists('version')){
 				$this->data = $this->model->getById($project, \npdc\lib\Args::get('version'));
@@ -119,7 +119,7 @@ class Project extends Base{
 				$this->data = $this->model->getById($project);
 			}
 			$this->version = $this->data['project_version'];
-			
+
 			if($project !== 'new'){
 				$this->versions = $this->model->getVersions($project);
 			}
@@ -133,12 +133,12 @@ class Project extends Base{
 				}
 				$_SESSION['notice'] .= '</select>';
 			}
-			
+
 			if($this->data === false && $this->canEdit && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit', 'warnings'])){
 				$this->data = $this->model->getById($project, $this->versions[0]['project_version']);
 			}
 		}
-		
+
 		if($this->data === false && $project !== 'new'){
 			if(count($this->versions) === 0){
 				$this->title = 'Not found';
@@ -173,12 +173,12 @@ class Project extends Base{
 						}
 						$_SESSION['notice'] = $this->controller->publishForm;
 					}
-					$_SESSION['notice'] .= ' You are looking at a '.$this->data['record_status'].' version of this page'.($this->data['record_status'] === 'draft' ? $this->controller->draftMsg : '');
+					$_SESSION['notice'] .= ' You are looking at an '.$this->data['record_status'].' version of this page'.($this->data['record_status'] === 'draft' ? $this->controller->draftMsg : '');
 					if(!$this->canEdit){
 						$cur = $this->model->getById($this->data['project_id']);
-						$_SESSION['notice'] .= ', the current can version can be found <a href="'.BASE_URL.'/project/'.$cur['uuid'].'">here</a>';
+						$_SESSION['notice'] .= ', the current version can be found <a href="'.BASE_URL.'/project/'.$cur['uuid'].'">here</a>';
 					}
-				} 
+				}
 				$this->title = 'Project - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');
 				$this->class = 'detail';
 				$this->mid .= parent::parseTemplate('project_mid');
@@ -186,7 +186,7 @@ class Project extends Base{
 				$this->bottom = parent::parseTemplate('foot_technical');
 				if(!\npdc\lib\Args::exists('uuid') || !\npdc\lib\Args::exists('uuidtype')){
 					$this->showCanonical();
-				}	
+				}
 			} elseif(\npdc\lib\Args::get('action') === 'warnings') {
 				$this->title = 'Please check - '.$this->data['title'];
 				$this->mid = $this->controller->showWarnings();

@@ -2,7 +2,7 @@
 
 /**
  * Publication view
- * 
+ *
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
@@ -37,7 +37,7 @@ class Publication extends Base{
 		$this->model = new \npdc\model\Publication();
 		parent::__construct();
 	}
-	
+
 	/**
 	 * List status changes of record
 	 *
@@ -46,13 +46,13 @@ class Publication extends Base{
 	public function listStatusChanges(){
 		$version = $this->version;
 		if(\npdc\lib\Args::exists('action') && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit'])){
-			$version = $this->versions[0]['publication_version']; 
+			$version = $this->versions[0]['publication_version'];
 		} elseif (\npdc\lib\Args::exists('version')){
 			$version = \npdc\lib\Args::get('version');
 		}
 		return $this->doListStatusChanges(\npdc\lib\Args::get('id'), $version);
 	}
-	
+
 	/**
 	 * Show list of publications
 	 *
@@ -62,8 +62,8 @@ class Publication extends Base{
 		$this->class = 'list publication';
 		$this->title = 'Publications';
 		$this->left = parent::showFilters($this->controller->formId);
-		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data']) 
-				? $_SESSION[$this->controller->formId]['data'] 
+		$list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
+				? $_SESSION[$this->controller->formId]['data']
 				: null);
 		$list2 = [];
 		$list = array_values($list);
@@ -91,7 +91,7 @@ class Publication extends Base{
 	 */
 	public function showItem($publication){
 		if(\npdc\lib\Args::get('action') !== 'new'){
-			$this->canEdit = isset($this->session->userId) 
+			$this->canEdit = isset($this->session->userId)
 				&& ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($publication, $this->session->userId));
 			if(\npdc\lib\Args::exists('version')){
 				$this->data = $this->model->getById($publication, \npdc\lib\Args::get('version'));
@@ -102,7 +102,7 @@ class Publication extends Base{
 				$this->data = $this->model->getById($publication);
 			}
 			$this->version = $this->data['publication_version'];
-			
+
 			if($publication !== 'new'){
 				$this->versions = $this->model->getVersions($publication);
 			}
@@ -162,12 +162,12 @@ class Publication extends Base{
 						}
 						$_SESSION['notice'] = $this->controller->publishForm;
 					}
-					$_SESSION['notice'] .= ' You are looking at a '.$this->data['record_status'].' version of this page'.($this->data['record_status'] === 'draft' ? $this->controller->draftMsg : '');
+					$_SESSION['notice'] .= ' You are looking at an '.$this->data['record_status'].' version of this page'.($this->data['record_status'] === 'draft' ? $this->controller->draftMsg : '');
 					if(!$this->canEdit){
 						$cur = $this->model->getById($this->data['publication_id']);
-						$_SESSION['notice'] .= ', the current can version can be found <a href="'.BASE_URL.'/publication/'.$cur['uuid'].'">here</a>';
+						$_SESSION['notice'] .= ', the current version can be found <a href="'.BASE_URL.'/publication/'.$cur['uuid'].'">here</a>';
 					}
-				} 
+				}
 				$this->title = 'Publication - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');
 				$this->class = 'detail';
 				$this->mid .= parent::parseTemplate('publication_mid', $model, $this->data);
@@ -175,7 +175,7 @@ class Publication extends Base{
 				$this->bottom = parent::parseTemplate('foot_technical');
 				if(!\npdc\lib\Args::exists('uuid') || !\npdc\lib\Args::exists('uuidtype')){
 					$this->showCanonical();
-				}	
+				}
 			} else {
 				$this->title = (\npdc\lib\Args::get('action') === 'new') ? 'New publication' : 'Edit publication - '.$this->data['title'];
 				$this->baseUrl .= '/'.$this->versions[0]['publication_version'];
@@ -197,11 +197,11 @@ class Publication extends Base{
 			}
 			$str .= str_replace('  ', ' ', str_replace('.', ' ', $first).' {'.$last.'}');
 		}
-		
-		$id = str_replace(' ', '', $aut.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).substr($citation['title'] ?? $this->data['title'], 0,5));		
+
+		$id = str_replace(' ', '', $aut.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).substr($citation['title'] ?? $this->data['title'], 0,5));
 		include('template/publication/'.NPDC_OUTPUT.'.php');
 		header('Content-type: '.$content_type);
-		header("Content-Disposition: attachment; filename=\"" . $this->data['uuid'].'.'.NPDC_OUTPUT . "\""); 
+		header("Content-Disposition: attachment; filename=\"" . $this->data['uuid'].'.'.NPDC_OUTPUT . "\"");
 		echo strip_tags($output);
 		die();
 	}

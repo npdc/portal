@@ -1,3 +1,6 @@
+## v3.1.2 - 2020-04-10
+Fixed typo's in version bar
+
 ## v3.1.1 - 2020-04-06
 Fix for .cols height when statusChange present
 
