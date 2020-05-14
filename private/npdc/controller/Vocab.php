@@ -44,14 +44,15 @@ class Vocab {
 			$res = simplexml_load_string($this->curl->get($url));
 			if($this->curl->status()['http_code'] === 200){
 				foreach($res->scheme as $scheme){
-					echo $scheme['id'].': '.$scheme['updateDate'].'<br/>';
-					if($this->model->getVocab($scheme['name']) === false){
+					echo $scheme['name'].': '.$scheme['updateDate'].'<br/>';
+					$vocab = (string)$scheme['name'];
+					if($this->model->getVocab($vocab) === false){
 						$this->model->addVocab(['vocab_id'=>(int)$scheme['id'], 'vocab_name'=>(string)$scheme['name'], 'last_update_date'=>(string)$scheme['updateDate']]);
 					} else {
-						$this->model->updateVocab($scheme['name'], ['vocab_name'=>(string)$scheme['name'], 'last_update_date'=>(string)$scheme['updateDate']]);
+						$this->model->updateVocab($vocab, ['vocab_id'=>(int)$scheme['id'], 'last_update_date'=>(string)$scheme['updateDate']]);
 					}
 				}
-				$this->model->updateVocab(1, ['last_update_local'=>date('Y-m-d')]);
+				$this->model->updateVocab(1, ['last_update_local'=>date('Ymd')]);
 			}	
 		}
 	}
