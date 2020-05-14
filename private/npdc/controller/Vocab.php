@@ -162,7 +162,7 @@ class Vocab {
 							continue 2;
 					}
 					$rec = $this->model->getTermByUUID($tbl, $uuid);
-					if($rec === false){
+					if(empty($rec)){
 						$values['uuid'] = $uuid;
 						$this->model->insertTerm($tbl, $values);
 					} else {
