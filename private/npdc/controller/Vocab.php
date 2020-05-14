@@ -40,7 +40,7 @@ class Vocab {
 	public function refreshList(){
 		echo 'refresh list <br/>';
 		if($this->model->getVocab(1)['last_update_local']<date('Y-m-d')){
-			$url = 'https://gcmdservices.gsfc.nasa.gov/kms/concept_schemes';
+			$url = 'https://gcmd.earthdata.nasa.gov/kms/concept_schemes';
 			$res = simplexml_load_string($this->curl->get($url));
 			if($this->curl->status()['http_code'] === 200){
 				foreach($res->scheme as $scheme){
@@ -65,8 +65,7 @@ class Vocab {
 		$vocabs = $this->model->getUpdatable();
 		foreach($vocabs as $vocab){
 			echo 'Starting with '.$vocab['vocab_name'].' - '.$vocab['vocab_id'].'<br/>';
-			$url = 'https://gcmdservices.gsfc.nasa.gov/static/kms/'.$vocab['vocab_name'].'/'.$vocab['vocab_name'].'.csv';
-			$url = 'https://gcmdservices.gsfc.nasa.gov/kms/concepts/concept_scheme/'.$vocab['vocab_name'].'?format=csv';
+			$url = 'https://gcmd.earthdata.nasa.gov/kms/concepts/concept_scheme/'.$vocab['vocab_name'].'?format=csv';
 			$csv = str_getcsv($this->curl->get($url), "\n");
 			$comment_lines = 1;
 			$keys = str_getcsv($csv[$comment_lines]);
