@@ -31,7 +31,8 @@
 		"submit": {
 			"type": "submit",
 			"value": "Login",
-			"hint": "<a href=\"login/reset\">Forgot your password?</a>"
+			"resetLabel": "Forgot your password?",
+			"resetAction": "login/reset"
 		}
 	}
 }

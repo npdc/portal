@@ -38,7 +38,7 @@
 		"submit": {
 			"type": "submit",
 			"value": "Apply",
-			"resetLabel": "Reset filters",
+			"resetLabel": "Clear filters",
 			"resetAction": "organization"
 		}
 	}
