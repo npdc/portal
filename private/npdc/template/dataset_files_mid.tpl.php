@@ -70,11 +70,11 @@ if(count($files) === 0){
 	. ($downloadable > 0 
 		? ($this->session->userLevel === 0 ? '<br/><input type="text" name="contact" placeholder="Contact details" /><span class="hint">If you wish you can leave your name and mail address here so we can contact you when a new version of a file becomes available</span><br/>' : '')
 			. '<button type="submit" formaction="files/selected">Download selected files</button> '
-			. ($public > 0 ? '<button type="submit" formaction="files/public">Download all public files</button> ' : '')
-			. ($this->session->userLevel > NPDC_PUBLIC && $login > 0 ? '<button type="submit" formaction="files/all">Download all available files</button> ' : '') 
+			. ($public > 0 ? '<button type="submit" formaction="files/public" class="secondary">Download all public files</button> ' : '')
+			. ($this->session->userLevel > NPDC_PUBLIC && $login > 0 ? '<button type="submit" formaction="files/all" class="secondary">Download all available files</button> ' : '') 
 		: '')
-	. ($this->session->userLevel > NPDC_PUBLIC 
-		? '<button type="submit" formaction="files/request">Request access to restricted files</button> '
+	. ($ask > 0 && $this->session->userLevel > NPDC_PUBLIC 
+		? '<button type="submit" formaction="files/request" class="secondary">Request access to restricted files</button> '
 		: '')
 	. '</form>';
 }

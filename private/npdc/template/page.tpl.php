@@ -21,7 +21,7 @@
 			<div id="head">
 				<div>
 					<div id="top">
-						<div id="search"><form method="post" action="<?=BASE_URL?>/search"><input type="text" placeholder="search term" name="q" /><input type="submit" value="search"/></form></div>
+						<div id="search"><form method="post" action="<?=BASE_URL?>/search"><input type="text" placeholder="Search" name="q" /><button class="icon-search"></button></form></div>
 						<div><span id="user"><?php
 						if($session->userLevel > NPDC_PUBLIC){
 							if(array_key_exists('adminUser', $_SESSION)){
@@ -85,7 +85,7 @@
 								echo '<button onclick="openUrl(\''.BASE_URL.'/'.($view->baseEditUrl ?? $view->baseUrl).'/takeover\')">Take over user rights</button> ';
 							}
 							if(property_exists($view, 'allowDuplicate') && $view->allowDuplicate && $session->userLevel >= NPDC_EDITOR){
-								echo '<button onclick="openUrl(\''.BASE_URL.'/'.(\npdc\lib\Args::exists('uuid') ? \npdc\lib\Args::get('type').'/'.\npdc\lib\Args::get('uuid') : $view->baseUrl).'/duplicate\')">Duplicate this page</button> ';
+								echo '<button onclick="openUrl(\''.BASE_URL.'/'.(\npdc\lib\Args::exists('uuid') ? \npdc\lib\Args::get('type').'/'.\npdc\lib\Args::get('uuid') : $view->baseUrl).'/duplicate\')" class="secondary">Duplicate this page</button> ';
 							}
 							echo '<button onclick="openUrl(\''.BASE_URL.'/'.($view->baseEditUrl ?? $view->baseUrl).'/edit\')">Edit this page</button></div>';
 						}

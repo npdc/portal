@@ -12,4 +12,6 @@ $border-menu: solid 1px transparentize($color-accent-1,0.5);
 $menu-bg-hover: $color-accent-3;
 $menu-bg-mobile: lighten($color-accent-1, 45%);
 
+$btn-cancel: $table-head-bg;//lighten($color-accent-2, 33%);
+
 $bg-color-outer: desaturate(mix($color-accent-3,$bg-color, 20%), 25%);

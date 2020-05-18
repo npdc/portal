@@ -14,7 +14,7 @@
 		include 'head.tpl.php';
 	?>
 	<body class="<?=$view->bodyClass?> nomenu <?=$view->class?> <?=(empty($session->userLevel) || $session->userLevel === NPDC_PUBLIC ? 'guest' : 'user')?>">
-		<button onclick="window.parent.closeOverlay();" style="float:right"><?=$view->closeButton ?? 'X'?></button>
+		<button onclick="window.parent.closeOverlay();" style="float:right" class="cancel"><?=$view->closeButton ?? 'X'?></button>
 		<div id="overlay"><div class="inner"></div></div>
 		<?php if(isset($_SESSION['notice'])){
 			echo '<div id="notice" style="margin-top: 35px">'.$_SESSION['notice'].'</div>';

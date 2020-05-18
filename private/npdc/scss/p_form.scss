@@ -34,6 +34,7 @@
 				&.disabled {
 					color: $color-accent-1;
 					background-color:$table-stripe-bg;
+					font-style: italic;
 				}
 				&.active {
 					background: $bg-color;
@@ -269,9 +270,6 @@ input, button, textarea, select:not([multiple]) {
 	box-shadow: inset 0 1px 2px $color-accent-3;
 }
 
-input[type=submit], input[type=reset], button {
-	box-shadow: none;
-}
 div.submitspacer {
 	height: 5px;
 }
@@ -282,6 +280,7 @@ textarea {
 }
 
 input[type=submit],input[type=reset], button{
+	box-shadow: none;
 	cursor: pointer;
 	background-color: $color-accent-1;
 	color: white;
@@ -300,6 +299,16 @@ input[type=submit],input[type=reset], button{
 	}
 	&:active {
 		border-color: $color-accent-3;
+	}
+}
+
+input[type=reset], button.reset, button.cancel, input[type=submit].hasGotoNext, #btn2, button.secondary {
+	background-color: $color-accent-3;
+	border-color: $color-accent-3;
+	color: $color-accent-1;
+	&:hover {
+		border-color: lighten($color-accent-3, 5%);
+		color: lighten($color-accent-1,15%);
 	}
 }
 

@@ -53,7 +53,7 @@ class Overlay{
 			$this->title = $page['title'];
 			$this->mid = ($page['show_last_revision'] ? '<p class="last-rev">Last revision: '.date('d F Y', strtotime($page['last_update'])).'</p>' : '').$page['content'];
 			if(\npdc\lib\Args::get('subaction') === 'accept'){
-				$this->mid .= '<button onclick="window.parent.closeOverlay();" style="float:right">Close '.$page['title'].'</button>';
+				$this->mid .= '<button onclick="window.parent.closeOverlay();" style="float:right" class="cancel">Close '.$page['title'].'</button>';
 			}
 		}
 	}

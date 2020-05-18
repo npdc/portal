@@ -93,7 +93,7 @@
 		}
 	}
 	#search {
-		input {
+		input,button {
 			height: 20px;
 			padding-top: 0px;
 			padding-bottom: 0px;
@@ -102,19 +102,19 @@
 		}
 		input[type=text]{
 			width: auto;
-			border-top-right-radius: 0px;
-			border-bottom-right-radius: 0px;
-			border-right-width: 0px;
+			padding-right: 30px;
 		}
-		input[type=submit]{
+		button{
 			box-sizing: border-box;
-			border-left: none;
+			border: none;
 			margin: 0px;
-			background-color: $color-accent-1;
+			background-color: white;
 			font-weight: bold;
-			color: white;
+			color: $color-accent-1;
 			border-top-left-radius: 0px;
 			border-bottom-left-radius: 0px;
+			margin-left: -30px;
+			background: transparent;
 		}
 	}
 }
