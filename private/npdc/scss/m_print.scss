@@ -41,7 +41,7 @@ a {
 
 	color: $fg-color !important;
 }
-body:not(.report) #main a:after {
+body:not(.report) #main a[href]:after {
 	content: ' ('attr(href)')';
 	font-size: 80%;
 }

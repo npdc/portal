@@ -12,15 +12,16 @@
 	display: none;
 }
 #head {
-	background-color: $color-bar;
+	background-color: white;
 	position: absolute;
 	top: 0px;
 	left: 0px;
 	right: 0px;
 	a:link, a:visited {
-		color: white;
+		color: $color-accent-1;
 	}
 	box-shadow: 0 0 5px #aaa;
+	// border-bottom: $border;
 	padding-top: 5px;
 	& > div {
 		max-width: 1240px;
@@ -44,7 +45,7 @@
 			display: block;
 			float: right;
 			padding: 5px;
-			color: white;
+			color: $footer-color;
 			cursor: pointer;
 			&:before {
 				content: '\25B2\0020';
@@ -57,7 +58,7 @@
 	margin-right: 5px;
 	padding-bottom: 2px;
 	padding-right: 0px;
-	color: white;
+	color: $color-accent-1;
 	overflow: auto;
 	& > div {
 		float: right;
@@ -84,8 +85,9 @@
 	}
 	#social {
 		a:link, a:visited {
-			color: white;
+			color: $color-accent-1;
 			text-decoration: none;
+			border: none;
 			font-size: 120%;
 			&:hover {
 				color: $color-accent-2;
@@ -131,6 +133,7 @@
 }
 
 #menu {
+	border-top: $border;
 	padding: 0;
 	overflow: auto;
 	h4 {
@@ -155,10 +158,11 @@
 		}
 		li {
 			list-style: none;
-			color: white;
+			color: $color-accent-1;
 			a:link, a:visited, span {
 				font-weight: bold;
 				text-decoration: none;
+				border: none;
 				display: block;
 				padding: 6px 20px;
 				box-sizing: border-box;
@@ -166,7 +170,17 @@
 				text-align: center;
 			}
 			&.active {
-				background: rgba($color-accent-3, 0.35);
+				&:after {
+					display: block;
+					border: solid 5px transparent;
+					width: 0px;
+					border-bottom-color: $color-accent-3;
+					margin-top: -5px;
+					border-top-width: 0px;
+					content: '';
+					margin-left: calc(50% - 5px);
+				}
+				// background: rgba($color-accent-3, 0.35);
 				/*> a:link, > a:visited {
 					color: $color-accent-2;
 				}*/
@@ -207,10 +221,20 @@
 			}
 			&.sub {
 				> span:before {
-					content: '\25BC\0020';
+					// content: '\25BC\0020';
 				}
 				&.active-child {
-					background: rgba($color-accent-3, 0.35);
+					&:after {
+						display: block;
+						border: solid 5px transparent;
+						width: 0px;
+						border-bottom-color: $color-accent-3;
+						margin-top: -5px;
+						border-top-width: 0px;
+						content: '';
+						margin-left: calc(50% - 5px);
+					}
+					// background: rgba($color-accent-3, 0.35);
 					&:hover{
 						background-color: $menu-bg-hover;
 					}
@@ -234,10 +258,10 @@
 
 .cols {
 	#main > & {
-		min-height: calc(100vh - 262px);
+		min-height: calc(100vh - 264px);
 	}
 	#main > h2 + & {
-		min-height: calc(100vh - 319px);
+		min-height: calc(100vh - 321px);
 	}
 	display: flex;
 	flex-wrap: wrap;
@@ -504,11 +528,11 @@
 	}
 	#right{
 		flex: 1;
-		//border-left: $border;
+		border-left: $border;
 		background: none;
 		padding-left: 10px;
-		background-color: $table-stripe-bg;
-		padding: 10px;
+		// background-color: $table-stripe-bg;
+		// padding: 10px;
 		min-width: 200px;
 		order: 2;
 		max-width: 300px;
@@ -555,21 +579,21 @@
 .detail {
 	@extend .base;
 	#main > h2 + .cols {
-		min-height: calc(100vh - 358px);
+		min-height: calc(100vh - 360px);
 	}
 	#main > h2 + #statusChanges + .cols {
-		min-height: calc(100vh - 381px);
+		min-height: calc(100vh - 383px);
 	}
 }
 
 div.technical {
-	color: #777;
+	color: $color-technical;
 	font-size: 80%;
 	a {
-		color: #777;
+		color: $color-technical;
 		text-decoration: none;
 		&:hover {
-			text-decoration: underline;
+			text-decoration: $link-decoration;
 		}
 	}
 	.version-selector {
@@ -605,14 +629,15 @@ div.technical {
 }
 
 #footer {
-	background-color: $color-bar;
-	margin: 10px -11px 0px;
+	background-color: $bg-color-outer;
+	border-top: $border;
+	margin: 10px -10px 0px;
 	padding: 10px;
 	font-size: 90%;
 	overflow: auto;
-	color: white;
+	// color: $footer-color;
 	a {
-		color: white;
+		// color: $footer-color;
 	}
 	.links {
 		float: left;

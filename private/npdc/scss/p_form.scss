@@ -26,6 +26,7 @@
 				background: $color-accent-3;
 				padding: 5px;
 				text-decoration: none;
+				border: none;
 				border-radius: 5px 5px 0 0;
 				border: solid 1px $color-accent-3;
 				border-bottom-width: 0px;
@@ -481,7 +482,6 @@ fieldset {
 	}
 	a:link {
 		display: initial;
-		text-decoration: underline;
 	}
 }
 

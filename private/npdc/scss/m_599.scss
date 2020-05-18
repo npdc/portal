@@ -45,10 +45,10 @@ body:not(.sticky) #page {
 	h4 {
 		display: block;
 		padding: 10px;
-		border: $border-menu;
+		//border: $border-menu;
 		text-align: center;
 		cursor: pointer;
-		color: white;
+		color: $color-accent-1;
 	}
 	&.hover > ul {
 		display: block;

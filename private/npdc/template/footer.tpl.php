@@ -23,7 +23,7 @@
 		<span class="nobr">at request of <a href="http://www.nwo.nl/en/research-and-results/programmes/Netherlands+Polar+Programme" title="Dutch Research Council">NWO</a></span>
 	</div>
 	<div class="rechts logos">
-		<a href="https://nioz.nl" title="Royal Netherlands Institute for Sea Research"><img src="<?=BASE_URL?>/img/nioz_w.png" alt="NIOZ" title="Royal Netherlands Institute for Sea Research" /></a>
-		<a href="http://www.nwo.nl/en/research-and-results/programmes/Netherlands+Polar+Programme" title="Dutch Research Council"><img src="<?=BASE_URL?>/img/nwo.png" alt="NWO" title="Dutch Research Council" /></a>
+		<a href="https://nioz.nl" title="Royal Netherlands Institute for Sea Research"><img src="<?=BASE_URL?>/img/nioz_fc.png" alt="NIOZ" title="Royal Netherlands Institute for Sea Research" /></a>
+		<a href="http://www.nwo.nl/en/research-and-results/programmes/Netherlands+Polar+Programme" title="Dutch Research Council"><img src="<?=BASE_URL?>/img/nwo_fc.png" alt="NWO" title="Dutch Research Council" /></a>
 	</div>
 </div>

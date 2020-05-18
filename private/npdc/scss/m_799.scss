@@ -59,7 +59,7 @@ ul.collapsable{
 	}
 }
 
-.detail, .contact {
+.page, .detail, .contact {
 	#mid {
 		padding: 0px;
 		min-height: 0px;
@@ -68,7 +68,9 @@ ul.collapsable{
 		}
 	}
 	#right{
-		border: none;
+		border-left: none;
+		border-top: $border;
+		padding-left: 0px;
 		margin-top: 1em;
 		max-width: none;
 		-webkit-column-count: 2;
