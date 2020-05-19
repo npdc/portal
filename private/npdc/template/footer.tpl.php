@@ -16,14 +16,16 @@
 		- 
 		<a href="<?=BASE_URL?>/copyright">Copyright &amp; Credits</a>
 		-
-		<a href="https://github.com/npdc/portal">View code on GitHub <span class="icon-github"></span></a>
+		<a href="https://github.com/npdc/portal" class="social"><span class="icon-github"></span></a>
+		-
+		<a href="https://twitter.com/npdc_nl" class="social"><span class="icon-twitter"></span></a>
 		<br/><br/>
 		<span class="nobr">The Netherlands Polar Data Center</span> 
 		is <span class="nobr">hosted by <a href="http://www.nioz.nl" title="Royal Netherlands Institute for Sea Research">NIOZ</a></span> 
 		<span class="nobr">at request of <a href="http://www.nwo.nl/en/research-and-results/programmes/Netherlands+Polar+Programme" title="Dutch Research Council">NWO</a></span>
 	</div>
 	<div class="rechts logos">
-		<a href="https://nioz.nl" title="Royal Netherlands Institute for Sea Research"><img src="<?=BASE_URL?>/img/nioz.png" alt="NIOZ" title="Royal Netherlands Institute for Sea Research" /></a>
-		<a href="http://www.nwo.nl/en/research-and-results/programmes/Netherlands+Polar+Programme" title="Dutch Research Council"><img src="<?=BASE_URL?>/img/nwo.png" alt="NWO" title="Dutch Research Council" /></a>
+		<a href="https://nioz.nl" title="Royal Netherlands Institute for Sea Research"><img src="<?=BASE_URL?>/img/nioz_fc.png" alt="NIOZ" title="Royal Netherlands Institute for Sea Research" /></a>
+		<a href="http://www.nwo.nl/en/research-and-results/programmes/Netherlands+Polar+Programme" title="Dutch Research Council"><img src="<?=BASE_URL?>/img/nwo_fc.png" alt="NWO" title="Dutch Research Council" /></a>
 	</div>
 </div>

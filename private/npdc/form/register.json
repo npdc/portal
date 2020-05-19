@@ -36,8 +36,7 @@
 		},
 		"submit": {
 			"type": "submit",
-			"value": "Register",
-			"hint": "<a href=\"login/reset\">Forgot your password?</a>"
+			"value": "Register"
 		}
 	}
 }
