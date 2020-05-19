@@ -1,3 +1,6 @@
+## v3.2.0 - 2020-05-19
+New style
+
 ## v3.1.2 - 2020-04-10
 Fixed typo's in version bar
 
