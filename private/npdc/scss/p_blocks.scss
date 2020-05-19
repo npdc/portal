@@ -55,7 +55,6 @@
 }
 #top {
 	float: right;
-	margin-right: 5px;
 	padding-bottom: 2px;
 	padding-right: 0px;
 	color: $color-accent-1;
@@ -638,6 +637,10 @@ div.technical {
 	// color: $footer-color;
 	a {
 		// color: $footer-color;
+	}
+	a.social:link, a.social:visited {
+		text-decoration: none;
+		font-size: 120%;
 	}
 	.links {
 		float: left;
