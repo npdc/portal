@@ -1,3 +1,6 @@
+## v3.2.1 - 2020-05-19
+Fix social icons on narrow screen
+
 ## v3.2.0 - 2020-05-19
 New style
 

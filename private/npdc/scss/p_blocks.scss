@@ -638,9 +638,11 @@ div.technical {
 	a {
 		// color: $footer-color;
 	}
-	a.social:link, a.social:visited {
-		text-decoration: none;
-		font-size: 120%;
+	.social {
+		a:link, a:visited {
+			text-decoration: none;
+			font-size: 120%;
+		}
 	}
 	.links {
 		float: left;

@@ -108,6 +108,12 @@ body:not(.sticky) #page {
 }
 #footer {
 	text-align:center;
+	.social {
+		display: block;
+		.sep:first-child {
+			display: none;
+		}
+	}
 }
 .search td:not(:nth-child(2)),
 .project td:not(:nth-child(1)) {
