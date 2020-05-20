@@ -354,9 +354,7 @@
 		.info {
 			font-style: italic;
 			font-size: 80%;
-		}
-		.type{
-			font-variant: small-caps;
+			display: block;
 		}
 		.time{
 			&:before {
@@ -458,9 +456,6 @@
 	}
 	&.search #search {
 		display:none;
-	}
-	&.search tr td:first-child {
-		font-variant: small-caps;
 	}
 	&.dataset {
 		td:not(:first-child){
