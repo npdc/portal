@@ -1,6 +1,6 @@
 {
   "name": "portal",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "**Features:**\r - Project descriptions\r - Dataset descriptions according to DIF10 format (GCMD standard)\r   - Datasets available in json-ld (schema.org / Google dataset search)\r - Publication descriptions\r - Responsive",
   "main": "gulpfile.js",
   "dependencies": {

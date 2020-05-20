@@ -1,3 +1,7 @@
+## v3.2.2 - 2020-05-20
+- Small layout enhancements
+- Fix data display for project in search function
+
 ## v3.2.1 - 2020-05-19
 Fix social icons on narrow screen
 
