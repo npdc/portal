@@ -309,7 +309,7 @@ class Project extends Base{
 	 * @return array projects matching $string
 	 */
 	public function search($string, $summary = false, $exclude = null, $includeDraft = false){
-		return $this->getList(['search'=>['string'=>$string, 'summary'=>$summary], 'exclude'=>$exclude]);
+		//return $this->getList(['search'=>['string'=>$string, 'summary'=>$summary], 'exclude'=>$exclude]);
 		$q = $this->dsql->dsql()
 			->table('project')
 			->field('*');

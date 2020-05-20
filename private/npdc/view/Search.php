@@ -155,7 +155,7 @@ class Search extends Base{
 										switch($type){
 											case 'project':
 											case 'dataset':
-											$row['date'] = $row['date_start'].' - '.$row['date_end'];
+												$row['date'] = $row['date_start'].' - '.$row['date_end'];
 										}
 										$key = $type.$row[$type.'_id'];
 										$list[$key] = $row;
