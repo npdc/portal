@@ -23,14 +23,10 @@
 		}
 	}
 }
-
-#head {
-	background-color: #ff6961;
-}
 #page:before,
 #page:after {
 	position: fixed;
-	content: 'Development';
+	content: 'Dev';
 	opacity: 0.5;
 	z-index: 999;
 	color: red;
@@ -40,12 +36,11 @@
 }
 
 #page:before {
-	top: 10vmin;
+	top: 4vmin;
 	left: 5px;
-	color: white;
 }
 
 #page:after {
-	bottom: 10vmin;
+	bottom: 4vmin;
 	right: 5px;
 }

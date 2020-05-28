@@ -1,28 +1,21 @@
-body.ignore {
-	#head {
-		background-color: #ffb347;
-	}
+#page:before,
+#page:after {
+	position: fixed;
+	content: 'Test';
+	opacity: 0.5;
+	z-index: 999;
+	color: #00bb00;
+	font-weight: bold;
+	font-size: calc(10pt + 5vmin);
+	transform: rotate(-25deg)
+}
 
-	#page:before,
-	#page:after {
-		position: fixed;
-		content: 'Test';
-		opacity: 0.5;
-		z-index: 999;
-		color: #00bb00;
-		font-weight: bold;
-		font-size: calc(10pt + 5vmin);
-		transform: rotate(-25deg)
-	}
+#page:before {
+	top: 4vmin;
+	left: 5px;
+}
 
-	#page:before {
-		top: 4vmin;
-		left: 5px;
-		color: white;
-	}
-
-	#page:after {
-		bottom: 4vmin;
-		right: 5px;
-	}
+#page:after {
+	bottom: 4vmin;
+	right: 5px;
 }
