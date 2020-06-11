@@ -34,7 +34,8 @@
 				"other": "Other, please specifiy under access and use constraints"
 			},
 			"multiple": false,
-			"asList": true
+			"asList": true,
+			"hint": "This license is applicable for all files that are listed as public. You can still restrict access to specific files using the settings on the files tab."
 		},
 		"access_constraints": {
 			"type": "textarea",
