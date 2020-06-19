@@ -448,7 +448,7 @@ class Person{
 	 * @return void
 	 */
 	public function updatePerson($data, $person_id){
-		return \npdc\lib\Db::update('person', $person_id, $data);
+		return \npdc\lib\Db::update('person', $person_id, $this->parseData($data));
 	}
 	
 	/**
