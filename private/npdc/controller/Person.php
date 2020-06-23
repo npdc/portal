@@ -26,7 +26,7 @@ class Person extends Base {
 		if(\npdc\lib\Args::get('action') === 'takeover' && \npdc\lib\Args::get('subaction') === 'do' && $this->session->userLevel >= NPDC_ADMIN){
 			$_SESSION['adminUser'] = $_SESSION['user'];
 			$_SESSION['user']['id'] = \npdc\lib\Args::get('id');
-			$_SESSION['notice'] = 'You now have taken over the rights of the requested user. To go back to your own account please log out and back in';
+			$_SESSION['notice'] = 'You now have taken over the rights of the requested user. To go back to your own account please use the link at the top of the page or log out and back in';
 			header('Location: '.BASE_URL.'/');
 			die();
 		} elseif(\npdc\lib\Args::get('action') === 'new' && $this->session->userLevel < $this->userLevelAdd){
