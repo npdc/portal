@@ -27,7 +27,7 @@ class Login {
 					$this->formId = 'login_reset_password';
 				} else {
 					$key = $this->model->getPasswordReset(\npdc\lib\Args::get('loginid'));
-					if($key === false || !password_verify(\npdc\lib\Args::get('loginkey'), $key['code'])){
+					if(empty($key) || !password_verify(\npdc\lib\Args::get('loginkey'), $key['code'])){
 						return;
 					} else {
 					}

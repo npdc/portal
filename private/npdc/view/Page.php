@@ -68,7 +68,7 @@ class Page extends Base{
 
 		$data = $model->getByUrl($page);
 		
-		if($data === false){
+		if(empty($data)){
 			$this->errorPage();
 		} else {
 			$this->title = $data['title'];
