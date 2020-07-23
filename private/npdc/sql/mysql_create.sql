@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
--- https://www.phpmyadmin.net/
+-- version 4.5.4.1deb2ubuntu2.1
+-- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 04, 2017 at 01:29 PM
--- Server version: 10.0.31-MariaDB-0ubuntu0.16.04.2
--- PHP Version: 7.0.22-0ubuntu0.16.04.1
+-- Generation Time: 23 jul 2020, 13:57
+-- Serverversie: 10.0.38-MariaDB-0ubuntu0.16.04.1
+-- PHP-versie: 7.0.33-0ubuntu0.16.04.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -124,6 +122,25 @@ CREATE TABLE `characteristics` (
   `data_type` longtext,
   `dataset_version_min` int(11) DEFAULT NULL,
   `dataset_version_max` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contact`
+--
+
+CREATE TABLE `contact` (
+  `contact_id` int(11) NOT NULL,
+  `receiver` text NOT NULL,
+  `sender_mail` text NOT NULL,
+  `sender_name` text NOT NULL,
+  `subject` text,
+  `text` text NOT NULL,
+  `country` text COMMENT 'this should be empty, is the anti-spam field',
+  `ip` varchar(100) DEFAULT NULL,
+  `browser` text,
+  `timestamp` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -450,7 +467,10 @@ CREATE TABLE `dataset` (
   `purpose` longtext,
   `insert_timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `creator` int(11) NOT NULL,
-  `ipy` tinyint(1) NOT NULL DEFAULT '0'
+  `ipy` tinyint(1) NOT NULL DEFAULT '0',
+  `uuid` varchar(36) DEFAULT NULL,
+  `created_from` varchar(36) DEFAULT NULL,
+  `license` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -546,7 +566,7 @@ CREATE TABLE `dataset_keyword` (
   `dataset_keyword_id` int(11) NOT NULL,
   `dataset_id` int(11) NOT NULL,
   `vocab_science_keyword_id` int(11) NOT NULL,
-  `detailed_variable` longtext,
+  `free_text` longtext,
   `dataset_version_min` int(11) NOT NULL,
   `dataset_version_max` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -759,6 +779,32 @@ CREATE TABLE `menu` (
   `min_user_level` longtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `menu`
+--
+
+INSERT INTO `menu` (`menu_id`, `label`, `url`, `parent_menu_id`, `sort`, `min_user_level`) VALUES
+(3, 'Home', '', NULL, 1, 'public'),
+(4, 'Data', NULL, NULL, 2, 'public'),
+(5, 'Info', NULL, NULL, 3, 'public'),
+(6, 'Tips', 'tips', NULL, 4, 'public'),
+(7, 'Contact', 'contact', NULL, 5, 'public'),
+(8, 'Datasets', 'dataset', 4, 1, 'public'),
+(9, 'Publications', 'publication', 4, 2, 'public'),
+(10, 'Data portals', 'portals', 4, 3, 'public'),
+(11, 'Projects', 'project', 4, 4, 'public'),
+(12, 'NPP', 'npp', 5, 1, 'public'),
+(13, 'NPDC', 'npdc', 5, 2, 'public'),
+(14, 'Admin', NULL, NULL, 7, 'admin'),
+(15, 'Organizations', 'organization', 14, 1, 'admin'),
+(16, 'People', 'person', 14, 2, 'admin'),
+(17, 'Users', 'users', 14, 3, 'nobody'),
+(18, 'User', NULL, NULL, 6, 'user'),
+(19, 'Data requests', 'request', 18, 2, 'user'),
+(20, 'Account settings', 'account', 18, 1, 'user'),
+(21, 'Editor tools', 'editor', 18, 3, 'editor'),
+(22, 'Organizations', 'organization', 4, 5, 'public');
+
 -- --------------------------------------------------------
 
 --
@@ -823,6 +869,18 @@ CREATE TABLE `news` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `npp_theme`
+--
+
+CREATE TABLE `npp_theme` (
+  `npp_theme_id` int(11) NOT NULL,
+  `theme_nl` varchar(100) DEFAULT NULL,
+  `theme_en` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `organization`
 --
 
@@ -852,7 +910,9 @@ CREATE TABLE `page` (
   `page_id` int(11) NOT NULL,
   `title` longtext NOT NULL,
   `content` longtext NOT NULL,
-  `url` longtext NOT NULL
+  `url` longtext NOT NULL,
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `show_last_revision` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -911,7 +971,8 @@ CREATE TABLE `person` (
   `orcid` char(16) DEFAULT NULL,
   `phone_personal_public` tinyint(1) NOT NULL DEFAULT '1',
   `phone_secretariat_public` tinyint(1) NOT NULL DEFAULT '1',
-  `phone_mobile_public` tinyint(1) NOT NULL DEFAULT '0'
+  `phone_mobile_public` tinyint(1) NOT NULL DEFAULT '0',
+  `sex` char(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -938,7 +999,8 @@ CREATE TABLE `program` (
   `program_id` int(11) NOT NULL,
   `name` longtext NOT NULL,
   `program_start` date NOT NULL,
-  `program_end` date DEFAULT NULL
+  `program_end` date DEFAULT NULL,
+  `sort` smallint(6) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -950,7 +1012,7 @@ CREATE TABLE `program` (
 CREATE TABLE `project` (
   `project_id` int(11) NOT NULL,
   `project_version` int(11) NOT NULL,
-  `nwo_project_id` varchar(10) DEFAULT NULL,
+  `nwo_project_id` varchar(20) DEFAULT NULL,
   `title` longtext NOT NULL,
   `acronym` longtext,
   `region` longtext NOT NULL,
@@ -968,7 +1030,9 @@ CREATE TABLE `project` (
   `record_status` varchar(9) NOT NULL,
   `insert_timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `creator` int(11) NOT NULL,
-  `published` datetime DEFAULT NULL
+  `published` datetime DEFAULT NULL,
+  `uuid` varchar(36) DEFAULT NULL,
+  `npp_theme_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1066,7 +1130,9 @@ CREATE TABLE `publication` (
   `url` longtext,
   `insert_timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `creator` int(11) NOT NULL,
-  `published` datetime DEFAULT NULL
+  `published` datetime DEFAULT NULL,
+  `uuid` varchar(36) DEFAULT NULL,
+  `publication_type_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1099,7 +1165,22 @@ CREATE TABLE `publication_person` (
   `sort` int(11) NOT NULL,
   `contact` tinyint(4) NOT NULL DEFAULT '0',
   `publication_version_max` int(11) DEFAULT NULL,
-  `editor` tinyint(4) NOT NULL DEFAULT '0'
+  `editor` tinyint(4) NOT NULL DEFAULT '0',
+  `free_organization` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `publication_type`
+--
+
+CREATE TABLE `publication_type` (
+  `publication_type_id` int(11) NOT NULL,
+  `label` varchar(100) DEFAULT NULL,
+  `bib` varchar(100) NOT NULL,
+  `ris` varchar(100) DEFAULT NULL,
+  `description` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1131,6 +1212,24 @@ CREATE TABLE `record_status_change` (
   `comment` longtext,
   `version` int(11) DEFAULT NULL,
   `record_status_change_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `related_dataset`
+--
+
+CREATE TABLE `related_dataset` (
+  `related_dataset_id` int(11) NOT NULL,
+  `dataset_id` int(11) NOT NULL,
+  `dataset_version_min` int(11) NOT NULL,
+  `dataset_version_max` int(11) DEFAULT NULL,
+  `url` varchar(100) DEFAULT NULL,
+  `doi` varchar(100) DEFAULT NULL,
+  `internal_related_dataset_id` int(11) DEFAULT NULL,
+  `relation` varchar(255) DEFAULT NULL,
+  `same` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1282,7 +1381,7 @@ CREATE TABLE `temporal_coverage_period` (
 
 CREATE TABLE `user_level` (
   `user_level_id` int(11) NOT NULL,
-  `label` longtext NOT NULL,
+  `label` varchar(9) NOT NULL,
   `description` longtext,
   `name` longtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -1589,6 +1688,12 @@ ALTER TABLE `characteristics`
   ADD KEY `characteristics_x_sensor_fk` (`sensor_id`);
 
 --
+-- Indexes for table `contact`
+--
+ALTER TABLE `contact`
+  ADD PRIMARY KEY (`contact_id`);
+
+--
 -- Indexes for table `continent`
 --
 ALTER TABLE `continent`
@@ -1784,6 +1889,12 @@ ALTER TABLE `news`
   ADD PRIMARY KEY (`news_id`);
 
 --
+-- Indexes for table `npp_theme`
+--
+ALTER TABLE `npp_theme`
+  ADD PRIMARY KEY (`npp_theme_id`);
+
+--
 -- Indexes for table `organization`
 --
 ALTER TABLE `organization`
@@ -1815,7 +1926,8 @@ ALTER TABLE `page_person`
 --
 ALTER TABLE `person`
   ADD PRIMARY KEY (`person_id`),
-  ADD KEY `person_x_organization_fk` (`organization_id`);
+  ADD KEY `person_x_organization_fk` (`organization_id`),
+  ADD KEY `person_x_user_level_fk` (`user_level`);
 
 --
 -- Indexes for table `platform`
@@ -1838,7 +1950,8 @@ ALTER TABLE `project`
   ADD PRIMARY KEY (`project_id`,`project_version`),
   ADD KEY `project_record_status` (`record_status`),
   ADD KEY `project_x_program_fk` (`program_id`),
-  ADD KEY `project_x_person_fk` (`creator`);
+  ADD KEY `project_x_person_fk` (`creator`),
+  ADD KEY `project_x_npp_theme_fk` (`npp_theme_id`);
 
 --
 -- Indexes for table `project_keyword`
@@ -1884,7 +1997,8 @@ ALTER TABLE `project_publication`
 ALTER TABLE `publication`
   ADD PRIMARY KEY (`publication_id`,`publication_version`),
   ADD KEY `publication_record_status` (`record_status`),
-  ADD KEY `publication_x_person_fk` (`creator`);
+  ADD KEY `publication_x_person_fk` (`creator`),
+  ADD KEY `publication_FK` (`publication_type_id`);
 
 --
 -- Indexes for table `publication_keyword`
@@ -1903,6 +2017,12 @@ ALTER TABLE `publication_person`
   ADD KEY `publication_person_x_publication_fk` (`publication_id`,`publication_version_min`,`person_id`) USING BTREE;
 
 --
+-- Indexes for table `publication_type`
+--
+ALTER TABLE `publication_type`
+  ADD PRIMARY KEY (`publication_type_id`);
+
+--
 -- Indexes for table `record_status`
 --
 ALTER TABLE `record_status`
@@ -1914,6 +2034,13 @@ ALTER TABLE `record_status`
 --
 ALTER TABLE `record_status_change`
   ADD PRIMARY KEY (`record_status_change_id`);
+
+--
+-- Indexes for table `related_dataset`
+--
+ALTER TABLE `related_dataset`
+  ADD PRIMARY KEY (`related_dataset_id`),
+  ADD KEY `related_dataset_x_dataset_fk` (`dataset_id`,`dataset_version_min`);
 
 --
 -- Indexes for table `sensor`
@@ -1985,7 +2112,8 @@ ALTER TABLE `temporal_coverage_period`
 -- Indexes for table `user_level`
 --
 ALTER TABLE `user_level`
-  ADD PRIMARY KEY (`user_level_id`);
+  ADD PRIMARY KEY (`user_level_id`),
+  ADD UNIQUE KEY `user_level_label` (`label`);
 
 --
 -- Indexes for table `vocab`
@@ -2103,13 +2231,13 @@ ALTER TABLE `access_request_file`
 -- AUTO_INCREMENT for table `account_new`
 --
 ALTER TABLE `account_new`
-  MODIFY `account_new_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `account_new_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `account_reset`
 --
 ALTER TABLE `account_reset`
-  MODIFY `account_reset_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `account_reset_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `additional_attributes`
@@ -2124,58 +2252,64 @@ ALTER TABLE `characteristics`
   MODIFY `characteristics_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `contact`
+--
+ALTER TABLE `contact`
+  MODIFY `contact_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `dataset`
 --
 ALTER TABLE `dataset`
-  MODIFY `dataset_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `dataset_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `dataset_ancillary_keyword`
 --
 ALTER TABLE `dataset_ancillary_keyword`
-  MODIFY `dataset_ancillary_keyword_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=260;
+  MODIFY `dataset_ancillary_keyword_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `dataset_citation`
 --
 ALTER TABLE `dataset_citation`
-  MODIFY `dataset_citation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `dataset_citation_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `dataset_data_center`
 --
 ALTER TABLE `dataset_data_center`
-  MODIFY `dataset_data_center_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `dataset_data_center_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `dataset_data_center_person`
 --
 ALTER TABLE `dataset_data_center_person`
-  MODIFY `dataset_data_center_person_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `dataset_data_center_person_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `dataset_keyword`
 --
 ALTER TABLE `dataset_keyword`
-  MODIFY `dataset_keyword_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=249;
+  MODIFY `dataset_keyword_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `dataset_link`
 --
 ALTER TABLE `dataset_link`
-  MODIFY `dataset_link_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `dataset_link_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `dataset_link_url`
 --
 ALTER TABLE `dataset_link_url`
-  MODIFY `dataset_link_url_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `dataset_link_url_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `data_resolution`
 --
 ALTER TABLE `data_resolution`
-  MODIFY `data_resolution_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `data_resolution_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `distribution`
@@ -2187,25 +2321,25 @@ ALTER TABLE `distribution`
 -- AUTO_INCREMENT for table `file`
 --
 ALTER TABLE `file`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `instrument`
 --
 ALTER TABLE `instrument`
-  MODIFY `instrument_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `instrument_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `location`
 --
 ALTER TABLE `location`
-  MODIFY `location_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=178;
+  MODIFY `location_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `menu`
 --
 ALTER TABLE `menu`
-  MODIFY `menu_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `menu_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `metadata_association`
@@ -2217,7 +2351,7 @@ ALTER TABLE `metadata_association`
 -- AUTO_INCREMENT for table `mime_type`
 --
 ALTER TABLE `mime_type`
-  MODIFY `mime_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+  MODIFY `mime_type_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `multimedia_sample`
@@ -2229,85 +2363,103 @@ ALTER TABLE `multimedia_sample`
 -- AUTO_INCREMENT for table `news`
 --
 ALTER TABLE `news`
-  MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `npp_theme`
+--
+ALTER TABLE `npp_theme`
+  MODIFY `npp_theme_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `organization`
 --
 ALTER TABLE `organization`
-  MODIFY `organization_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4162;
+  MODIFY `organization_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `page`
 --
 ALTER TABLE `page`
-  MODIFY `page_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `page_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `page_link`
 --
 ALTER TABLE `page_link`
-  MODIFY `page_link_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `page_link_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `person`
 --
 ALTER TABLE `person`
-  MODIFY `person_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=646;
+  MODIFY `person_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `platform`
 --
 ALTER TABLE `platform`
-  MODIFY `platform_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `platform_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `program`
 --
 ALTER TABLE `program`
-  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `project`
 --
 ALTER TABLE `project`
-  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
+  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `project_keyword`
 --
 ALTER TABLE `project_keyword`
-  MODIFY `project_keyword_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
+  MODIFY `project_keyword_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `project_link`
 --
 ALTER TABLE `project_link`
-  MODIFY `project_link_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `project_link_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `publication`
 --
 ALTER TABLE `publication`
-  MODIFY `publication_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `publication_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `publication_keyword`
 --
 ALTER TABLE `publication_keyword`
-  MODIFY `publication_keyword_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=237;
+  MODIFY `publication_keyword_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `publication_person`
 --
 ALTER TABLE `publication_person`
-  MODIFY `publication_person_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=429;
+  MODIFY `publication_person_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `publication_type`
+--
+ALTER TABLE `publication_type`
+  MODIFY `publication_type_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `record_status_change`
 --
 ALTER TABLE `record_status_change`
-  MODIFY `record_status_change_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=509;
+  MODIFY `record_status_change_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `related_dataset`
+--
+ALTER TABLE `related_dataset`
+  MODIFY `related_dataset_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `sensor`
@@ -2319,19 +2471,19 @@ ALTER TABLE `sensor`
 -- AUTO_INCREMENT for table `spatial_coverage`
 --
 ALTER TABLE `spatial_coverage`
-  MODIFY `spatial_coverage_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `spatial_coverage_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `suggestion`
 --
 ALTER TABLE `suggestion`
-  MODIFY `suggestion_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `suggestion_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `temporal_coverage`
 --
 ALTER TABLE `temporal_coverage`
-  MODIFY `temporal_coverage_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `temporal_coverage_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `temporal_coverage_ancillary`
@@ -2349,19 +2501,19 @@ ALTER TABLE `temporal_coverage_cycle`
 -- AUTO_INCREMENT for table `temporal_coverage_paleo`
 --
 ALTER TABLE `temporal_coverage_paleo`
-  MODIFY `temporal_coverage_paleo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `temporal_coverage_paleo_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `temporal_coverage_paleo_chronounit`
 --
 ALTER TABLE `temporal_coverage_paleo_chronounit`
-  MODIFY `temporal_coverage_paleo_chronounit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `temporal_coverage_paleo_chronounit_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `temporal_coverage_period`
 --
 ALTER TABLE `temporal_coverage_period`
-  MODIFY `temporal_coverage_period_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `temporal_coverage_period_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user_level`
@@ -2373,79 +2525,79 @@ ALTER TABLE `user_level`
 -- AUTO_INCREMENT for table `vocab_chronounit`
 --
 ALTER TABLE `vocab_chronounit`
-  MODIFY `vocab_chronounit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `vocab_chronounit_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_idn_node`
 --
 ALTER TABLE `vocab_idn_node`
-  MODIFY `vocab_idn_node_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `vocab_idn_node_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_instrument`
 --
 ALTER TABLE `vocab_instrument`
-  MODIFY `vocab_instrument_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1565;
+  MODIFY `vocab_instrument_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_iso_topic_category`
 --
 ALTER TABLE `vocab_iso_topic_category`
-  MODIFY `vocab_iso_topic_category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `vocab_iso_topic_category_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_location`
 --
 ALTER TABLE `vocab_location`
-  MODIFY `vocab_location_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=527;
+  MODIFY `vocab_location_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_platform`
 --
 ALTER TABLE `vocab_platform`
-  MODIFY `vocab_platform_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=839;
+  MODIFY `vocab_platform_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_res_hor`
 --
 ALTER TABLE `vocab_res_hor`
-  MODIFY `vocab_res_hor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `vocab_res_hor_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_res_time`
 --
 ALTER TABLE `vocab_res_time`
-  MODIFY `vocab_res_time_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `vocab_res_time_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_res_vert`
 --
 ALTER TABLE `vocab_res_vert`
-  MODIFY `vocab_res_vert_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `vocab_res_vert_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_science_keyword`
 --
 ALTER TABLE `vocab_science_keyword`
-  MODIFY `vocab_science_keyword_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3113;
+  MODIFY `vocab_science_keyword_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vocab_url_type`
 --
 ALTER TABLE `vocab_url_type`
-  MODIFY `vocab_url_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `vocab_url_type_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `zip`
 --
 ALTER TABLE `zip`
-  MODIFY `zip_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `zip_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `zip_files`
 --
 ALTER TABLE `zip_files`
-  MODIFY `zip_files_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+  MODIFY `zip_files_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -2662,7 +2814,8 @@ ALTER TABLE `page_person`
 -- Constraints for table `person`
 --
 ALTER TABLE `person`
-  ADD CONSTRAINT `person_x_organization_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`organization_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `person_x_organization_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`organization_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `person_x_user_level_fk` FOREIGN KEY (`user_level`) REFERENCES `user_level` (`label`);
 
 --
 -- Constraints for table `platform`
@@ -2675,6 +2828,7 @@ ALTER TABLE `platform`
 -- Constraints for table `project`
 --
 ALTER TABLE `project`
+  ADD CONSTRAINT `project_x_npp_theme_fk` FOREIGN KEY (`npp_theme_id`) REFERENCES `npp_theme` (`npp_theme_id`),
   ADD CONSTRAINT `project_x_person_fk` FOREIGN KEY (`creator`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `project_x_program_fk` FOREIGN KEY (`program_id`) REFERENCES `program` (`program_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `project_x_record_status_fk` FOREIGN KEY (`record_status`) REFERENCES `record_status` (`record_status`) ON DELETE NO ACTION ON UPDATE CASCADE;
@@ -2717,6 +2871,7 @@ ALTER TABLE `project_publication`
 -- Constraints for table `publication`
 --
 ALTER TABLE `publication`
+  ADD CONSTRAINT `publication_FK` FOREIGN KEY (`publication_type_id`) REFERENCES `publication_type` (`publication_type_id`),
   ADD CONSTRAINT `publication_x_person_fk` FOREIGN KEY (`creator`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `publication_x_record_status_fk` FOREIGN KEY (`record_status`) REFERENCES `record_status` (`record_status`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
@@ -2733,6 +2888,12 @@ ALTER TABLE `publication_person`
   ADD CONSTRAINT `publication_person_x_organization_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`organization_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `publication_person_x_person_fk` FOREIGN KEY (`person_id`) REFERENCES `person` (`person_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   ADD CONSTRAINT `publication_person_x_publication_fk` FOREIGN KEY (`publication_id`,`publication_version_min`) REFERENCES `publication` (`publication_id`, `publication_version`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `related_dataset`
+--
+ALTER TABLE `related_dataset`
+  ADD CONSTRAINT `related_dataset_x_dataset_fk` FOREIGN KEY (`dataset_id`,`dataset_version_min`) REFERENCES `dataset` (`dataset_id`, `dataset_version`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `sensor`
@@ -2767,6 +2928,12 @@ ALTER TABLE `temporal_coverage_cycle`
   ADD CONSTRAINT `temporal_coverage_cycle_x_temporal_coverage_fk` FOREIGN KEY (`temporal_coverage_id`) REFERENCES `temporal_coverage` (`temporal_coverage_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `temporal_coverage_paleo`
+--
+ALTER TABLE `temporal_coverage_paleo`
+  ADD CONSTRAINT `temporal_coverage_paleo_temporal_coverage_FK` FOREIGN KEY (`temporal_coverage_id`) REFERENCES `temporal_coverage` (`temporal_coverage_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `temporal_coverage_paleo_chronounit`
 --
 ALTER TABLE `temporal_coverage_paleo_chronounit`
@@ -2798,7 +2965,6 @@ ALTER TABLE `zip`
 ALTER TABLE `zip_files`
   ADD CONSTRAINT `zip_files_x_file_fk` FOREIGN KEY (`file_id`) REFERENCES `file` (`file_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `zip_files_x_zip_fk` FOREIGN KEY (`zip_id`) REFERENCES `zip` (`zip_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
