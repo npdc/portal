@@ -65,7 +65,7 @@ class Base {
 						$errors = [];
 						$this->id = \npdc\lib\Args::get('id');
 						$baseData = $this->model->getById($this->id, 'draft');
-						if($baseData === false){
+						if(empty($baseData)){
 							header('Location: '.BASE_URL.'/'.$this->name.'/'.$this->id);
 							die();
 						}
@@ -100,7 +100,7 @@ class Base {
 					switch(\npdc\lib\Args::get('action')){
 						case 'dosubmit':
 							$data = $this->model->getById(\npdc\lib\Args::get('id'), 'draft');
-							if($data === false){
+							if(empty($data)){
 								$_SESSION['notice'] = 'No draft was found';
 							} else {
 								$this->model->setStatus(\npdc\lib\Args::get('id'), 'draft', 'submitted', $_GET['comment']);
@@ -121,7 +121,7 @@ class Base {
 						case 'publish':
 							$prevState = (\npdc\config::$reviewBeforePublish ? 'submitted' : 'draft');
 							$data = $this->model->getById(\npdc\lib\Args::get('id'), $prevState);
-							if($data === false) {
+							if(empty($data)) {
 								$_SESSION['notice'] = 'No version foud to publish';
 							} elseif ($this->session->userLevel < NPDC_ADMIN & \npdc\config::$reviewBeforePublish) {
 								$_SESSION['notice'] = 'You have insufficient rights to publish';
@@ -251,10 +251,10 @@ class Base {
 		} else {
 			$baseData = $this->model->getById($this->id, 'draft');
 			$_SESSION[$this->formId]['db_action'] = 'update';
-			if($baseData === false && $this->session->userLevel >= NPDC_ADMIN){
+			if(empty($baseData) && $this->session->userLevel >= NPDC_ADMIN){
 				$baseData = $this->model->getById($this->id, 'submitted');
 			}
-			if($baseData === false){
+			if(empty($baseData)){
 				$baseData = $this->model->getById($this->id);
 			}
 			$this->version = $baseData[$this->name.'_version'];
@@ -372,9 +372,9 @@ class Base {
 		$draft = $this->model->getById($id, 'draft');
 		$submitted = $this->model->getById($id, 'submitted');
 		$changed = false;
-		if($draft === false && $submitted === false){
+		if(empty($draft) && empty($submitted)){
 			$changed = null;
-		} elseif($published === false){
+		} elseif(empty($published)){
 			$changed = true;
 		} else {
 			$test = $draft !== false ? $draft : $submitted;
