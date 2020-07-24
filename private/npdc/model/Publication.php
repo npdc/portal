@@ -170,7 +170,8 @@ class Publication extends Base{
 			->table('publication_person')->field('publication_person.*');
 		return $q->join('person.person_id', 'person_id', 'left')
 				->field($q->expr('CASE WHEN name IS NULL THEN free_person ELSE name END'), 'name')
-			->join('organization.organization_id', 'organization_id', 'left')->field('organization_name')
+			->join('organization.organization_id', 'organization_id', 'left')
+				->field($q->expr('CASE WHEN organization_name IS NULL THEN free_organization ELSE organization_name END'), 'organization_name')
 			->where(\npdc\lib\Db::selectVersion('publication', $id, $version))
 			->order('sort')
 			->get();
