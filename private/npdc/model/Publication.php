@@ -60,7 +60,7 @@ class Publication extends Base{
 		$q->order('date DESC, title')
 			->field('publication.*')
 			->field($q->expr('extract(YEAR FROM date)'), 'year')
-			->field($q->expr('"Publication"'), 'content_type')->where('record_status', 'published')
+			->field($q->expr("'Publication'"), 'content_type')->where('record_status', 'published')
 			->field($q->dsql()
 				->expr('CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}', ['draft', 'hasDraft'])
 			);
