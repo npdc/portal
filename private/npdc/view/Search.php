@@ -130,7 +130,7 @@ class Search extends Base{
 						if(array_key_exists('organization', $this->searchFields)){
 							if(count($this->searchFields['organization']) > 0){
 								foreach($model->getList(['organization'=>$this->searchFields['organization']]) as $row){
-									$row['content_type'] = $type;
+									$row['content_type'] = ucfirst($type);
 									switch($type){
 										case 'project':
 										case 'dataset':
@@ -142,7 +142,7 @@ class Search extends Base{
 							}
 						}
 						foreach($pubModel->searchByFreeOrganization($this->search) as $row){
-							$row['content_type'] = 'publication';
+							$row['content_type'] = 'Publication';
 							$key = 'publication'.$row['publication_id'];
 							$list[$key] = $row;
 						}
@@ -151,7 +151,7 @@ class Search extends Base{
 								$function = 'get'.ucfirst($type).'s';
 								foreach($this->searchFields['person'] as $id){
 									foreach($personModel->{$function}($id) as $row){
-										$row['content_type'] = $type;
+										$row['content_type'] = ucfirst($type);
 										switch($type){
 											case 'project':
 											case 'dataset':
@@ -163,7 +163,7 @@ class Search extends Base{
 								}
 							}
 							foreach($pubModel->searchByFreePerson($this->search) as $row){
-								$row['content_type'] = 'publication';
+								$row['content_type'] = 'Publication';
 								$key = 'publication'.$row['publication_id'];
 								$list[$key] = $row;
 							}
