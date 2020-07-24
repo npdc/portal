@@ -79,7 +79,7 @@ class Project extends Base{
 		$q->order('date_start DESC, date_end DESC, project_id')
 			->field('project.*')
 			->field($q->expr('date_start || \' - \' || date_end'), 'period')
-			->field($q->dsql()->expr('"Project"'), 'content_type')
+			->field($q->dsql()->expr("'Project'"), 'content_type')
 			->field($q->dsql()
 				->expr('CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}', ['draft', 'hasDraft'])
 			);
