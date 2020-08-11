@@ -179,7 +179,7 @@ class Organization {
 	 * @return integer id of newly inserted record
 	 */
 	public function insertOrganization($data){
-		return \npdc\lib\Db::insert('organization', $table, true);
+		return \npdc\lib\Db::insert('organization', $data, true);
 	}
 	
 	/**
