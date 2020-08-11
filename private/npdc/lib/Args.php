@@ -90,7 +90,7 @@ class Args {
 					if(method_exists($mName, 'getByUUID')){
 						$m = new $mName();
 						$r = $m->getByUUID(self::$args['uuid']);
-						if($r !== false){
+						if(!empty($r)){
 							self::$args = array_merge(['type'=>$cType, 'id'=>$r[$cType.'_id'], 'version'=>$r[$cType.'_version']], self::$args);
 							break;
 						}

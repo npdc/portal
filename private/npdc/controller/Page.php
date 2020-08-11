@@ -48,7 +48,7 @@ class Page extends Base{
 		$this->model = new \npdc\model\Page();
 		$data = $this->model->getByUrl($id);
 		$this->formId = 'page_'.$id;
-		if($data !== false){
+		if(!empty($data)){
 			$this->formController = new \npdc\controller\Form($this->formId);
 			$this->formController->getForm('page');
 			$this->formController->form->action = $_SERVER['REQUEST_URI'];

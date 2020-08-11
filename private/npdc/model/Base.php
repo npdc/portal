@@ -79,7 +79,7 @@ abstract class Base {
 
 	public function setStatus($id, $old, $new, $comment = null){
 		$r = \npdc\lib\Db::get($this->baseTbl, [$this->baseTbl.'_id'=>$id, 'record_status'=>$old]);
-		if($r !== false){
+		if(!empty($r)){
 			$q = $this->dsql->dsql()
 				->table($this->baseTbl)
 				->where($this->baseTbl.'_id', $id)
