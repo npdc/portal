@@ -23,7 +23,7 @@
 		'npdc/style.min'
 	];
 	$js = [
-		'external/jquery-2.2.3.min',
+		'external/jquery-3.5.1.min',
 		'external/jquery-ui.min',
 		'external/jquery.nicescroll.min',
 		'external/select2.full.min',

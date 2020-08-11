@@ -420,9 +420,12 @@ class Person{
 	 *
 	 * @param string $mail
 	 * @param integer $ownId id of person being changed
-	 * @return boolean
+	 * @return boolean true if no record is found
 	 */
 	public function checkMail($mail, $ownId){
+		if(empty($mail)){
+			return true;
+		}
 		return count($this->dsql->dsql()
 			->table('person')
 			->where('mail', $mail)
