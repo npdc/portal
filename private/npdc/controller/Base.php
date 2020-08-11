@@ -150,7 +150,7 @@ class Base {
 							die();
 						case 'cancel':
 							$data = $this->model->getById(\npdc\lib\Args::get('id'), 'submitted');
-							if($data !== false){
+							if(!empty($data)){
 								$this->model->setStatus(\npdc\lib\Args::get('id'), 'submitted', 'draft', $_GET['comment']);
 								$_SESSION['notice'] = 'The record has been reset to draft';
 								$this->sendSubmitterMail($data, 'rejected');
