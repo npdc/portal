@@ -19,6 +19,11 @@
 		<div id="overlay"><div class="inner"></div></div>
 		<div id="page">
 			<div id="head">
+			<?php
+			if(file_exists(__DIR__.'/header.tpl.php')){
+				require 'header.tpl.php';
+			} else {
+				?>
 				<div>
 					<div id="top">
 						<div id="search"><form method="post" action="<?=BASE_URL?>/search"><input type="text" placeholder="Search" name="q" /><button class="icon-search"></button></form></div>
@@ -61,6 +66,9 @@
 						<?=\npdc\lib\Menu::getMenu($session, \npdc\lib\Args::get('type'));?>
 					</div>
 				</div>
+				<?php
+			}
+			?>
 			</div>
 			<div id="main">
 				<?=isset($view->title) && strlen($view->title) > 0 ? '<h2>'.$view->title.'</h2>' : '';?>
