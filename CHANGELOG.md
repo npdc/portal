@@ -1,3 +1,6 @@
+## v3.3.0 - 2020-08-11
+Make page header customizable
+
 ## v3.2.2 - 2020-05-20
 - Small layout enhancements
 - Fix data display for project in search function

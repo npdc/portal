@@ -6,7 +6,8 @@ web/img/news
 web/img/favicon.ico
 web/img/*.jpg
 web/img/*.png
-private/app/npdc/template/footer.tpl.php
+private/npdc/template/header.tpl.php
+private/npdc/template/footer.tpl.php
 private/data
 private/download
 web/test.php
