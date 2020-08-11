@@ -75,7 +75,7 @@ class Search extends Base{
 					$modelName = 'npdc\\model\\'.ucfirst($type);
 					$model = new $modelName();
 					$res = $model->getByUUID($this->search);
-					if($res !== false){
+					if(!empty($res)){
 						header('Location: '.BASE_URL.'/'.$res['uuid']);
 						die();
 					} else {

@@ -23,7 +23,7 @@ class CheckDownload {
 		if(CALLER === 'index'){
 			$this->model = new \npdc\model\Zip();
 			$this->file = $this->model->getByName(\npdc\lib\Args::get('file'));
-			if($this->file !== false){
+			if(!empty($this->file)){
 				if($file->timestamp < "1 week geleden" && false){
 					$this->status = 'expired';
 				} elseif(file_exists(\npdc\config::$downloadDir.'/'.$this->file['filename'].'.zip')){
