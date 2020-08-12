@@ -329,7 +329,13 @@ class Form {
 					. 'name="'.$id.'" '
 					. 'value="on" '
 					. 'id="'.$id.'" '
-					. (substr($id, -4) === '_new' ? $field->default ?? null : $_SESSION[$this->formId]['data'][$id] ? 'checked ' : '')
+					. (substr($id, -4) === '_new' 
+						? $field->default ?? null 
+						: ($_SESSION[$this->formId]['data'][$id] 
+							? 'checked ' 
+							: ''
+						)
+					)
 					. '>'
 					. '<label for="'.$id.'"><span class="indicator"></span>'
 					. (isset($field->sideLabel) ? $field->sideLabel : '') 
