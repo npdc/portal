@@ -5,6 +5,7 @@
         "moxiecode/plupload": "^2.3",
         "ezyang/htmlpurifier": "^4.9",
         "lootils/uuid": "^1.0",
-        "atk4/dsql": "^1.2"
+        "atk4/dsql": "^1.2",
+        "jdorn/sql-formatter": "^1.2"
     }
 }
