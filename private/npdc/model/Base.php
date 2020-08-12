@@ -68,7 +68,7 @@ abstract class Base {
 			$return = \npdc\lib\Db::update($this->baseTbl.'_person', $record, $data);
 		} elseif($createNew){
 			\npdc\lib\Db::update($this->baseTbl.'_person', $record, [$this->baseTbl.'_version_max'=>$version-1]);
-			$return = $this->insertPerson(array_merge($data, $record, [$this->baseTbl.'_version_min'=>$version, $this->baseTbl.'_id'=>$oldRecord[$this->baseTbl.'_id']]));
+			$return = $this->insertPerson(array_merge($data, $record, [$this->baseTbl.'_version_min'=>$version]));
 		} elseif($updateEditor) {
 			$return = \npdc\lib\Db::update($this->baseTbl.'_person', $record,['editor'=>$data['editor']]);
 		} else {
