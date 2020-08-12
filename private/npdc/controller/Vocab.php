@@ -135,15 +135,15 @@ class Vocab {
 							break;
 						case 'horizontalresolutionrange':
 							$tbl = 'vocab_res_hor';
-							$values = ['`range`'=>$this->setValue($row['Horizontal_Resolution_Range'])];
+							$values = ['range'=>$this->setValue($row['Horizontal_Resolution_Range'])];
 							break;
 						case 'verticalresolutionrange':
 							$tbl = 'vocab_res_vert';
-							$values = ['`range`'=>$this->setValue($row['Vertical_Resolution_Range'])];
+							$values = ['range'=>$this->setValue($row['Vertical_Resolution_Range'])];
 							break;
 						case 'temporalresolutionrange':
 							$tbl = 'vocab_res_time';
-							$values = ['`range`'=>$this->setValue($row['Temporal_Resolution_Range'])];
+							$values = ['range'=>$this->setValue($row['Temporal_Resolution_Range'])];
 							break;
 						case 'sciencekeywords':
 							$tbl = 'vocab_science_keyword';
