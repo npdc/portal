@@ -5,7 +5,8 @@ git pull
 
 # refresh css and js
 gulp build:css
-gulp build:js
+gulp build:js-npdc
+gulp build:js-editor
 
 #send files to server
 scp -r /home/mtacoma/npdc/portal/private/npdc npdc:/private/
