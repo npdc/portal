@@ -107,7 +107,9 @@ function convertToBytes($from){
  * @return boolean was key found
  */
 function array_key_exists_r($needle, $haystack){
-	$result = array_key_exists($needle, $haystack);
+	$result = is_array($haystack) 
+		? array_key_exists($needle, $haystack)
+		: property_exists($haystack, $needle);
 	if (!$result){
 		foreach ($haystack as $v) {
 			if (is_array($v)) {
