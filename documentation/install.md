@@ -7,9 +7,11 @@
   - gd
   - xml
   - zip
-- mysql >= 5.6 or mariadb >= 10.0 or postgresql 10
+- mysql >= 5.6 or mariadb >= 10.0 <sup>[1](#postgres)</sup>
 - composer
 - usage of https higly recommended for entire site, for instance with a certificate of letsencrypt, site doesn't do any checks for https
+
+<a name="postgres">1</a>: As within the NPDC we use MariaDB supportfor PostgreSQL is not getting any attention. There are currently problems with the portal software on PostgreSQL. If needed it is most likely possible to restore full functionality using PostgreSQL, but for now this isn't high on the list of priorities for enhancement of the system.
 
 ### Apache specific config
 - Allow .htaccess
