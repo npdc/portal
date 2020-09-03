@@ -35,13 +35,13 @@ class config {
 	
 	//db connection
 	public static $db = [
-		'type' => 'mysql',//currently permitted: pgsql, mysql
+		'type' => 'mysql',//currently permitted: mysql (postgres is not fully functional)
 		'host' => '127.0.0.1',
 		'user' => 'database user',
 		'pass' => 'database password',
 		//'port' => 3306,//only needed with db on non-standard port
 		'name' => 'database name',//name of the database
-		'search_path' => 'public'//only for pgsql
+		//'search_path' => 'public'//only for pgsql
 	];
 	
 	
