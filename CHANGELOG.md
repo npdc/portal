@@ -1,3 +1,6 @@
+## v3.3.2 - 2020-10-05
+filter non numeric organization id
+
 ## v3.3.1 - 2020-08-13
 Correct to small top padding of page
 

@@ -53,13 +53,13 @@ class Organization extends Base {
 				$_SESSION[$this->formId]['data'] = $_POST;
 			} elseif(\npdc\lib\Args::get('action') === 'new'){
 				$_SESSION[$this->formId]['data']['country_id'] = 'NL';
-			} else {
+			} elseif(is_numeric($id)) {
 				$_SESSION[$this->formId]['data'] = $this->model->getById($id);
 				$_SESSION[$this->formId]['data']['gcmd_dif_code'] = $_SESSION[$this->formId]['data']['dif_code'];
 				$_SESSION[$this->formId]['data']['gcmd_dif_name'] = $_SESSION[$this->formId]['data']['dif_name'];
 				unset($_SESSION[$this->formId]['data']['dif_code']);
 				unset($_SESSION[$this->formId]['data']['dif_name']);
-			}
+			} 
 		} elseif(!\npdc\lib\Args::exists('id')) {
 			unset($_SESSION[$this->formId]['data']);
 			$this->formController = new \npdc\controller\Form($this->formId);
