@@ -257,11 +257,11 @@ class Dataset extends Base{
 			'includedInDataCatalog' => [
 				'@type' => 'DataCatalog',
 				'name' => \npdc\config::$siteName,
-				'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL
+				'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL,
 			],
-			'license' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'].'#access',
-			'isAccessbileForFree' => true,
+			'citation' => strip_tags($this->model->getCitationString($this->data))
 		];
+		
 		$content['keywords'] = [];
 		foreach ($this->model->getTopics($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$topic){
 			$cut = ':';
@@ -396,11 +396,12 @@ class Dataset extends Base{
 			}
 			$this->bottom = parent::parseTemplate('foot_technical');
 		} else {
+			$this->makeJson();
 			$this->mid .= parent::parseTemplate('dataset_mid');
 			$this->right = parent::parseTemplate('dataset_right');
 			$this->bottom = parent::parseTemplate('foot_technical');
 			if(\npdc\lib\Args::exists('uuid') && \npdc\lib\Args::exists('uuidtype')){
-				$this->makeJson();
+				// $this->makeJson();
 				$this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</script>';
 			}
 		}

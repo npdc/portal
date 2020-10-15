@@ -58,7 +58,7 @@ if(count($spatialCoverages) > 0){
 			});
 			<?php
 
-			$this->json['spatialCoverage'] = [
+			$this->json['@graph'][0]['spatialCoverage'] = [
 				'@type'=>'Place',
 				'geo'=>[],
 				'additionalProperty' => [
@@ -97,26 +97,26 @@ if(count($spatialCoverages) > 0){
 				switch($spatialCoverage['type']){
 					case 'Point':
 					$point = explode(',', $points[0]);
-						$this->json['spatialCoverage']['geo'][] = [
+						$this->json['@graph'][0]['spatialCoverage']['geo'][] = [
 							'@type'=>'GeoCoordinates',
 							'latitude'=>$point[0],
 							'longitude'=>$point[1]
 						];
 						break;
 					case 'LineString':
-						$this->json['spatialCoverage']['geo'][] = [
+						$this->json['@graph'][0]['spatialCoverage']['geo'][] = [
 							'@type'=>'GeoShape',
 							'line'=>implode(' ', $points)
 						];
 						break;
 					case 'Area':
-						$this->json['spatialCoverage']['geo'][] = [
+						$this->json['@graph'][0]['spatialCoverage']['geo'][] = [
 							'@type'=>'GeoShape',
 							'box'=>min($lats).' '.min($lons).' '.max($lats).' '.max($lons)
 						];
 						break;
 					case 'Polygon':
-						$this->json['spatialCoverage']['geo'][] = [
+						$this->json['@graph'][0]['spatialCoverage']['geo'][] = [
 							'@type'=>'GeoShape',
 							'polygon'=>implode(' ', $points)
 						];

@@ -445,6 +445,25 @@ class Dataset extends Base{
 		}
 		return $return;
 	}
+	
+	/**
+	 * get a full citation string of the dataset
+	 * 
+	 * @param array $data a dataset record
+	 */
+	public function getCitationString($data){
+		$citation = $this->getCitations($data['dataset_id'], $data['dataset_version'], 'this')[0];
+		$url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$data['uuid'];
+		return ($citation['creator'] ?? $this->getAuthors($data['dataset_id'], $data['dataset_version']))
+		. ' ('.substr($citation['release_date'] ?? $data['insert_timestamp'],0,4).').'
+		. ' <em>'.$data['title'].'.</em>'
+		. ' (v'.$data['dataset_version'].')'
+		. (!is_null($citation['release_place']) ? ' '.$citation['release_place'].'.' : '')
+		. (!is_null($citation['series_name']) ? ' Part of <i>'.$citation['series_name'].'</i>.' : '')
+		. (!is_null($citation['editor']) ? ' Edited by '.$citation['editor'].'.' : '')
+		. (!is_null($citation['publisher']) ? ' Published by '.$citation['publisher'].'.' : '')
+		. ' <a href="'.$url.'">'.$url.'</a>';
+	}
 
 	/**
 	 * get the data center holding the data

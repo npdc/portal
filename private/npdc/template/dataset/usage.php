@@ -22,4 +22,15 @@ include 'files.php';
 <p><?=$this->data['use_constraints']?></p>
 
 <?php
-$this->json['license'] = 'Access: '.($this->data['acces_constraints'] ?? 'No known constraints').'; Use: '.($this->data['use_constraints'] ?? 'No known constraints');
+if(substr($this->data['license'], 0, 2) == 'cc'){
+    $this->json['@graph'][0]['isAccessbileForFree'] = true;
+    $this->json['@graph'][0]['license'] = $this->data['license'] == 'ccby' 
+        ? ['https://spdx.org/licenses/CC-BY-4.0', 'https://creativecommons.org/licenses/by/4.0/'] 
+        : ['https://spdx.org/licenses/CC0-1.0', 'https://creativecommons.org/publicdomain/zero/1.0/'];
+} else {
+    $this->json['@graph'][0]['license'] = [
+        $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'].'#access',
+        'Access: '.($this->data['acces_constraints'] ?? 'No known constraints')
+        .'; Use: '.($this->data['use_constraints'] ?? 'No known constraints')
+    ];
+}
