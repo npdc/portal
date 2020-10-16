@@ -149,9 +149,6 @@ class Dataset extends Base{
 			$this->showError();
 		} elseif(NPDC_OUTPUT === 'xml'){//show as xml
 			$this->showXml();
-		} elseif(NPDC_OUTPUT === 'json'){
-			$this->makeJson();
-			$this->showJson();
 		} elseif(in_array(NPDC_OUTPUT, ['ris', 'bib'])){
 			$this->showCitation();
 		} elseif(\npdc\lib\Args::get('action') === 'duplicate'){
@@ -283,12 +280,6 @@ class Dataset extends Base{
 		];
 	}
 
-	private function showJson(){
-		//header('Content-type: text/ld+json');
-		header('Content-Type: application/json');
-		echo json_encode($this->json);
-		die();
-	}
 	/**
 	 * Output formatted citation
 	 *
