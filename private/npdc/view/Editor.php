@@ -12,32 +12,32 @@ namespace npdc\view;
 
 class Editor extends Base{
 
-	/**
-	 * Constructor
-	 *
-	 * @param object $session login information
-	 *
-	 */
-	public function __construct($session){
-		$this->session = $session;
-	}
-	
-	/**
-	 * Display the page
-	 *
-	 * @return void
-	 */
-	public function showList(){
-		if($this->session->userLevel < NPDC_EDITOR){
-			$this->title = 'No access';
-			$this->mid = 'You have insufficient privileges to access this page';
-		} else {
-			ob_start();
-			$hideFoot = true;
-			include 'template/overlay_editor.php';
-			$this->title = 'Editor tools';
-			$this->mid = ob_get_clean();
-			ob_end_clean();
-		}
-	}
+    /**
+     * Constructor
+     *
+     * @param object $session login information
+     *
+     */
+    public function __construct($session) {
+        $this->session = $session;
+    }
+    
+    /**
+     * Display the page
+     *
+     * @return void
+     */
+    public function showList() {
+        if ($this->session->userLevel < NPDC_EDITOR) {
+            $this->title = 'No access';
+            $this->mid = 'You have insufficient privileges to access this page';
+        } else {
+            ob_start();
+            $hideFoot = true;
+            include 'template/overlay_editor.php';
+            $this->title = 'Editor tools';
+            $this->mid = ob_get_clean();
+            ob_end_clean();
+        }
+    }
 }

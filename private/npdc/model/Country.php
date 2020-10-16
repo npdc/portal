@@ -10,30 +10,30 @@
 namespace npdc\model;
 
 class Country {
-	private $dsql;
-	
-	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		$this->dsql = \npdc\lib\Db::getDSQLcon();
-	}
-	
-	/**
-	 * List countries grouped by continent
-	 *
-	 * @return array list of countries with continent name
-	 */
-	public function getListByContinent(){
-		return $this->dsql->dsql()->table('country')
-			->join('continent.continent_id', 'continent_id')
-			->order('country.continent_id, country_name')
-			->get();
-	}
+    private $dsql;
+    
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $this->dsql = \npdc\lib\Db::getDSQLcon();
+    }
+    
+    /**
+     * List countries grouped by continent
+     *
+     * @return array list of countries with continent name
+     */
+    public function getListByContinent() {
+        return $this->dsql->dsql()->table('country')
+            ->join('continent.continent_id', 'continent_id')
+            ->order('country.continent_id, country_name')
+            ->get();
+    }
 
-	public function getList(){
-		return $this->dsql->dsql()->table('country')
-			->order('country_name')
-			->get();
-	}
+    public function getList() {
+        return $this->dsql->dsql()->table('country')
+            ->order('country_name')
+            ->get();
+    }
 }

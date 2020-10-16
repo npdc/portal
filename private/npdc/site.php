@@ -22,13 +22,13 @@ define('NPDC_ENVIRONMENT', $_SERVER['ENVIRONMENT'] ?? 'production');
 define('NPDC_DEV', NPDC_ENVIRONMENT=='dev');
 ini_set('display_errors', NPDC_DEV ? 'on' : 'off');
 
-if(BASE_URL === '/npdc_dev'){
-	ini_set('display_errors', 'on');
-	define('NPDC_DEV', true);
-	error_reporting(E_ALL & ~E_NOTICE);
+if (BASE_URL === '/npdc_dev' || strpos($_SERVER['HTTP_HOST'], 'dev') !== false) {
+    ini_set('display_errors', 'on');
+    define('NPDC_DEV', true);
+    error_reporting(E_ALL & ~E_NOTICE);
 } else {
-	error_reporting(E_ALL & ~E_NOTICE);
-	define('NPDC_DEV', false);
+    error_reporting(E_ALL & ~E_NOTICE);
+    define('NPDC_DEV', false);
 }
 
 //get version
@@ -40,23 +40,23 @@ require __DIR__ . '/../vendor/autoload.php';
 
 //make classes autoloading
 spl_autoload_register(
-	function($className){
-		$file = get_class_file($className);
-		if(file_exists($file)){
-			require_once $file;
-		} else {
-			echo 'A required file was not found '.$file;
-			if(!NPDC_DEV){
-				http_response_code(500);
-				die();
-			}
-		}
-	}
+    function($className) {
+        $file = get_class_file($className);
+        if (file_exists($file)) {
+            require_once $file;
+        } else {
+            echo 'A required file was not found '.$file;
+            if (!NPDC_DEV) {
+                http_response_code(500);
+                die();
+            }
+        }
+    }
 );
 
 //Open session, clear if inactive for too long, update last activity to now
 session_start();
-if(($_SESSION['last_act'] ?? time()) < (time()-\npdc\config::$sessionExpire*60)){
-	$_SESSION = [];
+if (($_SESSION['last_act'] ?? time()) < (time()-\npdc\config::$sessionExpire*60)) {
+    $_SESSION = [];
 }
 $_SESSION['last_act'] = time();

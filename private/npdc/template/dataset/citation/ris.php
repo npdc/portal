@@ -12,8 +12,8 @@ TY  - DATA
 ID  - '.$id.'
 T1  - '.$this->data['title'].'
 ';
-foreach($authors as $author){
-	$output .= 'AU  - '.$author.'
+foreach($authors as $author) {
+    $output .= 'AU  - '.$author.'
 ';
 }
 $output .= 'PY  - '.str_replace('-', '/', substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,10)).'/

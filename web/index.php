@@ -6,11 +6,13 @@
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
-if(file_exists('oldSite.php')){include 'oldSite.php';}//redirects from old urls
+if (file_exists('oldSite.php')) {
+    include 'oldSite.php';
+}//redirects from old urls
 
 //goto site.php, the main file
 define('CALLER', 'index');
-require dirname(__FILE__).'/../private/npdc/site.php';
+require dirname(__FILE__) . '/../private/npdc/site.php';
 
 $session = new \npdc\lib\Login();
 
@@ -23,7 +25,9 @@ $url = substr(
 use \npdc\lib\Args;
 
 $controllerName = ucfirst(Args::get('type'));
-$action = Args::exists('id') || Args::exists('action') ? 'showItem' : 'showList';
+$action = (Args::exists('id') || Args::exists('action'))
+    ? 'showItem' 
+    : 'showList';
 
 //get the view
 $controllerClass = 'npdc\\controller\\'.$controllerName;

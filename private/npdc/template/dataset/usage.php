@@ -22,7 +22,7 @@ include 'files.php';
 <p><?=$this->data['use_constraints']?></p>
 
 <?php
-if(substr($this->data['license'], 0, 2) == 'cc'){
+if (substr($this->data['license'], 0, 2) == 'cc') {
     $this->json['@graph'][0]['isAccessbileForFree'] = true;
     $this->json['@graph'][0]['license'] = $this->data['license'] == 'ccby' 
         ? ['https://spdx.org/licenses/CC-BY-4.0', 'https://creativecommons.org/licenses/by/4.0/'] 

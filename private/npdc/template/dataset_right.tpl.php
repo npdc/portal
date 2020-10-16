@@ -10,13 +10,13 @@ include 'dataset/files.php';
 ?>
 
 <section class="inline">
-	<h4>Start date</h4>
-	<p><?=$this->data['date_start']?></p>
+    <h4>Start date</h4>
+    <p><?=$this->data['date_start']?></p>
 </section>
 
 <section class="inline">
-	<h4>End date</h4>
-	<p><?=$this->data['date_end']?></p>
+    <h4>End date</h4>
+    <p><?=$this->data['date_end']?></p>
 </section>
 
 <?php
