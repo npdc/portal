@@ -7,7 +7,7 @@
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
 
-include 'dataset/citation.php';
+include 'dataset/citation/plain.php';
 
 $parts = [
 	['Summary', 'field', 'summary', 'general'],

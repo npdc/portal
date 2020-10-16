@@ -157,7 +157,7 @@ class Dataset extends Base{
 			}
 			$this->title = 'Confirm dataset duplication';
 			ob_start();
-			include 'template/dataset/citation.php';
+			include 'template/dataset/citation/plain.php';
 			ob_end_clean();
 			$this->mid = '<p>You have requested duplication of the following dataset:</p>
 			<p style="margin-left:20px;margin-right:20px">&ldquo;'.$citationString.'&rdquo;</p>
@@ -303,7 +303,7 @@ class Dataset extends Base{
 		}
 
 		$id = str_replace(' ', '', $aut.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).substr($citation['title'] ?? $this->data['title'], 0,5));
-		include('template/dataset/'.NPDC_OUTPUT.'.php');
+		include('template/dataset/citation/'.NPDC_OUTPUT.'.php');
 		header('Content-type: '.$content_type);
 		header("Content-Disposition: attachment; filename=\"" . $this->data['uuid'].'.'.NPDC_OUTPUT . "\"");
 		echo strip_tags($output);

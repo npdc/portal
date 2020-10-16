@@ -6,7 +6,7 @@
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
-include 'dataset/citation.php';
+include 'dataset/citation/plain.php';
 ?>
 <h4>Files</h4>
 <?php
