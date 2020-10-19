@@ -25,11 +25,24 @@ class CheckDownload {
             $this->file = $this->model->getByName(\npdc\lib\Args::get('file'));
             if (!empty($this->file)) {
                 if ($file->timestamp < "1 week geleden" && false) {
+                    # TODO: implement check
                     $this->status = 'expired';
-                } elseif (file_exists(\npdc\config::$downloadDir.'/'.$this->file['filename'].'.zip')) {
+                } elseif (file_exists(
+                    \npdc\config::$downloadDir . '/' 
+                    . $this->file['filename'] . '.zip'
+                )) {
                     $this->status = 'ready';
-                } elseif (file_exists(\npdc\config::$downloadDir.'/'.$this->file['filename']) && file_exists(\npdc\config::$downloadDir.'/'.$this->file['filename'].'.log')) {
-                    $this->status = 'working';    
+                } elseif (
+                    file_exists(
+                        \npdc\config::$downloadDir . '/' 
+                        . $this->file['filename']
+                    ) 
+                    && file_exists(
+                        \npdc\config::$downloadDir . '/' 
+                        . $this->file['filename'] . '.log'
+                    )
+                ) {
+                    $this->status = 'working';
                 } else {
                     $this->status = 'error';
                 }
@@ -41,8 +54,12 @@ class CheckDownload {
     public function __destruct() {
         if (CALLER === 'index') {
             if ($this->status === 'ready') {
-                if (file_exists(\npdc\config::$downloadDir.'/'.$this->file['filename'])) {
-                    $this->delTree(\npdc\config::$downloadDir.'/'.$this->file['filename']);
+                if (file_exists(
+                    \npdc\config::$downloadDir . '/' . $this->file['filename']
+                )) {
+                    $this->delTree(
+                        \npdc\config::$downloadDir . '/' . $this->file['filename']
+                    );
                 }
             }
         }
@@ -50,14 +67,16 @@ class CheckDownload {
     
     public function cleanup() {
         $dir = \npdc\config::$downloadDir;
-        echo 'Checking '.$dir.'<br/>';
+        echo 'Checking ' . $dir . '<br/>';
         $files = array_diff(scandir($dir), array('.', '..'));
         foreach($files as $file) {
-            if (filemtime($dir.'/'.$file) < time()-7*24*60*60) {
-                echo 'Removing '.$file.'<br/>';
-                is_dir($dir.'/'.$file)
-                    ? $this->delTree($dir.'/'.$file) 
-                    : unlink($dir.'/'.$file); 
+            if (filemtime($dir . '/' . $file) < time()-7*24*60*60) {
+                echo 'Removing ' . $file . '<br/>';
+                if (is_dir($dir . '/' . $file)){
+                    $this->delTree($dir . '/' . $file);
+                } else {
+                    unlink($dir . '/' . $file);
+                }
             }
         }
     }
@@ -65,9 +84,11 @@ class CheckDownload {
     private function delTree($dir) { 
         $files = array_diff(scandir($dir), array('.','..')); 
         foreach ($files as $file) { 
-            is_dir($dir.'/'.$file)
-                ? $this->delTree($dir.'/'.$file) 
-                : unlink($dir.'/'.$file); 
+            if (is_dir($dir . '/' . $file)){
+                $this->delTree($dir . '/' . $file);
+            } else {
+                unlink($dir . '/' . $file);
+            }
         }
         return rmdir($dir); 
     }
