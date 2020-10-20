@@ -23,7 +23,7 @@ class Add extends Base{
         }
         $this->formId = \npdc\lib\Args::get('action').'_new';
         $this->formController = new \npdc\controller\Form($this->formId);
-        switch(\npdc\lib\Args::get('action')) {
+        switch (\npdc\lib\Args::get('action')) {
             case 'person':
                 $this->formController->getForm('person');
                 $this->formController->form->fields->organization_id
@@ -56,7 +56,7 @@ class Add extends Base{
                 $this->doSave();
             }
         } else {
-            switch(\npdc\lib\Args::get('action')) {
+            switch (\npdc\lib\Args::get('action')) {
                 case 'person':
                     $_SESSION[$this->formId]['data'] = [];
                     $_SESSION[$this->formId]['data']['name'] = 
@@ -79,7 +79,7 @@ class Add extends Base{
     }
     
     private function doSave(){
-        switch(\npdc\lib\Args::get('action')) {
+        switch (\npdc\lib\Args::get('action')) {
             case 'person':
                 $model = new \npdc\model\Person();
                 if ($model->checkMail(

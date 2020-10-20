@@ -47,7 +47,7 @@ class Lookup {
         $this->{\npdc\lib\Args::get('action')}();
         header('Content-type:application/json;charset=utf-8');
         if ($_GET['output'] === 'object') {
-            foreach($this->data as &$row) {
+            foreach ($this->data as &$row) {
                 $row = ['id'=>$row[0], 'text'=>htmlspecialchars_decode($row[1])];
             }
             $this->data = (object) ['items'=>$this->data];
@@ -64,7 +64,7 @@ class Lookup {
     private function person() {
         $model = new \npdc\model\Person();
         $data = $model->search($_GET['q'], $_GET['e'] ?? null, array_key_exists('fuzzy', $_GET));
-        foreach($data as $row) {
+        foreach ($data as $row) {
             $this->data[] = [$row['person_id'], $row['name'], $row['organization_id']];
         }
     }
@@ -92,7 +92,7 @@ class Lookup {
     private function dataset() {
         $model = new \npdc\model\Dataset();
         $data = $model->search($_GET['q'], false, $_GET['e'] ?? null, true);
-        foreach($data as $row) {
+        foreach ($data as $row) {
             $this->data[] = [$row['dataset_id'], $row['title']];
         }
     }
@@ -103,7 +103,7 @@ class Lookup {
     private function project() {
         $model = new \npdc\model\Project();
         $data = $model->search($_GET['q'], false, $_GET['e'] ?? null, true);
-        foreach($data as $row) {
+        foreach ($data as $row) {
             $this->data[] = [$row['project_id'], $row['title']];
         }
     }
@@ -119,7 +119,7 @@ class Lookup {
             $this->data = $model->getByDOI(substr($_GET['doi'], strpos($_GET['doi'], '10.')));
         } elseif (array_key_exists('fuzzy', $_GET)) {
             $this->data = [];
-            foreach($model->getList() as $publication) {
+            foreach ($model->getList() as $publication) {
                 if (levenshtein(strtolower($publication['title']), strtolower($_GET['q']))/strlen($_GET['q']) < 0.3) {
                     $this->data[$publication['publication_id']] = $model->getAuthors($publication['publication_id'], $publication['publication_version'], INF).', '
                     . $publication['year'].'. '
@@ -129,7 +129,7 @@ class Lookup {
             }
         } else {
             $data = $model->search($_GET['q'], false, $_GET['e'] ?? null, true);
-            foreach($data as $row) {
+            foreach ($data as $row) {
                 $this->data[] = [$row['publication_id'], $row['title']];
             }
         }
@@ -145,7 +145,7 @@ class Lookup {
         $data = $vocab->getList('vocab_science_keyword', $_GET['q']);
         $output = [];
         $output2 = [];
-        foreach($data as $id=>$val) {
+        foreach ($data as $id=>$val) {
             if (true || !in_array($id, $_GET['e'] ?? [])) {
                 $output[] = ['id'=>$id, 'label'=>$val];
                 $output2[] = [$id, $val, substr_count($val, '>')];
@@ -166,7 +166,7 @@ class Lookup {
         $data = $vocab->getList('vocab_platform', $_GET['q']);
         $output = [];
         $output2 = [];
-        foreach($data as $id=>$val) {
+        foreach ($data as $id=>$val) {
             if (true || !in_array($id, $_GET['e'] ?? [])) {
                 $output[] = ['id'=>$id, 'label'=>$val];
                 $output2[] = [$id, $val, substr_count($val, '>')];
@@ -188,7 +188,7 @@ class Lookup {
         $data = $vocab->getList('vocab_instrument', $_GET['q']);
         $output = [];
         $output2 = [];
-        foreach($data as $id=>$val) {
+        foreach ($data as $id=>$val) {
             if (true || !in_array($id, $_GET['e'] ?? [])) {
                 $output[] = ['id'=>$id, 'label'=>$val];
                 $output2[] = [$id, $val, substr_count($val, '>')];
@@ -210,7 +210,7 @@ class Lookup {
         $data = $vocab->getList('vocab_location', $_GET['q']);
         $output = [];
         $output2 = [];
-        foreach($data as $id=>$val) {
+        foreach ($data as $id=>$val) {
             if (true || !in_array($id, $_GET['e'] ?? [])) {
                 $output[] = ['id'=>$id, 'label'=>$val];
                 $output2[] = [$id, $val, substr_count($val, '>')];

@@ -20,7 +20,7 @@ if (count($files) === 0) {
 } else {
     echo '<form method="post"><table class="files">';
     $downloadable = 0;
-    foreach($files as $file) {
+    foreach ($files as $file) {
         if ($file['default_access'] !== 'restricted') {
             continue;
         }

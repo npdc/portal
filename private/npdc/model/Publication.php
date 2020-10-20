@@ -26,17 +26,19 @@ class Publication extends Base{
         global $session;
         $q = $this->dsql->dsql()->table('publication');
         if (!is_null($filters)) {
-            foreach($filters as $filter=>$values) {
-                if ((is_array($values) && count($values) === 0) || empty($values)) {
+            foreach ($filters as $filter=>$values) {
+                if (empty($values)) {
                     continue;
                 }
-                switch($filter) {
+                switch ($filter) {
                     case 'region':
                         $q->where('region', $values);
                         break;
                         
                     case 'year':
-                        //use values swapped, include all records with start date before end date of filter and end date after start date of filter
+                        //use values swapped, include all records with start 
+                        // date before end date of filter and end date after 
+                        // start date of filter
                         if (!empty($values[1])) {
                             $q->where('date <= ?', $values[1]);
                         }
@@ -50,7 +52,10 @@ class Publication extends Base{
                                 ->where('publication_id',
                                     $q->dsql()->table('publication_person')
                                         ->field('publication_id')
-                                        ->where(\npdc\lib\Db::joinVersion('publication', 'publication_person'))
+                                        ->where(\npdc\lib\Db::joinVersion(
+                                            'publication',
+                                            'publication_person'
+                                        ))
                                         ->where('organization_id', $values)
                                 )
                         );
@@ -60,9 +65,13 @@ class Publication extends Base{
         $q->order('date DESC, title')
             ->field('publication.*')
             ->field($q->expr('extract(YEAR FROM date)'), 'year')
-            ->field($q->expr("'Publication'"), 'content_type')->where('record_status', 'published')
+            ->field($q->expr("'Publication'"), 'content_type')
+            ->where('record_status', 'published')
             ->field($q->dsql()
-                ->expr('CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}', ['draft', 'hasDraft'])
+                ->expr(
+                    'CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}',
+                    ['draft', 'hasDraft']
+                )
             );
         if ($session->userLevel > NPDC_USER) {
             if ($session->userLevel === NPDC_ADMIN) {
@@ -75,7 +84,10 @@ class Publication extends Base{
             } elseif ($session->userLevel === NPDC_EDITOR) {
                 $isEditor = $q->dsql()->table('publication_person')
                     ->field('publication_id')
-                    ->where(\npdc\lib\Db::joinVersion('publication', 'publication_person'))
+                    ->where(\npdc\lib\Db::joinVersion(
+                        'publication',
+                        'publication_person'
+                    ))
                     ->where('person_id', $session->userId)
                     ->where('editor');
                 $q->field($q->dsql()
@@ -85,26 +97,30 @@ class Publication extends Base{
                         ELSE FALSE 
                         END {}', [$session->userId, $isEditor, 'editor']
                         )
-                    )->where('publication.publication_version', 
+                    )
+                    ->where('publication.publication_version', 
                         $q->dsql()->table(['ds2'=>'publication'])
                             ->field('MAX(publication_version)')
                             ->where('ds2.publication_id=publication.publication_id')
-                            ->where($q->dsql()->andExpr()//ends with false, so inverts condition to: NOT (draft & NOT editor)
-                                ->where('record_status', 'draft')
-                                ->where($q->dsql()
-                                    ->expr('CASE 
-                                        WHEN creator=[] THEN FALSE
-                                        WHEN EXISTS([]) THEN FALSE
-                                        ELSE TRUE 
-                                        END', [$session->userId, $isEditor]
+                            ->where(
+                                $q->dsql()->andExpr()
+                                    ->where('record_status', 'draft')
+                                    ->where($q->dsql()
+                                        ->expr('CASE 
+                                            WHEN creator=[] THEN FALSE
+                                            WHEN EXISTS([]) THEN FALSE
+                                            ELSE TRUE 
+                                            END', [$session->userId, $isEditor]
+                                            )
                                         )
-                                    )
-                            , false)
+                                , false
+                                // inverts condition to NOT (draft & NOT editor)
+                            )
                     );
             } else {
                 $q->field($q->dsql()->expr('FALSE {}', ['editor']));
             }
-            switch($filters['editorOptions'][0]) {
+            switch ($filters['editorOptions'][0]) {
                 case 'all':
                     break;
                 case 'unpublished':
@@ -116,7 +132,9 @@ class Publication extends Base{
                         $q->where(
                             $q->dsql()->orExpr()
                                 ->where('creator', $session->userId)
-                                ->where($q->dsql()->expr('EXISTS([])', [$isEditor]))
+                                ->where(
+                                    $q->dsql()->expr('EXISTS([])', [$isEditor])
+                                )
                         );
                     }
                     break;
@@ -135,7 +153,15 @@ class Publication extends Base{
      * @return array publication details
      */
     public function getById($id, $version='published') {
-        return \npdc\lib\Db::get('publication', ['publication_id'=>$id, (is_numeric($version) ? 'publication_version' : 'record_status')=>$version]);
+        return \npdc\lib\Db::get(
+            'publication',
+            [
+                'publication_id'=>$id,
+                (
+                    is_numeric($version)
+                    ? 'publication_version'
+                    : 'record_status'
+                ) => $version]);
     }
 
     /**
@@ -169,9 +195,17 @@ class Publication extends Base{
         $q = $this->dsql->dsql()
             ->table('publication_person')->field('publication_person.*');
         return $q->join('person.person_id', 'person_id', 'left')
-                ->field($q->expr('CASE WHEN name IS NULL THEN free_person ELSE name END'), 'name')
+            ->field(
+                $q->expr('CASE WHEN name IS NULL THEN free_person ELSE name END'),
+                'name'
+            )
             ->join('organization.organization_id', 'organization_id', 'left')
-                ->field($q->expr('CASE WHEN organization_name IS NULL THEN free_organization ELSE organization_name END'), 'organization_name')
+                ->field(
+                    $q->expr(
+                        'CASE WHEN organization_name IS NULL THEN '
+                        . 'free_organization ELSE organization_name END'
+                    ),
+                    'organization_name')
             ->where(\npdc\lib\Db::selectVersion('publication', $id, $version))
             ->order('sort')
             ->get();
@@ -185,15 +219,30 @@ class Publication extends Base{
      * @param integer $names nummber of names to show before 'et al'
      * @return string formatted list of authors
      */
-    public function getAuthors($publication_id, $publication_version, $names=2, $sep = ',') {
+    public function getAuthors(
+        $publication_id,
+        $publication_version,
+        $names=2,
+        $sep = ','
+    ) {
         $q = $this->dsql->dsql()
             ->table('publication_person');
-        $res = $q->join('person.person_id', 'person_id', 'left')->field($q->expr('CASE 
-                WHEN free_person IS NOT NULL THEN free_person 
-                WHEN surname IS NULL THEN name 
-                ELSE surname || \', \' || COALESCE(initials, given_name) 
-            END'), 'name')
-            ->where(\npdc\lib\Db::selectVersion('publication', $publication_id, $publication_version))
+        $res = $q->join('person.person_id', 'person_id', 'left')
+            ->field(
+                $q->expr(
+                    'CASE 
+                    WHEN free_person IS NOT NULL THEN free_person 
+                    WHEN surname IS NULL THEN name 
+                    ELSE surname || \', \' || COALESCE(initials, given_name) 
+                    END'
+                ),
+                'name'
+            )
+            ->where(\npdc\lib\Db::selectVersion(
+                'publication',
+                $publication_id,
+                $publication_version
+            ))
             ->order('sort')
             ->get();
         $c = count($res);
@@ -203,16 +252,26 @@ class Publication extends Base{
             $return = $res[0]['name'].' &amp; '.$res[1]['name'];
         } else {
             $return = '';
-            if (!is_numeric($names) || $names < 1 || is_nan($names)) {
+            if (
+                !is_numeric($names)
+                || $names < 1
+                || is_nan($names)
+            ) {
                 $names = 1;
             }
-            for($i=0;$i<min($c-1, $names);$i++) {
-                $return .= ($i>0 ? $sep.' ' : '').$res[$i]['name'];
+            for ($i=0; $i<min($c-1, $names); $i++) {
+                $return .= 
+                    (
+                        $i>0
+                        ? $sep . ' '
+                        : ''
+                    )
+                    . $res[$i]['name'];
             }
             if ($c <= $names+1) {
-                $return .= $sep.' &amp; '.$res[$i]['name'];
+                $return .= $sep . ' &amp; ' . $res[$i]['name'];
             } else {
-                $return .= $sep.' et al.';
+                $return .= $sep . ' et al.';
             }
         }
         return $return;
@@ -244,9 +303,15 @@ class Publication extends Base{
     public function getDatasets($id, $version, $published = true) {
         $q = $this->dsql->dsql()
             ->table('dataset_publication')
-            ->join('dataset', \npdc\lib\Db::joinVersion('dataset', 'dataset_publication'), 'inner')
+            ->join(
+                'dataset',
+                \npdc\lib\Db::joinVersion('dataset', 'dataset_publication'),
+                'inner'
+            )
             ->where(\npdc\lib\Db::selectVersion('publication', $id, $version));
-        $q->order($q->expr('date_start DESC, dataset.dataset_id, '.\npdc\lib\Db::$sortByRecordStatus));
+        $q->order($q->expr(
+            'date_start DESC, dataset.dataset_id, ' . \npdc\lib\Db::$sortByRecordStatus
+        ));
         if ($published) {
             $q->where('record_status', 'published');
         } else {
@@ -271,9 +336,15 @@ class Publication extends Base{
     public function getProjects($id, $version, $published = true) {
         $q = $this->dsql->dsql()
             ->table('project_publication')
-            ->join('project', \npdc\lib\Db::joinVersion('project', 'project_publication'), 'inner')
+            ->join(
+                'project',
+                \npdc\lib\Db::joinVersion('project', 'project_publication'),
+                'inner'
+            )
             ->where(\npdc\lib\Db::selectVersion('publication', $id, $version));
-        $q->order($q->expr('date_start DESC, project.project_id, '.\npdc\lib\Db::$sortByRecordStatus));
+        $q->order($q->expr(
+            'date_start DESC, project.project_id, ' . \npdc\lib\Db::$sortByRecordStatus
+        ));
         if ($published) {
             $q->where('record_status', 'published');
         } else {
@@ -296,15 +367,20 @@ class Publication extends Base{
      * @param boolean $includeDraft also search in drafts
      * @return array list of publications matching filter
      */
-    public function search($string, $summary = false, $exclude = null, $includeDraft = false) {
+    public function search(
+        $string,
+        $summary = false,
+        $exclude = null,
+        $includeDraft = false
+    ) {
         $q = $this->dsql->dsql()
             ->table('publication')
             ->field('*');
         $q->field($q->expr('\'Publication\''), 'content_type')
             ->order('date DESC');
         if (!empty($string)) {
-            $string = '%'.$string.'%';
-            $operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
+            $string = '%' . $string . '%';
+            $operator = \npdc\lib\Db::getLike();
             $s = $q->orExpr()
                 ->where('title', $operator, $string)
                 ->where('doi', $operator, $string);
@@ -317,7 +393,12 @@ class Publication extends Base{
             $q->where('publication_id', 'NOT', $exclude);
         }
         if ($includeDraft) {
-            $q->where('publication_version', $q->dsql()->table('publication', 'a')->field('max(publication_version)')->where('a.publication_id=publication.publication_id'));
+            $q->where(
+                'publication_version',
+                $q->dsql()->table('publication', 'a')
+                    ->field('max(publication_version)')
+                    ->where('a.publication_id=publication.publication_id')
+            );
         } else {
             $q->where('record_status', 'published');    
         }
@@ -333,7 +414,9 @@ class Publication extends Base{
     public function searchByFreeOrganization($search) {
         $q = $this->dsql->dsql()->table('publication_person')
             ->join('publication.publication_id', 'publication_id', 'inner')
-            ->where(\npdc\lib\Db::joinVersion('publication', 'publication_person'))
+            ->where(
+                \npdc\lib\Db::joinVersion('publication', 'publication_person')
+            )
             ->where('free_organization', 'LIKE', '%'.$search.'%');
         return $q->get();
     }
@@ -347,7 +430,9 @@ class Publication extends Base{
     public function searchByFreePerson($search) {
         $q = $this->dsql->dsql()->table('publication_person')
             ->join('publication.publication_id', 'publication_id', 'inner')
-            ->where(\npdc\lib\Db::joinVersion('publication', 'publication_person'))
+            ->where(
+                \npdc\lib\Db::joinVersion('publication', 'publication_person')
+            )
             ->where('free_person', 'LIKE', '%'.$search.'%');
         return $q->get();
     }
@@ -379,28 +464,91 @@ class Publication extends Base{
      *
      * @param integer|array $publication either id or full publication record
      * @param string|integer $version (optional) version number of type
-     * @param boolean $wrap (optional, default true) whether to wrap the citation in a p-element or not
+     * @param boolean $wrap (optional, default true) whether to wrap the 
+     *                                  citation in a p-element or not
+     * @param boolean $link (optional, default true) Whether title of publication
+     *                                      is a link to publication page or not
      * @return string formatted citation
      */
-    public function getCitation($publication, $version = 'published', $wrap = true, $link=true) {
+    public function getCitation(
+        $publication,
+        $version = 'published',
+        $wrap = true,
+        $link=true
+    ) {
         if (is_numeric($publication)) {
             $publication = $this->getById($publication, $version);
         }
-        return ($wrap ? '<p>' : '').$this->getAuthors($publication['publication_id'], $publication['publication_version'], 2).', '
-        . ($publication['year'] ?? substr($publication['date'], 0, 4)).'. '
-        . ($link ? '<a href="'.BASE_URL.'/publication/'.$publication['uuid'].'">' : '').$publication['title'].($link ? '</a>' : '').(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' <i>'
-        . $publication['journal'].'</i> '.$publication['volume']
-        . (empty($publication['issue']) ? '' : ' ('.$publication['issue'].')')
-        . (empty($publication['pages'] && $publication['pages'] !== '-') ? '' :', '.$publication['pages'])
-        .($wrap ? '</p>' : '');
-
+        return 
+            (
+                $wrap
+                ? '<p>'
+                : ''
+            )
+            . $this->getAuthors(
+                $publication['publication_id'],
+                $publication['publication_version'],
+                2
+            )
+            . ', '
+            . ($publication['year'] ?? substr($publication['date'], 0, 4))
+            . '. '
+            . (
+                $link
+                ? '<a href="' . BASE_URL . '/publication/' . $publication['uuid'] . '">'
+                : ''
+            )
+            . $publication['title']
+            . (
+                $link
+                ? '</a>'
+                : ''
+            )
+            .(
+                in_array(
+                    substr($publication['title'],-1),
+                    ['.','?']
+                )
+                ? ''
+                : '.'
+            )
+            . ' <i>' . $publication['journal'] . '</i> ' . $publication['volume']
+            . (
+                empty($publication['issue'])
+                ? ''
+                : ' ('.$publication['issue'].')'
+            )
+            . (
+                empty($publication['pages'] && $publication['pages'] !== '-')
+                ? ''
+                :', ' . $publication['pages']
+            )
+            .(
+                $wrap
+                ? '</p>'
+                : ''
+        );
     }
     /**
      * SETTERS
      */
 
     protected function parseGeneral($data, $action) {
-        $fields = ['title','abstract','journal','volume', 'issue','pages','isbn','doi','date','url','record_status', 'creator', 'publication_type_id'];
+        $fields = [
+            'title',
+            'abstract',
+            'journal',
+            'volume',
+            'issue',
+            'pages',
+            'isbn',
+            'doi',
+            'date',
+            'url',
+            'record_status',
+            'creator',
+            'publication_type_id'
+        ];
         if ($action === 'insert') {
             array_push($fields, 'publication_version');
             if (is_numeric($data['publication_id'])) {
@@ -408,8 +556,8 @@ class Publication extends Base{
             }
         }
         $values = [];
-        foreach($fields as $field) {
-            switch($field) {
+        foreach ($fields as $field) {
+            switch ($field) {
                 case 'date':
                     if (is_array($data['date'])) {
                         $values['date'] = $data['date'][0];
@@ -422,9 +570,12 @@ class Publication extends Base{
                     if (empty($data[$field])) {
                         break;
                     }
+                    //no break
                 default:
-                    $values[$field] = empty($data[$field]) ? null : $data[$field];
-                    
+                    $values[$field] = 
+                        empty($data[$field])
+                        ? null
+                        : $data[$field];
             }
         }
         return $values;

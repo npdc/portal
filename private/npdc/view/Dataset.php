@@ -58,14 +58,14 @@ class Dataset extends Base{
                 ? $_SESSION[$this->controller->formId]['data']
                 : null
             , true);
-        switch(NPDC_OUTPUT) {
+        switch (NPDC_OUTPUT) {
             case 'xml':
                 $this->xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><datasets></datasets>');
                 $fields = ['uuid','dataset_id', 'dataset_version', 'title', 'published', 'url'];
-                foreach($list as $dataset) {
+                foreach ($list as $dataset) {
                     $em = $this->xml->addChild('dataset');
-                    foreach($fields as $field) {
-                        switch($field) {
+                    foreach ($fields as $field) {
+                        switch ($field) {
                             case 'url':
                                 $value = 'http'.(empty($_SERVER['HTTPS'])?'':'s').'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$dataset['uuid'].'.xml';
                                 break;
@@ -214,7 +214,7 @@ class Dataset extends Base{
             'Last_Name'=>$person['surname']
         ];
         $organizationDetail = $this->organizationModel->getById($person['organization_id']);
-        foreach([
+        foreach ([
             'organization_address'=>'Street_Address',
             'organization_city'=>'City',
             'organization_zip'=>'Postal_Code',
@@ -223,7 +223,7 @@ class Dataset extends Base{
             $return['Address'][$target] = $organizationDetail[$source];
         }
 
-        foreach(['personal'=>'Direct Line', 'secretariat'=>'Telephone', 'mobile'=>'Mobile'] as $phoneType=>$label) {
+        foreach (['personal'=>'Direct Line', 'secretariat'=>'Telephone', 'mobile'=>'Mobile'] as $phoneType=>$label) {
             if ($person['phone_'.$phoneType.'_public'] === 'yes' && !empty($person['phone_'.$phoneType])) {
                 $return['Phone'][] = ['Number'=>str_replace(['(0)', ' '], '', $person['phone_'.$phoneType]), 'Type'=>$label];
             }
@@ -264,10 +264,10 @@ class Dataset extends Base{
             $cut = ':';
             $content['keywords'][] = strpos($topic['description'], $cut) === false ? $topic['description'] : trim(substr($topic['description'],0,strpos($topic['description'], $cut)));
         }
-        foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword) {
+        foreach ($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword) {
             $content['keywords'][] = $this->vocab->formatTerm('vocab_science_keyword', $keyword);
         }
-        foreach($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $word) {
+        foreach ($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $word) {
             $content['keywords'][] = $word['keyword'];
         }
 
@@ -292,7 +292,7 @@ class Dataset extends Base{
         $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'];
 
         $authors = explode('; ', str_replace(' &amp;', ';', $citation['creator'] ?? $this->model->getAuthors($this->data['dataset_id'], $this->data['dataset_version'])));
-        foreach($authors as $author) {
+        foreach ($authors as $author) {
             list($last, $first) = explode(', ', $author);
             if (empty($str)) {
                 $aut = $last;
@@ -343,7 +343,7 @@ class Dataset extends Base{
         if ($this->canEdit && count($this->versions) > 1) {
             $v = $this->data['dataset_version'];
             $_SESSION['notice'] .= 'See version <select id="versionSelect" style="width:auto">';
-            foreach($this->versions as $version) {
+            foreach ($this->versions as $version) {
                 $_SESSION['notice'] .= '<option value="'.BASE_URL.'/dataset/'.$this->data['dataset_id'].'/'.$version['dataset_version'].'" '
                     . (in_array($v, [$version['dataset_version'], $version['record_status']]) ? 'selected=true' : '')
                     . '>'.$version['dataset_version'].' - '.$version['record_status'].'</option>';
@@ -410,7 +410,7 @@ class Dataset extends Base{
         $characteristics = $this->model->getCharacteristics($type, $id, $version);
         if (count($characteristics) > 0) {
             echo '<h4>Characteristics</h4><table style="width:auto">';
-            foreach($characteristics as $characteristic) {
+            foreach ($characteristics as $characteristic) {
                 echo '<tr><td>'.$characteristic['name'].':</td><td>'.$characteristic['value'].' '.$characteristic['unit'].'</td></tr>';
             }
             echo '</table>';

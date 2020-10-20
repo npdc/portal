@@ -73,7 +73,7 @@ if (!is_null($this->data['date_start'])) {
 $keywords = $this->model->getKeywords($this->data['project_id'], $this->data['project_version']);
 if (count($keywords) > 0) {
     echo '<h4>Keywords</h4><ul>';
-    foreach($keywords as $word) {
+    foreach ($keywords as $word) {
         echo '<li>'.$word['keyword'].'</li>';
     }
     echo '</ul>';
@@ -82,7 +82,7 @@ if (count($keywords) > 0) {
 $links = $this->model->getLinks($this->data['project_id'], $this->data['project_version']);
 if (count($links) > 0) {
     echo '<h4>Links</h4><ul>';
-    foreach($links as $link) {
+    foreach ($links as $link) {
         echo '<li><a href="'.checkurl($link['url']).'">'.$link['text'].'</a></li>';
     }
     echo '</ul>';

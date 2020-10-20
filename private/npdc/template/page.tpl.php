@@ -105,7 +105,7 @@
                 </div>
                 <?php if (isset($view->frontblocks)) {
                     echo '<div class="cols frontblocks">';
-                        foreach($view->frontblocks as $id=>$block) {
+                        foreach ($view->frontblocks as $id=>$block) {
                             echo '<div class="'.$id.'">'.$block.'</div>';
                         }
                     echo '</div>';

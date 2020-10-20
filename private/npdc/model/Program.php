@@ -22,7 +22,8 @@ class Program {
     /**
      * List programs
      *
-     * @param string $filter (optional) only show when present in specified content type
+     * @param string $filter (optional) only show when present in specified 
+     *                              content type
      * @return array list of programs
      */
     public function getList($filter = null) {
@@ -31,7 +32,7 @@ class Program {
             ->order('sort');
         if (!is_null($filter)) {
             $q2 = null;
-            switch($filter) {
+            switch ($filter) {
                 case 'project':
                     $q2 = $q->dsql()
                         ->table('project','a');
@@ -39,7 +40,11 @@ class Program {
                 case 'publication':
                     $q2 = $q->dsql()
                         ->table('project_publication')
-                        ->join('publication.publication_id a','publication_id', 'inner')
+                        ->join(
+                            'publication.publication_id a',
+                            'publication_id',
+                            'inner'
+                        )
                         ->join('project.project_id b','project_id', 'inner')
                         ->where('b.record_status', 'published');
                     

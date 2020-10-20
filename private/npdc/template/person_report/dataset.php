@@ -12,7 +12,7 @@ echo '<h3 class="collapsible">Datasets</h3><div class="hiddenSubDiv">';
 if (count($datasets) === 0) {
     echo '<p>'.$this->data['name'].' is not listed in any datasets</p>';
 } else {
-    foreach($datasets as $dataset) {
+    foreach ($datasets as $dataset) {
         echo '<h4 class="collapsible">'.$dataset['title']
         . ($dataset['record_status'] === 'draft' && $dataset['dataset_version'] === 1 ? ' <i>(unpublished)</i>' : '')
         . '</h4>
@@ -23,7 +23,7 @@ if (count($datasets) === 0) {
         if (count($people) > 1) {
             echo ' |&nbsp;With: ';
             $i = 0;
-            foreach($people as $person) {
+            foreach ($people as $person) {
                 if ($person['person_id'] !== $this->data['person_id']) {
                     echo ($i>0 ? ', ' : '').'<a href="'.BASE_URL.'/person/'.$person['person_id'].'/report">'.$person['name'].'</a>';
                     $i++;
@@ -34,7 +34,7 @@ if (count($datasets) === 0) {
         $projects = $datasetModel->getProjects($dataset['dataset_id'], $dataset['dataset_version'], false);
         if (count($projects) > 0) {
             echo '<h5>Projects</h5>';
-            foreach($projects as $project) {
+            foreach ($projects as $project) {
                 echo '<p><a href="'.BASE_URL.'/project/'.$project['project_id'].'">'.$project['title'].'</a>'
                 . ($project['record_status'] === 'draft' && $project['project_version'] === 1 ? ' <i>(unpublished)</i>' : '')
                 . ' |&nbsp;'.$project['date_start'].' - '.$project['date_end']
@@ -47,7 +47,7 @@ if (count($datasets) === 0) {
         $publications = $datasetModel->getpublications($dataset['dataset_id'], $dataset['dataset_version'], false);
         if (count($publications) > 0) {
             echo '<h5>Publications</h5>';
-            foreach($publications as $publication) {
+            foreach ($publications as $publication) {
                 echo '<p><a href="'.BASE_URL.'/publication/'.$publication['publication_id'].'">'.$publicationModel->getAuthors($publication['publication_id'], $publication['publication_version']).' ('.$publication['year'].'), '.$publication['title'].'</a>'
                 . ($publication['record_status'] === 'draft' && $publication['publication_version'] === 1 ? ' <i>(unpublished)</i>' : '')
                 . '</p>';

@@ -12,7 +12,7 @@ TY  - DATA
 ID  - '.$id.'
 T1  - '.$this->data['title'].'
 ';
-foreach($authors as $author) {
+foreach ($authors as $author) {
     $output .= 'AU  - '.$author.'
 ';
 }

@@ -27,7 +27,8 @@ class Request {
     /**
      * Get list of requests
      * 
-     * Depending on user level only own requests are shown, also request the user has to decide on or all request are shown
+     * Depending on user level only own requests are shown, also request the 
+     *     user has to decide on or all request are shown
      *
      * @param integer $person_id current user id
      * @param integer $userLevel user level of current user
@@ -37,7 +38,7 @@ class Request {
         $q = $this->dsql->dsql()
             ->table('access_request')
             ->order('request_timestamp DESC');
-        switch($userLevel) {
+        switch ($userLevel) {
             case NPDC_ADMIN:
                 //no filter
                 break;
@@ -47,8 +48,18 @@ class Request {
                     ->where('dataset_id', 'IN', $q->dsql()
                         ->table('dataset')->field('dataset.dataset_id')
                         ->where('record_status', 'published')
-                        ->join('dataset_person.dataset_id', 'dataset_id', 'inner')
-                        ->where(\npdc\lib\Db::joinVersion('dataset', 'dataset_person',false))
+                        ->join(
+                            'dataset_person.dataset_id',
+                            'dataset_id',
+                            'inner'
+                        )
+                        ->where(
+                            \npdc\lib\Db::joinVersion(
+                                'dataset',
+                                'dataset_person',
+                                false
+                            )
+                        )
                         ->where('editor')
                         ->where('person_id', $person_id)
                 ));

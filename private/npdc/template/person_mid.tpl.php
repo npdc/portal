@@ -27,7 +27,7 @@ $fields = [
     'orcid'=>'ORCID'
 ];
 
-foreach($fields as $id=>$label) {
+foreach ($fields as $id=>$label) {
     if (!empty($this->data[$id])) {
         echo '<div class="inline">
         <h4>'.$label.'</h4>

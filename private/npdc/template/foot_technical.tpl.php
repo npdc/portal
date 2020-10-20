@@ -10,7 +10,7 @@ if (!empty($this->data['doi'])) {
 <span class="nobr"><strong>UUID:</strong> <a href="<?=BASE_URL.'/'.$this->controller->name.'/'.$this->data['uuid']?>"><?=$this->data['uuid']?></a></span> |
 <span class="version-selector nobr"><strong>Version:</strong> <?php
 $versions = [];
-foreach($this->versions as $version) {
+foreach ($this->versions as $version) {
     if (in_array($version['record_status'], ['published', 'archived'])) {
         $versions[] = '<a href="'.BASE_URL.'/'.$this->controller->name.'/'.$version['uuid'].'" '.($this->data[$this->controller->name.'_version'] === $version[$this->controller->name.'_version'] ? ' class="active"' : '').'>'.$version[$this->controller->name.'_version'].' ('.($version['record_status'] === 'published' ? 'current' : $version['record_status']).')</a>';
     }

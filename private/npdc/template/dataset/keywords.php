@@ -20,7 +20,7 @@ foreach ($this->model->getTopics($this->data['dataset_id'], $this->data['dataset
 <h4>Science keywords</h4>
 <ul>
 <?php
-foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword) {
+foreach ($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword) {
     echo '<li>'.$this->vocab->formatTerm('vocab_science_keyword', $keyword).'</li>';
 }
 ?>
@@ -29,7 +29,7 @@ foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['datase
 <h4>Ancillary keywords</h4>
 <ul>
 <?php
-foreach($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $word) {
+foreach ($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $word) {
     echo '<li>'.$word['keyword'].'</li>';
 }
 ?>

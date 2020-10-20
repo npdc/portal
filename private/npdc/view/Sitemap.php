@@ -21,10 +21,10 @@ class Sitemap {
     private $map = [];
 
     private function output() {
-        switch(NPDC_OUTPUT) {
+        switch (NPDC_OUTPUT) {
             case 'txt':
                 header('Content-Type: text/plain');
-                foreach($this->map as $url=>$line) {
+                foreach ($this->map as $url=>$line) {
                     echo $this->url($url)."\r\n";
                 }
                 die();
@@ -32,7 +32,7 @@ class Sitemap {
             case 'xml':
                 $xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>
                 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> </urlset>');
-                foreach($this->map as $url=>$data) {
+                foreach ($this->map as $url=>$data) {
                     $line = $xml->addChild('url');
                     $line->addChild('loc', $this->url($url));
                     $line->addChild('lastmod', str_replace(' ', 'T', $data[1]).'+01:00');
@@ -46,10 +46,10 @@ class Sitemap {
                 die();
 
             default:
-            foreach($this->map as $title=>$group) {
+            foreach ($this->map as $title=>$group) {
                 $this->title = 'Sitemap';
                 $this->mid .= '<h3>'.$title.'</h3><ul>';
-                foreach($group[1] as $url=>$data) {
+                foreach ($group[1] as $url=>$data) {
                     $this->mid .= '<li><a href="'.$this->url($url,false).'">'.$data[0].'</a><span style="font-size: 80%;font-style:italic"> (Updated: '.$data[1].')</span></li>';
                 }
                 $this->mid .= '</ul>';
@@ -67,7 +67,7 @@ class Sitemap {
         $this->getDatasets();
         $this->getPublications();
 
-        switch(NPDC_OUTPUT) {
+        switch (NPDC_OUTPUT) {
             case 'xml':
             case 'txt':
                 $this->map = array_merge(
@@ -99,13 +99,13 @@ class Sitemap {
         $this->getDatasets();
         $this->getPublications();
 
-        switch(NPDC_OUTPUT) {
+        switch (NPDC_OUTPUT) {
             case 'xml':
             case 'txt':
                 $this->map = $this->{$item.'s'};
                 break;
             default:
-                switch($item) {
+                switch ($item) {
                     case 'page':
                         $this->map = [
                             'Pages' => [null,$this->pages]
@@ -149,7 +149,7 @@ class Sitemap {
      */
     private function getPages() {
         $model = new \npdc\model\Page();
-        foreach($model->getList() as $page) {
+        foreach ($model->getList() as $page) {
             if ($page['url'] != 'home') {
                 $this->pages[$page['url']] = [$page['title'], $page['last_update']];
                 $this->page_last = $page['last_update'] > $this->page_last ? $page['last_update'] : $this->page_last;
@@ -164,7 +164,7 @@ class Sitemap {
      */
     private function getProjects() {
         $model = new \npdc\model\Project();
-        foreach($model->getList() as $project) {
+        foreach ($model->getList() as $project) {
             $this->projects['project/'.$project['uuid']] = [$project['title'], $project['published']];
             $this->project_last = $project['published'] > $this->project_last ? $project['published'] : $this->project_last;
         }
@@ -177,7 +177,7 @@ class Sitemap {
      */
     private function getDatasets() {
         $model = new \npdc\model\Dataset();
-        foreach($model->getList() as $dataset) {
+        foreach ($model->getList() as $dataset) {
             $this->datasets['dataset/'.$dataset['uuid']] = [$dataset['title'], $dataset['published']];
             $this->dataset_last = $dataset['published'] > $this->dataset_last ? $dataset['published'] : $this->dataset_last;
         }
@@ -190,7 +190,7 @@ class Sitemap {
      */
     private function getPublications() {
         $model = new \npdc\model\Publication();
-        foreach($model->getList() as $publication) {
+        foreach ($model->getList() as $publication) {
             $this->publications['publication/'.$publication['uuid']] = [$publication['title'], $publication['published']];
             $this->publication_last = $publication['published'] > $this->publication_last ? $publication['published'] : $this->publication_last;
         }

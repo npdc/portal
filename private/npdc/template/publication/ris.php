@@ -12,11 +12,11 @@ TY  - '.$this->model->getTypeById($this->data['publication_type_id'])['ris'].'
 ID  - '.$id.'
 T1  - '.$this->data['title'].'
 ';
-foreach($authors as $author) {
+foreach ($authors as $author) {
     $output .= 'AU  - '.$author.'
 ';
 }
-switch($this->model->getTypeById($this->data['publication_type_id'])['ris']) {
+switch ($this->model->getTypeById($this->data['publication_type_id'])['ris']) {
     case 'JOUR':
         list($start, $end) = explode('-', $this->data['pages']);
         $output .= 'JO  - '.$this->data['journal'].'

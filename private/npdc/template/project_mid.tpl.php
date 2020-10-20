@@ -56,7 +56,7 @@ if (\npdc\config::$partEnabled['publication'] || $this->session->userLevel >= NP
         echo 'No publications linked to this project yet';
     } else {
         $publicationModel = new \npdc\model\Publication();
-        foreach($publications as $publication) {
+        foreach ($publications as $publication) {
             echo $publicationModel->getCitation($publication);
         }
     }

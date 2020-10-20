@@ -63,7 +63,7 @@ class Dataset extends Base{
             'dataset_file',
             'dataset_data_center'
         ];
-        foreach($tables as $table) {
+        foreach ($tables as $table) {
             if($this->tblHasChanged($table, $id, $version)){
                 return true;
             }
@@ -79,7 +79,7 @@ class Dataset extends Base{
      */
     protected function alterFields() {
         $vocab = new \npdc\lib\Vocab();
-        switch($this->screen) {
+        switch ($this->screen) {
             case 'general':
                 $this->alterFieldsGeneral();
                 break;
@@ -133,7 +133,7 @@ class Dataset extends Base{
         $this->formController->form->fields->links->fields
             ->type->options = $vocab->getList('vocab_url_type');
         $options = [];
-        foreach($this->model->getList() as $ds) {
+        foreach ($this->model->getList() as $ds) {
             $options[$ds['dataset_id']] = $ds['title'];
         }
         $this->formController->form->fields->related_dataset->fields
@@ -180,7 +180,7 @@ class Dataset extends Base{
         } else {
             $iso_topics = $this->model->getTopics($this->id, $this->version);
             $this->setFormData('iso_topic',[]);
-            foreach($iso_topics as $topic) {
+            foreach ($iso_topics as $topic) {
                 $this->setFormData(
                     'iso_topic',
                     $topic['vocab_iso_topic_category_id'],
@@ -188,7 +188,7 @@ class Dataset extends Base{
                 );
             }
             $this->setFormData('science_keywords',[]);
-            foreach(
+            foreach (
                 $this->model->getKeywords($this->id, $this->version) 
                 as $keyword
             ) {
@@ -209,7 +209,7 @@ class Dataset extends Base{
                 $this->id, $this->version
             );
             $words = [];
-            foreach($keywords as $keyword) {
+            foreach ($keywords as $keyword) {
                 $words[] = $keyword['keyword'];
             }
             $this->setFormData('keywords', $words);
@@ -223,7 +223,7 @@ class Dataset extends Base{
                 $this->id, $this->version
             )
         );
-        foreach(
+        foreach (
             $this->model->getDataCenter($this->id, $this->version) 
             as $rowid => $row
         ) {
@@ -239,7 +239,7 @@ class Dataset extends Base{
                 $row['dataset_data_center_id'], $this->version
             );
             $dc_people = [];
-            foreach($people as $person) {
+            foreach ($people as $person) {
                 $dc_people[] = $person['person_id'];
             }
             $this->setFormData($basekey . '_people', $dc_people);
@@ -247,7 +247,7 @@ class Dataset extends Base{
     }
 
     private function loadFormMethods(){
-        foreach(
+        foreach (
             $this->model->getPlatform($this->id, $this->version)
             as $rowid => $row
         ) {
@@ -269,7 +269,7 @@ class Dataset extends Base{
                     true
                 )
             );
-            foreach(
+            foreach (
                 $this->model->getInstrument($row['platform_id'], $this->version)
                 as $srid => $sr
             ) {
@@ -296,7 +296,7 @@ class Dataset extends Base{
                     $bsk.'_number_of_sensors',
                     $sr['number_of_sensors']
                 );
-                foreach(
+                foreach (
                     $this->model->getSensor(
                         $sr['instrument_id'],
                         $this->version
@@ -347,7 +347,7 @@ class Dataset extends Base{
             'label',
             'spatial_coverage_id'
         ];
-        foreach($this->model->getLocations($this->id, $this->version) as $row) {
+        foreach ($this->model->getLocations($this->id, $this->version) as $row) {
             $this->setFormData(
                 'location',
                 [
@@ -367,12 +367,12 @@ class Dataset extends Base{
                 true
             );
         }
-        foreach(
+        foreach (
             $this->model->getSpatialCoverages($this->id, $this->version)
             as $rowid => $row
         ) {
-            foreach($fields_spatial as $field) {
-                switch($field) {
+            foreach ($fields_spatial as $field) {
+                switch ($field) {
                     case 'type':
                         $this->setFormData(
                             'spatial_coverage_type_' . $rowid,
@@ -399,7 +399,7 @@ class Dataset extends Base{
             }
         }
 
-        foreach(
+        foreach (
             $this->model->getTemporalCoverages($this->id, $this->version)
             as $rowid => $row
         ) {
@@ -407,7 +407,7 @@ class Dataset extends Base{
                 'temporal_coverage_' . $rowid . '_id',
                 $row['temporal_coverage_id']
             );
-            foreach(
+            foreach (
                 $this->model->getTemporalCoveragesGroup(
                     'period',
                     $row['temporal_coverage_id'],
@@ -426,7 +426,7 @@ class Dataset extends Base{
                 );
             }
 
-            foreach(
+            foreach (
                 $this->model->getTemporalCoveragesGroup(
                     'cycle',
                     $row['temporal_coverage_id'],
@@ -457,7 +457,7 @@ class Dataset extends Base{
                 );
             }
 
-            foreach(
+            foreach (
                 $this->model->getTemporalCoveragesGroup(
                     'paleo',
                     $row['temporal_coverage_id'],
@@ -478,7 +478,7 @@ class Dataset extends Base{
                 $this->setFormData($base_id .'_end', $sr['end_value']);
                 $this->setFormData('unit_' . $base_id .'_end', $sr['end_unit']);
                 $this->setFormData($base_id . '_chronostratigraphic_unit', []);
-                foreach(
+                foreach (
                     $this->model->getTemporalCoveragePaleoChronounit(
                         $sr['temporal_coverage_paleo_id'],
                         $this->version
@@ -493,7 +493,7 @@ class Dataset extends Base{
                 }
             }
 
-            foreach(
+            foreach (
                 $this->model->getTemporalCoveragesGroup(
                     'ancillary',
                     $row['temporal_coverage_id'],
@@ -520,12 +520,12 @@ class Dataset extends Base{
             'vocab_res_time_id',
             'data_resolution_id'
         ];
-        foreach(
+        foreach (
             $this->model->getResolution($this->id, $this->version)
             as $rowid => $row
         ) {
-            foreach($fields_resolution as $field) {
-                switch($field) {
+            foreach ($fields_resolution as $field) {
+                switch ($field) {
                     case 'data_resolution_id':
                         $this->setFormData(
                             'resolution_' . $rowid . '_id',
@@ -575,7 +575,7 @@ class Dataset extends Base{
                 'citation_this_id',
                 $citation['dataset_citation_id']
             );
-            foreach($citation_fields as $field) {
+            foreach ($citation_fields as $field) {
                 $this->setFormData(
                     'citation_this_' . $field,
                     (
@@ -590,13 +590,13 @@ class Dataset extends Base{
 
     private function loadFormReferences(){
         $fields = ['id', 'type', 'title', 'description', 'mime', 'protocol'];
-        foreach(
+        foreach (
             $this->model->getLinks($this->id, $this->version) 
             as $linkid => $link
         ) {
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $key = 'links_' . $linkid . '_' . $field;
-                switch($field) {
+                switch ($field) {
                     case 'type':
                         $field = 'vocab_url_type_id';
                         break;
@@ -609,7 +609,7 @@ class Dataset extends Base{
                 }
                 $this->setFormData($key, $link[$field]);
             }
-            foreach(
+            foreach (
                 $this->model->getLinkUrls(
                     $link['dataset_link_id'],
                     $this->version
@@ -629,7 +629,7 @@ class Dataset extends Base{
             'projects',
             $this->model->getProjects($this->id, $this->version, false)
         );
-        foreach(
+        foreach (
             $this->model->getCitations($this->id, $this->version, 'other')
             as $rowid => $row
         ) {
@@ -637,7 +637,7 @@ class Dataset extends Base{
                 'citation_' . $rowid . '_id',
                 $row['dataset_citation_id']
             );
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $this->setFormData(
                     'citation_' . $rowid . '_' . $field,
                     (
@@ -648,7 +648,7 @@ class Dataset extends Base{
                 );
             }
         }
-        foreach(
+        foreach (
             $this->model->getRelatedDatasets($this->id, $this->version) 
             as $setId => $set
         ) {
@@ -667,13 +667,13 @@ class Dataset extends Base{
 
     private function loadFormFiles(){
         $fields = ['id', 'type', 'title', 'description', 'mime', 'protocol'];
-        foreach(
+        foreach (
             $this->model->getLinks($this->id, $this->version, true)
             as $linkid => $link
         ) {
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $key = 'links_' . $linkid . '_' . $field;
-                switch($field) {
+                switch ($field) {
                     case 'type':
                         $field = 'vocab_url_type_id';
                         break;
@@ -686,7 +686,7 @@ class Dataset extends Base{
                 }
                 $this->setFormData($key, $link[$field]);
             }
-            foreach(
+            foreach (
                 $this->model->getLinkUrls(
                     $link['dataset_link_id'],
                     $this->version
@@ -700,13 +700,13 @@ class Dataset extends Base{
         }
         $fileModel = new \npdc\model\File();
         $fields = ['id', 'file', 'name', 'title', 'description', 'perms'];
-        foreach(
+        foreach (
             $this->model->getFiles($this->id, $this->version) 
             as $nr => $file
         ) {
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $key = 'file_' . $field . '_' . $nr;
-                switch($field) {
+                switch ($field) {
                     case 'id':
                         $field = 'file_id';
                         break;
@@ -720,10 +720,10 @@ class Dataset extends Base{
                 $this->setFormData($key, $file[$field]);
             }
         }
-        foreach($fileModel->getDrafts('dataset:' . $this->id) as $nr => $file) {
-            foreach($fields as $field) {
+        foreach ($fileModel->getDrafts('dataset:' . $this->id) as $nr => $file) {
+            foreach ($fields as $field) {
                 $key = 'file_' . $field . '_n_' . $nr;
-                switch($field) {
+                switch ($field) {
                     case 'id':
                         $field = 'file_id';
                         break;
@@ -770,7 +770,7 @@ class Dataset extends Base{
             $this->setFormData('people_editor_new_1', true);
             $this->savePeople();
         } else {
-            switch($this->screen) {
+            switch ($this->screen) {
                 case 'general':
                     if ($_SESSION[$this->formId]['db_action'] !== 'insert') {
                         $saved = $this->model->updateGeneral(
@@ -876,10 +876,10 @@ class Dataset extends Base{
         $data = $this->model->getById($this->id, $this->version);
 
         $data['created_from'] = $data['uuid'];
-        foreach(['dataset_id','published','insert_timestamp','uuid'] as $key) {
+        foreach (['dataset_id','published','insert_timestamp','uuid'] as $key) {
             unset($data[$key]);
         }
-        foreach(
+        foreach (
             [
                 'dataset_version' => 1,
                 'creator' => $this->session->userId,
@@ -918,7 +918,7 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicateKeywords() {
-        foreach(
+        foreach (
             $this->model->getKeywords($this->id, $this->version)
             as $keyword
         ) {
@@ -930,7 +930,7 @@ class Dataset extends Base{
             ];
             $this->model->insertScienceKeyword($data);
         }
-        foreach(
+        foreach (
             $this->model->getAncillaryKeywords($this->id, $this->version)
             as $word
         ) {
@@ -948,7 +948,7 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicateTopics() {
-        foreach($this->model->getTopics($this->id, $this->version) as $topic) {
+        foreach ($this->model->getTopics($this->id, $this->version) as $topic) {
             $this->model->insertTopic(
                 $topic['vocab_iso_topic_category_id'],
                 $this->newId,
@@ -963,7 +963,7 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicatePeople() {
-        foreach($this->model->getPersons($this->id, $this->version) as $person) {
+        foreach ($this->model->getPersons($this->id, $this->version) as $person) {
             $data = [
                 'dataset_id' => $this->newId,
                 'dataset_version_min' => 1,
@@ -983,7 +983,7 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicateDataCenter() {
-        foreach(
+        foreach (
             $this->model->getDataCenter($this->id, $this->version) 
             as $dataCenter
         ) {
@@ -994,7 +994,7 @@ class Dataset extends Base{
                     'organization_id' => $dataCenter['organization_id']
                 ]
             );
-            foreach(
+            foreach (
                 $this->model->getDataCenterPerson(
                     $dataCenter['dataset_data_center_id'],
                     $this->version
@@ -1018,7 +1018,7 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicateLocations() {
-        foreach(
+        foreach (
             $this->model->getLocations($this->id, $this->version)
             as $location
         ) {
@@ -1039,12 +1039,12 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicateSpatialCoverage() {
-        foreach(
+        foreach (
             $this->model->getSpatialCoverages($this->id, $this->version) 
             as $sc
         ) {
             $data = ['dataset_id' => $this->newId, 'dataset_version_min' => 1];
-            foreach(
+            foreach (
                 [
                     'wkt',
                     'depth_min',
@@ -1070,15 +1070,15 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicateTemporalCoverage() {
-        foreach(
+        foreach (
             $this->model->getTemporalCoverages($this->id, $this->version)
             as $tc
         ) {
             $temporalCoverageId = $this->model->insertTemporalCoverage(
                 ['dataset_id' => $this->newId, 'dataset_version_min' => 1]
             );
-            foreach(['period', 'cycle', 'paleo', 'ancillary'] as $group) {
-                foreach(
+            foreach (['period', 'cycle', 'paleo', 'ancillary'] as $group) {
+                foreach (
                     $this->model->getTemporalCoveragesGroup(
                         $group,
                         $tc['temporal_coverage_id'],
@@ -1086,7 +1086,7 @@ class Dataset extends Base{
                     )
                     as $tcg
                 ) {
-                    switch($group) {
+                    switch ($group) {
                         case 'period':
                         $this->model->insertTemporalCoveragePeriod([
                                 'date_start' => $tcg['date_start'],
@@ -1115,7 +1115,7 @@ class Dataset extends Base{
                                 'temporal_coverage_id' => $temporalCoverageId,
                                 'dataset_version_min' => 1
                             ]);
-                            foreach(
+                            foreach (
                                 $this->model->getTemporalCoveragePaleoChronounit(
                                     $tcg['temporal_coverage_paleo_id'],
                                     $this->version
@@ -1158,12 +1158,12 @@ class Dataset extends Base{
             'vocab_res_time_id',
             'data_resolution_id'
         ];
-        foreach(
+        foreach (
             $this->model->getResolution($this->id, $this->version)
             as $resolution
         ) {
             $data = ['dataset_id' => $this->newId, 'dataset_version_min' => 1];
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $data[$field] = $resolution[$field];
             }
             $this->model->insertResolution($data);
@@ -1193,12 +1193,12 @@ class Dataset extends Base{
             'online_resource',
             'type'
         ];
-        foreach(
+        foreach (
             $this->model->getCitations($this->id, $this->version)
             as $citation
         ) {
             $data = ['dataset_id' => $this->newId, 'dataset_version_min' => 1];
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $data[$field] = $citation[$field];
             }
             $this->model->insertCitation($data);
@@ -1212,7 +1212,7 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicateLink() {
-        foreach($this->model->getLinks($this->id, $this->version) as $link) {
+        foreach ($this->model->getLinks($this->id, $this->version) as $link) {
             $link_id = $this->model->insertLink([
                 'dataset_id' => $this->newId,
                 'dataset_version_min' => 1,
@@ -1220,7 +1220,7 @@ class Dataset extends Base{
                 'title' => $link['title'],
                 'description' => $link['description']
             ]);
-            foreach(
+            foreach (
                 $this->model->getLinkUrls($link['dataset_link_id'], $this->version)
                 as $linkUrl
             ) {
@@ -1239,13 +1239,13 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicatePlatform() {
-        foreach($this->model->getPlatform($this->id, $this->version) as $platform) {
+        foreach ($this->model->getPlatform($this->id, $this->version) as $platform) {
             $platform_id = $this->model->insertPlatform([
                 'dataset_id' => $this->newId,
                 'dataset_version_min' => 1,
                 'vocab_platform_id' => $platform['vocab_platform_id']
             ]);
-            foreach(
+            foreach (
                 $this->model->getInstrument($platform['platform_id'], $this->version)
                 as $instrument
             ) {
@@ -1256,7 +1256,7 @@ class Dataset extends Base{
                     'platform_id' => $platform_id,
                     'dataset_version_min' => 1
                 ]);
-                foreach(
+                foreach (
                     $this->model->getSensor(
                         $instrument['instrument_id'],
                         $this->version
@@ -1280,7 +1280,7 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicateProjects() {
-        foreach(
+        foreach (
             $this->model->getProjects($this->id, $this->version, false)
             as $project
         ) {
@@ -1299,7 +1299,7 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicatePublications() {
-        foreach(
+        foreach (
             $this->model->getPublications($this->id, $this->version, false)
             as $publication
         ) {
@@ -1319,7 +1319,7 @@ class Dataset extends Base{
      * @return void
      */
     private function duplicateRelatedDatasets() {
-        foreach(
+        foreach (
             $this->model->getRelatedDatasets($this->id, $this->version)
             as $set
         ) {
@@ -1359,7 +1359,7 @@ class Dataset extends Base{
         $keyword = [];
         $loopId = 'science_keywords_keyword_id_';
         $sort = 1;
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $data = [
                     'dataset_id' => $this->id,
@@ -1399,13 +1399,13 @@ class Dataset extends Base{
             $this->version
         );
         $words = [];
-        foreach($currentKeywords as $row) {
+        foreach ($currentKeywords as $row) {
             $words[] = $row['keyword'];
         }
         $new = array_diff($this->getFormData('keywords'), $words);
         $old = array_diff($words, $this->getFormData('keywords'));
         if (count($old) > 0) {
-            foreach($old as $word) {
+            foreach ($old as $word) {
                 $this->model->deleteAncillaryKeyword(
                     $word,
                     $this->id,
@@ -1414,7 +1414,7 @@ class Dataset extends Base{
             }
         }
         if (count($new) > 0) {
-            foreach($new as $word) {
+            foreach ($new as $word) {
                 $this->model->insertAncillaryKeyword(
                     $word,
                     $this->id,
@@ -1436,18 +1436,18 @@ class Dataset extends Base{
     private function saveTopics() {
         $currentTopics = $this->model->getTopics($this->id, $this->version);
         $topics = [];
-        foreach($currentTopics as $row) {
+        foreach ($currentTopics as $row) {
             $topics[] = $row['vocab_iso_topic_category_id'];
         }
         $new = array_diff($this->getFormData('iso_topic'), $topics);
         $old = array_diff($topics, $this->getFormData('iso_topic'));
         if (count($old) > 0) {
-            foreach($old as $topic) {
+            foreach ($old as $topic) {
                 $this->model->deleteTopic($topic, $this->id, $this->version - 1);
             }
         }
         if (count($new) > 0) {
-            foreach($new as $topic) {
+            foreach ($new as $topic) {
                 $this->model->insertTopic($topic, $this->id, $this->version);
             }
         }
@@ -1463,7 +1463,7 @@ class Dataset extends Base{
         $loopId = 'projects_project_id_';
         $projectModel = new \npdc\model\Project();
 
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $projects[] = $this->getFormData($key);
                 if (strpos($key, '_new_') !== false) {
@@ -1493,7 +1493,7 @@ class Dataset extends Base{
         $loopId = 'publications_publication_id_';
         $publicationModel = new \npdc\model\Publication();
 
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $publications[] = $this->getFormData($key);
                 if (strpos($key, '_new_') !== false) {
@@ -1523,12 +1523,12 @@ class Dataset extends Base{
         $related = [];
         $loopId = 'related_dataset_';
         $serials = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = $this->getSerial($key, $loopId);
             }
         }
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             $rid = $loopId . $serial;
             $data = [
                 'same' => $this->getFormData($rid . '_same') == 'true' 
@@ -1569,7 +1569,7 @@ class Dataset extends Base{
     private function saveLocations() {
         $locations = [];
         $loopId = 'location_location_id_';
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $data = [
                     'dataset_id' => $this->id,
@@ -1611,7 +1611,7 @@ class Dataset extends Base{
     private function saveSpatialCoverage() {
         $coverages = [];
         $loopId = 'spatial_coverage_wkt_';
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (
                 substr($key, 0, strlen($loopId)) === $loopId 
                 && substr($key, -4) !== '_new'
@@ -1629,7 +1629,7 @@ class Dataset extends Base{
                 ];
                 $data = ['dataset_id' => $this->id];
                 $nr = substr($key, strlen($loopId));
-                foreach($fields as $field) {
+                foreach ($fields as $field) {
                     $key = (
                         substr($field, -5) === '_unit'
                             ? 'unit_spatial_coverage_' . substr($field, 0, -5) 
@@ -1673,7 +1673,7 @@ class Dataset extends Base{
                 $serials[] = $this->getSerial($key, $loopId);
             }
         }
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             //first make sure the temporal_coverage is stored in the database
             if (strpos($serial, 'new') !== false) {
                 $temporalCoverageId = $this->model->insertTemporalCoverage([
@@ -1687,7 +1687,7 @@ class Dataset extends Base{
             }
             $current[] = $temporalCoverageId;
             $loopId2 = $loopId . $serial . '_';
-            foreach(['dates', 'periodic', 'paleo', 'ancillary'] as $group) {
+            foreach (['dates', 'periodic', 'paleo', 'ancillary'] as $group) {
                 $loopId3 = $loopId2 . $group . '_';
                 $serials2 = [];
                 $current2 = [];
@@ -1703,7 +1703,7 @@ class Dataset extends Base{
                             );
                     }
                 }
-                foreach(array_unique($serials2) as $serial2) {
+                foreach (array_unique($serials2) as $serial2) {
                     $current2[] = $this->saveTemporalCoverageGroup(
                         $group,
                         $temporalCoverageId,
@@ -1849,7 +1849,7 @@ class Dataset extends Base{
                     $this->version
                 );
                 $units = [];
-                foreach($currentUnits as $row) {
+                foreach ($currentUnits as $row) {
                     $units[] = $row['vocab_chronounit_id'];
                 }
                 $new = array_diff(
@@ -1861,7 +1861,7 @@ class Dataset extends Base{
                     $this->getFormData($rid . '_chronostratigraphic_unit')
                 );
                 if (count($old) > 0) {
-                    foreach($old as $unit) {
+                    foreach ($old as $unit) {
                         $this->model->deleteTemporalCoveragePaleoChronounit(
                             $unit,
                             $id,
@@ -1870,7 +1870,7 @@ class Dataset extends Base{
                     }
                 }
                 if (count($new) > 0) {
-                    foreach($new as $unit) {
+                    foreach ($new as $unit) {
                         $this->model->insertTemporalCoveragePaleoChronounit([
                             'temporal_coverage_paleo_id' => $id,
                             'dataset_version_min' => $this->version,
@@ -1908,12 +1908,12 @@ class Dataset extends Base{
         $resolutions = [];
         $loopId = 'resolution_';
         $serials = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = $this->getSerial($key, $loopId);
             }
         }
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             $fields = [
                 'latitude_resolution',
                 'longitude_resolution',
@@ -1924,7 +1924,7 @@ class Dataset extends Base{
                 'vocab_res_time_id'
             ];
             $data = ['dataset_id' => $this->id];
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $key = 'resolution_' . $serial . '_' . $field;
                 $data[$field] = $this->getFormData($key);
             }
@@ -1957,7 +1957,7 @@ class Dataset extends Base{
         $persons = [];
         $loopId = 'people_person_id_';
         $sort = 1;
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $persons[] = $this->getFormData($key);
                 $record = [
@@ -2028,12 +2028,12 @@ class Dataset extends Base{
         $current = [];
         $loopId = 'data_center_';
         $serials = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = $this->getSerial($key, $loopId);
             }
         }
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             $rid = $loopId . $serial;
             $data = [
                 'dataset_id' => $this->id,
@@ -2042,7 +2042,7 @@ class Dataset extends Base{
             if (strpos($serial, 'new') !== false) {
                 $data['dataset_version_min'] = $this->version;
                 $data_center_id = $this->model->insertDataCenter($data);
-                foreach($this->getFormData($rid . '_people') as $person) {
+                foreach ($this->getFormData($rid . '_people') as $person) {
                     $this->model->insertDataCenterPerson(
                         [
                             'dataset_data_center_id' => $data_center_id,
@@ -2066,7 +2066,7 @@ class Dataset extends Base{
                     $this->version
                 );
                 $persons = [];
-                foreach($currentPersons as $row) {
+                foreach ($currentPersons as $row) {
                     $persons[] = $row['person_id'];
                 }
                 $new = array_diff(
@@ -2079,7 +2079,7 @@ class Dataset extends Base{
                 );
 
                 if (count($old) > 0) {
-                    foreach($old as $person) {
+                    foreach ($old as $person) {
                         $this->model->deleteDataCenterPerson(
                             $person,
                             $data_center_id,
@@ -2088,7 +2088,7 @@ class Dataset extends Base{
                     }
                 }
                 if (count($new) > 0) {
-                    foreach($new as $person) {
+                    foreach ($new as $person) {
                         $this->model->insertDataCenterPerson([
                             'person_id' => $person,
                             'dataset_data_center_id' => $data_center_id,
@@ -2112,12 +2112,12 @@ class Dataset extends Base{
         $citations = [];
         $loopId = 'citation_';
         $serials = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = $this->getSerial($key, $loopId);
             }
         }
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             $fields = [
                 'creator',
                 'editor',
@@ -2136,7 +2136,7 @@ class Dataset extends Base{
                 'type'
             ];
             $data = [];
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $key = 'citation_' . $serial . '_' . $field;
                 if (
                     $field === 'release_date' 
@@ -2174,12 +2174,12 @@ class Dataset extends Base{
         $current = [];
         $loopId = 'platform_';
         $serials = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = $this->getSerial($key, $loopId);
             }
         }
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             $rid = $loopId . $serial;
             $data = [
                 'dataset_id' => $this->id,
@@ -2217,12 +2217,12 @@ class Dataset extends Base{
         $loopId = $base_id.'_instrument_';
         $serials = [];
         $current = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = $this->getSerial($key, $loopId);
             }
         }
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             $rid = $loopId . $serial;
             $data = [
                 'vocab_instrument_id' => $this->getFormData($rid . '_instrument_id'),
@@ -2268,12 +2268,12 @@ class Dataset extends Base{
         $loopId = $base_id.'_sensor_';
         $serials = [];
         $current = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = $this->getSerial($key, $loopId);
             }
         }
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             $rid = $loopId . $serial;
             $data = [
                 'vocab_instrument_id' => $this->getFormData($rid . '_sensor_id'),
@@ -2316,14 +2316,14 @@ class Dataset extends Base{
         $base_id .= '_characteristics';
         $loopId = $base_id . '_id_';
         $serials = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = substr($key
                         , strlen($loopId));
             }
         }
         $current = [];
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             $data = [
                 'name' => $this->getFormData($base_id . '_name_' . $serial),
                 'description' => $this->getFormData($base_id . '_description_' . $serial),
@@ -2369,18 +2369,18 @@ class Dataset extends Base{
         }
         $loopId = 'links_';
         $serials = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = $this->getSerial($key, $loopId);
             }
         }
-        foreach(array_unique($serials) as $serial) {
+        foreach (array_unique($serials) as $serial) {
             $rid = $loopId . $serial;
             $fields = ['type', 'title', 'description'];
             $data = [];
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $key = $rid . '_'.$field;
-                switch($field) {
+                switch ($field) {
                     case 'type':
                         $field = 'vocab_url_type_id';
                         break;
@@ -2417,7 +2417,7 @@ class Dataset extends Base{
                     $serials2[] = $this->getSerial($key, $loopId2);
                 }
             }
-            foreach(array_unique($serials2) as $serial2) {
+            foreach (array_unique($serials2) as $serial2) {
                 //save the url
                 $rid2 = $loopId2 . $serial2;
                 if (strpos($serial2, 'new') !== false) {
@@ -2458,7 +2458,7 @@ class Dataset extends Base{
     private function saveFiles() {
         $loopId = 'file_id_';
         $serials = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serials[] = substr($key
                         , strlen($loopId)
@@ -2468,7 +2468,7 @@ class Dataset extends Base{
         $files = [];
         $fileModel = new \npdc\model\File();
         if (count($serials) > 0) {
-            foreach($serials as $serial) {
+            foreach ($serials as $serial) {
                 $rid = $loopId . $serial;
                 $files[] = $this->getFormData($rid);
                 if (substr($serial, 0, 1) === 'n') {
@@ -2530,7 +2530,7 @@ class Dataset extends Base{
                             'reason' => $_POST['request'],
                             'dataset_id' => $dataset
                         ]);
-                        foreach($_POST['files'] as $file) {
+                        foreach ($_POST['files'] as $file) {
                             $requestModel->insertFile([
                                 'access_request_id' => $requestId,
                                 'file_id' => $file
@@ -2542,7 +2542,7 @@ class Dataset extends Base{
                         $mail = new \npdc\lib\Mailer();
                         $personModel = new \npdc\model\Person();
                         $sendable = false;
-                        foreach($this->model->getPersons(
+                        foreach ($this->model->getPersons(
                             $this->data['dataset_id'],
                             $this->data['dataset_version'
                         ])
@@ -2609,7 +2609,7 @@ class Dataset extends Base{
                     $access[] = 'login';
                 }
             case 'public':
-                foreach($datasetFiles as $file) {
+                foreach ($datasetFiles as $file) {
                     if (
                         in_array($file['default_access'], $access)
                         && (
@@ -2639,7 +2639,7 @@ class Dataset extends Base{
                 $zip->setGuestName($_POST['contact']);
             }
             $zip->addMeta($this->model->generateMeta($this->data['dataset_id']));
-            foreach($files as $file) {
+            foreach ($files as $file) {
                 $zip->addFile($file);
             }
             header('Location: '.$zip->redirect);

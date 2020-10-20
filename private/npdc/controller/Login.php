@@ -21,7 +21,7 @@ class Login {
      */
     public function __construct($session) {
         $this->model = new \npdc\model\Person();
-        switch(\npdc\lib\Args::get('loginaction')) {
+        switch (\npdc\lib\Args::get('loginaction')) {
             case 'reset':
                 if (!\npdc\lib\Args::exists('loginkey')) {
                     $this->formId = 'login_reset_password';
@@ -49,7 +49,7 @@ class Login {
         $this->form = $this->formController->getForm($this->formId);
         
         if (array_key_exists('notice', $_GET)) {
-            switch($_GET['notice']) {
+            switch ($_GET['notice']) {
                 case 'expired':
                     $this->form->fields->action->value = 'parent/submit';
                     break;
@@ -69,7 +69,7 @@ class Login {
                         $_SESSION[$this->formId]['data']['mail']
                     );
                 }
-                switch($this->formId) {
+                switch ($this->formId) {
                     case 'login':
                         $this->processLogin($person);
                         break;
@@ -84,7 +84,7 @@ class Login {
         }
         
         /*update formfield*/
-        switch($this->formId) {
+        switch ($this->formId) {
             case 'login_new_password':
                 $this->form->action = $_SERVER['REQUEST_URI'];
                 $person = $this->model->getById(\npdc\lib\Args::get('loginid'));
@@ -119,7 +119,7 @@ class Login {
                 $person['person_id']
             );
             $_SESSION['user']['id'] = $person['person_id'];
-            switch($_SESSION[$this->formId]['data']['action']) {
+            switch ($_SESSION[$this->formId]['data']['action']) {
                 case 'parent/submit':
                     echo 'Saving...<script language="javascript" type="text/javascript">'
                         . 'window.parent.waitingForm.submit();</script>';

@@ -198,10 +198,10 @@ function checkUrl($url, $protocol = 'http://') {
  * @return float the corrected longitude
  */
 function parseLon($lon) {
-    while($lon > 180) {
+    while ($lon > 180) {
         $lon -= 360;
     }
-    while($lon < -180) {
+    while ($lon < -180) {
         $lon += 360;
     }
     return $lon;

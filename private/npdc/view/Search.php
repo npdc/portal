@@ -71,7 +71,7 @@ class Search extends Base{
 
             //first check if result is uuid and uuid exists
             if (\Lootils\Uuid\Uuid::isValid($this->search)) {
-                foreach(array_keys($this->types) as $type) {
+                foreach (array_keys($this->types) as $type) {
                     $modelName = 'npdc\\model\\'.ucfirst($type);
                     $model = new $modelName();
                     $res = $model->getByUUID($this->search);
@@ -124,14 +124,14 @@ class Search extends Base{
                 if (count($this->searchFields) > 0) {
                     $pubModel = new \npdc\model\Publication();
                     $personModel = new \npdc\model\Person();
-                    foreach(array_diff(array_keys($this->types), ['organization', 'person']) as $type) {
+                    foreach (array_diff(array_keys($this->types), ['organization', 'person']) as $type) {
                         $modelName = 'npdc\\model\\'.ucfirst($type);
                         $model = new $modelName();
                         if (array_key_exists('organization', $this->searchFields)) {
                             if (count($this->searchFields['organization']) > 0) {
-                                foreach($model->getList(['organization'=>$this->searchFields['organization']]) as $row) {
+                                foreach ($model->getList(['organization'=>$this->searchFields['organization']]) as $row) {
                                     $row['content_type'] = ucfirst($type);
-                                    switch($type) {
+                                    switch ($type) {
                                         case 'project':
                                         case 'dataset':
                                         $row['date'] = $row['date_start'].' - '.$row['date_end'];
@@ -141,7 +141,7 @@ class Search extends Base{
                                 }
                             }
                         }
-                        foreach($pubModel->searchByFreeOrganization($this->search) as $row) {
+                        foreach ($pubModel->searchByFreeOrganization($this->search) as $row) {
                             $row['content_type'] = 'Publication';
                             $key = 'publication'.$row['publication_id'];
                             $list[$key] = $row;
@@ -149,10 +149,10 @@ class Search extends Base{
                         if (array_key_exists('person', $this->searchFields)) {
                             if (count($this->searchFields['person']) > 0) {
                                 $function = 'get'.ucfirst($type).'s';
-                                foreach($this->searchFields['person'] as $id) {
-                                    foreach($personModel->{$function}($id) as $row) {
+                                foreach ($this->searchFields['person'] as $id) {
+                                    foreach ($personModel->{$function}($id) as $row) {
                                         $row['content_type'] = ucfirst($type);
-                                        switch($type) {
+                                        switch ($type) {
                                             case 'project':
                                             case 'dataset':
                                                 $row['date'] = $row['date_start'].' - '.$row['date_end'];
@@ -162,7 +162,7 @@ class Search extends Base{
                                     }
                                 }
                             }
-                            foreach($pubModel->searchByFreePerson($this->search) as $row) {
+                            foreach ($pubModel->searchByFreePerson($this->search) as $row) {
                                 $row['content_type'] = 'Publication';
                                 $key = 'publication'.$row['publication_id'];
                                 $list[$key] = $row;
@@ -173,10 +173,10 @@ class Search extends Base{
                 $this->type = array_diff($this->type, ['organization', 'person']);
                 if (count($this->type) > 0) {
                     //free text search trough dataset, project and publication
-                    foreach($this->type as $type) {
+                    foreach ($this->type as $type) {
                         $modelName = 'npdc\\model\\'.ucfirst($type);
                         $model = new $modelName();
-                        foreach($model->search($this->search, true) as $row) {
+                        foreach ($model->search($this->search, true) as $row) {
                             $key = $type.$row[$type.'_id'];
                             $list[$key] = $row;
                         }
@@ -184,10 +184,10 @@ class Search extends Base{
                 }
                 //make keys with date for ordering by date
                 $keys = [];
-                foreach($list as $data) {
+                foreach ($list as $data) {
                     $key = $data['date'];
                     $i = 0;
-                    while(in_array($key, $keys)) {
+                    while (in_array($key, $keys)) {
                         $i++;
                         $key = $data['date'].' '.$i;
                     }
@@ -200,7 +200,7 @@ class Search extends Base{
                 $this->mid .= count($list).' result'.(count($list) === 1 ? '' : 's').' for \''.$this->search    .'\'';
                 $arr = count($this->type) > 0 ? $this->type : array_keys($this->types);
                 $this->mid .= ' in ';
-                foreach($arr as $i=>$type) {
+                foreach ($arr as $i=>$type) {
                     if ($i>0 && $i<count($arr)-1) {
                         $this->mid .= ', ';
                     } elseif ($i>0) {

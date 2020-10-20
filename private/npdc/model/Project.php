@@ -26,17 +26,19 @@ class Project extends Base{
         global $session;
         $q = $this->dsql->dsql()->table('project');
         if (!is_null($filters)) {
-            foreach($filters as $filter=>$values) {
-                if ((is_array($values) && count($values) === 0) || empty($values)) {
+            foreach ($filters as $filter=>$values) {
+                if (empty($values)) {
                     continue;
                 }
-                switch($filter) {
+                switch ($filter) {
                     case 'region':
                         $q->where('region', $values);
                         break;
                         
                     case 'period':
-                        //use values swapped, include all records with start date before end date of filter and end date after start date of filter
+                        //use values swapped, include all records with start 
+                        // date before end date of filter and end date after 
+                        // start date of filter
                         if (!empty($values[1])) {
                             $q->where('date_start', '<=', $values[1]);
                         }
@@ -49,7 +51,12 @@ class Project extends Base{
                         $q->where('project_id',
                             $q->dsql()->table('project_person')
                                 ->field('project_id')
-                                ->where(\npdc\lib\Db::joinVersion('project', 'project_person'))
+                                ->where(
+                                    \npdc\lib\Db::joinVersion(
+                                        'project',
+                                        'project_person'
+                                    )
+                                )
                                 ->where('organization_id', $values)
                         );
                         break;
@@ -58,9 +65,16 @@ class Project extends Base{
                         $q->where('program_id', $values);
                         break;
                     case 'search':
-                        $idString = implode('[.]?', preg_replace("/[^. \-0-9a-zA-Z]/", " ", str_split($values['string'])));
+                        $idString = implode(
+                            '[.]?',
+                            preg_replace(
+                                "/[^. \-0-9a-zA-Z]/",
+                                " ",
+                                str_split($values['string'])
+                            )
+                        );
                         $string = '%'.$values['string'].'%';
-                        $operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
+                        $operator = \npdc\lib\Db::getLike();
                         $s = $q->orExpr()
                             ->where('title', $operator, $string)
                             ->where('acronym', $operator, $string)
@@ -123,7 +137,7 @@ class Project extends Base{
             } else {
                 $q->field($q->dsql()->expr('FALSE {}', ['editor']));
             }
-            switch($filters['editorOptions'][0]) {
+            switch ($filters['editorOptions'][0]) {
                 case 'all':
                     break;
                 case 'unpublished':
@@ -319,7 +333,7 @@ class Project extends Base{
         if (!empty($string)) {
             $idString = implode('[.]?', preg_replace("/[^. \-0-9a-zA-Z]/", " ", str_split($string)));
             $string = '%'.$string.'%';
-            $operator = (\npdc\config::$db['type']==='pgsql' ? '~*' : 'LIKE');
+            $operator = \npdc\lib\Db::getLike();
             $s = $q->orExpr()
                 ->where('title', $operator, $string)
                 ->where('acronym', $operator, $string)
@@ -333,9 +347,14 @@ class Project extends Base{
             $q->where('project_id', 'NOT', $exclude);
         }
         if ($includeDraft) {
-            $q->where('project_version', $q->dsql()->table('project', 'a')->field('max(project_version)')->where('a.project_id=project.project_id'));
+            $q->where(
+                'project_version',
+                $q->dsql()->table('project', 'a')
+                    ->field('max(project_version)')
+                    ->where('a.project_id=project.project_id')
+            );
         } else {
-            $q->where('record_status', 'published');    
+            $q->where('record_status', 'published');
         }
         return $q->get();
     }
@@ -359,7 +378,11 @@ class Project extends Base{
         return \npdc\lib\Db::insert('project_publication', $data);
     }
 
-    public function deletePublication($project_id, $version, $currentPublications) {
+    public function deletePublication(
+        $project_id,
+        $version,
+        $currentPublications
+    ) {
         $q = $this->dsql->dsql()
             ->table('project_publication')
             ->where('project_id', $project_id)
@@ -395,7 +418,21 @@ class Project extends Base{
      * @param string $action Either update or insert
      */
     protected function parseGeneral($data, $action) {
-        $fields = ['nwo_project_id','title','acronym','region','summary','program_id','date_start','date_end','research_type','science_field','record_status', 'creator', 'npp_theme_id'];
+        $fields = [
+            'nwo_project_id',
+            'title',
+            'acronym',
+            'region',
+            'summary',
+            'program_id',
+            'date_start',
+            'date_end',
+            'research_type',
+            'science_field',
+            'record_status',
+            'creator',
+            'npp_theme_id'
+        ];
         if ($action === 'insert') {
             array_push($fields, 'project_version');
             if (is_numeric($data['project_id'])) {
@@ -403,8 +440,8 @@ class Project extends Base{
             }
         }
         $values = [];
-        foreach($fields as $field) {
-            switch($field) {
+        foreach ($fields as $field) {
+            switch ($field) {
                 case 'date_start':
                     $values[$field] = $data['period'][0] ?? $data['date_start'];
                     break;
@@ -417,8 +454,9 @@ class Project extends Base{
                         break;
                     }
                 default:
-                    $values[$field] = empty($data[$field]) ? null : $data[$field];
-                    
+                    $values[$field] = empty($data[$field])
+                        ? null
+                        : $data[$field];
             }
         }
         return $values;

@@ -16,46 +16,60 @@ abstract class Base {
     protected function _updateSub($tbl, $record, $data, $version) {
         $oldRecord = \npdc\lib\Db::get($tbl, $record);
         $createnew = false;
-        if ($oldRecord[$this->baseTbl.'_version_min'] != $version) {
-            foreach($data as $key=>$val) {
+        if ($oldRecord[$this->baseTbl . '_version_min'] != $version) {
+            foreach ($data as $key=>$val) {
                 if ($val != $oldRecord[$key]) {
                     $createNew = true;
                 }
             }
         }
         if ($createNew) {
-            \npdc\lib\Db::update($tbl, $record, [$this->baseTbl.'_version_max'=>$version-1]);
-            $data[$this->baseTbl.'_version_min'] = $version;
+            \npdc\lib\Db::update(
+                $tbl,
+                $record,
+                [$this->baseTbl.'_version_max' => $version-1]
+            );
+            $data[$this->baseTbl . '_version_min'] = $version;
             return \npdc\lib\Db::insert($tbl, $data, true);
         } else {
             return \npdc\lib\Db::update($tbl, $record, $data);
         }
     }
 
-    protected function _deleteSub($tbl, $id, $version, $current, $parent = null) {
+    protected function _deleteSub($tbl, $id, $version, $current, $parent=null) {
         if (is_null($parent)) {
             $parent = $this->baseTbl;
         }
         $q = $this->dsql->dsql()
             ->table($tbl)
-            ->where($parent.'_id', $id)
-            ->where($this->baseTbl.'_version_max IS NULL');
-        if (!empty($current) && !(count($current) === 1 && empty($current[0]))) {
-            $q->where($tbl.'_id', 'NOT', $current);
+            ->where($parent . '_id', $id)
+            ->where($this->baseTbl . '_version_max IS NULL');
+        if (
+            !empty($current)
+            && !(
+                count($current) === 1
+                && empty($current[0])
+            )
+        ) {
+            $q->where($tbl . '_id', 'NOT', $current);
         }
-        $q->set($this->baseTbl.'_version_max', $version)
-            ->update();
-        $this->dsql->dsql()
-            ->table($tbl)
-            ->where($this->dsql->expr($this->baseTbl.'_version_min > '.$this->baseTbl.'_version_max'))
+        $q->set($this->baseTbl . '_version_max', $version)->update();
+        $this->dsql->dsql()->table($tbl)
+            ->where(
+                $this->dsql->expr(
+                    $this->baseTbl . '_version_min'
+                    . ' > '
+                    . $this->baseTbl . '_version_max'
+                )
+            )
             ->delete();
     }
 
     public function updatePerson($record, $data, $version) {
-        $oldRecord = \npdc\lib\Db::get($this->baseTbl.'_person', $record);
+        $oldRecord = \npdc\lib\Db::get($this->baseTbl . '_person', $record);
         $createNew = false;
         $updateEditor = false;
-        foreach($data as $key=>$val) {
+        foreach ($data as $key=>$val) {
             if ($val != $oldRecord[$key]) {
                 if ($key === 'editor') {
                     $updateEditor = true;
@@ -64,13 +78,37 @@ abstract class Base {
                 }
             }
         }
-        if ($oldRecord[$this->baseTbl.'_version_min'] === $version && ($createNew || $updateEditor)) {
-            $return = \npdc\lib\Db::update($this->baseTbl.'_person', $record, $data);
+        if (
+            $oldRecord[$this->baseTbl . '_version_min'] === $version
+            && (
+                $createNew
+                || $updateEditor
+            )
+        ) {
+            $return = \npdc\lib\Db::update(
+                $this->baseTbl . '_person',
+                $record,
+                $data
+            );
         } elseif ($createNew) {
-            \npdc\lib\Db::update($this->baseTbl.'_person', $record, [$this->baseTbl.'_version_max'=>$version-1]);
-            $return = $this->insertPerson(array_merge($data, $record, [$this->baseTbl.'_version_min'=>$version]));
+            \npdc\lib\Db::update(
+                $this->baseTbl . '_person',
+                $record,
+                [$this->baseTbl . '_version_max' => $version - 1]
+            );
+            $return = $this->insertPerson(
+                array_merge(
+                    $data,
+                    $record,
+                    [$this->baseTbl.'_version_min'=>$version]
+                )
+            );
         } elseif ($updateEditor) {
-            $return = \npdc\lib\Db::update($this->baseTbl.'_person', $record,['editor'=>$data['editor']]);
+            $return = \npdc\lib\Db::update(
+                $this->baseTbl . '_person',
+                $record,
+                ['editor'=>$data['editor']]
+            );
         } else {
             $return = true;
         }
@@ -78,18 +116,31 @@ abstract class Base {
     }
 
     public function setStatus($id, $old, $new, $comment = null) {
-        $r = \npdc\lib\Db::get($this->baseTbl, [$this->baseTbl.'_id'=>$id, 'record_status'=>$old]);
+        $r = \npdc\lib\Db::get(
+            $this->baseTbl,
+            [$this->baseTbl . '_id'=>$id, 'record_status'=>$old]
+        );
         if (!empty($r)) {
             $q = $this->dsql->dsql()
                 ->table($this->baseTbl)
-                ->where($this->baseTbl.'_id', $id)
+                ->where($this->baseTbl . '_id', $id)
                 ->where('record_status', $old)
                 ->set('record_status', $new);
             if ($new === 'published') {
                 $q->set('published', date("Y-m-d H:i:s", time()));
             }
             $return = $q->update();
-            \npdc\lib\Db::insert('record_status_change', [$this->baseTbl.'_id'=>$id, 'version'=>$r[$this->baseTbl.'_version'], 'old_state'=>$old, 'new_state'=>$new, 'person_id'=>$_SESSION['user']['id'], 'comment'=>$comment]);
+            \npdc\lib\Db::insert(
+                'record_status_change',
+                [
+                    $this->baseTbl . '_id'=>$id,
+                    'version'=>$r[$this->baseTbl . '_version'
+                ],
+                'old_state'=>$old,
+                'new_state'=>$new,
+                'person_id'=>$_SESSION['user']['id'],
+                'comment'=>$comment]
+            );
         }
         return $return;
     }
@@ -106,7 +157,7 @@ abstract class Base {
         $q = $this->dsql->dsql()
             ->table('record_status_change')
             ->join('person.person_id', 'person_id', 'inner')
-            ->where($this->baseTbl.'_id', $id)
+            ->where($this->baseTbl . '_id', $id)
             ->where('version', $version)
             ->order('datetime DESC');
         if ($state !== null) {
@@ -126,7 +177,7 @@ abstract class Base {
         return $this->dsql->dsql()
             ->table('record_status_change')
             ->join('person.person_id', 'person_id', 'inner')
-            ->where($this->baseTbl.'_id', $id)
+            ->where($this->baseTbl . '_id', $id)
             ->where('version', $version)
             ->order('datetime DESC')
             ->get();
@@ -140,24 +191,30 @@ abstract class Base {
      * @return boolean user is allowed to edit
      */
     public function isEditor($id, $person_id) {
-        return is_numeric($id) && is_numeric($person_id)
-            ? (
-                count($this->dsql->dsql()
-                ->table($this->baseTbl.'_person')
-                ->where($this->baseTbl.'_id', $id)
-                ->where('person_id', $person_id)
-                ->where($this->baseTbl.'_version_max IS NULL')
-                ->where('editor')
-                ->get()) > 0
-            ) || (
-                count($this->dsql->dsql()
+        if (!(is_numeric($id) && is_numeric($person_id))) {
+            return false;
+        } elseif (count(
+            $this->dsql->dsql()
                 ->table($this->baseTbl)
                 ->where($this->baseTbl.'_id', $id)
                 ->where('creator', $person_id)
                 ->where('record_status IN (\'draft\', \'published\')')
-                ->get()) > 0
-            )
-            : false;
+                ->get()
+        ) > 0) {
+            return true;
+        } elseif (count(
+            $this->dsql->dsql()
+                ->table($this->baseTbl . '_person')
+                ->where($this->baseTbl . '_id', $id)
+                ->where('person_id', $person_id)
+                ->where($this->baseTbl . '_version_max IS NULL')
+                ->where('editor')
+                ->get()
+        ) > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -170,9 +227,9 @@ abstract class Base {
     public function getVersions($id) {
         return $this->dsql->dsql()
             ->table($this->baseTbl)
-            ->where($this->baseTbl.'_id', $id)
-            ->field($this->baseTbl.'_version, record_status, uuid')
-            ->order($this->baseTbl.'_version DESC')
+            ->where($this->baseTbl . '_id', $id)
+            ->field($this->baseTbl . '_version, record_status, uuid')
+            ->order($this->baseTbl . '_version DESC')
             ->get();
     }
 
@@ -183,44 +240,52 @@ abstract class Base {
         $id = \npdc\lib\Db::insert($this->baseTbl, $values, true);
         $uuid = \Lootils\Uuid\Uuid::createV5(
             \npdc\config::$UUIDNamespace ?? \Lootils\Uuid\Uuid::createV4(),
-            $this->baseTbl.'/'.$id.'/'.$values[$this->baseTbl.'_version']
+            $this->baseTbl . '/' . $id . '/'.$values[$this->baseTbl . '_version']
         )->getUUID();
-        \npdc\lib\Db::update($this->baseTbl, [$this->baseTbl.'_id'=>$id, $this->baseTbl.'_version'=>$values[$this->baseTbl.'_version']], ['uuid'=>$uuid]);
+        \npdc\lib\Db::update(
+            $this->baseTbl,
+            [
+                $this->baseTbl . '_id' => $id,
+                $this->baseTbl . '_version' => $values[$this->baseTbl.'_version']
+            ],
+            ['uuid'=>$uuid]
+        );
         return $id;
     }
     
     public function updateGeneral($data, $id, $version) {
         \npdc\lib\Db::update($this->baseTbl,
             [
-                $this->baseTbl.'_id'=>$id,
-                $this->baseTbl.'_version'=>$version
+                $this->baseTbl . '_id'=>$id,
+                $this->baseTbl . '_version'=>$version
             ],
             $this->parseGeneral($data, 'update')
         );
     }
 
     public function insertPerson($data) {
-        return \npdc\lib\Db::insert($this->baseTbl.'_person', $data);
+        return \npdc\lib\Db::insert($this->baseTbl . '_person', $data);
     }
     
     public function deletePerson($id, $version, $currentPersons) {
         $q = $this->dsql->dsql()
-            ->table($this->baseTbl.'_person')
-            ->where($this->baseTbl.'_id', $id)
-            ->where($this->baseTbl.'_version_max IS NULL');
+            ->table($this->baseTbl . '_person')
+            ->where($this->baseTbl . '_id', $id)
+            ->where($this->baseTbl . '_version_max IS NULL');
         if (count($currentPersons) > 0) {
             $q->where('person_id', 'NOT', $currentPersons);
         }
-        $q->set($this->baseTbl.'_version_max', $version)
+        $q->set($this->baseTbl . '_version_max', $version)
             ->update();
     }
 
     public function insertKeyword($word, $id, $version) {
-        return \npdc\lib\Db::insert($this->baseTbl.'_keyword',
+        return \npdc\lib\Db::insert(
+            $this->baseTbl . '_keyword',
             [
-                $this->baseTbl.'_id'=>$id,
-                $this->baseTbl.'_version_min'=>$version,
-                'keyword'=>$word
+                $this->baseTbl . '_id' => $id,
+                $this->baseTbl . '_version_min' => $version,
+                'keyword' => $word
             ],
             true
         );
@@ -228,15 +293,19 @@ abstract class Base {
     
     public function deleteKeyword($word, $id, $version) {
         $this->dsql->dsql()
-            ->table($this->baseTbl.'_keyword')
-            ->where($this->baseTbl.'_id', $id)
+            ->table($this->baseTbl . '_keyword')
+            ->where($this->baseTbl . '_id', $id)
             ->where('keyword', $word)
-            ->where($this->baseTbl.'_version_max IS NULL')
-            ->set($this->baseTbl.'_version_max', $version)
+            ->where($this->baseTbl . '_version_max IS NULL')
+            ->set($this->baseTbl . '_version_max', $version)
             ->update();
         $this->dsql->dsql()
-            ->table($this->baseTbl.'_keyword')
-            ->where($this->baseTbl.'_version_max < '.$this->baseTbl.'_version_min')
+            ->table($this->baseTbl . '_keyword')
+            ->where(
+                $this->baseTbl . '_version_max'
+                .' < '
+                . $this->baseTbl.'_version_min'
+            )
             ->delete();
     }
 }

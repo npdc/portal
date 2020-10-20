@@ -69,7 +69,7 @@ class Project extends Base{
         $list2 = [] ;
         $n = count($list);
         $page = \npdc\lib\Args::get('page') ?? 1;
-        for($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++) {
+        for ($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++) {
             $item = $list[$i];
             $add = '';
             $parent = $this->model->getParents($item['project_id']);
@@ -78,7 +78,7 @@ class Project extends Base{
             }
             $children = $this->model->getChildren($item['project_id']);
             if (count($children) > 0) {
-                foreach($children as $child) {
+                foreach ($children as $child) {
                     $add .= '<div class="child">'.$child['title'].'</div>';
                 }
             }
@@ -126,7 +126,7 @@ class Project extends Base{
             if ($this->canEdit && is_null($this->controller->display) && count($this->versions) > 1) {
                 $v = \npdc\lib\Args::exists('version') ? \npdc\lib\Args::get('version') : 'published';
                 $_SESSION['notice'] = 'See version <select id="versionSelect" style="width:auto">';
-                foreach($this->versions as $version) {
+                foreach ($this->versions as $version) {
                     $_SESSION['notice'] .= '<option value="'.BASE_URL.'/project/'.$project.'/'.$version['project_version'].'" '
                         .(in_array($v, [$version['project_version'], $version['record_status']]) ? 'selected=true' : '')
                         .'>'.$version['project_version'].' - '.$version['record_status'].'</option>';

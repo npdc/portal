@@ -32,15 +32,11 @@ class Person{
             ->join('organization.organization_id', 'organization_id', 'left')
             ->order('name')->field('person.*, organization_name');
         if (!is_null($filters)) {
-            foreach($filters as $filter=>$values) {
-                if (
-                        (is_array($values) && count($values) === 0)
-                        || is_null($values) 
-                        || $values === ''
-                    ) {
+            foreach ($filters as $filter=>$values) {
+                if (empty($values)) {
                     continue;
                 }
-                switch($filter) {
+                switch ($filter) {
                     case 'hint':
                     case 'submit':
                         break;
@@ -49,12 +45,13 @@ class Person{
                         $q->where('organization_id', $values);
                         break;
                     case 'type':
-                        foreach($values as $value) {
+                        foreach ($values as $value) {
                             $q->where(
                                 $q->expr(
                                     'person_id IN (SELECT person_id FROM '
-                                    .$value.'_person)')
-                                );
+                                    .$value.'_person)'
+                                )
+                            );
                         }
                         break;
                     case 'userLevel':
@@ -77,7 +74,9 @@ class Person{
      * @return array person
      */
     public function getById($id) {
-        if ($id === null) { return null;}
+        if ($id === null) {
+            return null;
+        }
         $data = $this->dsql->dsql()
             ->table('person')
             ->join('organization.organization_id', 'organization_id', 'left')
@@ -85,9 +84,12 @@ class Person{
             ->get()[0];
         if (!empty($data)) {
             if (!empty($data['orcid'])) {
-                $data['orcid'] = implode('-', str_split($data['orcid'], 4));
+                $data['orcid'] = implode(
+                    '-',
+                    str_split($data['orcid'], 4)
+                );
             }
-            foreach($data as $key=>&$value) {
+            foreach ($data as $key=>&$value) {
                 if (preg_match('/^phone_[a-z]{1,}_public$/', $key)) {
                     $value = $value === 1 ? 'yes' : 'no';
                 }
@@ -130,11 +132,15 @@ class Person{
         $rows = $q->order('user_level_id')
             ->get();
         $description = '';
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $description .= $row['description']."\r\n";
         }
         $description = '<ul>'
-            .str_replace(['- ', "\r\n"], ['<li>', '</li>'], $description)
+            .str_replace(
+                ['- ', "\r\n"],
+                ['<li>', '</li>'],
+                $description
+            )
             .'</ul>';
         return ['name'=>$row['name'], 'description'=>$description];
     }
@@ -177,7 +183,7 @@ class Person{
         $q = $this->dsql->dsql()
             ->table('account_new')
             ->where('expire_reason IS NULL');
-        foreach($data as $key=>$val) {
+        foreach ($data as $key=>$val) {
             $q->where($key, $val);
         }
         $q->set('expire_reason', 'new link')->update();
@@ -202,8 +208,8 @@ class Person{
             ->where(
                 $q->expr('request_time > NOW() - INTERVAL '
                     .(\npdc\config::$db['type']==='pgsql' 
-                        ? '\''.\npdc\config::$resetExpiryHours.' hours\'' 
-                        : \npdc\config::$resetExpiryHours.' HOUR'
+                        ? '\'' . \npdc\config::$resetExpiryHours . ' hours\'' 
+                        : \npdc\config::$resetExpiryHours . ' HOUR'
                     )
                 )
             )
@@ -233,7 +239,7 @@ class Person{
         $q = $this->dsql->dsql()
             ->table('account_reset')
             ->where('expire_reason IS NULL');
-            foreach($data as $key=>$val) {
+            foreach ($data as $key=>$val) {
                 $q->where($key, $val);
             }
         $q->set('expire_reason', 'new link')->update();
@@ -261,8 +267,8 @@ class Person{
             ->where(
                 $q->expr('request_time > NOW() - INTERVAL '
                     .(\npdc\config::$db['type']==='pgsql' 
-                        ? '\''.\npdc\config::$resetExpiryHours.' hours\'' 
-                        : \npdc\config::$resetExpiryHours.' HOUR'
+                        ? '\'' . \npdc\config::$resetExpiryHours . ' hours\'' 
+                        : \npdc\config::$resetExpiryHours . ' HOUR'
                     )
                 )
             )->get()[0];
@@ -282,9 +288,9 @@ class Person{
             ->where($q->expr('expire_reason IS NULL'))
             ->where(
                 $q->expr('request_time > NOW() - INTERVAL '
-                    .(\npdc\config::$db['type']==='pgsql' 
-                        ? '\''.\npdc\config::$resetExpiryHours.' hours\'' 
-                        : \npdc\config::$resetExpiryHours.' HOUR'
+                    . (\npdc\config::$db['type']==='pgsql' 
+                        ? '\'' . \npdc\config::$resetExpiryHours . ' hours\'' 
+                        : \npdc\config::$resetExpiryHours . ' HOUR'
                     )
                 )
             )
@@ -315,9 +321,11 @@ class Person{
     public function getProjects($id) {
         return $this->dsql->dsql()
             ->table('project_person')
-            ->join('project',
+            ->join(
+                'project',
                 \npdc\lib\Db::joinVersion('project', 'project_person'),
-                'inner')
+                'inner'
+            )
             ->where('person_id', $id)
             ->where('record_status', 'published')
             ->order('date_start DESC, date_end DESC')
@@ -333,9 +341,11 @@ class Person{
     public function getPublications($id) {
         return $this->dsql->dsql()
             ->table('publication_person')
-            ->join('publication',
+            ->join(
+                'publication',
                 \npdc\lib\Db::joinVersion('publication', 'publication_person'),
-                'inner')
+                'inner'
+            )
             ->where('person_id', $id)
             ->where('record_status', 'published')
             ->order('date DESC')
@@ -351,9 +361,11 @@ class Person{
     public function getDatasets($id, $published = true) {
         return $this->dsql->dsql()
             ->table('dataset_person')
-            ->join('dataset',
+            ->join(
+                'dataset',
                 \npdc\lib\Db::joinVersion('dataset', 'dataset_person'),
-                'inner')
+                'inner'
+            )
             ->where('person_id', $id)
             ->where('record_status', 'published')
             ->order('date_start DESC')
@@ -369,8 +381,7 @@ class Person{
      * @return array resulting people
      */
     public function search($string, $exclude = [], $fuzzy = false) {
-        $q = $this->dsql->dsql()
-            ->table('person');
+        $q = $this->dsql->dsql()->table('person');
         if (strlen($string) > 0) {
             if ($fuzzy) {
                 if (strpos($string, ',') !== false) {
@@ -379,16 +390,18 @@ class Person{
                 }
                 preg_match(\npdc\config::$surname_regex, $string, $parts);
                 $q->where(
-                    $q->expr('levenshtein_ratio([], surname) >= []',
+                    $q->expr(
+                        'levenshtein_ratio([], surname) >= []',
                         [$parts['f'],
                         \npdc\config::$levenshtein_ratio_person]
                     )
                 );
                 if ($parts['f'] !== $parts['l']) {
-                    $subs = substr($string, strrpos($string, ' ')+1);
+                    $subs = substr($string, strrpos($string, ' ') + 1);
                     if (\npdc\config::$db['type'] === 'mysql') {
                         $q->where(
-                            $q->expr('levenshtein_ratio([], surname) >= []',
+                            $q->expr(
+                                'levenshtein_ratio([], surname) >= []',
                                 [$parts['l'],
                                 \npdc\config::$levenshtein_ratio_person]
                             )
@@ -396,16 +409,12 @@ class Person{
                     }
                 }
             } else {
-                $q->where('name ',
-                    \npdc\config::$db['type']==='pgsql'
-                        ? '~*'
-                        : 'REGEXP'
-                    , $string);
+                $q->where('name ', \npdc\lib\Db::getRegexp(), $string);
             }
         }
         $q->order('name');
         if (is_array($exclude) && count($exclude) > 0) {
-            foreach($exclude as $id) {
+            foreach ($exclude as $id) {
                 if (!is_numeric($id)) {
                     die('Hacking attempt');
                 }
@@ -430,7 +439,8 @@ class Person{
             ->table('person')
             ->where('mail', $mail)
             ->where('person_id', '<>', $ownId)
-            ->get()) === 0;
+            ->get()
+        ) === 0;
     }
     
     /**
@@ -451,7 +461,11 @@ class Person{
      * @return void
      */
     public function updatePerson($data, $person_id) {
-        return \npdc\lib\Db::update('person', $person_id, $this->parseData($data));
+        return \npdc\lib\Db::update(
+            'person',
+            $person_id,
+            $this->parseData($data)
+        );
     }
     
     /**
@@ -464,7 +478,7 @@ class Person{
         if (!empty($data['orcid'])) {
             $data['orcid'] = str_replace('-', '', $data['orcid']);
         }
-        foreach($data as $key=>&$value) {
+        foreach ($data as $key=>&$value) {
             if (preg_match('/^phone_[a-z]{1,}_public$/', $key)) {
                 $value = $value === 'yes' ? 1 : 0;
             }

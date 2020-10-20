@@ -28,7 +28,7 @@ class Account extends Base{
         if (\npdc\lib\Args::exists('action')) {
             $this->formController = new \npdc\controller\Form($this->formId);
             $this->person = $this->model->getById($this->session->userId);
-            switch(\npdc\lib\Args::get('action')) {
+            switch (\npdc\lib\Args::get('action')) {
                 case 'edit':
                     $this->formController->getForm('person');
                     $this->formController->form->fields->organization_id
@@ -44,7 +44,7 @@ class Account extends Base{
         if (array_key_exists('formid', $_POST)) {
             $this->formController->doCheck();
             if ($this->formController->ok) {
-                switch(\npdc\lib\Args::get('action')) {
+                switch (\npdc\lib\Args::get('action')) {
                     case 'edit':
                         $this->change_details();
                         break;

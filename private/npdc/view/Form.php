@@ -52,7 +52,7 @@ class Form {
             'group'=>'If a field group is not required fields marked with * are only required to be filled in when when filling in at least one field in the group, in that case all subfields with * in that group should be filled in.',
             'table'=>'When a table is required at least one row should be filled. New rows will be added to a table as soon as you have entered information into a field in the bottom row of a table, you can leave the last row empty before submitting, even if fields are required. When using a row all required subfields have to be filled.'
         ];
-        foreach($hints as $id=>$txt) {
+        foreach ($hints as $id=>$txt) {
             if (strpos($data->hint, $id) !== false) {
                 $hint .= ' '.$txt;
             }
@@ -61,7 +61,7 @@ class Form {
         if (!empty($hint)) {
             $form .= '<div style="clear:both">'.$this->hint($hint).'</div>';
         }
-        foreach($data->fields as $id=>$field) {
+        foreach ($data->fields as $id=>$field) {
             $form .= $this->field($id, $field);
         }
         $form .= '</form>';
@@ -211,7 +211,7 @@ class Form {
         
         $input = '';
     
-        switch($field->type) {
+        switch ($field->type) {
             case 'captcha':
                 global $session;
                 if (isset($_SESSION[$this->formId]['captcha']) 
@@ -280,7 +280,7 @@ class Form {
                     }
                 }
                 $input .= '<select name="unit_'.$id.'" class="number_with_unit no-select2 '.($this->hasError('unit_'.$id) ? 'error' : '').'"><option>==Select==</option>';
-                foreach($field->units as $unitid=>$unit) {
+                foreach ($field->units as $unitid=>$unit) {
                     $input .= '<option value="'.$unitid.'" '.($_SESSION[$this->formId]['data']['unit_'.$id] === $unitid ? 'selected' : '').'>'.$unit.'</option>';
                 }
                 $input .= '</select>';
@@ -368,17 +368,17 @@ class Form {
                     $dataKeys = array_keys($_SESSION[$this->formId]['data']);
                     $errorKeys = array_keys($_SESSION[$this->formId]['errors']);
                     $max = 0;
-                    foreach(preg_grep('/'.$id.'_(\w+)_n_(\d+)/i', $dataKeys) as $key) {
+                    foreach (preg_grep('/'.$id.'_(\w+)_n_(\d+)/i', $dataKeys) as $key) {
                         $rowId = intval(substr($key, strrpos($key, '_')+1));
                         $max = $rowId>=$max ? $rowId+1 : $max;
                     }
-                    foreach($dataKeys as &$key) {
+                    foreach ($dataKeys as &$key) {
                         if (strpos($key, '_new_') !== false) {
                             $key = substr($key, 0, strrpos($key, '_')-2).'_'.(intval(substr($key, strrpos($key, '_')+1))+$max);
                         }
                         unset($key);
                     }
-                    foreach($errorKeys as &$key) {
+                    foreach ($errorKeys as &$key) {
                         if (strpos($key, '_new_') !== false) {
                             $key = substr($key, 0, strrpos($key, '_')-2).'_'.(intval(substr($key, strrpos($key, '_')+1))+$max);
                         }
@@ -443,7 +443,7 @@ class Form {
         if ($field->hasSuggestions ?? false) {
             $input .= '<ul class="suggestions'.(isset($_SESSION[$this->formId]['data'][$id]) ? '' : ' show').'" data-target="'.$id.'" ><li>Suggestions (Click a suggestion to put it in the field above, click this header to show/hide the suggestions)</li>';
             $model = new \npdc\model\Suggestion();
-            foreach($model->getList($id) as $suggestion) {
+            foreach ($model->getList($id) as $suggestion) {
                 $input .= '<li>'. htmlentities($suggestion['suggestion']).'</li>';
             }
             $input .= '</ul>';
@@ -503,20 +503,20 @@ class Form {
             $input .= '<table class="multivalue'.(property_exists($field, 'additionalFields') ? ' noAdd':'').'"';
         }
         $input .= ' data-sortable="'. ($field->noSort ?? false ? 'false' : 'true').'" data-n-label="'.$field->nLabel.'" ><colgroup><col><col>';
-        foreach($field->fields ?? $field->additionalFields as $subfield) {
+        foreach ($field->fields ?? $field->additionalFields as $subfield) {
             if ($subfield->type !== 'hidden') {
                 $input .= '<col>';
             }
         }
         
         $input .= '</colgroup><thead><tr><td colspan="2"></td>';
-        foreach($field->fields ?? $field->additionalFields as $subfield) {
+        foreach ($field->fields ?? $field->additionalFields as $subfield) {
             if ($subfield->type !== 'hidden') {
                 $input .= '<td>'.$subfield->label.($subfield->required ?? $subfield->type !== 'checkbox' ? '*' : '').'</td>';
             }
         }
         $input .= '</tr><tr><td colspan="2"></td>';
-        foreach($field->fields ?? $field->additionalFields as $subfield) {
+        foreach ($field->fields ?? $field->additionalFields as $subfield) {
             if ($subfield->type !== 'hidden') {
                 $input .= '<td>'.$this->hint($subfield->hint, $subfield->gcmd_url).'</td>';
             }
@@ -524,7 +524,7 @@ class Form {
         $input .= '</tr></thead><tbody>';
         if (is_array($_SESSION[$this->formId]['data']) && !array_key_exists($id, $_SESSION[$this->formId]['data'])) {
             $loopId = $id.'_'.array_keys(get_object_vars($field->fields ?? $field->additionalFields))[0];
-            foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+            foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
                 if (substr($key, 0, strlen($loopId)) === $loopId) {
                     $rowid = substr($key, strlen($loopId));
                     $input .= '<tr id="'.$id.'_row'.$rowid.'"><td>≡</td><td>x</td>';
@@ -532,7 +532,7 @@ class Form {
                         $input .= '<td onclick="cloneLine(this);">+</td>';
                     }
 
-                    foreach($field->fields ?? $field->additionalFields as $subid=>$subfield) {
+                    foreach ($field->fields ?? $field->additionalFields as $subid=>$subfield) {
                         if (property_exists($subfield, 'placeholder') && ($subfield->required || true)) {
                             $subfield->placeholder .= '*';
                         }
@@ -551,13 +551,13 @@ class Form {
         }
         
         $_SESSION[$this->formId]['data'][$id]['new'] = [];
-        foreach($_SESSION[$this->formId]['data'][$id] as $rowid=>$row) {
+        foreach ($_SESSION[$this->formId]['data'][$id] as $rowid=>$row) {
             $input .= '<tr id="'.$id.'_row_'.$rowid.'"><td>≡</td><td>x</td>';
             if (!property_exists($field, 'lookup') && !property_exists($field, 'additionalFields')) {
                 $input .= '<td onclick="cloneLine(this);">+</td>';
             }    
 
-            foreach($field->fields ?? $field->additionalFields as $subid=>$subfield) {
+            foreach ($field->fields ?? $field->additionalFields as $subid=>$subfield) {
                 $_SESSION[$this->formId]['data'][$id.'_'.$subid.'_'.$rowid] = $row[$subid] ?? null;
                 if ($subfield->type === 'hidden') {
                     $input .= $this->hidden($id.'_'.$subid.'_'.$rowid, $row[$subid] ?? null);
@@ -571,7 +571,7 @@ class Form {
         }
 
         $input .= '</tbody><tfoot><tr><td colspan="2"></td>';
-        foreach($field->fields ?? $field->additionalFields as $subfield) {
+        foreach ($field->fields ?? $field->additionalFields as $subfield) {
             if ($subfield->type !== 'hidden') {
                 $input .= '<td></td>';
             }
@@ -626,10 +626,10 @@ class Form {
                     $_SESSION[$this->formId]['data'][$id] = $str;
                 }
             }
-            foreach($field->options as $option_id=>$label) {
+            foreach ($field->options as $option_id=>$label) {
                 if (is_array($label)) {
                     $input .= '<optgroup label="'.$option_id.'">';
-                    foreach($label as $option_id=>$label) {
+                    foreach ($label as $option_id=>$label) {
                         $input .= '<option value="'.$option_id.'" title="'.$label.'"'
                             .(in_array($option_id, $_SESSION[$this->formId]['data'][$id]) 
                                 ? ' selected' 
@@ -669,7 +669,7 @@ class Form {
         } else {
             $type = $multiple ? 'checkbox' : 'radio';
             $input = '<div class="cols">';
-            foreach($field->options as $option_id=>$label) {
+            foreach ($field->options as $option_id=>$label) {
                 $input .= '<div><input name="'.$fieldName.'" '
                     . 'value="'.$option_id.'" '
                     . 'type="'.$type.'" '
@@ -695,7 +695,7 @@ class Form {
      */
     private function multiText($id, $field) {
         $input = '<div class="multitext"><div class="values">';
-        foreach($_SESSION[$this->formId]['data'][$id] ?? [] as $value) {
+        foreach ($_SESSION[$this->formId]['data'][$id] ?? [] as $value) {
             if (trim($value) !== '') {
                 $input .= '<span><input type="hidden" name="'.$id.'[]" value="'.$value.'" />'.$value.'<span class="delete">x</span></span> ';
             }
@@ -716,7 +716,7 @@ class Form {
             $return = (empty($fieldset->name) ? '' : '<a name="'.$fieldset->name.'"></a>').(substr($id, -4) === '_new' || (!$this->collapsible && !$fieldset->collapsible) ? '' : '<h4 class="fieldset collapsible">'.$fieldset->label.((property_exists($fieldset, 'required') && $fieldset->required) ? '*' : '').'</h4>');
             $nrs = [];
             $loopId = $id.'_';
-            foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+            foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
                 if (substr($key, 0, strlen($loopId)) === $loopId) {
                     $nrs[] = substr($key, strlen($loopId), strpos($key, '_', strlen($loopId))-strlen($loopId));
                 }
@@ -727,7 +727,7 @@ class Form {
             $fieldset2 = clone($fieldset);
             $fieldset2->multi = 'repeatable';
     
-            foreach($nrs as $nr) {
+            foreach ($nrs as $nr) {
                 $this->nr = $nr;
                 $return .= $this->fieldset($id.'_'.$nr, $fieldset2);
             }
@@ -762,7 +762,7 @@ class Form {
             } elseif (property_exists($fieldset, 'max')) {
                 $return .= $this->hint('Please fill in at maximum '.$fieldset->max.' field'.($fieldset->max !== 1 ? 's' : ''));
             }
-            foreach($fieldset->fields as $subid=>$field) {
+            foreach ($fieldset->fields as $subid=>$field) {
                 $return .= $this->field(($fieldset->use_main_id ?? true ? $id.'_' : '').$subid, $field);
             }
             $return .= '</fieldset>';
@@ -877,7 +877,7 @@ class Form {
     private function map($id, $field) {
         $nrs = [];
         $loopId = $id.'_'.array_keys(get_object_vars($field->fields))[1];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $nrs[] = substr($key, strlen($loopId)+1);
             }
@@ -890,7 +890,7 @@ class Form {
         }
         $return = substr($id, -4) === '_new' || !$this->collapsible ? '' : '<h4 class="fieldset collapsible">'.$field->label.((property_exists($field, 'required') && $field->required) ? '*' : '').'</h4>';
         
-        foreach($nrs as $nr) {
+        foreach ($nrs as $nr) {
             $hasError = $this->hasError($id.'_'.$nr);
             $return .= '<fieldset id="'.$id.'_'.$nr.'"';
             if (property_exists($field, 'min')) {
@@ -912,10 +912,10 @@ class Form {
             $return .= '<div class="map">';
             $return .= '<div id="mapContainer_'.$nr.'" class="mapContainer"></div>';
             $return .= '<div>';
-            foreach($field->fields as $subid=>$subfield) {
+            foreach ($field->fields as $subid=>$subfield) {
                 if ($subfield->type === 'group') {
                     $return .= '<div id="'.$id.'_'.$subid.'_'.$nr.'">';
-                    foreach($subfield->fields as $subid=>$subfield) {
+                    foreach ($subfield->fields as $subid=>$subfield) {
                         if ($subfield->type !== 'hint') {
                             $return .=     '<h4 class="label">'.$subfield->label.'</h4>';
                         }
@@ -928,7 +928,7 @@ class Form {
                         
                     if ($subid === 'type') {
                         $newoptions = [];
-                        foreach($subfield->options as $key=>$option) {
+                        foreach ($subfield->options as $key=>$option) {
                             $newoptions[$id.'_'.$key.'_'.$nr] = $option;
                         }
                         $subfield->options = $newoptions;

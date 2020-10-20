@@ -71,7 +71,8 @@ class Page{
     /**
      * SETTERS
      * 
-     * insertPage is missing, also in the interface. Only way to add a new page is to add it to the database directly
+     * insertPage is missing, also in the interface. Only way to add a new page 
+     *  is to add it to the database directly
      */
 
 
@@ -120,7 +121,7 @@ class Page{
             ->table('page_person')
             ->where('page_id', $page);
         if (count($persons) > 0) {
-            foreach($persons as $person) {
+            foreach ($persons as $person) {
                 if (!is_numeric($person)) {
                     die('hacking attempt');
                 }
@@ -164,12 +165,12 @@ class Page{
             ->table('page_link')
             ->where('page_id', $page_id);
         if (is_array($keep) && count($keep) > 0) {
-            foreach($keep as $id) {
+            foreach ($keep as $id) {
                 if (!is_numeric($id)) {
                     die('Hacking attempt');
                 }
             }
-            $q->where('page_link_id NOT IN ('.implode(',', $keep).')');
+            $q->where('page_link_id NOT IN (' . implode(',', $keep) . ')');
         }
         $q->delete();
     }

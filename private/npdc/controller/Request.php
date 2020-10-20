@@ -82,7 +82,7 @@ class Request extends Base {
             $zip->addMeta(
                 $this->modelDataset->generateMeta($request['dataset_id'])
             );
-            foreach($this->model->getFiles(\npdc\lib\Args::get('id')) as $file) {
+            foreach ($this->model->getFiles(\npdc\lib\Args::get('id')) as $file) {
                 $zip->addFile($file['file_id']);
             }
             $this->model->updateRequest(
@@ -99,7 +99,7 @@ class Request extends Base {
                 . $_POST['reason'];
         }
         $mailText .= "\r\n\r\nYou requested the following files:\r\n";
-        foreach($this->model->getFiles(\npdc\lib\Args::get('id')) as $file) {
+        foreach ($this->model->getFiles(\npdc\lib\Args::get('id')) as $file) {
             $mailText .= '- ' . $file['name'] . "\r\n";
         }
         $mailText .= "\r\n";

@@ -19,6 +19,6 @@ if (!empty($this->controller->notice)) {
 
 <h4>Requested files</h4>
 <?php
-foreach($this->model->getFiles($this->data['access_request_id']) as $file) {
+foreach ($this->model->getFiles($this->data['access_request_id']) as $file) {
     echo '<p>'.$file['title'].' ('.$file['name'].', '.$file['type'].', '.formatBytes($file['size']).')<br/><i>'.$file['description'].'</i></p>';
 }

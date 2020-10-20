@@ -37,10 +37,10 @@ class Dif {
         if ($element === null) {
             $element = &$this->xml;
         }
-        foreach($data as $key=>$value) {
+        foreach ($data as $key=>$value) {
             if (is_array($value)) {
                 if (is_numeric(array_keys($value)[0])) {
-                    foreach($value as $v) {
+                    foreach ($value as $v) {
                         if (is_array($v)) {
                             $this->parseArray($v, $element->addChild($key));
                         } else {

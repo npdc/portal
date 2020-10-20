@@ -84,7 +84,7 @@ class Overlay{
                 $getFunction = 'id';
             }
             $model = new $modelClass();
-            switch($getFunction) {
+            switch ($getFunction) {
                 case 'url':
                     $page = $model->getByUrl($parts[1]);
                     break;

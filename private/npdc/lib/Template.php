@@ -23,7 +23,7 @@ class Template {
         } else {
             $str = $data->$value;
         }
-        switch($type) {
+        switch ($type) {
             case 'bool':
                 $str = $str ? 'yes' : 'no';
                 break;

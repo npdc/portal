@@ -69,7 +69,7 @@ class CheckDownload {
         $dir = \npdc\config::$downloadDir;
         echo 'Checking ' . $dir . '<br/>';
         $files = array_diff(scandir($dir), array('.', '..'));
-        foreach($files as $file) {
+        foreach ($files as $file) {
             if (filemtime($dir . '/' . $file) < time()-7*24*60*60) {
                 echo 'Removing ' . $file . '<br/>';
                 if (is_dir($dir . '/' . $file)){

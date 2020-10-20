@@ -20,12 +20,12 @@ $fields = ['publication_type_id'=>'Publication type'
     , 'isbn'=>'ISBN'
     , 'doi'=>'DOI'];
 
-foreach($fields as $id=>$label) {
+foreach ($fields as $id=>$label) {
     if (!empty($this->data[$id])) {
         echo '<section class="inline">
         <h4>'.$label.'</h4>
         <p>';
-        switch($id) {
+        switch ($id) {
             case 'doi':
                 $doi = substr($this->data[$id], strpos($this->data[$id], '10.'));
                 echo '<a href="https://doi.org/'.$doi.'">'.$doi.'</a></p>';
@@ -47,7 +47,7 @@ foreach($fields as $id=>$label) {
 $keywords = $this->model->getKeywords($this->data['publication_id'], $this->data['publication_version']);
 if (count($keywords) > 0) {
     echo '<h4>Keywords</h4><ul>';
-    foreach($keywords as $word) {
+    foreach ($keywords as $word) {
         echo '<li>'.$word['keyword'].'</li>';
     }
     echo '</ul>';

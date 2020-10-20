@@ -11,10 +11,10 @@ namespace npdc\view;
 class Account extends Base {
     public $class = 'detail';
     public $right = '<ul>'
-            . '<li><a href="'.BASE_URL.'/account">View account</a></li>'
-            . '<li><a href="'.BASE_URL.'/account/edit">Edit details</a></li>'
-            . '<li><a href="'.BASE_URL.'/account/password">Change password</a></li>'
-            . '</ul>';
+        . '<li><a href="' . BASE_URL . '/account">View account</a></li>'
+        . '<li><a href="' . BASE_URL . '/account/edit">Edit details</a></li>'
+        . '<li><a href="' . BASE_URL . '/account/password">Change password</a></li>'
+        . '</ul>';
     
     /**
      * Constructor

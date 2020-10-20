@@ -46,7 +46,7 @@ class Vocab {
             $url = 'https://gcmd.earthdata.nasa.gov/kms/concept_schemes';
             $res = simplexml_load_string($this->curl->get($url));
             if ($this->curl->status()['http_code'] === 200) {
-                foreach($res->scheme as $scheme) {
+                foreach ($res->scheme as $scheme) {
                     echo $scheme['name'] . ': ' . $scheme['updateDate'] . '<br/>';
                     $vocab = (string)$scheme['name'];
                     if ($this->model->getVocab($vocab) === false) {
@@ -79,7 +79,7 @@ class Vocab {
      */
     public function loopVocabs() {
         $vocabs = $this->model->getUpdatable();
-        foreach($vocabs as $vocab) {
+        foreach ($vocabs as $vocab) {
             echo 'Starting with ' . $vocab['vocab_name'] . ' - '
                 . $vocab['vocab_id'] . '<br/>';
             $url = 'https://gcmd.earthdata.nasa.gov/kms/concepts/concept_scheme/'
@@ -88,7 +88,7 @@ class Vocab {
             $comment_lines = 1;
             $keys = str_getcsv($csv[$comment_lines]);
             $data = array_slice($csv, $comment_lines + 1);
-            foreach($data as $row) {
+            foreach ($data as $row) {
                 if (count($keys) !== count(str_getcsv($row))) {
                     echo 'Skipping ' . $row . '<br/>';
                     continue;

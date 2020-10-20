@@ -51,7 +51,9 @@ class Add extends Base {
         } else {
             $this->mid = '<script language="javascript" type="text/javascript">
                 $(function() {
-                    window.parent.closeOverlay('.json_encode($this->controller->return).');
+                    window.parent.closeOverlay('
+                    . json_encode($this->controller->return)
+                    . ');
                 });
                 </script>
                 ';

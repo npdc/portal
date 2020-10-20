@@ -62,7 +62,7 @@ class Login extends Base{
      * @return void
      */
     public function showItem() {
-        switch(\npdc\lib\Args::get('loginaction')) {
+        switch (\npdc\lib\Args::get('loginaction')) {
             case 'reset':
                 if (!\npdc\lib\Args::exists('loginkey')) {
                     $this->title = 'Request new password';

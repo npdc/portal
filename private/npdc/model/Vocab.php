@@ -93,33 +93,71 @@ class Vocab {
         $q = $this->dsql->dsql()
             ->table($vocab)
             ->where('visible');
-        $regexp = \npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP';
-        switch($vocab) {
+        $regexp = \npdc\lib\Db::getRegexp();
+        switch ($vocab) {
             case 'vocab_chronounit':
                 $q->order('sort');
                 if (!empty($filter)) {
                     $f = $q->orExpr();
-                    foreach(['eon', 'era', 'period', 'epoch', 'stage'] as $var) {
+                    foreach (
+                        ['eon', 'era', 'period', 'epoch', 'stage']
+                        as $var
+                    ) {
                         $f->where($var, $regexp, $filter);
                     }
                     $q->where($f);
                 }
                 break;
             case 'vocab_instrument':
-                $q->order($q->expr('CASE WHEN category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' ELSE category END, coalesce(class, \'0\'), coalesce(type, \'0\'), coalesce(subtype, \'0\'), coalesce(short_name, \'0\')'));
+                $q->order(
+                    $q->expr(
+                        'CASE WHEN category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' '
+                        . 'ELSE category END, coalesce(class, \'0\'), '
+                        . 'coalesce(type, \'0\'), coalesce(subtype, \'0\'), '
+                        . 'coalesce(short_name, \'0\')'
+                    )
+                );
                 if (!empty($filter)) {
                     $f = $q->orExpr();
-                    foreach(['category', 'class', 'type', 'subtype', 'short_name', 'long_name'] as $var) {
+                    foreach (
+                        [
+                            'category',
+                            'class',
+                            'type',
+                            'subtype',
+                            'short_name',
+                            'long_name'
+                        ] 
+                        as $var
+                    ) {
                         $f->where($var, $regexp, $filter);
                     }
                     $q->where($f);
                 }
                 break;
             case 'vocab_location':
-                $q->order($q->expr('CASE WHEN location_category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' ELSE location_category END, coalesce(location_type, \'0\'), coalesce(location_subregion1, \'0\'), coalesce(location_subregion2, \'0\'), coalesce(location_subregion3, \'0\')'));
+                $q->order(
+                    $q->expr(
+                        'CASE WHEN location_category=\'NOT APPLICABLE\' THEN '
+                        . '\'zzzzzzz\' ELSE location_category END, '
+                        . 'coalesce(location_type, \'0\'), '
+                        . 'coalesce(location_subregion1, \'0\'), '
+                        . 'coalesce(location_subregion2, \'0\'), '
+                        . 'coalesce(location_subregion3, \'0\')'
+                    )
+                );
                 if (!empty($filter)) {
                     $f = $q->orExpr();
-                    foreach(['location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3'] as $var) {
+                    foreach (
+                        [
+                            'location_category',
+                            'location_type',
+                            'location_subregion1',
+                            'location_subregion2',
+                            'location_subregion3'
+                        ]
+                        as $var
+                    ) {
                         $f->where($var, $regexp, $filter);
                     }
                     
@@ -127,10 +165,19 @@ class Vocab {
                 }
                 break;
             case 'vocab_platform':
-                $q->order($q->expr('CASE WHEN category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' ELSE category END, coalesce(series_entity, \'0\'), coalesce(short_name, \'0\')'));
+                $q->order(
+                    $q->expr(
+                        'CASE WHEN category=\'NOT APPLICABLE\' THEN \'zzzzzzz\' '
+                        . 'ELSE category END, coalesce(series_entity, \'0\'), '
+                        . 'coalesce(short_name, \'0\')'
+                    )
+                );
                 if (!empty($filter)) {
                     $f = $q->orExpr();
-                    foreach(['category', 'series_entity', 'short_name', 'long_name'] as $var) {
+                    foreach (
+                        ['category', 'series_entity', 'short_name', 'long_name']
+                        as $var
+                    ) {
                         $f->where($var, $regexp, $filter);
                     }
                     $q->where($f);
@@ -145,10 +192,27 @@ class Vocab {
                 }
                 break;
             case 'vocab_science_keyword':
-                $q->order($q->expr('category, coalesce(topic, \'0\'), coalesce(term, \'0\'), coalesce(var_lvl_1, \'0\'), coalesce(var_lvl_2, \'0\'), coalesce(var_lvl_3, \'0\'), coalesce(detailed_variable, \'0\')'));
+                $q->order(
+                    $q->expr(
+                        'category, coalesce(topic, \'0\'), coalesce(term, \'0\'), '
+                        . 'coalesce(var_lvl_1, \'0\'), coalesce(var_lvl_2, \'0\'), '
+                        . 'coalesce(var_lvl_3, \'0\'), coalesce(detailed_variable, \'0\')'
+                    )
+                );
                 if (!empty($filter)) {
                     $f = $q->orExpr();
-                    foreach(['category', 'topic', 'term', 'var_lvl_1', 'var_lvl_2', 'var_lvl_3', 'detailed_variable'] as $var) {
+                    foreach (
+                        [
+                            'category',
+                            'topic',
+                            'term',
+                            'var_lvl_1',
+                            'var_lvl_2',
+                            'var_lvl_3',
+                            'detailed_variable'
+                        ]
+                        as $var
+                    ) {
                         $f->where($var, $regexp, $filter);
                     }
                     $q->where($f);
@@ -158,7 +222,7 @@ class Vocab {
                 $q->order($q->expr('type, coalesce(subtype, \'0\')'));
                 if (!empty($filter)) {
                     $f = $q->orExpr();
-                    foreach(['type', 'subtype'] as $var) {
+                    foreach (['type', 'subtype'] as $var) {
                         $f->where($var, $regexp, $filter);
                     }
                     $q->where($f);
@@ -177,7 +241,10 @@ class Vocab {
     public function getIDNNode($location_id) {
         return $this->dsql->dsql()
             ->table('vocab_idn_node')
-            ->join('vocab_location_vocab_idn_node.vocab_idn_node_id','vocab_idn_node_id')
+            ->join(
+                'vocab_location_vocab_idn_node.vocab_idn_node_id',
+                'vocab_idn_node_id'
+            )
             ->where('vocab_location_id', $location_id)
             ->get();
     }

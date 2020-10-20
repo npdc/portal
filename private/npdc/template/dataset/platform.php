@@ -8,7 +8,7 @@
 
 $platforms = $this->model->getPlatform($this->data['dataset_id'], $this->data['dataset_version']);
 if (count($platforms) > 0) {
-    foreach($platforms as $platform) {
+    foreach ($platforms as $platform) {
         echo '<fieldset><legend>Platform</legend>'.$this->vocab->formatTerm('vocab_platform', $platform);
         $this->showCharacteristics('platform', $platform['platform_id'], $this->data['dataset_version']);
         $instruments = $this->model->getInstrument($platform['platform_id'], $this->data['dataset_version']);

@@ -36,11 +36,11 @@
         $css[] = 'npdc/'.NPDC_ENVIRONMENT.'.min';
     }
     $v = NPDC_DEV ? time() : APP_VERSION;
-    foreach([
+    foreach ([
         'css'=>['<link rel="stylesheet" type="text/css" href="'.BASE_URL.'/css/', '.css?'.$v.'" />'],
         'js'=>['<script src="'.BASE_URL.'/js/', '.js?'.$v.'"></script>']
     ] as $type=>$code) {
-        foreach($$type as $file) {
+        foreach ($$type as $file) {
             echo $code[0].$file.$code[1]."\r\n";
         }
     }

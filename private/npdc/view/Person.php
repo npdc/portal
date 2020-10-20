@@ -56,7 +56,7 @@ class Person extends Base{
         $list = array_values($list);
         $n = count($list);
         $page = \npdc\lib\Args::get('page') ?? 1;
-        for($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++) {
+        for ($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++) {
             $person = $list[$i];
             $person['report'] = '<button onclick="javascript:event.stopPropagation();location.href=\''.BASE_URL.'/person/'.$person['person_id'].'/report\'">View</button>';
             $person['takeover'] = '<button onclick="javascript:event.stopPropagation();location.href=\''.BASE_URL.'/person/'.$person['person_id'].'/takeover\'">Take over</button>';

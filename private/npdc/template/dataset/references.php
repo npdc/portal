@@ -20,7 +20,7 @@ if (count($publications) === 0) {
     echo 'No publications linked to this dataset yet';
 } else {
     $publicationModel = new \npdc\model\Publication();
-    foreach($publications as $publication) {
+    foreach ($publications as $publication) {
         echo $publicationModel->getCitation($publication);
     }
 }
@@ -30,7 +30,7 @@ $links = $this->model->getLinks($this->data['dataset_id'], $this->data['dataset_
 if (count($links) === 0) {
     echo 'No links';
 } else {
-    foreach($links as $link) {
+    foreach ($links as $link) {
         $urls = $this->model->getLinkUrls($link['dataset_link_id'], $this->data['dataset_version']);
         echo '<p'
             .(count($urls) === 1 
@@ -39,7 +39,7 @@ if (count($links) === 0) {
             .'<br/>'.$link['description'].'</p>';
         if (count($urls) > 1) {
             echo '<ul style="margin-top: 0px;">';
-            foreach($urls as $url) {
+            foreach ($urls as $url) {
                 echo '<li><a href="'.checkurl($url['url']).'">'.checkurl($url['url']).'</a></li>';
             }
             echo '</ul>';
@@ -50,7 +50,7 @@ if (count($links) === 0) {
 $citations = $this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version'], 'other');
 if (count($citations) > 0) {
     echo '<h4>Other references</h4>';
-    foreach($citations as $citation) {
+    foreach ($citations as $citation) {
         echo '<p>'
             . $citation['creator']
             . ' ('.substr($citation['release_date'],0,4).').'
@@ -66,7 +66,7 @@ if (count($citations) > 0) {
 $related = $this->model->getRelatedDatasets($this->data['dataset_id'], $this->data['dataset_version']);
 if (count($related) > 0) {
     echo '<h4>Related datasets</h4><ul>';
-    foreach($related as $set) {
+    foreach ($related as $set) {
         if (!empty($set['doi'])) {
             $l = '<a href="https://dx.doi.org/'.$set['doi'].'">https://dx.doi.org/'.$set['doi'].'</a>';
         } elseif (!empty($set['internal_related_dataset_id'])) {

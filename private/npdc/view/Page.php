@@ -73,7 +73,7 @@ class Page extends Base{
         } else {
             $this->title = $data['title'];
             
-            switch($this->controller->display) {
+            switch ($this->controller->display) {
                 case 'edit':
                     $this->loadEditPage();
                     break;
@@ -110,7 +110,7 @@ class Page extends Base{
      */
     private function displayPersons($persons) {
         $personView = new \npdc\lib\Person();
-        foreach($persons as $person) {
+        foreach ($persons as $person) {
             //display address if person of different organization than previous person
             $this->right .= '<div><h4>'.$person['role'].'</h4>'
                     .$personView->showPerson($person).'</div>';
@@ -124,7 +124,7 @@ class Page extends Base{
      */
     private function displayUrls($urls) {
         $this->right .= '<div><h4>Links</h4><ul>';
-        foreach($urls as $url) {
+        foreach ($urls as $url) {
             $this->right .= '<li><a href="'.$url['url'].'">'.$url['text'].'</a></li>';
         }
         $this->right .= '</ul></div>';

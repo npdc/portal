@@ -23,7 +23,7 @@ class Page extends Base{
         $this->session = $session;
         $this->id = \npdc\lib\Args::get('id');
         if (\npdc\lib\Args::exists('action')) {
-            switch(\npdc\lib\Args::get('action')) {
+            switch (\npdc\lib\Args::get('action')) {
                 case 'new':
                     die('Please ask the NPDC to add a new page to the database');
                     break;
@@ -102,7 +102,7 @@ class Page extends Base{
                 //Load data
                 $_SESSION[$this->formId]['data'] = $data;
                 $people = $this->model->getPersons($data['page_id']);
-                foreach($people as $n=>$person) {
+                foreach ($people as $n=>$person) {
                     $this->setFormData(
                         'people_person_id_' . $n,
                         $person['person_id']
@@ -121,7 +121,7 @@ class Page extends Base{
                     );
                 }
                 $urls = $this->model->getUrls($data['page_id']);
-                foreach($urls as $n=>$url) {
+                foreach ($urls as $n=>$url) {
                     $this->setFormData(
                         'links_id_' . $n,
                         $url['page_link_id']
@@ -148,7 +148,7 @@ class Page extends Base{
         $persons = [];
         $loopId = 'people_person_id_';
         $sort = 1;
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $persons[] = $this->getFormData($key);
                 $record = [
@@ -180,7 +180,7 @@ class Page extends Base{
     private function saveLinks() {
         $loopId = 'links_id_';
         $keep = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId 
                 && strpos($key, '_new_') === false) {
                 $keep[] = $this->getFormData($key);
@@ -190,7 +190,7 @@ class Page extends Base{
         
         $loopId = 'links_url_';
         $sort = 1;
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $data = [];
                 $data['url'] = $this->getFormData($key);

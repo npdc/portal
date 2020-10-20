@@ -77,7 +77,7 @@ class Args {
             str_replace('%20', ' ', $url),
             self::$args
         );
-        foreach(self::$args as $key=>$val) {
+        foreach (self::$args as $key=>$val) {
             if (is_numeric($key) || $val === '') {
                 unset(self::$args[$key]);
             }
@@ -119,7 +119,7 @@ class Args {
                         self::$args['uuid']
                     );
                 }
-                foreach(
+                foreach (
                     (
                         array_key_exists('uuidtype', self::$args)
                         ? [self::$args['uuidtype']]

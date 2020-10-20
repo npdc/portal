@@ -17,9 +17,9 @@ $fields = [
     'vocab_res_time_id'=>'Temporal resolution range'
 ];
 
-foreach($resolutions as $resolution) {
+foreach ($resolutions as $resolution) {
     echo '<fieldset><legend>Data resolution</legend>';
-    foreach($fields as $id=>$label) {
+    foreach ($fields as $id=>$label) {
         if (!empty($resolution[$id])) {
             echo '<section class="inline"><h4>'.$label.'</h4><p>'.(substr($id, 0,5) === 'vocab' ? $this->vocab->formatTerm(substr($id, 0, -3), $resolution) : $resolution[$id]).'</p></section>';
         }

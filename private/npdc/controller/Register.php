@@ -46,7 +46,7 @@ class Register extends Login{
         if ($this->formId === 'register_create') {
             $persons = $this->model->getByMail($this->record['mail']);
             $this->form->fields->person->options = [];
-            switch(count($persons)) {
+            switch (count($persons)) {
                 case 0:
                     $this->form->fields->person->disabled = true;
                     $this->form->fields->name->disabled = false;
@@ -64,7 +64,7 @@ class Register extends Login{
                         .' contact the NPDC</a>';
                     break;
                 default:
-                    foreach($persons as $person) {
+                    foreach ($persons as $person) {
                         $this->form->fields->person
                             ->options[$person['person_id']] = $person['name'];
                     }
@@ -73,7 +73,7 @@ class Register extends Login{
                 . \npdc\config::$passwordMinLength . ' characters or longer';
         }
         if (array_key_exists('notice', $_GET)) {
-            switch($_GET['notice']) {
+            switch ($_GET['notice']) {
                 case 'expired':
                     $this->form->fields->action->value = 'parent/submit';
             }
@@ -89,7 +89,7 @@ class Register extends Login{
                         $_SESSION[$this->formId]['data']['mail']
                     )
                     : null;
-                switch($this->formId) {
+                switch ($this->formId) {
                     case 'register':
                         $this->processRegister($person);
                         break;

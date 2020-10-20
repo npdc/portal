@@ -110,7 +110,7 @@ class Base {
                         }
                         $this->version = $baseData[$this->name.'_version'];
                         $_SESSION['warnings'] = [];
-                        foreach($this->pages as $page=>$title) {
+                        foreach ($this->pages as $page=>$title) {
                             $this->screen = $page;
                             $this->formController = new \npdc\controller\Form(
                                 $this->name . '_' . $this->id
@@ -184,7 +184,7 @@ class Base {
     }
     
     private function doAction(){
-        switch(\npdc\lib\Args::get('action')) {
+        switch (\npdc\lib\Args::get('action')) {
             case 'dosubmit':
                 $data = $this->model->getById(
                     \npdc\lib\Args::get('id'),
@@ -375,13 +375,13 @@ class Base {
                 . '<br/><input type="submit" value="Do publish" /></form>'
                 . '</div>';
         }
-        foreach($_SESSION['warnings'] as $section=>$data) {
+        foreach ($_SESSION['warnings'] as $section=>$data) {
             if (!empty($data[0])) {
                 $output .= '<h3><a href="' . BASE_URL . '/' . $this->name . '/'
                     . $this->id . '/edit/' . $section . '">' . $data[0]
                     . '</a></h3><ul>';
             }
-            foreach($data[1] as $warning) {
+            foreach ($data[1] as $warning) {
                 $output .= '<li>'.$warning.'</li>';
             }
             $output .= '</ul>';
@@ -502,7 +502,7 @@ class Base {
     public function getPersons($filter = null) {
         $model = new \npdc\model\Person();
             $options = [];
-            foreach($model->getList($filter) ?? [] as $person) {
+            foreach ($model->getList($filter) ?? [] as $person) {
                 $options[$person['person_id']] = $person['name'];
             }
             return $options;
@@ -517,7 +517,7 @@ class Base {
     public function getOrganizations($filter = null) {
         $model = new \npdc\model\Organization();
         $options = [];
-        foreach($model->getList($filter) ?? [] as $org) {
+        foreach ($model->getList($filter) ?? [] as $org) {
             $options[$org['organization_id']] = $org['organization_name'];
         }
         return $options;
@@ -538,7 +538,7 @@ class Base {
     public function getPrograms($filter = null) {
         $model = new \npdc\model\Program();
         $options = [];
-        foreach($model->getList($filter) ?? [] as $prog) {
+        foreach ($model->getList($filter) ?? [] as $prog) {
             $options[$prog['program_id']] = $prog['name'];
         }
         return $options;
@@ -554,7 +554,7 @@ class Base {
         $options = [];
         if ($showContinent) {
             $continent = '';
-            foreach($model->getListByContinent() as $country) {
+            foreach ($model->getListByContinent() as $country) {
                 if ($country['continent_id'] !== $continent) {
                     $options[$country['continent_name']] = [];
                     $continent = $country['continent_id'];
@@ -563,7 +563,7 @@ class Base {
                     $country['country_name'];
             }
         } else {
-            foreach($model->getList() as $country) {
+            foreach ($model->getList() as $country) {
             $options[$country['country_id']] = $country['country_name'];
         }
         
@@ -585,7 +585,7 @@ class Base {
             $changed = true;
         } else {
             $test = $draft !== false ? $draft : $submitted;
-            foreach($test as $key=>$val) {
+            foreach ($test as $key=>$val) {
                 if (!in_array(
                     $key,
                     [

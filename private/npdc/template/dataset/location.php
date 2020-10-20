@@ -14,7 +14,7 @@
 <ul>
 <?php
 $locations = $this->model->getLocations($this->data['dataset_id'], $this->data['dataset_version']);
-foreach($locations as $location) {
+foreach ($locations as $location) {
     echo '<li>'.$this->vocab->formatTerm('vocab_location', $location)
         . (empty($location['detailed']) ? '' : ' > '.$location['detailed'])
         . '</li>';
@@ -66,13 +66,13 @@ if (count($spatialCoverages) > 0) {
                     '@id' => "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
                 ]
             ];
-            foreach($spatialCoverages as $spatialCoverage) {
+            foreach ($spatialCoverages as $spatialCoverage) {
                 $wkt = $spatialCoverage['wkt'];//str_replace([' -90', ' 90'], [' -89.999999999', ' 89.999999999'], $spatialCoverage['wkt']);
                 ?>
                 feature = wkt.readFeature("<?=$wkt?>",{dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
                 <?php
                 $txt = '';
-                foreach(['altitude', 'depth'] as $metric) {
+                foreach (['altitude', 'depth'] as $metric) {
                     if (!is_null($spatialCoverage[$metric.'_min'])) {
                         $txt .= '<i>'.ucfirst($metric).':</i> '.$spatialCoverage[$metric.'_min'].' - '.$spatialCoverage[$metric.'_max'].' '.$spatialCoverage[$metric.'_unit'].'<br/>';
                     }
@@ -85,16 +85,16 @@ if (count($spatialCoverages) > 0) {
                 $points = explode(',', substr($spatialCoverage['wkt'], strrpos($spatialCoverage['wkt'], '(')+1, strpos($spatialCoverage['wkt'], ')')-strrpos($spatialCoverage['wkt'], '(')-1));
                 $lats = [];
                 $lons = [];
-                foreach($points as &$point) {
+                foreach ($points as &$point) {
                     $point = explode(' ', $point);
-                    foreach($point as &$coord) {
+                    foreach ($point as &$coord) {
                         $coord = round($coord, 4);
                     }
                     $lats[] = $point[1];
                     $lons[] = $point[0];
                     $point = implode(',', array_reverse($point));
                 }
-                switch($spatialCoverage['type']) {
+                switch ($spatialCoverage['type']) {
                     case 'Point':
                     $point = explode(',', $points[0]);
                         $this->json['@graph'][0]['spatialCoverage']['geo'][] = [

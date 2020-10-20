@@ -45,7 +45,7 @@ class Publication extends Base{
             'project_publication',
             'dataset_publication'
         ];
-        foreach($tables as $table) {
+        foreach ($tables as $table) {
             if($this->tblHasChanged($table, $id, $version)){
                 return true;
             };
@@ -67,7 +67,7 @@ class Publication extends Base{
     
     private function getTypes() {
         $types = [];
-        foreach($this->model->getTypes() as $type) {
+        foreach ($this->model->getTypes() as $type) {
             $types[$type['publication_type_id']] = 
                 $type['label'] . ' | ' . $type['description'];
         }
@@ -102,7 +102,7 @@ class Publication extends Base{
 
             $keywords = $this->model->getKeywords($this->id, $this->version);
             $words = [];
-            foreach($keywords as $keyword) {
+            foreach ($keywords as $keyword) {
                 $words[] = $keyword['keyword'];
             }
             $this->setFormData('keywords', $words);
@@ -111,7 +111,7 @@ class Publication extends Base{
                 'people',
                 $this->model->getPersons($this->id, $this->version)
             );
-            foreach($_SESSION[$this->formId]['data']['people'] as &$row) {
+            foreach ($_SESSION[$this->formId]['data']['people'] as &$row) {
                 if (empty($row['person_id'])) {
                     $row['person_id'] = 'quickadd';
                 }
@@ -162,7 +162,7 @@ class Publication extends Base{
                 $_SESSION['notice'] = 'Found the details below based on your '
                     . 'DOI (' . $doi . '), please check the details and update '
                     . 'where needed';
-                foreach(['title', 'issue', 'volume'] as $field) {
+                foreach (['title', 'issue', 'volume'] as $field) {
                     $this->setFormData($field, $data->$field);
                 }
                 $this->setFormData('pages', $data->page);
@@ -173,7 +173,7 @@ class Publication extends Base{
                     'url',
                     $curl2->getRedirect('http://dx.doi.org/'.$doi)
                 );
-                foreach($data->author as $author) {
+                foreach ($data->author as $author) {
                     $this->setFormData(
                         'people',
                         [
@@ -183,7 +183,7 @@ class Publication extends Base{
                         true
                     );
                 }
-                foreach(
+                foreach (
                     ['published-print', 'published-online', 'issued']
                     as $date
                 ) {
@@ -271,18 +271,18 @@ class Publication extends Base{
     private function saveKeywords() {
         $currentKeywords = $this->model->getKeywords($this->id, $this->version);
         $words = [];
-        foreach($currentKeywords as $row) {
+        foreach ($currentKeywords as $row) {
             $words[] = $row['keyword'];
         }
         $new = array_diff($this->getFormData('keywords'), $words);
         $old = array_diff($words, $this->getFormData('keywords'));
         if (count($old) > 0) {
-            foreach($old as $word) {
+            foreach ($old as $word) {
                 $this->model->deleteKeyword($word, $this->id, $this->version-1);
             }
         }
         if (count($new) > 0) {
-            foreach($new as $word) {
+            foreach ($new as $word) {
                 $this->model->insertKeyword($word, $this->id, $this->version);
             }
         }
@@ -298,7 +298,7 @@ class Publication extends Base{
         $loopId = 'projects_project_id_';
         $projectModel = new \npdc\model\Project();
         
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $projects[] = $this->getFormData($key);
                 if (strpos($key, '_new_') !== false) {
@@ -328,7 +328,7 @@ class Publication extends Base{
         $loopId = 'datasets_dataset_id_';
         $projectModel = new \npdc\model\Dataset();
         
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $datasets[] = $this->getFormData($key);
                 if (strpos($key, '_new_') !== false) {
@@ -357,7 +357,7 @@ class Publication extends Base{
         $persons = [];
         $loopId = 'people_person_id_';
         $sort = 1;
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $serial = substr($key, strlen($loopId));
                 $id = $this->getFormData(

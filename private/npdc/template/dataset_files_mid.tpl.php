@@ -22,10 +22,10 @@ if (count($files) === 0) {
     $public = 0;
     $login = 0;
     $ask = 0;
-    foreach($files as $file) {
+    foreach ($files as $file) {
         $checkbox = false;
         $icon = null;
-        switch($file['default_access']) {
+        switch ($file['default_access']) {
             case 'login':
                 if ($this->session->userLevel < 1 || $this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId)) {
                     $icon = 'key';
@@ -85,7 +85,7 @@ $links = $this->model->getLinks($this->data['dataset_id'], $this->data['dataset_
 if (count($links) === 0) {
     echo 'No files at other locations';
 } else {
-    foreach($links as $link) {
+    foreach ($links as $link) {
         $urls = $this->model->getLinkUrls($link['dataset_link_id'], $this->data['dataset_version']);
         echo '<p'
             .(count($urls) === 1 
@@ -94,7 +94,7 @@ if (count($links) === 0) {
             .'<br/>'.$link['description'].'</p>';
         if (count($urls) > 1) {
             echo '<ul style="margin-top: 0px;">';
-            foreach($urls as $url) {
+            foreach ($urls as $url) {
                 echo '<li><a href="'.checkurl($url['url']).'">'.checkurl($url['url']).'</a></li>';
             }
             echo '</ul>';

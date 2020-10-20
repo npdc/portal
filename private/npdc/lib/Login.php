@@ -21,7 +21,7 @@ class Login {
     public function __construct() {
         $this->model = new \npdc\model\Person();
         
-        foreach($this->model->getUserLevels() as $level) {
+        foreach ($this->model->getUserLevels() as $level) {
             define(
                 'NPDC_'.strtoupper($level['label']),
                 (int)$level['user_level_id']

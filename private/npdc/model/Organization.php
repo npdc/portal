@@ -21,7 +21,8 @@ class Organization {
     /**
      * Get list of organizations
      *
-     * @param string $filter (optional) filter, only organizations present in content type given
+     * @param string $filter (optional) filter, only organizations present in 
+     *                              content type given
      * @return array list of organizations
      */
     public function getList($filter = null) {
@@ -42,30 +43,47 @@ class Organization {
                 }
                 if (in_array('project', $filter['type'])) {
                     //Filter on having a project
-                    $inPr = $this->dsql->dsql()->table('project_person')->field('organization_id')
-                        ->join('project', \npdc\lib\Db::joinVersion('project', 'project_person')
-                        ->where('record_status', 'published')
-                    );
+                    $inPr = $this->dsql->dsql()->table('project_person')
+                        ->field('organization_id')
+                        ->join(
+                            'project',
+                            \npdc\lib\Db::joinVersion('project', 'project_person')
+                        )
+                        ->where('record_status', 'published');
                     $qf->where('organization_id', $inPr);
-    
                 }
                 if (in_array('dataset', $filter['type'])) {
                     //Filter on having a dataset
                     $inDa = $this->dsql->dsql()
                         ->table('dataset_person')->field('organization_id')
-                        ->join('dataset', \npdc\lib\Db::joinVersion('dataset', 'dataset_person'))
+                        ->join(
+                            'dataset',
+                            \npdc\lib\Db::joinVersion('dataset', 'dataset_person')
+                        )
                         ->where('record_status', 'published');
                     $inOc = $this->dsql->dsql()
-                        ->table('dataset')->field('originating_center', 'organization_id')
+                        ->table('dataset')
+                            ->field('originating_center', 'organization_id')
                         ->where('record_status', 'published');
-                    $inDs = $this->dsql->dsql()->table($this->dsql->expr("( [] union [] )", [$inDa, $inOc]), 'ds');
+                    $inDs = $this->dsql->dsql()->table(
+                        $this->dsql->expr(
+                            "( [] union [] )",
+                            [$inDa, $inOc]
+                        ),
+                        'ds'
+                    );
                     $qf->where('organization_id', $inDs);
                 }
     
                 if (in_array('publication', $filter['type'])) {
                     //Filter on having a publication
-                    $inPu = $this->dsql->dsql()->table('publication_person')->field('organization_id')
-                        ->join('publication', \npdc\lib\Db::joinVersion('publication', 'publication_person'));
+                    $inPu = $this->dsql->dsql()->table('publication_person')
+                        ->field('organization_id')
+                        ->join(
+                            'publication',
+                            \npdc\lib\Db::joinVersion('publication', 'publication_person')
+                        )
+                        ->where('record_status', 'published');
                     $qf->where('organization_id', $inPu);
                 }
     
@@ -74,15 +92,27 @@ class Organization {
                     $org->where($qf);
                 }
             }
-            if (array_key_exists('country', $filter) && is_array($filter['country']) && count($filter['country']) > 0) {
+            if (
+                array_key_exists('country', $filter)
+                && is_array($filter['country'])
+                && count($filter['country']) > 0
+            ) {
                 $org->where('country.country_id', $filter['country']);
             }
 
             if (isset($filter['search'])) {
                 $org->where(
                     $org->orExpr()
-                    ->where('organization_name', 'LIKE', '%'.$filter['search'].'%')
-                    ->where('historic_name', 'LIKE', '%'.$filter['search'].'%')
+                    ->where(
+                        'organization_name',
+                        'LIKE',
+                        '%' . $filter['search'] . '%'
+                    )
+                    ->where(
+                        'historic_name',
+                        'LIKE',
+                        '%' . $filter['search'] . '%'
+                    )
                 );
             }
         }
@@ -93,19 +123,28 @@ class Organization {
      * Search for organizations
      *
      * @param string $string string to search for
-     * @param array|null $exclude (optional) list of ids of organizations to ignore in search
+     * @param array|null $exclude (optional) list of ids of organizations to 
+     *                              ignore in search
      * @return array lists of organizations
      */
     public function search($string, $exclude = null) {
         $q = $this->dsql->dsql()->table('organization');
         if (!empty($string)) {
             $f = $q->orExpr();
-            foreach(['organization_name', 'dif_code', 'dif_name'] as $field) {
-                $f->where($field, (\npdc\config::$db['type']==='pgsql' ? '~*' : 'REGEXP'), $string);
+            foreach (
+                ['organization_name', 'dif_code', 'dif_name']
+                as $field
+            ) {
+                $f->where($field, \npdc\lib\Db::getRegexp(), $string);
             }
             $q->where($f);
         }
-        $q->order($q->expr('(CASE WHEN country_id IN [] THEN 0 ELSE 1 END), organization_name', [\npdc\config::$defaultOrganizationFilter['country']]));
+        $q->order(
+            $q->expr(
+                '(CASE WHEN country_id IN [] THEN 0 ELSE 1 END), organization_name',
+                [\npdc\config::$defaultOrganizationFilter['country']]
+            )
+        );
         if (is_array($exclude) && count($exclude) > 0) {
             $q->where('organization_id', 'NOT', $exclude);
         }
@@ -122,7 +161,8 @@ class Organization {
         return $this->dsql->dsql()
             ->table('organization')->field('organization.*')
             ->where('organization_id', $id)
-            ->join('country.country_id', 'country_id', 'left')->field('country_name')
+            ->join('country.country_id', 'country_id', 'left')
+                ->field('country_name')
             ->get()[0];
     }
 

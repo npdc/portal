@@ -60,7 +60,7 @@ class Front{
         $this->mid .= '<div><div>'.$v->getForm().'</div></div></div>';
 
         $list = [];
-        foreach(['project', 'dataset', 'publication'] as $type) {
+        foreach (['project', 'dataset', 'publication'] as $type) {
             $modelName = 'npdc\\model\\'.ucfirst($type);
             $model = new $modelName();
             $res = $model->getList();
@@ -69,10 +69,10 @@ class Front{
             }
         }
         $keys = [];
-        foreach($list as $data) {
+        foreach ($list as $data) {
             $key = $data['published'];
             $i = 0;
-            while(in_array($key, $keys)) {
+            while (in_array($key, $keys)) {
                 $i++;
                 $key = $data['published'].' '.$i;
             }
@@ -82,7 +82,7 @@ class Front{
         krsort($list);
         $list = array_slice($list, 0, \npdc\config::$showNew);
         $block = '<h3>Recently added or updated</h3>';
-        foreach($list as $item) {
+        foreach ($list as $item) {
             $block .= '<hr/>';
             if (array_key_exists('project_id', $item)) {
                 $type = 'Project';

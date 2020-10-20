@@ -13,7 +13,7 @@ $output = '@'.$this->model->getTypeById($this->data['publication_type_id'])['bib
     year={'.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).'},
     url={'.$url.'},
     abstract={'.$this->data['summary'].'}';
-switch($this->model->getTypeById($this->data['publication_type_id'])['bib']) {
+switch ($this->model->getTypeById($this->data['publication_type_id'])['bib']) {
     case 'article':
         $output .= '
     journal={'.$this->data['journal'].'}

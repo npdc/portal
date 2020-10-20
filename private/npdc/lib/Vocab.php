@@ -108,7 +108,7 @@ class Vocab {
         if (substr($vocab, 0, 10) === 'vocab_res_') {
             $this->fields[$vocab] = preg_replace('/\{(.*)\}/', '', $fields);
         }
-        foreach($data as $row) {
+        foreach ($data as $row) {
             $term = $this->formatTerm($vocab, $row, true, false);
             if (
                 empty($filter)
@@ -135,7 +135,7 @@ class Vocab {
     public function formatTerm($vocab, $row, $last = true, $shorten=false) {
         $fields = str_replace(['{', '}'], '', $this->fields[$vocab]);
         $parts = [];
-        for($i=0;$i<($last ? count($fields) : count($fields)-1);$i++) {
+        for ($i=0;$i<($last ? count($fields) : count($fields)-1);$i++) {
             //if field has both short and long term the short should be between
             // brackets, this tests this
             if (is_array($fields[$i])) {
@@ -165,7 +165,7 @@ class Vocab {
                 }
             }
         }
-        foreach($parts as $i=>&$part) {
+        foreach ($parts as $i=>&$part) {
             if ($shorten && strlen($part) > 12 && $i < count($parts)-1) {
                 $part = substr($part, 0, 10) . '...';
             }

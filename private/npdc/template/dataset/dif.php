@@ -15,8 +15,8 @@ $data = [
 ];
 
 $specialFields = ['title'=>'title', 'version'=>'dataset_version'];
-foreach($this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$citation) {
-    foreach([
+foreach ($this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$citation) {
+    foreach ([
         'creator'=>'Dataset_Creator', 
         'editor'=>'Dataset_Editor', 
         'title'=>'Dataset_Title',
@@ -45,11 +45,11 @@ foreach($this->model->getCitations($this->data['dataset_id'], $this->data['datas
     }
 }
 
-foreach($this->model->getPersons($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$person) {
+foreach ($this->model->getPersons($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$person) {
     $data['Personnel'][$i]['Role'] = json_decode(strtoupper($person['role']));
     
     $personDetails = $this->personModel->getById($person['person_id']);
-    foreach([
+    foreach ([
         'given_name'=>'First_Name',
         'surname'=>'Last_Name'
     ] as $source=>$target) {
@@ -57,7 +57,7 @@ foreach($this->model->getPersons($this->data['dataset_id'], $this->data['dataset
     }
     
     $organizationDetail = $this->organizationModel->getById($person['organization_id']);
-    foreach([
+    foreach ([
         'organization_address'=>'Street_Address',
         'organization_city'=>'City',
         'organization_zip'=>'Postal_Code',
@@ -65,7 +65,7 @@ foreach($this->model->getPersons($this->data['dataset_id'], $this->data['dataset
     ] as $source=>$target) {
         $data['Personnel'][$i]['Contact_Person']['Address'][$target] = $organizationDetail[$source];
     }
-    foreach(['personal'=>'Direct Line', 'secretariat'=>'Telephone', 'mobile'=>'Mobile'] as $phoneType=>$label) {
+    foreach (['personal'=>'Direct Line', 'secretariat'=>'Telephone', 'mobile'=>'Mobile'] as $phoneType=>$label) {
         if ($personDetails['phone_'.$phoneType.'_public'] === 'yes' && !empty($personDetails['phone_'.$phoneType])) {
             $data['Personnel'][$i]['Contact_Person']['Phone'][] = ['Number'=>str_replace(['(0)', ' '], '', $personDetails['phone_'.$phoneType]), 'Type'=>$label];
         }
@@ -73,8 +73,8 @@ foreach($this->model->getPersons($this->data['dataset_id'], $this->data['dataset
     $data['Personnel'][$i]['Contact_Person']['Email'] = $personDetails['mail'];
 }
 
-foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword) {
-    foreach([
+foreach ($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword) {
+    foreach ([
         'category'=>'Category',
         'topic'=>'Topic',
         'term'=>'Term',
@@ -90,16 +90,16 @@ foreach($this->model->getKeywords($this->data['dataset_id'], $this->data['datase
 }
 
 
-foreach($this->model->getTopics($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$topic) {
+foreach ($this->model->getTopics($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$topic) {
     $data['ISO_Topic_Category'][$i] = substr($topic['description'], 0, strpos($topic['description'], ':'));
 }
 
-foreach($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword) {
+foreach ($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword) {
     $data['Ancillary_Keyword'][$i] = $keyword['keyword'];
 }
 
-foreach($this->model->getPlatform($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$platform) {
-    foreach([
+foreach ($this->model->getPlatform($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$platform) {
+    foreach ([
         'category'=>'Type',
         'short_name'=>'Short_Name',
         'long_name'=>'Long_name'
@@ -108,8 +108,8 @@ foreach($this->model->getPlatform($this->data['dataset_id'], $this->data['datase
             $data['Platform'][$i][$target] = $platform[$source];
         }
     }
-    foreach($this->model->getInstrument($platform['platform_id'], $this->data['dataset_version']) as $j=>$instrument) {
-        foreach([
+    foreach ($this->model->getInstrument($platform['platform_id'], $this->data['dataset_version']) as $j=>$instrument) {
+        foreach ([
             'short_name'=>'Short_Name',
             'long_name'=>'Long_Name',
             'technique'=>'Technique',
@@ -120,8 +120,8 @@ foreach($this->model->getPlatform($this->data['dataset_id'], $this->data['datase
                 $data['Platform'][$i]['Instrument'][$j][$target] = $instrument[$source];
             }
         }
-        foreach($this->model->getSensor($instrument['instrument_id'], $this->data['dataset_version']) as $k=>$sensor) {
-            foreach([
+        foreach ($this->model->getSensor($instrument['instrument_id'], $this->data['dataset_version']) as $k=>$sensor) {
+            foreach ([
                 'short_name'=>'Short_Name',
                 'long_name'=>'Long_Name',
                 'technique'=>'Technique'
@@ -143,15 +143,15 @@ $units = [
     'm'=> 'months',
     'y'=> 'years'
 ];
-foreach($this->model->getTemporalCoverages($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$tc) {
-    foreach([
+foreach ($this->model->getTemporalCoverages($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$tc) {
+    foreach ([
         'period',
         'cycle',
         'paleo',
         'ancillary'
     ] as $group) {
-        foreach($this->model->getTemporalCoveragesGroup($group, $tc['temporal_coverage_id'], $this->data['dataset_version']) as $j=>$tcg) {
-            switch($group) {
+        foreach ($this->model->getTemporalCoveragesGroup($group, $tc['temporal_coverage_id'], $this->data['dataset_version']) as $j=>$tcg) {
+            switch ($group) {
                 case 'period':
                     if ($tcg['date_start'] === $tcg['date_end']) {
                         $data['Temporal_Coverage'][$i]['Single_DateTime'][$j] = $tcg['date_start'];
@@ -160,7 +160,7 @@ foreach($this->model->getTemporalCoverages($this->data['dataset_id'], $this->dat
                     }
                 break;
                 case 'cycle':
-                    foreach([
+                    foreach ([
                         'name'=>'Name',
                         'date_start'=>'Start_Date',
                         'date_end'=>'End_Date',
@@ -172,7 +172,7 @@ foreach($this->model->getTemporalCoverages($this->data['dataset_id'], $this->dat
                 break;
                 case 'paleo':
                     $data['Temporal_Coverage'][$i]['Paleo_DateTime'][$j] = ['Paleo_Start_Date'=>$tcg['start_value'].' '.$tcg['start_unit'], 'Paleo_End_Date'=>$tcg['end_value'].' '.$tcg['end_unit']];
-                    foreach($this->model->getTemporalCoveragePaleoChronounit($tcg['temporal_coverage_paleo_id'], $this->data['dataset_version']) as $k=>$tp) {
+                    foreach ($this->model->getTemporalCoveragePaleoChronounit($tcg['temporal_coverage_paleo_id'], $this->data['dataset_version']) as $k=>$tp) {
                         $data['Temporal_Coverage'][$i]['Paleo_DateTime'][$j]['Chronostratigraphic_Unit'][$k] = $this->vocab->formatTerm('vocab_chronounit', $tp);
                     }
                 break;
@@ -186,18 +186,18 @@ foreach($this->model->getTemporalCoverages($this->data['dataset_id'], $this->dat
 
 $data['Dataset_Progress'] = strtoupper($this->data['dataset_progress']);
 
-foreach($this->model->getSpatialCoverages($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$sc) {
+foreach ($this->model->getSpatialCoverages($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$sc) {
     $data['Spatial_Coverage'][$i]['Granule_Spatial_Representation'] = 'GEODETIC';
     $wkt = substr($sc['wkt'], strrpos($sc['wkt'], '(')+1, strpos($sc['wkt'], ')')-strlen($sc['wkt']));
     $points = explode(',', $wkt);
     if (in_array($sc['type'], ['Area', 'Polygon'])) {
         array_pop($points);
     }
-    foreach($points as &$point) {
+    foreach ($points as &$point) {
         $point = array_combine(['Point_Longitude','Point_Latitude'], explode(' ', $point));
     }
     $data['Spatial_Coverage'][$i]['Geometry']['Coordinate_System'] = 'GEODETIC';
-    switch($sc['type']) {
+    switch ($sc['type']) {
         case 'Point':
             $data['Spatial_Coverage'][$i]['Geometry']['Point'] = $point;
             break;
@@ -221,7 +221,7 @@ foreach($this->model->getSpatialCoverages($this->data['dataset_id'], $this->data
             $data['Spatial_Coverage'][$i]['Geometry']['Boundary']['Point'] = $points;
             break;
     }
-    foreach(['depth', 'altitude'] as $source) {
+    foreach (['depth', 'altitude'] as $source) {
         $showUnit = false;
         if (!empty($sc[$source.'_min'])) {
             $data['Spatial_Coverage'][$i]['Minimum_'.ucfirst($source)] = $sc[$source.'_min'];
@@ -237,8 +237,8 @@ foreach($this->model->getSpatialCoverages($this->data['dataset_id'], $this->data
     }
 }
 
-foreach($this->model->getLocations($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$location) {
-    foreach([
+foreach ($this->model->getLocations($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$location) {
+    foreach ([
         'location_category'=>'Location_Category',
         'location_type'=>'Location_Type',
         'location_subregion1'=>'Location_Subregion1',
@@ -250,7 +250,7 @@ foreach($this->model->getLocations($this->data['dataset_id'], $this->data['datas
             $data['Location'][$i][$target] = $location[$source];
         }
     }
-    foreach($this->vocab->getIDNNodes($location['vocab_location_id']) as $node) {
+    foreach ($this->vocab->getIDNNodes($location['vocab_location_id']) as $node) {
         $data['IDN_Node'][$node['vocab_idn_node_id']]['Short_Name'] = $node['short_name'];
         if (!empty($node['long_name'])) {
             $data['IDN_Node'][$node['vocab_idn_node_id']]['Long_Name'] = $node['long_name'];
@@ -258,8 +258,8 @@ foreach($this->model->getLocations($this->data['dataset_id'], $this->data['datas
     }
 }
 
-foreach($this->model->getResolution($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$resolution) {
-    foreach([
+foreach ($this->model->getResolution($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$resolution) {
+    foreach ([
         'latitude_resolution'=>'Latitude_Resolution',
         'longitude_resolution'=>'Longitude_Resolution',
         'hor_range'=>'Horizontal_Resolution_Range',
@@ -274,7 +274,7 @@ foreach($this->model->getResolution($this->data['dataset_id'], $this->data['data
     }    
 }
 
-foreach($this->model->getProjects($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$project) {
+foreach ($this->model->getProjects($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$project) {
     $data['Project'][$i] = [
         'Short_Name'=>$project['acronym'] ?? $project['title'],
         'Long_Name'=>$project['title'],
@@ -283,7 +283,7 @@ foreach($this->model->getProjects($this->data['dataset_id'], $this->data['datase
     ];
 }
 
-foreach([
+foreach ([
     'quality'=>'Quality',
     'access_constraints'=>'Access_Constraints',
     'use_constraints'=>'Use_Constraints'
@@ -299,23 +299,23 @@ if (!is_null($this->data['originating_center'])) {
 
 $datacenters = $this->model->getDataCenter($this->data['dataset_id'], $this->data['dataset_version']);
 if (count($datacenters) === 0) {
-    foreach(\npdc\config::$dataCenter as $organization_id=>$persons) {
+    foreach (\npdc\config::$dataCenter as $organization_id=>$persons) {
         $data['Organization'][$organization_id] = $this->displayDataCenter($organization_id);
-        foreach($persons as $person) {
+        foreach ($persons as $person) {
             $data['Organization'][$organization_id]['Personnel'][$person] = ['Role'=>'DATA CENTER CONTACT', 'Contact_Person'=>$this->displayDataCenterPersonnel($person)];
         }
     }
 } else {
-    foreach($datacenters as $i=>$datacenter) {
+    foreach ($datacenters as $i=>$datacenter) {
         $data['Organization'][$i] = $this->displayDataCenter($datacenter['organization_id']);
-        foreach($this->model->getDataCenterPerson($datacenter['dataset_data_center_id'], $this->data['dataset_version']) as $person) {
+        foreach ($this->model->getDataCenterPerson($datacenter['dataset_data_center_id'], $this->data['dataset_version']) as $person) {
             $data['Organization'][$i]['Personnel'][$person['person_id']] = ['Role'=>'DATA CENTER CONTACT', 'Contact_Person'=>$this->displayDataCenterPersonnel($person['person_id'])];
         }
     }
 }
 
 $publicationModel = new \npdc\model\Publication();
-foreach($this->model->getPublications($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$publication) {
+foreach ($this->model->getPublications($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$publication) {
     $data['Reference'][$i]['Citation'] = $publicationModel->getAuthors($publication['publication_id'], $publication['publication_version'], INF).', '
         . $publication['year'].'. '
         . $publication['title'].(in_array(substr($publication['title'],-1), ['.','?']) ? '' : '.').' '
@@ -331,12 +331,12 @@ $links = array_merge(
     $this->model->getLinks($this->data['dataset_id'], $this->data['dataset_version']),
     $this->model->getLinks($this->data['dataset_id'], $this->data['dataset_version'], true)
 );
-foreach($links as $i=>$link) {
+foreach ($links as $i=>$link) {
     $data['Related_URL'][$i]['URL_Content_Type']['Type'] = $link['type'];
     if (!empty($link['subtype'])) {
         $data['Related_URL'][$i]['URL_Content_Type']['Subtype'] = $link['subtype'];
     }
-    foreach($this->model->getLinkUrls($link['dataset_link_id'], $this->data['dataset_version']) as $j=>$url) {
+    foreach ($this->model->getLinkUrls($link['dataset_link_id'], $this->data['dataset_version']) as $j=>$url) {
         $data['Related_URL'][$i]['URL'] = $url['url'];
     }
     $data['Related_URL'][$i]['Title'] = $link['title'];
@@ -354,7 +354,7 @@ if (in_array($this->data['region'], ['Antarctica', 'Bipolar'])) {
     $nodes[] = 'AMD';
     $nodes[] = 'AMD/NL';
 }
-foreach($nodes as $i=>$node) {
+foreach ($nodes as $i=>$node) {
     $data['IDN_Node'][$i]['Short_Name'] = $node;
 }
 

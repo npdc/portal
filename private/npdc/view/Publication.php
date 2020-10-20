@@ -69,7 +69,7 @@ class Publication extends Base{
         $list = array_values($list);
         $n = count($list);
         $page = \npdc\lib\Args::get('page') ?? 1;
-        for($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++) {
+        for ($i = ($page-1)*\npdc\config::$rowsPerPage; $i < min($page*\npdc\config::$rowsPerPage, $n); $i++) {
             $item = $list[$i];
             $item['publication'] = $this->model->getCitation($item['publication_id'], $item['publication_version'], false, false);
             $list2[] = $item;
@@ -110,7 +110,7 @@ class Publication extends Base{
             if ($this->canEdit && is_null($this->controller->display) && count($this->versions) > 1) {
                 $v = \npdc\lib\Args::exists('version') ? \npdc\lib\Args::get('version') : 'published';
                 $_SESSION['notice'] .= 'See version <select id="versionSelect" style="width:auto">';
-                foreach($this->versions as $version) {
+                foreach ($this->versions as $version) {
                     $_SESSION['notice'] .= '<option value="'.BASE_URL.'/publication/'.$publication.'/'.$version['publication_version'].'" '
                         .(in_array($v, [$version['publication_version'], $version['record_status']]) ? 'selected=true' : '')
                         .'>'.$version['publication_version'].' - '.$version['record_status'].'</option>';
@@ -188,7 +188,7 @@ class Publication extends Base{
     private function showCitation() {
         $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/publication/'.$this->data['uuid'];
         $authors = explode('; ', str_replace(' &amp;', ';', $this->model->getAuthors($this->data['publication_id'], $this->data['publication_version'], 9999, ';')));
-        foreach($authors as $author) {
+        foreach ($authors as $author) {
             list($last, $first) = explode(', ', $author);
             if (empty($str)) {
                 $aut = $last;

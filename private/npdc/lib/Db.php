@@ -55,7 +55,7 @@ class Db {
                 echo 'Error';echo $e->getMessage();
                 die();
             }
-            switch($db['type']) {
+            switch ($db['type']) {
                 case 'pgsql':
                     $searchPath = $db['search_path'] ?? 'public';
                     $stmt = $instance->prepare(
@@ -97,7 +97,7 @@ class Db {
         $r = self::getDSQLcon()->dsql()->table($tbl)->set($data)->insert();
         if ($returnId) {
             $q = self::getDSQLcon()->dsql()->table($tbl);
-            foreach($data as $key=>$val) {
+            foreach ($data as $key=>$val) {
                 if (empty($val)) {
                     $q->where($key . ' IS NULL');
                 } else {
@@ -118,7 +118,7 @@ class Db {
         $q = self::getDSQLcon()
             ->table($table);
         if (is_array($record)) {
-            foreach($record as $key=>$val) {
+            foreach ($record as $key=>$val) {
                 if (is_null($val)) {
                     $q->where($key . ' IS NULL');    
                 } else {
@@ -179,7 +179,7 @@ class Db {
      * @return Query 
      */
     public static function joinVersion($ctype, $joined, $includeId = true) {
-        $q =self::getDSQLcon()->andExpr();
+        $q = self::getDSQLcon()->andExpr();
         if ($includeId) {
             $q->where(
                 $ctype . '.' . $ctype.'_id = ' . $joined . '.' . $ctype . '_id'
@@ -219,5 +219,17 @@ class Db {
                 ->where($ctype.'_version_max', '>=', $version)
         );
         return $q;
+    }
+    
+    public static function getLike(){
+        return \npdc\config::$db['type'] === 'pgsql'
+            ? '~*'
+            : 'LIKE';
+    }
+    
+    public static function getRegexp(){
+        \npdc\config::$db['type'] === 'pgsql'
+            ? '~*'
+            : 'REGEXP';
     }
 }

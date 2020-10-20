@@ -40,7 +40,7 @@ class Request extends Base{
             $this->title = 'Data requests';
         
             $data = $this->model->getList($this->session->userId, $this->session->userLevel);
-            foreach($data as &$row) {
+            foreach ($data as &$row) {
                 $row['date'] = date('Y-m-d H:i', strtotime($row['request_timestamp']));
                 $row['permitted'] = $this->parsePermitted($row['permitted']);
                 $row['nr'] = count($this->model->getFiles($row['access_request_id']));

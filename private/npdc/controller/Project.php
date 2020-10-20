@@ -44,7 +44,7 @@ class Project extends Base{
             'project_publication',
             'dataset_project'
         ];
-        foreach($tables as $table) {
+        foreach ($tables as $table) {
             if($this->tblHasChanged($table, $id, $version)){
                 return true;
             }
@@ -92,13 +92,13 @@ class Project extends Base{
 
             $keywords = $this->model->getKeywords($this->id, $this->version);
             $words = [];
-            foreach($keywords as $keyword) {
+            foreach ($keywords as $keyword) {
                 $words[] = $keyword['keyword'];
             }
             $this->setFormData('keywords', $words);
 
             $links = $this->model->getLinks($this->id, $this->version);
-            foreach($links as $n=>$link) {
+            foreach ($links as $n=>$link) {
                 $this->setFormData('links_id_' . $n, $link['project_link_id']);
                 $this->setFormData('links_url_' . $n,  $link['url']);
                 $this->setFormData('links_label_' . $n, $link['text']);
@@ -125,7 +125,7 @@ class Project extends Base{
     private function getNppThemes() {
         $model = new \npdc\model\Npp_theme();
         $return = [];
-        foreach($model->getList() as $theme) {
+        foreach ($model->getList() as $theme) {
             $return[$theme['npp_theme_id']] = $theme['npp_theme_id'].'. '.$theme['theme_en'];
         }
         return $return;
@@ -183,18 +183,18 @@ class Project extends Base{
     private function saveKeywords() {
         $currentKeywords = $this->model->getKeywords($this->id, $this->version);
         $words = [];
-        foreach($currentKeywords as $row) {
+        foreach ($currentKeywords as $row) {
             $words[] = $row['keyword'];
         }
         $new = array_diff($this->getFormData('keywords'), $words);
         $old = array_diff($words, $this->getFormData('keywords'));
         if (count($old) > 0) {
-            foreach($old as $word) {
+            foreach ($old as $word) {
                 $this->model->deleteKeyword($word, $this->id, $this->version-1);
             }
         }
         if (count($new) > 0) {
-            foreach($new as $word) {
+            foreach ($new as $word) {
                 $this->model->insertKeyword($word, $this->id, $this->version);
             }
         }
@@ -208,7 +208,7 @@ class Project extends Base{
     private function saveLinks() {
         $loopId = 'links_id_';
         $keep = [];
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId 
                 && strpos($key, '_new_') === false) {
                 $keep[] = $this->getFormData($key);
@@ -217,7 +217,7 @@ class Project extends Base{
         $this->model->deleteLink($this->id, $this->version-1, $keep);
         
         $loopId = 'links_url_';
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $data = [];
                 $data['url'] = $this->getFormData($key);
@@ -248,7 +248,7 @@ class Project extends Base{
         $loopId = 'datasets_dataset_id_';
         $datasetModel = new \npdc\model\Dataset();
         
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $current[] = $this->getFormData($key);
                 if (strpos($key, '_new_') !== false) {
@@ -279,7 +279,7 @@ class Project extends Base{
         $loopId = 'publications_publication_id_';
         $publicationModel = new \npdc\model\Publication();
         
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $current[] = $this->getFormData($key);
                 if (strpos($key, '_new_') !== false) {
@@ -309,7 +309,7 @@ class Project extends Base{
         $persons = [];
         $loopId = 'people_person_id_';
         $sort = 1;
-        foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
+        foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $persons[] = $this->getFormData($key);
                 $record = [

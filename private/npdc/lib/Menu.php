@@ -41,7 +41,7 @@ class Menu{
     public function generate($parent = null) {
         $active = false;
         $return = '<ul>';
-        foreach($this->model->getItems($parent, $this->userLevel) as $item) {
+        foreach ($this->model->getItems($parent, $this->userLevel) as $item) {
             if (
                 !(\npdc\config::$partEnabled[$item['url']] ?? true) 
                 && $this->session->userLevel < NPDC_ADMIN

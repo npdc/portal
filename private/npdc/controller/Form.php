@@ -72,11 +72,11 @@ class Form extends Base{
         $this->adminOverrule = array_key_exists('adminoverrule', $this->formData) 
             && $this->formData['adminoverrule'] = 'adminoverrule';
         
-        foreach($this->form->fields as $id=>$field) {
+        foreach ($this->form->fields as $id=>$field) {
             if ($field->disabled ?? false) {
                 continue;
             }
-            switch($field->type) {
+            switch ($field->type) {
                 case 'table':
                     $this->table($id, $field);
                     break;
@@ -104,7 +104,7 @@ class Form extends Base{
         }
         unset($this->formData['formid']);
         unset($this->formData['submit']);
-        foreach($this->formData as $key=>$val) {
+        foreach ($this->formData as $key=>$val) {
             if ($val === '') {
                 $this->formData[$key] = null;
             }
@@ -167,7 +167,7 @@ class Form extends Base{
         $baseId = $id.'_'.array_keys(get_object_vars($field->fields))[0];
         $c = 0;
         if ($this->dataType === 'global') {
-            foreach(array_keys($this->formData) as $key) {
+            foreach (array_keys($this->formData) as $key) {
                 if (substr($key, 0, strlen($baseId)) === $baseId) {
                     if (
                         property_exists($field, 'lookup')
@@ -177,7 +177,7 @@ class Form extends Base{
                     } else {
                         $c2 = 0;
                         $rowid = substr($key, strlen($baseId));
-                        foreach($field->fields as $subfieldId=>$subfield) {
+                        foreach ($field->fields as $subfieldId=>$subfield) {
                             $key = $id . '_' . $subfieldId . $rowid;
                             if ($rowid === '_new') {
                                 $this->formData[$key . '_' . $c] = $this->formData[$key];
@@ -192,7 +192,7 @@ class Form extends Base{
                             }
                         }
                         if ($c2 === 0) {
-                            foreach($field->fields as $subfieldId=>$subfield) {
+                            foreach ($field->fields as $subfieldId=>$subfield) {
                                 $key = $id . '_' . $subfieldId . $rowid
                                     . ($rowid === '_new' ? '_'.$c : '');
                                 unset($this->formData[$key]);
@@ -241,11 +241,11 @@ class Form extends Base{
                 }
             }
             $c2 = 0;
-            foreach(array_unique($serials) as $serial) {
+            foreach (array_unique($serials) as $serial) {
                 $c = 0;
-                foreach($field->fields as $subfieldId=>$subfield) {
+                foreach ($field->fields as $subfieldId=>$subfield) {
                     $baseId = $id.'_'.$serial.'_'.$subfieldId;
-                    switch($subfield->type) {
+                    switch ($subfield->type) {
                         case 'table':
                             if ($this->table($baseId, $subfield) > 0) {
                                 $c++;
@@ -287,12 +287,12 @@ class Form extends Base{
                         || (!$field->required ?? false)
                     )
                 ) {
-                    foreach($this->formData as $key=>$val) {
+                    foreach ($this->formData as $key=>$val) {
                         if (strpos($key, $id.'_'.$serial) !== false) {
                             unset($this->formData[$key]);
                         }
                     }
-                    foreach($this->errors as $key=>$val) {
+                    foreach ($this->errors as $key=>$val) {
                         if (strpos($key, $id.'_'.$serial) !== false) {
                             unset($this->errors[$key]);
                         }
@@ -326,7 +326,7 @@ class Form extends Base{
             }
             $this->active=$c2;
         } else {
-            foreach($field->fields as $subfieldId=>$subfield) {
+            foreach ($field->fields as $subfieldId=>$subfield) {
                 $baseId =
                     (
                         $field->use_main_id ?? true 
@@ -372,7 +372,7 @@ class Form extends Base{
             $this->active === 0
             && ($this->adminOverrule || (!$field->required ?? false))
         ) {
-            foreach($field->fields as $subfieldId=>$subfield) {
+            foreach ($field->fields as $subfieldId=>$subfield) {
                 $baseId = 
                     (
                         $field->use_main_id ?? true
@@ -431,8 +431,8 @@ class Form extends Base{
         $this->value = [];
         $this->formData['newFiles'] = [];
         if ($this->dataType === 'global') {
-            foreach($_FILES[$id]['error'] as $key=>$error) {
-                switch($error) {
+            foreach ($_FILES[$id]['error'] as $key=>$error) {
+                switch ($error) {
                     case 4:
                         if ($field->required ?? true) {
                             $this->addError($id, 'No file uploaded');
@@ -495,14 +495,14 @@ class Form extends Base{
                 $loopId = $id . '_' . array_keys(
                     get_object_vars($field->additionalFields)
                 )[0];
-                foreach(array_keys($this->formData) as $key) {
+                foreach (array_keys($this->formData) as $key) {
                     if (
                         substr($key, 0, strlen($loopId)) === $loopId
                         && strpos($key, '_new') === false
                     ) {
                         $rowid = substr($key, strlen($loopId));
                         if (!empty($this->formData[$id . '_id' . $rowid])) {
-                            foreach(
+                            foreach (
                                 $field->additionalFields
                                 as $subId=>$subField
                             ) {
@@ -525,7 +525,7 @@ class Form extends Base{
                     }
                 }
             }
-            foreach(array_keys($this->formData) as $key) {
+            foreach (array_keys($this->formData) as $key) {
                 if (
                     substr($key, 0, strlen($id) + 1) === $id . '_'
                     && substr($key, -4) === '_new'
@@ -546,7 +546,7 @@ class Form extends Base{
     private function map($id, $field) {
         $c = 0;
         $loopId = $id.'_wkt';
-        foreach(array_keys($this->formData) as $key) {
+        foreach (array_keys($this->formData) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 if (substr($key, -4) === '_new') {
                     unset($this->formData[$key]);
@@ -631,7 +631,7 @@ class Form extends Base{
                 $field->label . ' is too long, maximum ' . $field->max_length . ' allowed'
             );
         } else {
-            switch($field->type) {
+            switch ($field->type) {
                 case 'mail':
                     if (!filter_var($this->value, FILTER_VALIDATE_EMAIL)) {
                         $this->addError(
@@ -697,7 +697,7 @@ class Form extends Base{
                     break;
                 case 'options':
                     if (is_array($this->value)) {
-                        foreach($this->value as $c=>$value) {
+                        foreach ($this->value as $c=>$value) {
                             if (!array_key_exists_r($value, $field->options)) {
                                 $this->addError(
                                     $id,
@@ -749,7 +749,7 @@ class Form extends Base{
             $return = null;
         } elseif (is_array($this->value)) {
             $return = $this->value;
-            foreach($return as &$value) {
+            foreach ($return as &$value) {
                 if (!empty($value)) {
                     $value = $this->purified($value, $field->allowTags);
                 }
@@ -772,7 +772,7 @@ class Form extends Base{
      * @return string formatted date in format yyyy-mm-dd
      */
     private function checkDate($date, $dir = 'up') {
-        switch($dir) {
+        switch ($dir) {
             case 'up':
                 $month_default = 12;
                 $day_default = 31;
@@ -811,7 +811,7 @@ class Form extends Base{
                     $date = $year.'-'.$month.'-'.$day;
                 } else {
                     $date = null;
-                    while($day > 28) {
+                    while ($day > 28) {
                         $day--;
                         if (checkdate($month, $day, $year)) {
                             $date = $year.'-'.$month.'-'.$day;
@@ -853,7 +853,7 @@ class Form extends Base{
         if (
             move_uploaded_file($_FILES[$id]['tmp_name'][$key], $dest)
         ) {
-            foreach(
+            foreach (
                 $field->additionalFields ?? []
                 as $subId=>$subField
             ) {
