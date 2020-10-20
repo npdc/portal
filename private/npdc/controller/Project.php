@@ -12,7 +12,7 @@ namespace npdc\controller;
 class Project extends Base{
     public $formId = 'projectlist';
     public $name = 'project';
-    public $userLevelAdd = NPDC_EDITOR;//minimum user level required to add a new dataset
+    public $userLevelAdd = NPDC_EDITOR;
     
     /**
      * Constructor
@@ -34,12 +34,22 @@ class Project extends Base{
      * @return boolean did record change
      */
     public function recordChanged($id, $version) {
-        $changed = $this->generalHasChanged($id, $version);
-        $tables = ['project_keyword', 'project_link', 'project_person', 'project_publication', 'dataset_project'];
-        foreach($tables as $table) {
-            $changed = $this->tblHasChanged($table, $id, $version) || $changed;
+        if($this->generalHasChanged($id, $version)){
+            return true;
         }
-        return $changed;
+        $tables = [
+            'project_keyword',
+            'project_link',
+            'project_person',
+            'project_publication',
+            'dataset_project'
+        ];
+        foreach($tables as $table) {
+            if($this->tblHasChanged($table, $id, $version)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -48,9 +58,12 @@ class Project extends Base{
      * @return void
      */
     protected function alterFields() {
-        $this->formController->form->fields->npp_theme_id->options = $this->getNppThemes();
-        $this->formController->form->fields->program_id->options = $this->getPrograms();
-        $this->formController->form->fields->people->fields->organization_id->options = $this->getOrganizations();
+        $this->formController->form->fields->npp_theme_id
+            ->options = $this->getNppThemes();
+        $this->formController->form->fields->program_id
+            ->options = $this->getPrograms();
+        $this->formController->form->fields->people->fields->organization_id
+            ->options = $this->getOrganizations();
     }
     
     /**
@@ -62,35 +75,50 @@ class Project extends Base{
     protected function loadForm($baseData) {
         if (\npdc\lib\Args::get('action') === 'new') {
             unset($_SESSION[$this->formId]);
-            $_SESSION[$this->formId]['data']['people'][] = [
-                'person_id'=>$this->session->userId, 
-                'name'=>$this->session->name, 
-                'organization_id'=>$this->session->organization_id, 
-                'editor'=>true, 
-                'contact'=>true, 
-                'role'=>'PI'
-                ];
+            $this->setFormData(
+                'people',
+                [
+                    'person_id' => $this->session->userId, 
+                    'name' => $this->session->name, 
+                    'organization_id' => $this->session->organization_id, 
+                    'editor' => true, 
+                    'contact' => true, 
+                    'role' => 'PI'
+                ],
+                true
+            );
         } else {
             $_SESSION[$this->formId]['data'] = $baseData;
-
 
             $keywords = $this->model->getKeywords($this->id, $this->version);
             $words = [];
             foreach($keywords as $keyword) {
                 $words[] = $keyword['keyword'];
             }
-            $_SESSION[$this->formId]['data']['keywords'] = $words;
+            $this->setFormData('keywords', $words);
 
             $links = $this->model->getLinks($this->id, $this->version);
             foreach($links as $n=>$link) {
-                $_SESSION[$this->formId]['data']['links_id_'.$n] = $link['project_link_id'];
-                $_SESSION[$this->formId]['data']['links_url_'.$n] = $link['url'];
-                $_SESSION[$this->formId]['data']['links_label_'.$n] = $link['text'];
+                $this->setFormData('links_id_' . $n, $link['project_link_id']);
+                $this->setFormData('links_url_' . $n,  $link['url']);
+                $this->setFormData('links_label_' . $n, $link['text']);
             }
-            $_SESSION[$this->formId]['data']['people'] = $this->model->getPersons($this->id, $this->version);
-            $_SESSION[$this->formId]['data']['period'] = [$baseData['date_start'], $baseData['date_end']];
-            $_SESSION[$this->formId]['data']['datasets'] = $this->model->getDatasets($this->id, $this->version);
-            $_SESSION[$this->formId]['data']['publications'] = $this->model->getPublications($this->id, $this->version);
+            $this->setFormData(
+                'people',
+                $this->model->getPersons($this->id, $this->version)
+            );
+            $this->setFormData(
+                'period',
+                [$baseData['date_start'], $baseData['date_end']]
+            );
+            $this->setFormData(
+                'datasets',
+                $this->model->getDatasets($this->id, $this->version)
+            );
+            $this->setFormData(
+                'publications',
+                $this->model->getPublications($this->id, $this->version)
+            );
         }
     }
 
@@ -113,12 +141,18 @@ class Project extends Base{
         }
             
         if ($_SESSION[$this->formId]['db_action'] === 'insert') {
-            $_SESSION[$this->formId]['data']['project_version'] = $this->version;
-            $_SESSION[$this->formId]['data']['record_status'] = 'draft';
-            $_SESSION[$this->formId]['data']['creator'] = $this->session->userId;
-            $this->id = $this->model->insertGeneral($_SESSION[$this->formId]['data']);
+            $this->setFormData('project_version', $this->version);
+            $this->setFormData('record_status', 'draft');
+            $this->setFormData('creator', $this->session->userId);
+            $this->id = $this->model->insertGeneral(
+                $_SESSION[$this->formId]['data']
+            );
         } else {
-            $saved = $this->model->updateGeneral($_SESSION[$this->formId]['data'], $this->id, $this->version) !== false;
+            $saved = $this->model->updateGeneral(
+                $_SESSION[$this->formId]['data'],
+                $this->id,
+                $this->version
+            ) !== false;
         }
         $this->saveKeywords();
         $this->saveLinks();
@@ -132,7 +166,10 @@ class Project extends Base{
             : 'Something went wrong when trying to save your record';
         if ($saved) {
             unset($_SESSION[$this->formId]);
-            header('Location: '.BASE_URL.'/project/'.$this->id.'/'.$this->version);
+            header(
+                'Location: ' . BASE_URL . '/project/' . $this->id . '/' 
+                . $this->version
+            );
             echo 'redirect';
             die();
         }
@@ -149,8 +186,8 @@ class Project extends Base{
         foreach($currentKeywords as $row) {
             $words[] = $row['keyword'];
         }
-        $new = array_diff($_SESSION[$this->formId]['data']['keywords'], $words);
-        $old = array_diff($words, $_SESSION[$this->formId]['data']['keywords']);
+        $new = array_diff($this->getFormData('keywords'), $words);
+        $old = array_diff($words, $this->getFormData('keywords'));
         if (count($old) > 0) {
             foreach($old as $word) {
                 $this->model->deleteKeyword($word, $this->id, $this->version-1);
@@ -174,7 +211,7 @@ class Project extends Base{
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId 
                 && strpos($key, '_new_') === false) {
-                $keep[] = $_SESSION[$this->formId]['data'][$key];
+                $keep[] = $this->getFormData($key);
             }
         }
         $this->model->deleteLink($this->id, $this->version-1, $keep);
@@ -183,10 +220,14 @@ class Project extends Base{
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $data = [];
-                $data['url'] = $_SESSION[$this->formId]['data'][$key];
-                $data['text'] = $_SESSION[$this->formId]['data']['links_label_'.substr($key, strlen($loopId))];
+                $data['url'] = $this->getFormData($key);
+                $data['text'] = $this->getFormData(
+                    'links_label_' . substr($key, strlen($loopId))
+                );
                 if (strpos($key, '_new_') === false) {
-                    $recordId = $_SESSION[$this->formId]['data']['links_id_'.substr($key, strlen($loopId))];
+                    $recordId = $this->getFormData(
+                        'links_id_' . substr($key, strlen($loopId))
+                    );
                     $this->model->updateLink($recordId, $data, $this->version);
                 } else {
                     $data['project_id'] = $this->id;
@@ -209,13 +250,16 @@ class Project extends Base{
         
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $current[] = $_SESSION[$this->formId]['data'][$key];
+                $current[] = $this->getFormData($key);
                 if (strpos($key, '_new_') !== false) {
                     $data = [
-                        'project_id'=>$this->id, 
-                        'dataset_id'=>$_SESSION[$this->formId]['data'][$key],
-                        'dataset_version_min'=>$datasetModel->getVersions($_SESSION[$this->formId]['data'][$key])[0]['dataset_version'],
-                        'project_version_min'=>$this->version
+                        'project_id' => $this->id, 
+                        'dataset_id' => $this->getFormData($key),
+                        'dataset_version_min' =>
+                            $datasetModel->getVersions(
+                                $this->getFormData($key)
+                            )[0]['dataset_version'],
+                        'project_version_min' => $this->version
                     ];
                     $this->model->insertDataset($data);
                 }
@@ -237,13 +281,16 @@ class Project extends Base{
         
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $current[] = $_SESSION[$this->formId]['data'][$key];
+                $current[] = $this->getFormData($key);
                 if (strpos($key, '_new_') !== false) {
                     $data = [
-                        'project_id'=>$this->id, 
-                        'publication_id'=>$_SESSION[$this->formId]['data'][$key],
-                        'publication_version_min'=>$publicationModel->getVersions($_SESSION[$this->formId]['data'][$key])[0]['publication_version'],
-                        'project_version_min'=>$this->version
+                        'project_id' => $this->id, 
+                        'publication_id' => $this->getFormData($key),
+                        'publication_version_min' =>
+                            $publicationModel->getVersions(
+                                $this->getFormData($key)
+                            )[0]['publication_version'],
+                        'project_version_min' => $this->version
                     ];
                     $this->model->insertPublication($data);
                 }
@@ -264,22 +311,42 @@ class Project extends Base{
         $sort = 1;
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $persons[] = $_SESSION[$this->formId]['data'][$key];
+                $persons[] = $this->getFormData($key);
                 $record = [
-                    'project_id'=>$this->id, 
-                    'person_id'=>$_SESSION[$this->formId]['data'][$key],
-                    'project_version_max'=>null
+                    'project_id' => $this->id, 
+                    'person_id' => $this->getFormData($key),
+                    'project_version_max' => null
                 ];
                 $data = [];
-                $data['organization_id'] = $_SESSION[$this->formId]['data']['people_organization_id_'.substr($key, strlen($loopId))];
-                $data['role'] = $_SESSION[$this->formId]['data']['people_role_'.substr($key, strlen($loopId))];
-                $data['contact'] = !empty($_SESSION[$this->formId]['data']['people_contact_'.substr($key, strlen($loopId))]) ? 1 : 0;
-                $data['editor'] = !empty($_SESSION[$this->formId]['data']['people_editor_'.substr($key, strlen($loopId))]) ? 1 : 0;
+                $data['organization_id'] = $this->getFormData(
+                    'people_organization_id_' . substr($key, strlen($loopId))
+                );
+                $data['role'] = $this->getFormData(
+                    'people_role_' . substr($key, strlen($loopId))
+                );
+                $data['contact'] = !empty($this->getFormData(
+                        'people_contact_' . substr($key, strlen($loopId))
+                    ))
+                    ? 1
+                    : 0;
+                $data['editor'] = !empty($this->getFormData(
+                        'people_editor_' . substr($key, strlen($loopId))
+                    ))
+                    ? 1
+                    : 0;
                 $data['sort'] = $sort;
                 if (strpos($key, '_new_') === false) {
-                    $saved = $this->model->updatePerson($record, $data, $this->version) === false ? false : $saved;
+                    $saved = $this->model->updatePerson(
+                            $record,
+                            $data,
+                            $this->version
+                        ) === false ? false : $saved;
                 } else {
-                    $data = array_merge($data, $record, ['project_version_min'=>$this->version]);
+                    $data = array_merge(
+                        $data,
+                        $record,
+                        ['project_version_min'=>$this->version]
+                    );
                     $this->model->insertPerson($data);
                 }
                 $sort++;

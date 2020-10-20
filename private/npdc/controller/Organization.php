@@ -11,7 +11,7 @@ namespace npdc\controller;
 
 class Organization extends Base {
     public $formId = 'organizationlist';
-    public $userLevelAdd = NPDC_EDITOR;//minimum user level required to add a new organization
+    public $userLevelAdd = NPDC_EDITOR;
     /**
      * Constructor
      *
@@ -20,7 +20,10 @@ class Organization extends Base {
      */
     public function __construct($session) {
         $this->session = $session;
-        if (\npdc\lib\Args::get('action') === 'new' && $this->session->userLevel < $this->userLevelAdd) {
+        if (
+            \npdc\lib\Args::get('action') === 'new'
+            && $this->session->userLevel < $this->userLevelAdd
+        ) {
             return;
         } elseif (\npdc\lib\Args::exists('action')) {
             $id = \npdc\lib\Args::get('id');
@@ -30,7 +33,8 @@ class Organization extends Base {
             $this->formController = new \npdc\controller\Form($this->formId);
             $this->formController->getForm('organization');
             $this->formController->form->action = $_SERVER['REQUEST_URI'];
-            $this->formController->form->fields->address->fields->country_id->options = $this->getCountries();
+            $this->formController->form->fields->address->fields->country_id
+                ->options = $this->getCountries();
             $this->model = new \npdc\model\Organization();
             if (array_key_exists('formid', $_POST)) {
                 $this->formController->doCheck();
@@ -44,7 +48,10 @@ class Organization extends Base {
                         $id = $this->model->insertOrganization($data);
                     } else {
                         $id = \npdc\lib\Args::get('id');
-                        $this->model->updateOrganization($data, \npdc\lib\Args::get('id'));
+                        $this->model->updateOrganization(
+                            $data,
+                            \npdc\lib\Args::get('id')
+                        );
                     }
                     $_SESSION['notice'] = 'The changes have been saved';
                     header('Location: '.BASE_URL.'/organization/'.$id);
@@ -52,11 +59,17 @@ class Organization extends Base {
                 }
                 $_SESSION[$this->formId]['data'] = $_POST;
             } elseif (\npdc\lib\Args::get('action') === 'new') {
-                $_SESSION[$this->formId]['data']['country_id'] = 'NL';
+                $this->setFormData('country_id', 'NL');
             } elseif (is_numeric($id)) {
                 $_SESSION[$this->formId]['data'] = $this->model->getById($id);
-                $_SESSION[$this->formId]['data']['gcmd_dif_code'] = $_SESSION[$this->formId]['data']['dif_code'];
-                $_SESSION[$this->formId]['data']['gcmd_dif_name'] = $_SESSION[$this->formId]['data']['dif_name'];
+                $this->setFormData(
+                    'gcmd_dif_code',
+                    $this->getFormData('dif_code')
+                );
+                $this->setFormData(
+                    'gcmd_dif_name',
+                    $this->getFormData('dif_name')
+                );
                 unset($_SESSION[$this->formId]['data']['dif_code']);
                 unset($_SESSION[$this->formId]['data']['dif_name']);
             } 
@@ -65,7 +78,8 @@ class Organization extends Base {
             $this->formController = new \npdc\controller\Form($this->formId);
             $this->formController->getForm('organizationlist');
             if ($this->session->userLevel >= NPDC_ADMIN) {
-                $this->formController->form->fields->country->options = $this->getCountries(false);
+                $this->formController->form->fields->country
+                    ->options = $this->getCountries(false);
             } else {
                 $this->formController->form->fields->country->disabled = true;
             }
@@ -77,8 +91,11 @@ class Organization extends Base {
                 $this->formController->doCheck('get');
             }
             if ($this->session->userLevel < NPDC_ADMIN) {
-                $_SESSION[$this->formId]['data']['country'] = \npdc\config::$defaultOrganizationFilter['country'];
+                $this->setFormData(
+                    'country',
+                    \npdc\config::$defaultOrganizationFilter['country']
+                );
             }
         }
-    }    
+    }
 }

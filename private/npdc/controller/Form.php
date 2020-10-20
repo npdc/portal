@@ -9,15 +9,16 @@
 
 namespace npdc\controller;
 
-require __DIR__.'/../../vendor/ezyang/htmlpurifier/library/HTMLPurifier.autoload.php';
+require __DIR__
+    . '/../../vendor/ezyang/htmlpurifier/library/HTMLPurifier.autoload.php';
 use Symm\Gisconverter, HTMLPurifier_Config, HTMLPurifier;
 
-class Form {
+class Form extends Base{
     public $ok = true;
     public $errors = [];
     private $value;
     private $filter;
-    private $formId;
+    public $formId;
     public $form;
     private $formData;
     private $active;
@@ -49,7 +50,9 @@ class Form {
      * @return object form
      */
     public function getForm($form) {
-        $this->form = json_decode(file_get_contents(__DIR__.'/../form/'.$form.'.json'));
+        $this->form = json_decode(
+            file_get_contents(__DIR__ . '/../form/' . $form . '.json')
+        );
         return $this->form;
     }
     
@@ -66,7 +69,8 @@ class Form {
             $this->formData = $data === 'post' ? $_POST : $_GET;
         }
         
-        $this->adminOverrule = array_key_exists('adminoverrule', $this->formData) && $this->formData['adminoverrule'] = 'adminoverrule';
+        $this->adminOverrule = array_key_exists('adminoverrule', $this->formData) 
+            && $this->formData['adminoverrule'] = 'adminoverrule';
         
         foreach($this->form->fields as $id=>$field) {
             if ($field->disabled ?? false) {
@@ -91,7 +95,11 @@ class Form {
                         break;
                     }
                 default:
-                    $this->formData[$id] = $this->field($id, $field, $field->required ?? true);
+                    $this->formData[$id] = $this->field(
+                        $id,
+                        $field,
+                        $field->required ?? true
+                    );
             }
         }
         unset($this->formData['formid']);
@@ -124,13 +132,25 @@ class Form {
         if (!array_key_exists($allowTags, $this->purifiers)) {
             $config = HTMLPurifier_Config::createDefault();
             if (!is_null($this->purifier_allowed[$allowTags])) {
-                $config->set('HTML.Allowed', $this->purifier_allowed[$allowTags]);
+                $config->set(
+                    'HTML.Allowed',
+                    $this->purifier_allowed[$allowTags]
+                );
             }
             $this->purifers[$allowTags] = new HTMLPurifier($config);
         }
         $value = $this->purifers[$allowTags]->purify($value);
-        $value = trim(preg_replace('/<([a-z][a-z0-9]*)[ a-zA-Z0-9:;"\'=-]*>[ \r\n(<br\/?>)]*<\/\1>/','', $value));//remove empty elements
-        if (in_array($allowTags,['full', 'default']) && strpos($value, '<p>') !== 0) {
+        $value = trim(
+            preg_replace(
+                '/<([a-z][a-z0-9]*)[ a-zA-Z0-9:;"\'=-]*>[ \r\n(<br\/?>)]*<\/\1>/',
+                '',
+                $value
+            )
+        );//remove empty elements
+        if (
+            in_array($allowTags,['full', 'default'])
+            && strpos($value, '<p>') !== 0
+        ) {
             $value = '<p>'.$value.'</p>';
         }
         return $value;
@@ -149,17 +169,20 @@ class Form {
         if ($this->dataType === 'global') {
             foreach(array_keys($this->formData) as $key) {
                 if (substr($key, 0, strlen($baseId)) === $baseId) {
-                    if (property_exists($field, 'lookup') && substr($key, -4) === '_new') {
+                    if (
+                        property_exists($field, 'lookup')
+                        && substr($key, -4) === '_new'
+                    ) {
                         unset($this->formData[$key]);
                     } else {
                         $c2 = 0;
                         $rowid = substr($key, strlen($baseId));
                         foreach($field->fields as $subfieldId=>$subfield) {
-                            $key = $id.'_'.$subfieldId.$rowid;
+                            $key = $id . '_' . $subfieldId . $rowid;
                             if ($rowid === '_new') {
-                                $this->formData[$key.'_'.$c] = $this->formData[$key];
+                                $this->formData[$key . '_' . $c] = $this->formData[$key];
                                 unset($this->formData[$key]);
-                                $key = $key.'_'.$c;
+                                $key = $key . '_' . $c;
                             }
                             $this->formData[$key] = $this->field($key
                                 , $subfield
@@ -170,7 +193,8 @@ class Form {
                         }
                         if ($c2 === 0) {
                             foreach($field->fields as $subfieldId=>$subfield) {
-                                $key = $id.'_'.$subfieldId.$rowid.($rowid === '_new' ? '_'.$c : '');
+                                $key = $id . '_' . $subfieldId . $rowid
+                                    . ($rowid === '_new' ? '_'.$c : '');
                                 unset($this->formData[$key]);
                                 unset($this->errors[$key]);
                             }
@@ -185,7 +209,11 @@ class Form {
             //TODO implement check on subfields
         }
         if ($c === 0 && ($field->required ?? true)) {
-            $this->addError($id, 'Please provide a value', $field->label.' is required');
+            $this->addError(
+                $id,
+                'Please provide a value',
+                $field->label . ' is required'
+            );
         }
         return $c;
     }
@@ -204,7 +232,7 @@ class Form {
             $serials = [];
             foreach (array_keys($this->formData) as $key) {
                 if (substr($key, 0, strlen($loopId)) === $loopId) {
-                    $serial = substr($key, strlen($loopId), strpos($key, '_', strlen($loopId))-strlen($loopId));
+                    $serial = $this->getSerial($key, $loopId);
                     if ($serial === 'new') {
                         unset($this->formData[$key]);
                     } else {
@@ -225,23 +253,40 @@ class Form {
                             break;
                         case 'fieldset':
                             $this->fieldset($baseId, $subfield);
-                            if (($subfield->required ?? false) && !array_key_exists($baseId, $this->errors ?? [])) {
+                            if (
+                                ($subfield->required ?? false)
+                                && !array_key_exists($baseId, $this->errors ?? [])
+                            ) {
                                 $c++;
                             }
                             break;
                         case 'hidden':
                             if (!empty($subfield->value)) {
-                                $this->formData[$baseId] = $this->field($baseId, $subfield, $subfield->required ?? true);
+                                $this->formData[$baseId] = $this->field(
+                                    $baseId,
+                                    $subfield,
+                                    $subfield->required ?? true
+                                );
                                 break;
                             }
                         default:
-                            $this->formData[$baseId] = $this->field($baseId, $subfield, $subfield->required ?? true);
+                            $this->formData[$baseId] = $this->field(
+                                $baseId,
+                                $subfield,
+                                $subfield->required ?? true
+                            );
                             if (!empty($this->formData[$baseId])) {
                                 $c++;
                             }
                     }
                 }
-                if ($c === 0 && ($this->adminOverrule || (!$field->required ?? false))) {
+                if (
+                    $c === 0
+                    && (
+                        $this->adminOverrule
+                        || (!$field->required ?? false)
+                    )
+                ) {
                     foreach($this->formData as $key=>$val) {
                         if (strpos($key, $id.'_'.$serial) !== false) {
                             unset($this->formData[$key]);
@@ -257,38 +302,84 @@ class Form {
                         $c2++;
                     }
                     if ($c < ($field->min ?? 0)) {
-                        $this->addError($id.'_'.$serial, 'Not enough fields filled', 'Not enough fields filled for '.$field->label);
+                        $this->addError(
+                            $id . '_' . $serial,
+                            'Not enough fields filled',
+                            'Not enough fields filled for ' . $field->label
+                        );
                     }
                     if ($c > ($field->max ?? INF)) {
-                        $this->addError($id.'_'.$serial, 'Too many fields filled', 'Too many fields filled for '.$field->label);
+                        $this->addError(
+                            $id . '_' . $serial,
+                            'Too many fields filled',
+                            'Too many fields filled for ' . $field->label
+                        );
                     }
                 }
             }
             if ($field->required && $c2 === 0) {
-                $this->addError($id, 'A value is required', $field->label.' is required');
+                $this->addError(
+                    $id,
+                    'A value is required',
+                    $field->label . ' is required'
+                );
             }
             $this->active=$c2;
         } else {
             foreach($field->fields as $subfieldId=>$subfield) {
-                $baseId = ($field->use_main_id ?? true ? $id.'_' : '').$subfieldId;
-                $this->formData[$baseId] = $this->field($baseId, $subfield, $subfield->required ?? true);
-                if (!empty($this->formData[$baseId]) || !empty($_FILES[$baseId]['tmp_name'])) {
+                $baseId =
+                    (
+                        $field->use_main_id ?? true 
+                        ? $id . '_' 
+                        : ''
+                    )
+                    . $subfieldId;
+                $this->formData[$baseId] = $this->field(
+                    $baseId,
+                    $subfield,
+                    $subfield->required ?? true
+                );
+                if (
+                    !empty($this->formData[$baseId])
+                    || !empty($_FILES[$baseId]['tmp_name'])
+                ) {
                     $this->active++;
                 }
             }
         }
         
         if (($field->required ?? false) && $this->active === 0) {
-            $this->addError($id, 'Please give a value', $field->label.' is required');
+            $this->addError(
+                $id,
+                'Please give a value',
+                $field->label . ' is required'
+            );
         } elseif ($this->active < ($field->min ?? 0)) {
-            $this->addError($id, 'Not enough fields filled', 'Not enough fields filled for '.$field->label);
+            $this->addError(
+                $id,
+                'Not enough fields filled',
+                'Not enough fields filled for ' . $field->label
+            );
         }
         if ($this->active > ($field->max ?? INF)) {
-            $this->addError($id, 'Too many fields filled', 'Too many fields filled for '.$field->label);
+            $this->addError(
+                $id,
+                'Too many fields filled',
+                'Too many fields filled for ' . $field->label
+            );
         }
-        if ($this->active === 0 && ($this->adminOverrule || (!$field->required ?? false))) {
+        if (
+            $this->active === 0
+            && ($this->adminOverrule || (!$field->required ?? false))
+        ) {
             foreach($field->fields as $subfieldId=>$subfield) {
-                $baseId = ($field->use_main_id ?? true ? $id.'_' : '').$subfieldId;
+                $baseId = 
+                    (
+                        $field->use_main_id ?? true
+                        ? $id . '_'
+                        : ''
+                    )
+                    . $subfieldId;
                 unset($this->formData[$baseId]);
                 unset($this->errors[$baseId]);
             }
@@ -349,44 +440,96 @@ class Form {
                         break;
                     case 1:
                     case 2:
-                        $this->addError($id, 'The file '.$_FILES[$id]['name'][$key].' is too large');
+                        $this->addError(
+                            $id,
+                            'The file ' . $_FILES[$id]['name'][$key] . ' is too large'
+                        );
                         break;
                     case 0:
                         if (substr($_FILES[$id]['name'][$key], -4) === '.php') {
                             $this->addError($id, 'php files are not allowed');
-                        } elseif (property_exists($field, 'format') && !in_array(mime_content_type($_FILES[$id]['tmp_name'][$key]), explode(',', $field->format))) {
-                            $this->addError($id, 'The filetype '.mime_content_type($_FILES[$id]['tmp_name'][$key]).' of '.$_FILES[$id]['name'][$key].' is not allowed');
-                        } elseif (property_exists($field, 'maxSize') && filesize($_FILES[$id]['tmp_name'][$key]) > convertToBytes($field->maxSize)) {
-                            $this->addError($id, 'The file '.$_FILES[$id]['name'][$key].' is too large, it is '.\formatBytes(filesize($_FILES[$id]['tmp_name'][$key])).' where only '.$field->maxSize.' is allowed');
+                        } elseif (
+                            property_exists($field, 'format')
+                            && !in_array(
+                                mime_content_type($_FILES[$id]['tmp_name'][$key]),
+                                explode(',', $field->format)
+                            )
+                        ) {
+                            $this->addError(
+                                $id,
+                                (
+                                    'The filetype ' . mime_content_type(
+                                        $_FILES[$id]['tmp_name'][$key]
+                                    ) . ' of ' . $_FILES[$id]['name'][$key] 
+                                    . ' is not allowed'
+                                )
+                            );
+                        } elseif (
+                            property_exists($field, 'maxSize')
+                            && filesize($_FILES[$id]['tmp_name'][$key]) 
+                                > convertToBytes($field->maxSize)
+                        ) {
+                            $this->addError(
+                                $id,
+                                'The file ' . $_FILES[$id]['name'][$key]
+                                    . ' is too large, it is '
+                                    . \formatBytes(
+                                        filesize($_FILES[$id]['tmp_name'][$key])
+                                    )
+                                    . ' where only ' . $field->maxSize
+                                    . ' is allowed'
+                            );
                         } else {
                             $this->saveFile($id, $field, $key);
                         }
                         break;
                     default:
-                        $this->addError($id, 'Unspecified error when uploading file '.$_FILES[$id]['name'][$key]);
+                        $this->addError(
+                            $id,
+                            'Unspecified error when uploading file '
+                                . $_FILES[$id]['name'][$key]
+                        );
                 }
             }
             if (property_exists($field, 'additionalFields')) {
-                $loopId = $id.'_'.array_keys(get_object_vars($field->additionalFields))[0];
+                $loopId = $id . '_' . array_keys(
+                    get_object_vars($field->additionalFields)
+                )[0];
                 foreach(array_keys($this->formData) as $key) {
-                    if (substr($key, 0, strlen($loopId)) === $loopId && strpos($key, '_new') === false) {
+                    if (
+                        substr($key, 0, strlen($loopId)) === $loopId
+                        && strpos($key, '_new') === false
+                    ) {
                         $rowid = substr($key, strlen($loopId));
-                        if (!empty($this->formData[$id.'_id'.$rowid])) {
-                            foreach($field->additionalFields as $subId=>$subField) {
-                                $this->field($id.'_'.$subId.$rowid, $subField, $subField->required ?? true);
+                        if (!empty($this->formData[$id . '_id' . $rowid])) {
+                            foreach(
+                                $field->additionalFields
+                                as $subId=>$subField
+                            ) {
+                                $this->field(
+                                    $id . '_' . $subId . $rowid,
+                                    $subField,
+                                    $subField->required ?? true
+                                );
                             }
                             $fileModel = new \npdc\model\File();
-                            $fileModel->updateFile($this->formData[$id.'_id'.$rowid], [
-                                'title'=>$this->formData[$id.'_title'.$rowid]
-                                , 'description'=>$this->formData[$id.'_description'.$rowid]
-                                , 'default_access'=>$this->formData[$id.'_perms'.$rowid]
-                            ]);
+                            $fileModel->updateFile(
+                                $this->formData[$id . '_id' . $rowid],
+                                [
+                                    'title'=>$this->formData[$id . '_title' . $rowid],
+                                    'description'=>$this->formData[$id . '_description' . $rowid],
+                                    'default_access'=>$this->formData[$id . '_perms' . $rowid]
+                                ]
+                            );
                         }
                     }
                 }
             }
             foreach(array_keys($this->formData) as $key) {
-                if (substr($key,0,strlen($id)+1) === $id.'_' && substr($key, -4) === '_new') {
+                if (
+                    substr($key, 0, strlen($id) + 1) === $id . '_'
+                    && substr($key, -4) === '_new'
+                ) {
                     unset($this->formData[$key]);
                 }
             }
@@ -415,7 +558,11 @@ class Form {
                         } catch (Gisconverter\Exceptions\OutOfRangeLon $ex) {
                             //IGNORE THIS ERROR;
                         } catch (Gisconverter\InvalidText $itex) {
-                            $this->addError($id.substr($key, strrpos($key, '_')), 'The WKT was not formed properly, please select your spatial coverage again');
+                            $this->addError(
+                                $id . substr($key, strrpos($key, '_')),
+                                'The WKT was not formed properly, please select'
+                                    . ' your spatial coverage again'
+                            );
                         } catch (Gisconverter\Exceptions $ex) {
                             die('Something went wrong when checking the points');
                         }
@@ -428,7 +575,11 @@ class Form {
         }
         
         if ($c === 0 && ($field->required ?? true)) {
-            $this->addError($id, 'Please provide a value', 'Spatial coverage is required');
+            $this->addError(
+                $id,
+                'Please provide a value',
+                'Spatial coverage is required'
+            );
         }
     }
 
@@ -465,14 +616,29 @@ class Form {
             ) {
             //no validation needed
         } elseif (!$hasValue) {
-            $this->addError($id, $field->errorMsg ?? 'Please provide a value', $field->label.' is required');
-        } elseif (property_exists($field, 'max_length') && strlen($this->value) > $field->max_length) {
-            $this->addError($id, 'This answer is too long, maximum '.$field->max_length.' allowed', $field->label.' is too long, maximum '.$field->max_length.' allowed');
+            $this->addError(
+                $id,
+                $field->errorMsg ?? 'Please provide a value',
+                $field->label . ' is required'
+            );
+        } elseif (
+            property_exists($field, 'max_length')
+            && strlen($this->value) > $field->max_length
+        ) {
+            $this->addError(
+                $id,
+                'This answer is too long, maximum ' . $field->max_length . ' allowed',
+                $field->label . ' is too long, maximum ' . $field->max_length . ' allowed'
+            );
         } else {
             switch($field->type) {
                 case 'mail':
                     if (!filter_var($this->value, FILTER_VALIDATE_EMAIL)) {
-                        $this->addError($id, 'Please make sure you provide a valid mail address', $this->label.' is not valid');
+                        $this->addError(
+                            $id,
+                            'Please make sure you provide a valid mail address',
+                            $this->label . ' is not valid'
+                        );
                         $this->filter = FILTER_SANITIZE_EMAIL;
                     } else {
                         $this->value = strtolower($this->value);
@@ -487,22 +653,44 @@ class Form {
                     $this->value = '';
                     break;
                 case 'date':
-                    $res = [$this->checkDate($this->formData[$id][0], $field->fuzzy ? 'down' : 'none')];
+                    $res = [$this->checkDate(
+                        $this->formData[$id][0],
+                        $field->fuzzy ? 'down' : 'none'
+                    )];
                     if (isset($field->range) && $field->range) {
                         if ($required && empty($res[0])) {
-                            $this->addError($id.' 1', 'The start date you provided is not valid', 'Invalid start date for '.$field->label);
+                            $this->addError(
+                                $id . ' 1',
+                                'The start date you provided is not valid',
+                                'Invalid start date for ' . $field->label
+                            );
                         }
-                        $res[1] = $this->checkDate($this->formData[$id][1], $field->fuzzy ? 'up' : 'none');
+                        $res[1] = $this->checkDate(
+                            $this->formData[$id][1],
+                            $field->fuzzy ? 'up' : 'none'
+                        );
                         if (($field->endRequired ?? $required) && empty($res[1])) {
-                            $this->addError($id.' 2', 'The end date you provided is not valid', 'Invalid end date for '.$field->label);
+                            $this->addError(
+                                $id . ' 2',
+                                'The end date you provided is not valid',
+                                'Invalid end date for ' . $field->label
+                            );
                         }
                         if (!empty($res[0]) && !empty($res[1]) && $res[0] > $res[1]) {
-                            $this->addError($id.' 2', 'The end date has to be after the start date', 'End date before start date for '.$field->label);
+                            $this->addError(
+                                $id . ' 2',
+                                'The end date has to be after the start date',
+                                'End date before start date for ' . $field->label
+                            );
                         }
                         $this->value = $res;
                     } else {
                         if ($required && empty($res[0])) {
-                            $this->addError($id, 'The date you provided is not valid', 'Invalid date provided for '.$field->label);
+                            $this->addError(
+                                $id,
+                                'The date you provided is not valid',
+                                'Invalid date provided for ' . $field->label
+                            );
                         }
                         $this->value = $res[0];
                     }
@@ -511,7 +699,11 @@ class Form {
                     if (is_array($this->value)) {
                         foreach($this->value as $c=>$value) {
                             if (!array_key_exists_r($value, $field->options)) {
-                                $this->addError($id, 'Illegal value selected', $field->label.' has a illegal value');
+                                $this->addError(
+                                    $id,
+                                    'Illegal value selected',
+                                    $field->label . ' has a illegal value'
+                                );
                                 unset($this->value[$c]);
                             }
                         }
@@ -519,10 +711,23 @@ class Form {
                         if ($this->value === 'na') {
                             unset($this->value);
                         }
-                        if ($this->value === 'please_select' && $field->required ?? true) {
-                            $this->addError($id, 'Please select a value', $field->label.' is required');
-                        } elseif (!array_key_exists_r($this->value, $field->options)) {
-                            $this->addError($id, 'Illegal value selected', $field->label.' has a illegal value');
+                        if (
+                            $this->value === 'please_select'
+                            && ($field->required ?? true)
+                        ) {
+                            $this->addError(
+                                $id,
+                                'Please select a value',
+                                $field->label . ' is required'
+                            );
+                        } elseif (
+                            !array_key_exists_r($this->value, $field->options)
+                        ) {
+                            $this->addError(
+                                $id,
+                                'Illegal value selected',
+                                $field->label . ' has a illegal value'
+                            );
                             unset($this->value);
                         }
                         
@@ -532,8 +737,11 @@ class Form {
                     $this->value = array_filter($this->value);
                     break;
                 case 'number_with_unit':
-                    if ($this->formData['unit_'.$id] === '==Select==') {
-                        $this->addError('unit_'.$id, 'Please select a unit for '.$field->label);
+                    if ($this->formData['unit_' . $id] === '==Select==') {
+                        $this->addError(
+                            'unit_' . $id,
+                            'Please select a unit for ' . $field->label
+                        );
                     }
             }
         }
@@ -584,7 +792,13 @@ class Form {
             $valid = checkdate($month, $day, $year);
         }
         if (!$valid) {
-            $pattern = '/^(?P<year>[0-9]{2,4})([-\/](?P<month>([1-9][0-9])|0?[1-9])([-\/](?P<day>([1-9][0-9])|0?[1-9]))?)?/';
+            $pattern = '/^(?P<year>[0-9]{2,4})'
+                . '([-\/]'
+                    . '(?P<month>1[0-2]|0?[1-9])'
+                    . '([-\/]'
+                        . '(?P<day>3[01]|[12][0-9]|0?[1-9])'
+                    . ')?'
+                . ')?/';
             if (preg_match($pattern, $date, $matches)) {
                 $year = $matches['year'];
                 $month = array_key_exists('month', $matches) 
@@ -609,7 +823,9 @@ class Form {
                 $date = null;
             }
         }
-        return empty($date) ? null : sprintf('%1$04d-%2$02d-%3$02d',$year, $month, $day);
+        return empty($date)
+            ? null
+            : sprintf('%1$04d-%2$02d-%3$02d', $year, $month, $day);
     }
     
     /**
@@ -632,25 +848,33 @@ class Form {
      * @return void
      */
     private function saveFile($id, $field, $key) {
-        $location = uniqid().'_'.$_FILES[$id]['name'][$key];
-        $dest = \npdc\config::$fileDir
-            .'/'.$location;
-        if (move_uploaded_file($_FILES[$id]['tmp_name'][$key], $dest)) {
-            foreach($field->additionalFields ?? [] as $subId=>$subField) {
-                $this->field($id.'_'.$subId.'_new_'.$key, $subField, $subField->required ?? true);
+        $location = uniqid() . '_' . $_FILES[$id]['name'][$key];
+        $dest = \npdc\config::$fileDir . '/' . $location;
+        if (
+            move_uploaded_file($_FILES[$id]['tmp_name'][$key], $dest)
+        ) {
+            foreach(
+                $field->additionalFields ?? []
+                as $subId=>$subField
+            ) {
+                $this->field(
+                    $id . '_' . $subId . '_new_' . $key,
+                    $subField,
+                    $subField->required ?? true
+                );
             }
             $fileModel = new \npdc\model\File();
-            $this->formData[$id.'_id_new_'.$key] = $fileModel->insertFile([
-                'name'=>$_FILES[$id]['name'][$key]
-                , 'location'=>$location
-                , 'type'=> mime_content_type($dest)
-                , 'size'=>filesize($dest)
-                , 'title'=>$this->formData[$id.'_title_new_'.$key]
-                , 'description'=>$this->formData[$id.'_description_new_'.$key]
-                , 'default_access'=>$this->formData[$id.'_perms_new_'.$key]
-                , 'form_id'=>str_replace('_', ':', $this->formId)
+            $this->formData[$id . '_id_new_' . $key] = $fileModel->insertFile([
+                'name' => $_FILES[$id]['name'][$key],
+                'location' => $location,
+                'type' => mime_content_type($dest),
+                'size' => filesize($dest),
+                'title' => $this->formData[$id . '_title_new_' . $key],
+                'description' => $this->formData[$id . '_description_new_' . $key],
+                'default_access' => $this->formData[$id . '_perms_new_' . $key],
+                'form_id' => str_replace('_', ':', $this->formId)
             ]);
-            $this->formData['newFiles'][] = $this->formData[$id.'_id_new_'.$key];
+            $this->formData['newFiles'][] = $this->formData[$id . '_id_new_' . $key];
         } else {
             $this->addError($id, 'Error when moving file');
         }

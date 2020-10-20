@@ -29,7 +29,7 @@ class Page extends Base{
                     break;
                 case 'edit':
                     if ($session->userLevel >= NPDC_ADMIN) {
-                        $this->editPage(\npdc\lib\Args::get('id'));//load edit form
+                        $this->editPage(\npdc\lib\Args::get('id'));
                         $this->display = 'edit';
                     } else {
                         $this->display = 'not_allowed';
@@ -52,20 +52,39 @@ class Page extends Base{
             $this->formController = new \npdc\controller\Form($this->formId);
             $this->formController->getForm('page');
             $this->formController->form->action = $_SERVER['REQUEST_URI'];
-            if (array_key_exists('formid', $_POST) && $_POST['formid'] === $this->formId) {
+            if (
+                array_key_exists('formid', $_POST)
+                && $_POST['formid'] === $this->formId
+            ) {
                 $this->formController->doCheck('post');
                 if ($this->formController->ok) {
-                    if ($_SESSION[$this->formId]['data']['url'] === $data['url'] 
-                        || (!in_array($_SESSION[$this->formId]['data']['url'], ['new', 'edit']) && $this->model->getByUrl($_SESSION[$this->formId]['data']['url']) === false)) {
+                    if (
+                        $this->getFormData('url') === $data['url'] 
+                        || (
+                            !in_array(
+                                $this->getFormData('url'),
+                                ['new', 'edit']
+                            ) 
+                            && $this->model->getByUrl(
+                                $this->getFormData('url')
+                            ) === false
+                        )
+                    ) {
                         //do save
                         $this->id = $data['page_id'];
                         
-                        $this->model->updatePage($data['page_id'],
+                        $this->model->updatePage(
+                            $data['page_id'],
                             [
-                                'url'=>$_SESSION[$this->formId]['data']['url'],
-                                'title'=>$_SESSION[$this->formId]['data']['title'],
-                                'content'=>  html_entity_decode($_SESSION[$this->formId]['data']['content']),
-                                'show_last_revision' =>$_SESSION[$this->formId]['data']['show_last_revision'] === 'on' ? 1 : 0
+                                'url' => $this->getFormData('url'),
+                                'title' => $this->getFormData('title'),
+                                'content' =>  html_entity_decode(
+                                    $this->getFormData('content')
+                                ),
+                                'show_last_revision' =>
+                                    $this->getFormData('show_last_revision') === 'on'
+                                    ? 1
+                                    : 0
                             ]
                         );
 
@@ -73,7 +92,7 @@ class Page extends Base{
                         $this->saveLinks();
                         
                         $_SESSION['notice'] = 'The page has been saved';
-                        header('Location: '.BASE_URL.'/'.$_SESSION[$this->formId]['data']['url']);
+                        header('Location: ' . BASE_URL . '/' . $this->getFormData('url'));
                         die();
                     } else {
                         $_SESSION[$this->formId]['errors']['url'] = 'This url already exists or is not permitted';
@@ -84,16 +103,37 @@ class Page extends Base{
                 $_SESSION[$this->formId]['data'] = $data;
                 $people = $this->model->getPersons($data['page_id']);
                 foreach($people as $n=>$person) {
-                    $_SESSION[$this->formId]['data']['people_person_id_'.$n] = $person['person_id'];
-                    $_SESSION[$this->formId]['data']['people_name_'.$n] = $person['name'];
-                    $_SESSION[$this->formId]['data']['people_role_'.$n] = $person['role'];
-                    $_SESSION[$this->formId]['data']['people_editor_'.$n] = $person['editor'];
+                    $this->setFormData(
+                        'people_person_id_' . $n,
+                        $person['person_id']
+                    );
+                    $this->setFormData(
+                        'people_name_' . $n,
+                        $person['name']
+                    );
+                    $this->setFormData(
+                        'people_role_' . $n,
+                        $person['role']
+                    );
+                    $this->setFormData(
+                        'people_editor_' . $n,
+                        $person['editor']
+                    );
                 }
                 $urls = $this->model->getUrls($data['page_id']);
                 foreach($urls as $n=>$url) {
-                    $_SESSION[$this->formId]['data']['links_id_'.$n] = $url['page_link_id'];
-                    $_SESSION[$this->formId]['data']['links_url_'.$n] = $url['url'];
-                    $_SESSION[$this->formId]['data']['links_label_'.$n] = $url['text'];
+                    $this->setFormData(
+                        'links_id_' . $n,
+                        $url['page_link_id']
+                    );
+                    $this->setFormData(
+                        'links_url_' . $n,
+                        $url['url']
+                    );
+                    $this->setFormData(
+                        'links_label_' . $n,
+                        $url['text']
+                    );
                 }
             }
         }
@@ -110,14 +150,14 @@ class Page extends Base{
         $sort = 1;
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $persons[] = $_SESSION[$this->formId]['data'][$key];
+                $persons[] = $this->getFormData($key);
                 $record = [
                     'page_id'=>$this->id, 
-                    'person_id'=>$_SESSION[$this->formId]['data'][$key]
+                    'person_id'=>$this->getFormData($key)
                 ];
                 $data = [
-                    'role'=>$_SESSION[$this->formId]['data']['people_role_'.substr($key, strlen($loopId))],
-                    'editor'=> !empty($_SESSION[$this->formId]['data']['people_editor_'.substr($key, strlen($loopId))]) ? 1 : 0,
+                    'role'=>$this->getFormData('people_role_' . substr($key, strlen($loopId))),
+                    'editor'=> !empty($this->getFormData('people_editor_'.substr($key, strlen($loopId)))) ? 1 : 0,
                     'sort'=>$sort
                 ];
                 if (strpos($key, '_new_') === false) {
@@ -143,7 +183,7 @@ class Page extends Base{
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId 
                 && strpos($key, '_new_') === false) {
-                $keep[] = $_SESSION[$this->formId]['data'][$key];
+                $keep[] = $this->getFormData($key);
             }
         }
         $this->model->deleteLink($this->id, $keep);
@@ -153,12 +193,16 @@ class Page extends Base{
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
                 $data = [];
-                $data['url'] = $_SESSION[$this->formId]['data'][$key];
-                $data['text'] = $_SESSION[$this->formId]['data']['links_label_'.substr($key, strlen($loopId))];
+                $data['url'] = $this->getFormData($key);
+                $data['text'] = $this->getFormData(
+                    'links_label_' . substr($key, strlen($loopId))
+                );
                 $data['sort'] = $sort;
                 $sort++;
                 if (strpos($key, '_new_') === false) {
-                    $recordId = $_SESSION[$this->formId]['data']['links_id_'.substr($key, strlen($loopId))];
+                    $recordId = $this->getFormData(
+                        'links_id_' . substr($key, strlen($loopId))
+                    );
                     $this->model->updateLink($recordId, $data);
                 } else {
                     $data['page_id'] = $this->id;

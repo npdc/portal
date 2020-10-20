@@ -49,7 +49,9 @@ class Dataset extends Base{
      * @return boolean
      */
     public function recordChanged($id, $version) {
-        $changed = $this->generalHasChanged($id, $version);
+        if($this->generalHasChanged($id, $version)){
+            return true;
+        }
         $tables = [
             'dataset_citation',
             'dataset_keyword',
@@ -246,7 +248,8 @@ class Dataset extends Base{
 
     private function loadFormMethods(){
         foreach(
-            $this->model->getPlatform($this->id, $this->version) as $rowid => $row
+            $this->model->getPlatform($this->id, $this->version)
+            as $rowid => $row
         ) {
             $basekey = 'platform_' . $rowid;
             $this->setFormData($basekey . '_id', $row['platform_id']);
@@ -468,7 +471,10 @@ class Dataset extends Base{
                     $sr['temporal_coverage_paleo_id']
                 );
                 $this->setFormData($base_id . '_start', $sr['start_value']);
-                $this->setFormData('unit_' . $base_id . '_start', $sr['start_unit']);
+                $this->setFormData(
+                    'unit_' . $base_id . '_start',
+                    $sr['start_unit']
+                );
                 $this->setFormData($base_id .'_end', $sr['end_value']);
                 $this->setFormData('unit_' . $base_id .'_end', $sr['end_unit']);
                 $this->setFormData($base_id . '_chronostratigraphic_unit', []);
@@ -1250,7 +1256,13 @@ class Dataset extends Base{
                     'platform_id' => $platform_id,
                     'dataset_version_min' => 1
                 ]);
-                foreach($this->model->getSensor($instrument['instrument_id'], $this->version) as $sensor) {
+                foreach(
+                    $this->model->getSensor(
+                        $instrument['instrument_id'],
+                        $this->version
+                    )
+                    as $sensor
+                ) {
                     $this->model->insertSensor([
                         'vocab_instrument_id' => $instrument['vocab_instrument_id'],
                         'technique' => $instrument['technique'],
@@ -1513,17 +1525,7 @@ class Dataset extends Base{
         $serials = [];
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $serials[] = substr($key
-                        , strlen($loopId)
-                        , (
-                            strpos(
-                                $key,
-                                '_',
-                                strlen($loopId)
-                            )
-                            - strlen($loopId)
-                        )
-                    );
+                $serials[] = $this->getSerial($key, $loopId);
             }
         }
         foreach(array_unique($serials) as $serial) {
@@ -1668,15 +1670,7 @@ class Dataset extends Base{
         $current = [];
         foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $serials[] = substr(
-                    $key
-                    , strlen($loopId)
-                    , strpos(
-                        $key,
-                        '_',
-                        strlen($loopId)
-                    )-strlen($loopId)
-                );
+                $serials[] = $this->getSerial($key, $loopId);
             }
         }
         foreach(array_unique($serials) as $serial) {
@@ -1916,14 +1910,7 @@ class Dataset extends Base{
         $serials = [];
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $serials[] = substr($key
-                        , strlen($loopId)
-                        , strpos(
-                            $key,
-                            '_',
-                            strlen($loopId)
-                        )-strlen($loopId)
-                    );
+                $serials[] = $this->getSerial($key, $loopId);
             }
         }
         foreach(array_unique($serials) as $serial) {
@@ -2047,33 +2034,57 @@ class Dataset extends Base{
             }
         }
         foreach(array_unique($serials) as $serial) {
+            $rid = $loopId . $serial;
             $data = [
                 'dataset_id' => $this->id,
-                'organization_id' => $this->getFormData($loopId.$serial.'_data_center')
+                'organization_id' => $this->getFormData($rid . '_data_center')
             ];
             if (strpos($serial, 'new') !== false) {
                 $data['dataset_version_min'] = $this->version;
                 $data_center_id = $this->model->insertDataCenter($data);
-                foreach($this->getFormData($loopId.$serial.'_people') as $person) {
-                    $this->model->insertDataCenterPerson(['dataset_data_center_id' => $data_center_id, 'dataset_version_min' => $this->version, 'person_id' => $person]);
+                foreach($this->getFormData($rid . '_people') as $person) {
+                    $this->model->insertDataCenterPerson(
+                        [
+                            'dataset_data_center_id' => $data_center_id,
+                            'dataset_version_min' => $this->version,
+                            'person_id' => $person
+                        ]
+                    );
                 }
             } else {
-                $data_center_id = $this->getFormData($loopId.$serial.'_id');
-                $return = $this->model->updateDataCenter($data_center_id, $data, $this->version);
+                $data_center_id = $this->getFormData($rid . '_id');
+                $return = $this->model->updateDataCenter(
+                    $data_center_id,
+                    $data,
+                    $this->version
+                );
                 if (is_numeric($return)) {
                     $data_center_id = $return;
                 }
-                $currentPersons = $this->model->getDataCenterPerson($data_center_id, $this->version);
+                $currentPersons = $this->model->getDataCenterPerson(
+                    $data_center_id,
+                    $this->version
+                );
                 $persons = [];
                 foreach($currentPersons as $row) {
                     $persons[] = $row['person_id'];
                 }
-                $new = array_diff($this->getFormData($loopId.$serial.'_people'), $persons);
-                $old = array_diff($persons, $this->getFormData($loopId.$serial.'_people') ?? []);
+                $new = array_diff(
+                    $this->getFormData($rid . '_people'),
+                    $persons
+                );
+                $old = array_diff(
+                    $persons,
+                    $this->getFormData($rid . '_people') ?? []
+                );
 
                 if (count($old) > 0) {
                     foreach($old as $person) {
-                        $this->model->deleteDataCenterPerson($person, $data_center_id, $this->version-1);
+                        $this->model->deleteDataCenterPerson(
+                            $person,
+                            $data_center_id,
+                            $this->version - 1
+                        );
                     }
                 }
                 if (count($new) > 0) {
@@ -2103,30 +2114,50 @@ class Dataset extends Base{
         $serials = [];
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $serials[] = substr($key
-                        , strlen($loopId)
-                        , strpos($key, '_', strlen($loopId))-strlen($loopId)
-                    );
+                $serials[] = $this->getSerial($key, $loopId);
             }
         }
         foreach(array_unique($serials) as $serial) {
-            $fields = ['creator', 'editor', 'title', 'series_name', 'release_date', 'release_place', 'publisher', 'version', 'issue_identification', 'presentation_form', 'other', 'persistent_identifier_type', 'persistent_identifier_identifier', 'online_resource', 'type'];
+            $fields = [
+                'creator',
+                'editor',
+                'title',
+                'series_name',
+                'release_date',
+                'release_place',
+                'publisher',
+                'version',
+                'issue_identification',
+                'presentation_form',
+                'other',
+                'persistent_identifier_type',
+                'persistent_identifier_identifier',
+                'online_resource',
+                'type'
+            ];
             $data = [];
             foreach($fields as $field) {
-                $key = 'citation_'.$serial.'_'.$field;
-                if ($field === 'release_date' && is_array($this->getFormData($key))) {
+                $key = 'citation_' . $serial . '_' . $field;
+                if (
+                    $field === 'release_date' 
+                    && is_array($this->getFormData($key))
+                ) {
                     $data[$field] = $this->getFormData($key)[0];
                 } else {
                     $data[$field] = $this->getFormData($key);
                 }
             }
-            if (empty($this->getFormData('citation_'.$serial.'_id'))) {
+            if (empty($this->getFormData('citation_' . $serial . '_id'))) {
                 $data['dataset_id'] = $this->id;
                 $data['dataset_version_min'] = $this->version;
                 $citations[] = $this->model->insertCitation($data);
             } else {
-                $record_id = $this->getFormData('citation_'.$serial.'_id');
-                $return = $this->model->updateCitation($record_id, $data, $this->version);
+                $record_id = $this->getFormData('citation_' . $serial . '_id');
+                $return = $this->model->updateCitation(
+                    $record_id,
+                    $data,
+                    $this->version
+                );
                 $citations[] = !is_bool($return) ? $return : $record_id;
             }
         }
@@ -2145,30 +2176,32 @@ class Dataset extends Base{
         $serials = [];
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $serials[] = substr($key
-                        , strlen($loopId)
-                        , strpos($key, '_', strlen($loopId))-strlen($loopId)
-                    );
+                $serials[] = $this->getSerial($key, $loopId);
             }
         }
         foreach(array_unique($serials) as $serial) {
+            $rid = $loopId . $serial;
             $data = [
                 'dataset_id' => $this->id,
-                'vocab_platform_id' => $this->getFormData($loopId.$serial.'_platform_id')
+                'vocab_platform_id' => $this->getFormData($rid . '_platform_id')
             ];
             if (strpos($serial, 'new') !== false) {
                 $data['dataset_version_min'] = $this->version;
                 $platform_id = $this->model->insertPlatform($data);
             } else {
-                $platform_id = $this->getFormData($loopId.$serial.'_id');
-                $return = $this->model->updatePlatform($platform_id, $data, $this->version);
+                $platform_id = $this->getFormData($rid . '_id');
+                $return = $this->model->updatePlatform(
+                    $platform_id,
+                    $data,
+                    $this->version
+                );
                 if (!is_bool($return)) {
                     $platform_id = $return;
                 }
             }
             $current[] = $platform_id;
-            $this->saveCharacteristics('platform', $platform_id, $loopId.$serial);
-            $this->saveInstrument($loopId.$serial, $platform_id);
+            $this->saveCharacteristics('platform', $platform_id, $rid);
+            $this->saveInstrument($rid, $platform_id);
         }
         $this->model->deletePlatform($this->id, $this->version-1, $current);
     }
@@ -2186,17 +2219,15 @@ class Dataset extends Base{
         $current = [];
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $serials[] = substr($key
-                        , strlen($loopId)
-                        , strpos($key, '_', strlen($loopId))-strlen($loopId)
-                    );
+                $serials[] = $this->getSerial($key, $loopId);
             }
         }
         foreach(array_unique($serials) as $serial) {
+            $rid = $loopId . $serial;
             $data = [
-                'vocab_instrument_id' => $this->getFormData($loopId.$serial.'_instrument_id'),
-                'technique' => $this->getFormData($loopId.$serial.'_technique'),
-                'number_of_sensors' => $this->getFormData($loopId.$serial.'_number_of_sensors'),
+                'vocab_instrument_id' => $this->getFormData($rid . '_instrument_id'),
+                'technique' => $this->getFormData($rid . '_technique'),
+                'number_of_sensors' => $this->getFormData($rid . '_number_of_sensors'),
                 'platform_id' => $platform_id
 
             ];
@@ -2205,17 +2236,25 @@ class Dataset extends Base{
                 $data['dataset_version_min'] = $this->version;
                 $instrument_id = $this->model->insertInstrument($data);
             } else {
-                $instrument_id = $this->getFormData($loopId.$serial.'_id');
-                $return = $this->model->updateInstrument($instrument_id, $data, $this->version);
+                $instrument_id = $this->getFormData($rid . '_id');
+                $return = $this->model->updateInstrument(
+                    $instrument_id,
+                    $data,
+                    $this->version
+                );
                 if (!is_bool($return)) {
                     $instrument_id = $return;
                 }
             }
             $current[] = $instrument_id;
-            $this->saveCharacteristics('instrument', $instrument_id, $loopId.$serial);
+            $this->saveCharacteristics(
+                'instrument',
+                $instrument_id,
+                $loopId.$serial
+            );
             //$this->saveSensor($loopId.$serial, $instrument_id);
         }
-        $this->model->deleteInstrument($platform_id, $this->version-1, $current);
+        $this->model->deleteInstrument($platform_id, $this->version - 1, $current);
     }
 
     /**
@@ -2231,16 +2270,14 @@ class Dataset extends Base{
         $current = [];
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $serials[] = substr($key
-                        , strlen($loopId)
-                        , strpos($key, '_', strlen($loopId))-strlen($loopId)
-                    );
+                $serials[] = $this->getSerial($key, $loopId);
             }
         }
         foreach(array_unique($serials) as $serial) {
+            $rid = $loopId . $serial;
             $data = [
-                'vocab_instrument_id' => $this->getFormData($loopId.$serial.'_sensor_id'),
-                'technique' => $this->getFormData($loopId.$serial.'_technique'),
+                'vocab_instrument_id' => $this->getFormData($rid . '_sensor_id'),
+                'technique' => $this->getFormData($rid . '_technique'),
                 'instrument_id' => $instrument_id
 
             ];
@@ -2248,14 +2285,18 @@ class Dataset extends Base{
                 $data['dataset_version_min'] = $this->version;
                 $sensor_id = $this->model->insertSensor($data);
             } else {
-                $sensor_id = $this->getFormData($loopId.$serial.'_id');
-                $return = $this->model->updateSensor($sensor_id, $data, $this->version);
+                $sensor_id = $this->getFormData($rid . '_id');
+                $return = $this->model->updateSensor(
+                    $sensor_id,
+                    $data,
+                    $this->version
+                );
                 if (!is_bool($return)) {
                     $sensor_id = $return;
                 }
             }
             $current[] = $sensor_id;
-            $this->saveCharacteristics('sensor', $sensor_id, $loopId.$serial);
+            $this->saveCharacteristics('sensor', $sensor_id, $rid);
         }
         $this->model->deleteSensor($instrument_id, $this->version-1, $current);
     }
@@ -2272,7 +2313,8 @@ class Dataset extends Base{
         if (!in_array($type, ['platform', 'instrument', 'sensor'])) {
             die('wrong type in saveCharacteristics');
         }
-        $loopId = $base_id.'_characteristics_id_';
+        $base_id .= '_characteristics';
+        $loopId = $base_id . '_id_';
         $serials = [];
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
@@ -2283,22 +2325,32 @@ class Dataset extends Base{
         $current = [];
         foreach(array_unique($serials) as $serial) {
             $data = [
-                'name' => $this->getFormData($base_id.'_characteristics_name_'.$serial),
-                'description' => $this->getFormData($base_id.'_characteristics_description_'.$serial),
-                'data_type' => $this->getFormData($base_id.'_characteristics_datatype_'.$serial),
-                'unit' => $this->getFormData($base_id.'_characteristics_unit_'.$serial),
-                'value' => $this->getFormData($base_id.'_characteristics_value_'.$serial),
+                'name' => $this->getFormData($base_id . '_name_' . $serial),
+                'description' => $this->getFormData($base_id . '_description_' . $serial),
+                'data_type' => $this->getFormData($base_id . '_datatype_' . $serial),
+                'unit' => $this->getFormData($base_id . '_unit_' . $serial),
+                'value' => $this->getFormData($base_id . '_value_' . $serial),
                 $type.'_id' => $record_id
             ];
             if (strpos($serial, 'new') === false) {
-                $return = $this->model->updateCharacteristics($this->getFormData($base_id.'_characteristics_id_'.$serial), $data, $this->version);
-                $current[] = is_bool($return) ? $this->getFormData($base_id.'_characteristics_id_'.$serial) : $return;
+                $return = $this->model->updateCharacteristics(
+                    $this->getFormData($base_id . '_id_' . $serial),
+                    $data,
+                    $this->version
+                );
+                $current[] = is_bool($return) 
+                    ? $this->getFormData($base_id . '_id_' . $serial) 
+                    : $return;
             } else {
                 $data['dataset_version_min'] = $this->version;
                 $current[] = $this->model->insertCharacteristics($data);
             }
         }
-        $this->model->deleteCharacteristics([$type, $record_id], $this->version-1, $current);
+        $this->model->deleteCharacteristics(
+            [$type, $record_id],
+            $this->version-1,
+            $current
+        );
     }
 
     /**
@@ -2309,24 +2361,25 @@ class Dataset extends Base{
      */
     private function saveLink($getData = false) {
         $links = [];
-        foreach ($this->model->getLinks($this->id, $this->version, !$getData) as $link) {
+        foreach (
+            $this->model->getLinks($this->id, $this->version, !$getData) 
+            as $link
+        ) {
             $links[] = $link['dataset_link_id'];
         }
         $loopId = 'links_';
         $serials = [];
         foreach(array_keys($_SESSION[$this->formId]['data']) as $key) {
             if (substr($key, 0, strlen($loopId)) === $loopId) {
-                $serials[] = substr($key
-                        , strlen($loopId)
-                        , strpos($key, '_', strlen($loopId))-strlen($loopId)
-                    );
+                $serials[] = $this->getSerial($key, $loopId);
             }
         }
         foreach(array_unique($serials) as $serial) {
+            $rid = $loopId . $serial;
             $fields = ['type', 'title', 'description'];
             $data = [];
             foreach($fields as $field) {
-                $key = $loopId.$serial.'_'.$field;
+                $key = $rid . '_'.$field;
                 switch($field) {
                     case 'type':
                         $field = 'vocab_url_type_id';
@@ -2343,40 +2396,54 @@ class Dataset extends Base{
                 $data['dataset_version_min'] = $this->version;
                 $record_id = $this->model->insertLink($data);
             } else {
-                $record_id = $this->getFormData('links_'.$serial.'_id');
+                $record_id = $this->getFormData($rid . '_id');
 
-                $return = $this->model->updateLink($record_id, $data, $this->version);
+                $return = $this->model->updateLink(
+                    $record_id,
+                    $data,
+                    $this->version
+                );
                 if (!is_bool($return)) {
                     $record_id = $return;
                 }
             }
             $links[] = $record_id;
 
-            $loopId2 = $loopId.$serial.'_url_';
+            $loopId2 = $rid . '_url_';
             $serials2 = [];
             $current2 = [];
             foreach (array_keys($_SESSION[$this->formId]['data']) as $key) {
                 if (substr($key, 0, strlen($loopId2)) === $loopId2) {
-                    $serials2[] = substr($key
-                            , strlen($loopId2)
-                            , strpos($key, '_', strlen($loopId2))-strlen($loopId2)
-                        );
+                    $serials2[] = $this->getSerial($key, $loopId2);
                 }
             }
             foreach(array_unique($serials2) as $serial2) {
                 //save the url
+                $rid2 = $loopId2 . $serial2;
                 if (strpos($serial2, 'new') !== false) {
                     $data = [
                         'dataset_link_id' => $record_id,
                         'dataset_version_min' => $this->version,
-                        'url' => $this->getFormData($loopId2.$serial2.'_url')
+                        'url' => $this->getFormData($rid2 . '_url')
                     ];
                     $current2[] = $this->model->insertLinkUrl($data);
                 } else {
-                    $return = $this->model->updateLinkUrl($this->getFormData($loopId2.$serial2.'_id'), ['url' => $this->getFormData($loopId2.$serial2.'_url'), 'dataset_link_id' => $record_id], $this->version);
-                    $current2[] = !is_bool($return) ? $return : $this->getFormData($loopId2.$serial2.'_id');
+                    $return = $this->model->updateLinkUrl(
+                        $this->getFormData($rid2 . '_id'),
+                        [
+                            'url' => $this->getFormData($rid2 . '_url'),
+                            'dataset_link_id' => $record_id
+                        ],
+                        $this->version
+                    );
+                    $current2[] = !is_bool($return)
+                        ? $return :
+                        $this->getFormData($rid2 . '_id');
                 }
-                $this->model->deleteLinkUrl($record_id, $this->version-1, $current2);
+                $this->model->deleteLinkUrl(
+                    $record_id,
+                    $this->version-1,
+                    $current2);
             }
         }
         $v = $this->version-1;
@@ -2402,15 +2469,19 @@ class Dataset extends Base{
         $fileModel = new \npdc\model\File();
         if (count($serials) > 0) {
             foreach($serials as $serial) {
-                $files[] = $this->getFormData($loopId.$serial);
+                $rid = $loopId . $serial;
+                $files[] = $this->getFormData($rid);
                 if (substr($serial, 0, 1) === 'n') {
                     $data = [
                         'dataset_id' => $this->id,
                         'dataset_version_min' => $this->version,
-                        'file_id' => $this->getFormData($loopId.$serial)
+                        'file_id' => $this->getFormData($rid)
                         ];
                     $this->model->insertFile($data);
-                    $fileModel->updateFile($data['file_id'], ['record_state' => 'complete']);
+                    $fileModel->updateFile(
+                        $data['file_id'],
+                        ['record_state' => 'complete']
+                    );
                 }
             }
         }
@@ -2431,11 +2502,17 @@ class Dataset extends Base{
     private function listFiles() {
         $dataset = \npdc\lib\Args::get('id');
         if (\npdc\lib\Args::exists('version') && $this->canEdit) {
-            $this->data = $this->model->getById($dataset, \npdc\lib\Args::get('version'));
+            $this->data = $this->model->getById(
+                $dataset,
+                \npdc\lib\Args::get('version')
+            );
         } else {
             $this->data = $this->model->getById($dataset);
         }
-        $datasetFiles = $this->model->getFiles($dataset, $this->data['dataset_version']);
+        $datasetFiles = $this->model->getFiles(
+            $dataset,
+            $this->data['dataset_version']
+        );
         $files = [];
         $tmpFiles = [];
         $access = ['public'];
@@ -2448,20 +2525,37 @@ class Dataset extends Base{
                         $this->error = 'Please provide information on why you want access';
                     } else {
                         $requestModel = new \npdc\model\Request();
-                        $requestId = $requestModel->insertRequest(['person_id' => $this->session->userId, 'reason' => $_POST['request'], 'dataset_id' => $dataset]);
+                        $requestId = $requestModel->insertRequest([
+                            'person_id' => $this->session->userId,
+                            'reason' => $_POST['request'],
+                            'dataset_id' => $dataset
+                        ]);
                         foreach($_POST['files'] as $file) {
-                            $requestModel->insertFile(['access_request_id' => $requestId, 'file_id' => $file]);
+                            $requestModel->insertFile([
+                                'access_request_id' => $requestId,
+                                'file_id' => $file
+                            ]);
                         }
-                        $_SESSION['notice'] = 'Your request has been saved with number '.$requestId;
+                        $_SESSION['notice'] = 'Your request has been saved with'
+                            . ' number ' . $requestId;
 
                         $mail = new \npdc\lib\Mailer();
                         $personModel = new \npdc\model\Person();
                         $sendable = false;
-                        foreach($this->model->getPersons($this->data['dataset_id'], $this->data['dataset_version']) as $person) {
+                        foreach($this->model->getPersons(
+                            $this->data['dataset_id'],
+                            $this->data['dataset_version'
+                        ])
+                        as $person) {
                             if ($person['editor'] == 1) {
-                                $personData = $personModel->getById($person['person_id']);
+                                $personData = $personModel->getById(
+                                    $person['person_id']
+                                );
                                 if ($personData['mail'] !== null) {
-                                    $mail->to($personData['mail'], $personData['name']);
+                                    $mail->to(
+                                        $personData['mail'],
+                                        $personData['name']
+                                    );
                                     $sendable = true;
                                 }
                             }
@@ -2469,21 +2563,41 @@ class Dataset extends Base{
                         if ($sendable) {
                             $mail->subject('New data request');
                             $text = 'Dear data provider'.",\r\n\r"
-                                . 'There is a new data request for data you provided at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease process this request.\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+                                . 'There is a new data request for data you '
+                                . 'provided at ' . $_SERVER['REQUEST_SCHEME']
+                                . '://' . $_SERVER['HTTP_HOST'] . BASE_URL
+                                . '/request/' . $requestId . "\r\n\r\n"
+                                . 'Please process this request.'
+                                . "\r\n\r\nKind regards,\r\n"
+                                . \npdc\config::$siteName;
                             $mail->text($text);
                             $mail->send();
                         }
 
                         $mail = new \npdc\lib\Mailer();
-                        $mail->to(\npdc\config::$mail['contact'], \npdc\config::$siteName);
+                        $mail->to(
+                            \npdc\config::$mail['contact'],
+                            \npdc\config::$siteName
+                        );
                         $mail->subject('New data request');
                         $text = 'Dear admin'.",\r\n\r"
-                            . 'There is a new data request at '.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/request/'.$requestId."\r\n\r\nPlease make sure the request is processed.\r\n\r\n"
-                            . ($sendable ? 'A message has been sent to the researchers to notify them of the request' : 'It was NOT possible to send a notification to the researchers')
-                            . "\r\n\r\nKind regards,\r\n". \npdc\config::$siteName;
+                            . 'There is a new data request at '
+                            . $_SERVER['REQUEST_SCHEME'] . '://'
+                            . $_SERVER['HTTP_HOST'] . BASE_URL . '/request/'
+                            . $requestId . "\r\n\r\nPlease make sure the "
+                            . "request is processed.\r\n\r\n"
+                            . (
+                                $sendable
+                                ? 'A message has been sent to the researchers '
+                                    . 'to notify them of the request'
+                                : 'It was NOT possible to send a notification '
+                                    .'to the researchers'
+                            )
+                            . "\r\n\r\nKind regards,\r\n"
+                            . \npdc\config::$siteName;
                         $mail->text($text);
                         $mail->send();
-                        header('Location: '.BASE_URL.'/request/'.$requestId);
+                        header('Location: ' . BASE_URL . '/request/' . $requestId);
                         die();
                     }
                 }
@@ -2496,7 +2610,13 @@ class Dataset extends Base{
                 }
             case 'public':
                 foreach($datasetFiles as $file) {
-                    if (in_array($file['default_access'], $access) && (empty($tmpFiles) || in_array($file['file_id'], $tmpFiles))) {
+                    if (
+                        in_array($file['default_access'], $access)
+                        && (
+                            empty($tmpFiles)
+                            || in_array($file['file_id'], $tmpFiles)
+                        )
+                    ) {
                         $files[] = $file['file_id'];
                     }
                 }
@@ -2504,7 +2624,13 @@ class Dataset extends Base{
         }
         if (!empty($files)) {
             $zip = new \npdc\lib\ZipFile();
-            $zip->create(preg_replace('/[^A-Za-z0-9\-_]/', '', str_replace(' ', '_', $this->session->name ?? 'guest')));
+            $zip->create(
+                preg_replace(
+                    '/[^A-Za-z0-9\-_]/',
+                    '',
+                    str_replace(' ', '_', $this->session->name ?? 'guest')
+                )
+            );
             $zip->setDataset($this->data['dataset_id']);
             if (!empty($this->session->userId)) {
                 $zip->setUser($this->session->userId);
