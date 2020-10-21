@@ -12,6 +12,8 @@ class Dataset extends Base{
     public $formId = 'datasetlist';
     public $name = 'dataset';
     public $userLevelAdd = NPDC_EDITOR;
+    private $vocab;
+    private $vocabModel;
 
     //list of pages in edit form
     public $pages = [
@@ -33,6 +35,7 @@ class Dataset extends Base{
         $this->session = $session;
         $this->model = new \npdc\model\Dataset();
         parent::__construct();
+        $this->vocab = new \npdc\lib\Vocab();
         if (\npdc\lib\Args::get('action') === 'files') {
             $this->listFiles();
         }
@@ -78,7 +81,7 @@ class Dataset extends Base{
      * @return void
      */
     protected function alterFields() {
-        $vocab = new \npdc\lib\Vocab();
+        $this->vocab = new \npdc\lib\Vocab();
         switch ($this->screen) {
             case 'general':
                 $this->alterFieldsGeneral();
@@ -97,7 +100,7 @@ class Dataset extends Base{
     
     private function alterFieldsGeneral(){
         $this->formController->form->fields
-            ->iso_topic->options = $vocab->getList('vocab_iso_topic_category');
+            ->iso_topic->options = $this->vocab->getList('vocab_iso_topic_category');
         if ($this->session->userLevel >= NPDC_ADMIN) {
             $this->formController->form->fields->dif_id->disabled = false;
         } elseif ($this->id !== 'new') {
@@ -118,20 +121,20 @@ class Dataset extends Base{
     
     private function alterFieldsCoverage(){
         $this->formController->form->fields->temporal_coverage->fields->paleo
-            ->fields->chronostratigraphic_unit->options = $vocab->getList(
+            ->fields->chronostratigraphic_unit->options = $this->vocab->getList(
                 'vocab_chronounit'
             );
         $this->formController->form->fields->resolution->fields
-            ->vocab_res_hor_id->options = $vocab->getList('vocab_res_hor');
+            ->vocab_res_hor_id->options = $this->vocab->getList('vocab_res_hor');
         $this->formController->form->fields->resolution->fields
-            ->vocab_res_vert_id->options = $vocab->getList('vocab_res_vert');
+            ->vocab_res_vert_id->options = $this->vocab->getList('vocab_res_vert');
         $this->formController->form->fields->resolution->fields
-            ->vocab_res_time_id->options = $vocab->getList('vocab_res_time');
+            ->vocab_res_time_id->options = $this->vocab->getList('vocab_res_time');
     }
     
     private function alterFieldsReferences(){
         $this->formController->form->fields->links->fields
-            ->type->options = $vocab->getList('vocab_url_type');
+            ->type->options = $this->vocab->getList('vocab_url_type');
         $options = [];
         foreach ($this->model->getList() as $ds) {
             $options[$ds['dataset_id']] = $ds['title'];
@@ -147,8 +150,7 @@ class Dataset extends Base{
      */
     protected function loadForm($baseData) {
         $_SESSION[$this->formId]['data'] = $baseData;
-        $vocab = new \npdc\lib\Vocab();
-        $vocabModel = new \npdc\model\Vocab();
+        $this->vocabModel = new \npdc\model\Vocab();
         switch ($this->screen) {
             case 'general':
                 $this->loadFormGeneral();
@@ -163,7 +165,7 @@ class Dataset extends Base{
                 $this->loadFormCoverage();
                 break;
             case 'usage':
-                $this->loadFromUsage();
+                $this->loadFormUsage();
                 break;
             case 'references':
                 $this->loadFormReferences();
@@ -197,7 +199,7 @@ class Dataset extends Base{
                     [
                         'id' => $keyword['dataset_keyword_id'],
                         'keyword_id' => $keyword['vocab_science_keyword_id'],
-                        'keyword' => $vocab->formatTerm(
+                        'keyword' => $this->vocab->formatTerm(
                             'vocab_science_keyword', $keyword, false, true
                         ),
                         'detailed_variable' => $keyword['free_text']
@@ -259,9 +261,9 @@ class Dataset extends Base{
             );
             $this->setFormData(
                 $basekey . '_platform',
-                $vocab->formatTerm(
+                $this->vocab->formatTerm(
                     'vocab_platform',
-                    $vocabModel->getTermById(
+                    $this->vocabModel->getTermById(
                         'vocab_platform',
                         $row['vocab_platform_id']
                     ),
@@ -281,9 +283,9 @@ class Dataset extends Base{
                 );
                 $this->setFormData(
                     $bsk.'_instrument',
-                    $vocab->formatTerm(
+                    $this->vocab->formatTerm(
                         'vocab_instrument',
-                        $vocabModel->getTermById(
+                        $this->vocabModel->getTermById(
                             'vocab_instrument',
                             $sr['vocab_instrument_id']
                         ),
@@ -311,9 +313,9 @@ class Dataset extends Base{
                     );
                     $this->setFormData(
                         $bssk . '_sensor',
-                        $vocab->formatTerm(
+                        $this->vocab->formatTerm(
                             'vocab_instrument',
-                            $vocabModel->getTermById(
+                            $this->vocabModel->getTermById(
                                 'vocab_instrument',
                                 $ssr['vocab_instrument_id']
                             ),
@@ -353,9 +355,9 @@ class Dataset extends Base{
                 [
                     'id' => $row['location_id'],
                     'location_id' => $row['vocab_location_id'],
-                    'location' => $vocab->formatTerm(
+                    'location' => $this->vocab->formatTerm(
                         'vocab_location',
-                        $vocabModel->getTermById(
+                        $this->vocabModel->getTermById(
                             'vocab_location',
                             $row['vocab_location_id']
                         ),

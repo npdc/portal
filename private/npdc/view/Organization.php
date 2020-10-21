@@ -48,20 +48,32 @@ class Organization extends Base{
         $this->class = 'list';
         $this->canEdit = false;
         $this->title = 'Organizations';
-        $list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
-            ? $_SESSION[$this->controller->formId]['data'] 
-            : null
+        $list = $this->model->getList(
+            isset($_SESSION[$this->controller->formId]['data'])
+                ? $_SESSION[$this->controller->formId]['data'] 
+                : null
         );
         $list = array_values($list);
-                $n = count($list);
-                $page = \npdc\lib\Args::get('page') ?? 1;
-                $list = array_slice($list, ($page-1)*\npdc\config::$rowsPerPage, min($page*\npdc\config::$rowsPerPage, $n));
-                $this->makePager($n, $page);
+        $n = count($list);
+        $page = \npdc\lib\Args::get('page') ?? 1;
+        $list = array_slice(
+            $list,
+            ($page - 1) * \npdc\config::$rowsPerPage,
+            min($page * \npdc\config::$rowsPerPage, $n)
+        );
+        $this->makePager($n, $page);
         $this->left = parent::showFilters('organizationlist');
-        $this->mid = $this->displayTable('organization'.($this->session->userLevel >= NPDC_ADMIN ? ' searchbox' : ''), $list
-            , ['organization_name'=>'Name',
-                'organization_city'=>'City']
-            , ['organization', 'organization_id']);
+        $this->mid = $this->displayTable(
+            'organization' 
+            . (
+                $this->session->userLevel >= NPDC_ADMIN
+                ? ' searchbox'
+                : ''
+            ),
+            $list
+            , ['organization_name'=>'Name', 'organization_city'=>'City']
+            , ['organization', 'organization_id']
+        );
     }
     
     /**
@@ -73,7 +85,10 @@ class Organization extends Base{
     public function showItem($id) {
         $this->canEdit = isset($this->session->userId) 
             && ($this->session->userLevel === NPDC_ADMIN);
-        if (\npdc\lib\Args::get('action') === 'new' && $this->session->userLevel >= $this->controller->userLevelAdd) {
+        if (
+            \npdc\lib\Args::get('action') === 'new'
+            && $this->session->userLevel >= $this->controller->userLevelAdd
+        ) {
             $this->title = 'Add organization';
         } elseif (!empty($id)) {
             $organization = $this->model->getById($id);
@@ -84,7 +99,13 @@ class Organization extends Base{
             http_response_code(404);
             return;
         }
-        if (($this->canEdit && \npdc\lib\Args::get('action') === 'edit') || \npdc\lib\Args::get('action') === 'new') {
+        if (
+            (
+                $this->canEdit
+                && \npdc\lib\Args::get('action') === 'edit'
+            )
+            || \npdc\lib\Args::get('action') === 'new'
+        ) {
             $this->loadEditPage();
         } else {
             $this->data = $organization;

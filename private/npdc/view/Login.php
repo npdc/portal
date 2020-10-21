@@ -44,7 +44,9 @@ class Login extends Base{
         }
         if ($this->session->userLevel === NPDC_PUBLIC) {
             if ($_GET['notice'] === 'expired') {
-                $_SESSION['notice'] = 'For security reasons you have to provide your username and password again. All data you entered into the form will be saved when you log in again.';
+                $_SESSION['notice'] = 'For security reasons you have to provide'
+                    .' your username and password again. All data you entered '
+                    . 'into the form will be saved when you log in again.';
             } elseif (!\npdc\config::$loginEnabled) {
                 $this->mid = \npdc\config::$loginDisabledMessage;
                 return;
@@ -68,7 +70,9 @@ class Login extends Base{
                     $this->title = 'Request new password';
                 } elseif (empty($this->controller->formId)) {
                     $this->title = 'Link not valid';
-                    $this->mid = 'This link is not valid, either it is older than '.\npdc\config::$resetExpiryHours.' hours, already used or it didn\'t exist at all.';
+                    $this->mid = 'This link is not valid, either it is older '
+                        .'than ' . \npdc\config::$resetExpiryHours
+                        . ' hours, already used or it didn\'t exist at all.';
                     $this->template = 'page';
                     return;
                 } else {

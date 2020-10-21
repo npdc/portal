@@ -44,15 +44,17 @@ class Front{
         $model = new \npdc\model\Page();
 
         $data = $model->getByUrl('home');
-        $this->mid = '<div class="frontPageContent">'.$data['content'].'</div><div>';
+        $this->mid = '<div class="frontPageContent">' . $data['content']
+            . '</div><div>';
         
         $newsModel = new \npdc\model\News();
         $news = $newsModel->getLatest();
         if (count($news) > 0) {
-            $this->mid .= '<div><h4>'.$news[0]['title'].'</h4>'
-                . '<p class="info">Published: '.date('j F Y H:i', strtotime($news[0]['published'])).'</p>'
-                . '<p>'.$news[0]['content'].'</p>'
-                . '<a href="'.$news[0]['link'].'">More info</a></div>';
+            $this->mid .= '<div><h4>' . $news[0]['title'] . '</h4>'
+                . '<p class="info">Published: '
+                . date('j F Y H:i', strtotime($news[0]['published'])) . '</p>'
+                . '<p>' . $news[0]['content'] . '</p><a href="'
+                . $news[0]['link'] . '">More info</a></div>';
         }
 
         $c = new \npdc\controller\Search($this->session);
@@ -91,7 +93,12 @@ class Front{
             } elseif (array_key_exists('publication_id', $item)) {
                 $type = 'Publication';
             }
-            $block .= '<a href="'.BASE_URL.'/'.strtolower($type).'/'.$item['uuid'].'">'.trim($item['title']).'</a> <span class="info"><span class="type">'.$type.'</span> <span class="time">'.date('j F Y H:i', strtotime($item['published'])).'</span></span>';
+            $block .= '<a href="' . BASE_URL . '/' . strtolower($type) . '/'
+                . $item['uuid'] . '">' . trim($item['title'])
+                . '</a> <span class="info"><span class="type">' . $type
+                . '</span> <span class="time">'
+                . date('j F Y H:i', strtotime($item['published']))
+                . '</span></span>';
         }
         
         $this->right = $block;
@@ -99,9 +106,16 @@ class Front{
             '@context' => ['@vocab'=>'http://schema.org/'],
             '@type' => ['Organization'],
             'legalName' => \npdc\config::$siteName,
-            'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL,
-            'logo' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/img/logo.png'
+            'url' => $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']
+                . BASE_URL,
+            'logo' => $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']
+                . BASE_URL . '/img/logo.png'
         ], \npdc\config::$organizationSchemaOrg);
-        $this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</script>';
-    }    
+        $this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'
+            . json_encode(
+                $this->json,
+                JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
+            )
+            . '</script>';
+    }
 }

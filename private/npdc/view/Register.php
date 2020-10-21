@@ -37,7 +37,11 @@ class Register extends Base{
      * @return void
      */
     public function showList() {
-        if (array_key_exists('formid', $_POST) && $this->controller->formId === 'register' && $this->controller->formController->ok) {
+        if (
+            array_key_exists('formid', $_POST)
+            && $this->controller->formId === 'register'
+            && $this->controller->formController->ok
+        ) {
             $this->title = '';
         } else {
             $formView = new \npdc\view\Form($this->controller->formId);
@@ -54,7 +58,9 @@ class Register extends Base{
         $this->template = 'page';
         if (empty($this->controller->formId)) {
             $this->title = 'Link not valid';
-            $this->mid = 'This link is not valid, either it is older than '.\npdc\config::$resetExpiryHours.' hours, already used or it didn\'t exist at all.';
+            $this->mid = 'This link is not valid, either it is older than '
+                . \npdc\config::$resetExpiryHours
+                . ' hours, already used or it didn\'t exist at all.';
             return;
         } else {
             $this->title = 'Set password';

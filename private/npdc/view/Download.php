@@ -23,10 +23,14 @@ class Download {
      * @return void
      */
     public function showList() {
-        $file = \npdc\config::$downloadDir.'/'.\npdc\lib\Args::get('file').'.'.\npdc\lib\Args::get('ext');
+        $file = \npdc\config::$downloadDir . '/' . \npdc\lib\Args::get('file')
+            . '.' . \npdc\lib\Args::get('ext');
         if (file_exists($file)) {
             header('Content-type: application/octet-stream'); 
-            header('Content-Disposition: attachment; filename='.\npdc\lib\Args::get('file').'.'.\npdc\lib\Args::get('ext'));
+            header(
+                'Content-Disposition: attachment; filename='
+                . \npdc\lib\Args::get('file') . '.' . \npdc\lib\Args::get('ext')
+            );
             header('Pragma: no-cache'); 
             header('Expires: 0');
             readfile($file);

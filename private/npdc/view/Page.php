@@ -49,7 +49,8 @@ class Page extends Base{
     }
     
     /**
-     * no list available, show error instead, should never be called. Only present for compatibility
+     * no list available, show error instead, should never be called. Only 
+     *                      present for compatibility
      * 
      * @return void
      */
@@ -84,9 +85,18 @@ class Page extends Base{
                 default:
                     $this->mid = '';
                     if ($data['show_last_revision']) {
-                        $this->mid = '<p class="last-rev">Last revision: '.date('j F Y', strtotime($data['last_update'])).'</p>';
+                        $this->mid = '<p class="last-rev">Last revision: '
+                            . date(
+                                'j F Y',
+                                strtotime($data['last_update'])
+                            )
+                            .'</p>';
                     }
-                    $this->mid .= preg_replace('#\<(a href|img src)="((?!.*(:\/\/)).*)?"#', '<$1="'.BASE_URL.'/$2"', $data['content']);
+                    $this->mid .= preg_replace(
+                        '#\<(a href|img src)="((?!.*(:\/\/)).*)?"#',
+                        '<$1="' . BASE_URL . '/$2"',
+                        $data['content']
+                    );
 
                     $persons = $model->getPersons($data['page_id']);
 
@@ -111,9 +121,10 @@ class Page extends Base{
     private function displayPersons($persons) {
         $personView = new \npdc\lib\Person();
         foreach ($persons as $person) {
-            //display address if person of different organization than previous person
-            $this->right .= '<div><h4>'.$person['role'].'</h4>'
-                    .$personView->showPerson($person).'</div>';
+            //display address if person of different organization than previous 
+            //    person
+            $this->right .= '<div><h4>' . $person['role'] . '</h4>'
+                . $personView->showPerson($person) . '</div>';
         }
     }
     
@@ -125,7 +136,8 @@ class Page extends Base{
     private function displayUrls($urls) {
         $this->right .= '<div><h4>Links</h4><ul>';
         foreach ($urls as $url) {
-            $this->right .= '<li><a href="'.$url['url'].'">'.$url['text'].'</a></li>';
+            $this->right .= '<li><a href="' . $url['url'] . '">'
+                . $url['text'] . '</a></li>';
         }
         $this->right .= '</ul></div>';
     }    

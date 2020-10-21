@@ -90,7 +90,7 @@ function formatBytes($size, $precision = 2) {
  * @param string $from filesize
  * @return integer filesize in bytes
  */
-function candidate($from) {
+function convertToBytes($from) {
     $number = (float)$from;
     $powers = [
         'K'=>1,

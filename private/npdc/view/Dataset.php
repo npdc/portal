@@ -39,7 +39,10 @@ class Dataset extends Base{
      */
     public function listStatusChanges() {
         $version = $this->version;
-        if (\npdc\lib\Args::exists('action') && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit'])) {
+        if (
+            \npdc\lib\Args::exists('action')
+            && in_array(\npdc\lib\Args::get('action'), ['edit', 'submit'])
+        ) {
             $version = $this->versions[0]['dataset_version'];
         } elseif (\npdc\lib\Args::exists('version')) {
             $version = \npdc\lib\Args::get('version');
@@ -54,26 +57,51 @@ class Dataset extends Base{
      */
     public function showList() {
         $this->left = parent::showFilters($this->controller->formId);
-        $list = $this->model->getList(isset($_SESSION[$this->controller->formId]['data'])
+        $list = $this->model->getList(
+            isset($_SESSION[$this->controller->formId]['data'])
                 ? $_SESSION[$this->controller->formId]['data']
                 : null
-            , true);
+            ,
+            true);
         switch (NPDC_OUTPUT) {
             case 'xml':
-                $this->xml =  new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><datasets></datasets>');
-                $fields = ['uuid','dataset_id', 'dataset_version', 'title', 'published', 'url'];
+                $this->xml =  new \SimpleXMLElement(
+                    '<?xml version="1.0" encoding="utf-8"?><datasets></datasets>'
+                );
+                $fields = [
+                    'uuid',
+                    'dataset_id',
+                    'dataset_version',
+                    'title',
+                    'published',
+                    'url'
+                ];
                 foreach ($list as $dataset) {
                     $em = $this->xml->addChild('dataset');
                     foreach ($fields as $field) {
                         switch ($field) {
                             case 'url':
-                                $value = 'http'.(empty($_SERVER['HTTPS'])?'':'s').'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/'.$dataset['uuid'].'.xml';
+                                $value = 'http' 
+                                . (
+                                    empty($_SERVER['HTTPS'])
+                                    ? ''
+                                    : 's'
+                                )
+                                . '://' . $_SERVER['HTTP_HOST'] . BASE_URL . '/'
+                                . $dataset['uuid'] . '.xml';
                                 break;
                             default:
                                 $value = $dataset[$field];
 
                         }
-                        $em->addChild($field, str_replace('&', '&amp;', strip_tags(html_entity_decode($value))));
+                        $em->addChild(
+                            $field,
+                            str_replace(
+                                '&',
+                                '&amp;',
+                                strip_tags(html_entity_decode($value))
+                            )
+                        );
                     }
                 }
                 header('Content-Type: application/xml');
@@ -90,28 +118,45 @@ class Dataset extends Base{
                 $list = array_values($list);
                 $n = count($list);
                 $page = \npdc\lib\Args::get('page') ?? 1;
-                $list = array_slice($list, ($page-1)*\npdc\config::$rowsPerPage, min($page*\npdc\config::$rowsPerPage, $n));
+                $list = array_slice(
+                    $list,
+                    ($page - 1) * \npdc\config::$rowsPerPage,
+                    min($page * \npdc\config::$rowsPerPage, $n)
+                );
                 $this->makePager($n, $page);
-                $this->mid = $this->displayTable('dataset', $list
-                        , ['title'=>'Title',
-                            'date_start'=>'Start date',
-                            'date_end'=>'End date']
-                        , ['dataset', 'dataset_id']
-                        , true
-                        , true
+                $this->mid = $this->displayTable(
+                    'dataset',
+                    $list,
+                    [
+                        'title'=>'Title',
+                        'date_start'=>'Start date',
+                        'date_end'=>'End date'
+                    ],
+                    ['dataset', 'dataset_id'],
+                    true,
+                    true
                     );
                     $this->json = array_merge([
                         '@context' => ['@vocab'=>'http://schema.org/'],
                         '@type' => ['Service', 'ResearchProject'],
                         'legalName' => \npdc\config::$siteName,
-                        'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL,
+                        'url' => $_SERVER['REQUEST_SCHEME'] . '://' 
+                            . $_SERVER['HTTP_HOST'] . BASE_URL,
                         'category' => ['Polar science'],
                         'logo' => [
                             '@type' => 'ImageObject',
-                            'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/img/logo.png'
+                            'url' => $_SERVER['REQUEST_SCHEME'] . '://'
+                                . $_SERVER['HTTP_HOST'] . BASE_URL
+                                . '/img/logo.png'
                         ],
                     ], \npdc\config::$providerSchemaOrg);
-                    $this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</script>';
+                    $this->extraHeader .= 
+                        '<script id="schemaorg" type="application/ld+json">'
+                        . json_encode(
+                            $this->json,
+                            JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
+                        )
+                        . '</script>';
         }
     }
 
@@ -123,10 +168,20 @@ class Dataset extends Base{
      */
     public function showItem($dataset) {
         if (\npdc\lib\Args::get('action') !== 'new') {
-            $this->canEdit = isset($this->session->userId) && ($this->session->userLevel === NPDC_ADMIN || $this->model->isEditor($dataset, $this->session->userId));
+            $this->canEdit = 
+                isset($this->session->userId) 
+                && (
+                    $this->session->userLevel === NPDC_ADMIN 
+                    || $this->model->isEditor($dataset, $this->session->userId)
+                );
             $this->versions = $this->model->getVersions($dataset);
 
-            if (in_array(\npdc\lib\Args::get('action'), ['edit', 'submit', 'warnings'])) {
+            if (
+                in_array(
+                    \npdc\lib\Args::get('action'),
+                    ['edit', 'submit', 'warnings']
+                )
+            ) {
                 $v = $this->versions[0]['dataset_version'];
             } elseif (\npdc\lib\Args::exists('version')) {
                 $v = \npdc\lib\Args::get('version');
@@ -135,7 +190,13 @@ class Dataset extends Base{
                 ? $this->model->getById($dataset, $v)
                 : $this->model->getById($dataset);
 
-            if (!$this->canEdit && !in_array($this->data['record_status'], ['published', 'archived'])) {
+            if (
+                !$this->canEdit
+                && !in_array(
+                    $this->data['record_status'],
+                    ['published', 'archived']
+                )
+            ) {
                 $this->data = false;
             }
 
@@ -145,7 +206,7 @@ class Dataset extends Base{
             $this->version = $this->data['dataset_version'];
         }
 
-        if ($this->data === false && \npdc\lib\Args::get('action') !== 'new') {//dataset not found
+        if ($this->data === false && \npdc\lib\Args::get('action') !== 'new') {
             $this->showError();
         } elseif (NPDC_OUTPUT === 'xml') {//show as xml
             $this->showXml();
@@ -153,30 +214,34 @@ class Dataset extends Base{
             $this->showCitation();
         } elseif (\npdc\lib\Args::get('action') === 'duplicate') {
             if (!$this->canEdit) {
-                header('Location: '.BASE_URL.'/'.\npdc\lib\Args::get('type').'/'.$this->data['uuid']);
+                header(
+                    'Location: ' . BASE_URL . '/' . \npdc\lib\Args::get('type')
+                    . '/' . $this->data['uuid']);
             }
             $this->title = 'Confirm dataset duplication';
-            ob_start();
-            include 'template/dataset/citation/plain.php';
-            ob_end_clean();
-            $this->mid = '<p>You have requested duplication of the following dataset:</p>
-            <p style="margin-left:20px;margin-right:20px">&ldquo;'.$citationString.'&rdquo;</p>
-            <p><strong>Please be aware:</strong></p>
-            <ul><li>This can\'t easily be undone! Please only use when you indeed need a duplicate of this dataset.<br/><i>Recommended use is for cases where datasets are mostly similar and only vary in a few fields.</i></li>
-            <li>Files (or links to it) will not be transferred (the whole idea of duplicates is that you can easily make a similar description for different files)</li>
-            <li>Edits done in the original after creating the duplicate will <strong>not</strong> be transfered to the duplicate, nor the other way</li></ul>
-            <button onclick="openUrl(\''.BASE_URL.'/dataset/'.$this->data['uuid'].'/doduplicate\')">Do create a duplicate</button> <button onclick="openUrl(\''.BASE_URL.'/dataset/'.$this->data['uuid'].'\')">Cancel</button>';
+            $this->mid = parent::parseTemplate('dataset_duplication');
             return;
-        } elseif ((!$this->canEdit || is_null($this->controller->display)) && \npdc\lib\Args::get('action') !== 'new') {//display dataset
+        } elseif (
+            (
+                !$this->canEdit
+                || is_null($this->controller->display)
+            )
+            && \npdc\lib\Args::get('action') !== 'new'
+        ) {//display dataset
             $this->showDataset();
-            if (!\npdc\lib\Args::exists('uuid') || !\npdc\lib\Args::exists('uuidtype')) {
+            if (
+                !\npdc\lib\Args::exists('uuid')
+                || !\npdc\lib\Args::exists('uuidtype')
+            ) {
                 $this->showCanonical();
             }
         } elseif (\npdc\lib\Args::get('action') === 'warnings') {
             $this->title = 'Please check - '.$this->data['title'];
             $this->mid = $this->controller->showWarnings();
         } else {
-            $this->title = (\npdc\lib\Args::get('action') === 'new') ? 'New dataset' : 'Edit dataset - '.$this->data['title'];
+            $this->title = \npdc\lib\Args::get('action') === 'new'
+                ? 'New dataset'
+                : ('Edit dataset - ' . $this->data['title']);
             $this->baseUrl .= '/'.$this->versions[0]['dataset_version'];
             $this->loadEditPage($this->controller->pages);
         }
@@ -213,19 +278,38 @@ class Dataset extends Base{
             'First_Name'=>$person['given_name'] ?? $person['initials'],
             'Last_Name'=>$person['surname']
         ];
-        $organizationDetail = $this->organizationModel->getById($person['organization_id']);
+        $organizationDetail = $this->organizationModel->getById(
+            $person['organization_id']
+        );
         foreach ([
-            'organization_address'=>'Street_Address',
-            'organization_city'=>'City',
-            'organization_zip'=>'Postal_Code',
-            'country_name'=>'Country'
+            'organization_address' => 'Street_Address',
+            'organization_city' => 'City',
+            'organization_zip' => 'Postal_Code',
+            'country_name' => 'Country'
         ] as $source=>$target) {
             $return['Address'][$target] = $organizationDetail[$source];
         }
 
-        foreach (['personal'=>'Direct Line', 'secretariat'=>'Telephone', 'mobile'=>'Mobile'] as $phoneType=>$label) {
-            if ($person['phone_'.$phoneType.'_public'] === 'yes' && !empty($person['phone_'.$phoneType])) {
-                $return['Phone'][] = ['Number'=>str_replace(['(0)', ' '], '', $person['phone_'.$phoneType]), 'Type'=>$label];
+        foreach (
+            [
+                'personal' => 'Direct Line',
+                'secretariat' => 'Telephone',
+                'mobile' => 'Mobile'
+            ]
+            as $phoneType=>$label
+        ) {
+            if (
+                $person['phone_' . $phoneType . '_public'] === 'yes'
+                && !empty($person['phone_' . $phoneType])
+            ) {
+                $return['Phone'][] = [
+                    'Number' => str_replace(
+                        ['(0)', ' '],
+                        '',
+                        $person['phone_' . $phoneType]
+                    ),
+                    'Type'=>$label
+                ];
             }
         }
         $return['Email'] = $person['mail'];
@@ -249,33 +333,66 @@ class Dataset extends Base{
             'name' => $this->data['title'],
             'description' => strip_tags($this->data['summary']),
             'version' => $this->data['dataset_version'],
-            'identifier' => 'urn:uuid:'.$this->data['uuid'],
-            'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'],
+            'identifier' => 'urn:uuid:' . $this->data['uuid'],
+            'url' => $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']
+                . BASE_URL . '/dataset/' . $this->data['uuid'],
             'includedInDataCatalog' => [
                 '@type' => 'DataCatalog',
                 'name' => \npdc\config::$siteName,
-                'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL,
+                'url' => $_SERVER['REQUEST_SCHEME'] . '://'
+                    . $_SERVER['HTTP_HOST'] . BASE_URL,
             ],
-            'citation' => strip_tags($this->model->getCitationString($this->data))
+            'citation' => strip_tags(
+                $this->model->getCitationString($this->data)
+            )
         ];
         
         $content['keywords'] = [];
-        foreach ($this->model->getTopics($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$topic) {
+        foreach (
+            $this->model->getTopics(
+                $this->data['dataset_id'],
+                $this->data['dataset_version']
+            )
+            as $i=>$topic
+        ) {
             $cut = ':';
-            $content['keywords'][] = strpos($topic['description'], $cut) === false ? $topic['description'] : trim(substr($topic['description'],0,strpos($topic['description'], $cut)));
+            $content['keywords'][] = 
+                strpos($topic['description'], $cut) === false
+                ? $topic['description']
+                : trim(substr(
+                    $topic['description'],
+                    0,
+                    strpos($topic['description'], $cut)
+                ));
         }
-        foreach ($this->model->getKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $i=>$keyword) {
-            $content['keywords'][] = $this->vocab->formatTerm('vocab_science_keyword', $keyword);
+        foreach (
+            $this->model->getKeywords(
+                $this->data['dataset_id'],
+                $this->data['dataset_version']
+            )
+            as $i=>$keyword
+        ) {
+            $content['keywords'][] = $this->vocab->formatTerm(
+                'vocab_science_keyword',
+                $keyword
+            );
         }
-        foreach ($this->model->getAncillaryKeywords($this->data['dataset_id'], $this->data['dataset_version']) as $word) {
+        foreach (
+            $this->model->getAncillaryKeywords(
+                $this->data['dataset_id'],
+                $this->data['dataset_version']
+            )
+            as $word
+        ) {
             $content['keywords'][] = $word['keyword'];
         }
 
         if (!empty($this->data['dif_id'])) {
-            $content['sameAs'] = 'https://gcmd.nasa.gov/r/d/'.$this->data['dif_id'];
+            $content['sameAs'] = 'https://gcmd.nasa.gov/r/d/'
+                . $this->data['dif_id'];
         }
         $this->json = [
-            '@context' => ['@vocab'=>'http://schema.org/'],
+            '@context' => ['@vocab' => 'http://schema.org/'],
             '@graph' => [$content]
         ];
     }
@@ -288,10 +405,28 @@ class Dataset extends Base{
      * @return void
      */
     private function showCitation() {
-        $citation = $this->model->getCitations($this->data['dataset_id'], $this->data['dataset_version'], 'this')[0];
-        $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].BASE_URL.'/dataset/'.$this->data['uuid'];
+        $citation = $this->model->getCitations(
+            $this->data['dataset_id'],
+            $this->data['dataset_version'],
+            'this'
+        )[0];
+        $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']
+            . BASE_URL . '/dataset/' . $this->data['uuid'];
 
-        $authors = explode('; ', str_replace(' &amp;', ';', $citation['creator'] ?? $this->model->getAuthors($this->data['dataset_id'], $this->data['dataset_version'])));
+        $authors = explode(
+            '; ',
+            str_replace(
+                ' &amp;',
+                ';',
+                (
+                    $citation['creator']
+                    ?? $this->model->getAuthors(
+                        $this->data['dataset_id'],
+                        $this->data['dataset_version']
+                    )
+                )
+            )
+        );
         foreach ($authors as $author) {
             list($last, $first) = explode(', ', $author);
             if (empty($str)) {
@@ -299,13 +434,44 @@ class Dataset extends Base{
             } else {
                 $str .= ' and ';
             }
-            $str .= str_replace('  ', ' ', str_replace('.', ' ', $first).' {'.$last.'}');
+            $str .= str_replace(
+                '  ',
+                ' ',
+                str_replace(
+                    '.',
+                    ' ',
+                    $first
+                )
+                . ' {' . $last . '}');
         }
 
-        $id = str_replace(' ', '', $aut.substr($citation['release_date'] ?? $this->data['insert_timestamp'],0,4).substr($citation['title'] ?? $this->data['title'], 0,5));
-        include('template/dataset/citation/'.NPDC_OUTPUT.'.php');
-        header('Content-type: '.$content_type);
-        header("Content-Disposition: attachment; filename=\"" . $this->data['uuid'].'.'.NPDC_OUTPUT . "\"");
+        $id = str_replace(
+            ' ',
+            '',
+            $aut 
+            . substr(
+                (
+                    $citation['release_date']
+                    ?? $this->data['insert_timestamp']
+                ),
+                0,
+                4
+            )
+            .substr(
+                (
+                    $citation['title']
+                    ?? $this->data['title']
+                ),
+                0,
+                5
+            )
+        );
+        include('template/dataset/citation/' . NPDC_OUTPUT . '.php');
+        header('Content-type: ' . $content_type);
+        header(
+            'Content-Disposition: attachment; filename="' . $this->data['uuid']
+            . '.' . NPDC_OUTPUT . '"'
+        );
         echo strip_tags($output);
         die();
     }
@@ -323,14 +489,18 @@ class Dataset extends Base{
         } elseif (!$this->canEdit) {
             if ($this->session->userLevel === NPDC_PUBLIC) {
                 $this->title = 'Please login';
-                $this->mid .= 'Please login<script type="text/javascript" language="javascript">$.ready(openOverlay(\''.BASE_URL.'/login?notice=login\'));</script>';
+                $this->mid .= 'Please login<script type="text/javascript" '
+                    . 'language="javascript">$.ready(openOverlay(\'' . BASE_URL
+                    . '/login?notice=login\'));</script>';
             } else {
                 $this->title = 'No access';
                 $this->mid .= 'No access';
             }
         } elseif (\npdc\lib\Args::exists('version')) {
-            $this->title = 'No version '.\npdc\lib\Args::get('version').' found';
-            $this->mid .= 'There is no version '.\npdc\lib\Args::get('version').' of this dataset.';
+            $this->title = 'No version ' . \npdc\lib\Args::get('version')
+                . ' found';
+            $this->mid .= 'There is no version '
+                . \npdc\lib\Args::get('version') . ' of this dataset.';
         }
     }
 
@@ -342,41 +512,85 @@ class Dataset extends Base{
     private function showDataset() {
         if ($this->canEdit && count($this->versions) > 1) {
             $v = $this->data['dataset_version'];
-            $_SESSION['notice'] .= 'See version <select id="versionSelect" style="width:auto">';
+            $_SESSION['notice'] .= 'See version <select id="versionSelect" '
+                . 'style="width:auto">';
             foreach ($this->versions as $version) {
-                $_SESSION['notice'] .= '<option value="'.BASE_URL.'/dataset/'.$this->data['dataset_id'].'/'.$version['dataset_version'].'" '
-                    . (in_array($v, [$version['dataset_version'], $version['record_status']]) ? 'selected=true' : '')
-                    . '>'.$version['dataset_version'].' - '.$version['record_status'].'</option>';
+                $_SESSION['notice'] .= '<option value="' . BASE_URL 
+                    . '/dataset/' . $this->data['dataset_id'] . '/'
+                    . $version['dataset_version'] . '" '
+                    . (
+                        in_array(
+                            $v,
+                            [
+                                $version['dataset_version'],
+                                $version['record_status']
+                            ]
+                        )
+                        ? 'selected=true'
+                        : ''
+                    )
+                    . '>' . $version['dataset_version'] . ' - '
+                    . $version['record_status'] . '</option>';
             }
             $_SESSION['notice'] .= '</select>';
         }
-        $changed = $this->controller->recordChanged($this->data['dataset_id'], $this->data['dataset_version']);
+        $changed = $this->controller->recordChanged(
+            $this->data['dataset_id'],
+            $this->data['dataset_version']
+        );
         if (!$changed) {
             if ($this->data['record_status'] === 'draft') {
-                $_SESSION['notice'] .= ' Publishing this draft is not possible since it doesn\'t appear to be different than the published record.';
+                $_SESSION['notice'] .= ' Publishing this draft is not possible '
+                    . 'since it doesn\'t appear to be different than the '
+                    . 'published record.';
             }
-        } elseif (\npdc\lib\Args::get('action') === 'submit' && $this->data['record_status'] === 'draft') {
+        } elseif (
+            \npdc\lib\Args::get('action') === 'submit'
+            && $this->data['record_status'] === 'draft'
+        ) {
             $_SESSION['notice'] = $this->controller->submitForm;
         } elseif ($this->data['record_status'] !== 'published') {
-            if ($this->session->userLevel === NPDC_ADMIN && $this->data['record_status'] === 'submitted') {
+            if (
+                $this->session->userLevel === NPDC_ADMIN
+                && $this->data['record_status'] === 'submitted'
+            ) {
                 if (\npdc\lib\Args::get('action') !== 'submitted') {
-                    header('Location: '.BASE_URL.'/dataset/'.\npdc\lib\Args::get('id').'/submitted');
+                    header(
+                        'Location: ' . BASE_URL . '/dataset/'
+                        . \npdc\lib\Args::get('id').'/submitted'
+                    );
                     die();
                 }
                 $_SESSION['notice'] = $this->controller->publishForm;
             }
-            $_SESSION['notice'] .= ' You are looking at an '.$this->data['record_status'].' version of this page'.($this->data['record_status'] === 'draft' ? $this->controller->draftMsg : '');
+            $_SESSION['notice'] .= ' You are looking at an '
+                . $this->data['record_status'] . ' version of this page'
+                . (
+                    $this->data['record_status'] === 'draft'
+                    ? $this->controller->draftMsg
+                    : ''
+                );
             if (!$this->canEdit) {
                 $cur = $this->model->getById($this->data['dataset_id']);
-                $_SESSION['notice'] .= ', the current version can be found <a href="'.BASE_URL.'/dataset/'.$cur['uuid'].'">here</a>';
+                $_SESSION['notice'] .= ', the current version can be found '
+                    . '<a href="' . BASE_URL . '/dataset/' . $cur['uuid'] 
+                    . '">here</a>';
             }
         }
-        $this->title = 'Dataset - '.$this->data['title'].(is_null($this->data['acronym']) ? '' : ' ('.$this->data['acronym'].')');
+        $this->title = 'Dataset - ' . $this->data['title']
+            . (
+                is_null($this->data['acronym'])
+                ? ''
+                : ' (' . $this->data['acronym'] . ')'
+            );
         $this->class = 'detail';
         if (\npdc\lib\Args::get('action') === 'files') {
             if (\npdc\lib\Args::get('subaction') === 'request') {
                 if ($this->session->userLevel === NPDC_PUBLIC) {
-                    header('Location: '.BASE_URL.'/dataset/'.$this->data['uuid'].'/files');
+                    header(
+                        'Location: ' . BASE_URL . '/dataset/'
+                        . $this->data['uuid'] . '/files'
+                    );
                     die();
                 }
                 $this->mid .= parent::parseTemplate('dataset_files_request_mid');
@@ -391,9 +605,17 @@ class Dataset extends Base{
             $this->mid .= parent::parseTemplate('dataset_mid');
             $this->right = parent::parseTemplate('dataset_right');
             $this->bottom = parent::parseTemplate('foot_technical');
-            if (\npdc\lib\Args::exists('uuid') && \npdc\lib\Args::exists('uuidtype')) {
-                // $this->makeJson();
-                $this->extraHeader .= '<script id="schemaorg" type="application/ld+json">'.json_encode($this->json,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE).'</script>';
+            if (
+                \npdc\lib\Args::exists('uuid')
+                && \npdc\lib\Args::exists('uuidtype')
+            ) {
+                $this->extraHeader .= '<script id="schemaorg" type="application'
+                    . '/ld+json">'
+                    . json_encode(
+                        $this->json,
+                        JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
+                    )
+                    . '</script>';
             }
         }
     }
@@ -407,11 +629,17 @@ class Dataset extends Base{
      * @return void
      */
     public function showCharacteristics($type, $id, $version) {
-        $characteristics = $this->model->getCharacteristics($type, $id, $version);
+        $characteristics = $this->model->getCharacteristics(
+            $type,
+            $id,
+            $version
+        );
         if (count($characteristics) > 0) {
             echo '<h4>Characteristics</h4><table style="width:auto">';
             foreach ($characteristics as $characteristic) {
-                echo '<tr><td>'.$characteristic['name'].':</td><td>'.$characteristic['value'].' '.$characteristic['unit'].'</td></tr>';
+                echo '<tr><td>' . $characteristic['name'] . ':</td><td>'
+                    . $characteristic['value'] . ' '
+                    . $characteristic['unit'] . '</td></tr>';
             }
             echo '</table>';
         }
