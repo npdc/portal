@@ -66,7 +66,6 @@ class Publication extends Base{
             ->field('publication.*')
             ->field($q->expr('extract(YEAR FROM date)'), 'year')
             ->field($q->expr("'Publication'"), 'content_type')
-            ->where('record_status', 'published')
             ->field($q->dsql()
                 ->expr(
                     'CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}',
@@ -75,11 +74,14 @@ class Publication extends Base{
             );
         if ($session->userLevel > NPDC_USER) {
             if ($session->userLevel === NPDC_ADMIN) {
-                $q->field($q->dsql()->expr('TRUE {}', ['editor']))
-                    ->where('publication.publication_version', 
-                    $q->dsql()->table(['ds2'=>'publication'])
-                        ->field('MAX(publication_version)')
-                        ->where('ds2.publication_id=publication.publication_id')
+                $q->field(
+                        $q->dsql()->expr('TRUE {}', ['editor'])
+                    )
+                    ->where(
+                        'publication.publication_version', 
+                        $q->dsql()->table(['ds2'=>'publication'])
+                            ->field('MAX(publication_version)')
+                            ->where('ds2.publication_id=publication.publication_id')
                 );
             } elseif ($session->userLevel === NPDC_EDITOR) {
                 $isEditor = $q->dsql()->table('publication_person')
