@@ -39,7 +39,8 @@ class Account extends Base {
         $this->model = new \npdc\model\Person();
         $this->data = $this->model->getById($this->session->userId);
         $this->mid = parent::parseTemplate('person_mid');
-        $this->right .= parent::parseTemplate('organization_mid');
+        // TODO: build new template for showing org details of account page
+        // $this->right .= parent::parseTemplate('organization_mid');
     }
     
     /**

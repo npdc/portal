@@ -15,7 +15,9 @@
         echo 'Please provide in \'Involved people\'';
     } else {
         $orgModel = new \npdc\model\Organization();
-        echo $orgModel->getById($this->data['originating_center'])['organization_name'];
+        echo $orgModel->getById(
+            $this->data['originating_center']
+        )['organization_name'];
     }
     ?>
     </p>

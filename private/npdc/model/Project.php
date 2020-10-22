@@ -405,7 +405,7 @@ class Project extends Base{
             ->where('project_id', $project_id)
             ->where('project_version_max IS NULL');
         if (count($currentDatasets) > 0) {
-            $q->where('project_id', 'NOT', $currentDatasets);
+            $q->where('dataset_id', 'NOT', $currentDatasets);
         }
         $q->set('project_version_max', $version)
             ->update();

@@ -228,7 +228,7 @@ class Db {
     }
     
     public static function getRegexp(){
-        \npdc\config::$db['type'] === 'pgsql'
+        return \npdc\config::$db['type'] === 'pgsql'
             ? '~*'
             : 'REGEXP';
     }
