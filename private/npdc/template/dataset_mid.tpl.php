@@ -22,19 +22,52 @@ $parts = [
 
 foreach ($parts as $n=>$part) {
     $content = '';
-    if ($part[1] === 'field' && !empty(strip_tags($this->data[$part[2]]))) {
-        $content = '<div class="overflow">'.(strpos($this->data[$part[2]], '<') === 0 ? $this->data[$part[2]] : nl2br($this->data[$part[2]])).'</div>';
+    if (
+        $part[1] === 'field'
+        && !empty(
+            strip_tags(
+                $this->data[$part[2]]
+            )
+        )
+    ) {
+        $content = '<div class="overflow">'
+            . (
+                strpos($this->data[$part[2]], '<') === 0
+                ? $this->data[$part[2]]
+                : nl2br($this->data[$part[2]])
+            )
+            . '</div>';
     } elseif ($part[1] === 'file') {
         ob_start();
-        include 'dataset/'.$part[2].'.php';
+        include 'dataset/' . $part[2] . '.php';
         $content = ob_get_clean();
     }
-    if (!empty($content) || ($this->data['record_status'] === 'draft' && $this->canEdit)) {
+    if (
+        !empty($content)
+        || (
+            $this->data['record_status'] === 'draft'
+            && $this->canEdit
+        )
+    ) {
         echo '<hr><div>';
-        if ($part[0] != '' || ($this->data['record_status'] === 'draft' && $this->canEdit)) {
-            echo '<h4>'.$part[0].($this->data['record_status'] === 'draft' && $this->canEdit ? ' [<a href="'.BASE_URL.'/dataset/'.$this->data['dataset_id'].'/edit/'.$part[3].'">edit</a>]' : '').'</h4>';
+        if (
+            $part[0] != ''
+            || (
+                $this->data['record_status'] === 'draft'
+                && $this->canEdit
+            )
+        ) {
+            echo '<h4>' . $part[0]
+            . (
+                $this->data['record_status'] === 'draft'
+                && $this->canEdit
+                ? ' [<a href="' . BASE_URL . '/dataset/'
+                    . $this->data['dataset_id'] . '/edit/' . $part[3]
+                    . '">edit</a>]'
+                : ''
+            )
+            . '</h4>';
         }
-        echo $content
-            . '</div>';
+        echo $content . '</div>';
     }
 }
