@@ -1554,7 +1554,7 @@ class Dataset extends Base{
                     $data,
                     $this->version
                 );
-                $related[] = !is_bool($return)
+                $related[] = !empty($return) && !is_bool($return)
                     ? $return
                     : $record_id;
             }
@@ -1595,7 +1595,8 @@ class Dataset extends Base{
                         $data,
                         $this->version
                     );
-                    $locations[] = is_bool($return)
+                    $locations[] = 
+                        empty($return) || is_bool($return)
                         ? $location_id
                         : $return;
                 }
@@ -1653,7 +1654,9 @@ class Dataset extends Base{
                         $data,
                         $this->version
                     );
-                    $coverages[] = !is_bool($return) ? $return : $record_id;
+                    $coverages[] = !empty($return) && !is_bool($return)
+                        ? $return
+                        : $record_id;
                 }
             }
         }
@@ -1943,7 +1946,10 @@ class Dataset extends Base{
                     $data,
                     $this->version
                 );
-                $resolutions[] = !is_bool($return) ? $return : $record_id;
+                $resolutions[] = 
+                    !empty($return) && !is_bool($return)
+                    ? $return
+                    : $record_id;
             }
         }
         $v = $this->version-1;
@@ -2160,7 +2166,10 @@ class Dataset extends Base{
                     $data,
                     $this->version
                 );
-                $citations[] = !is_bool($return) ? $return : $record_id;
+                $citations[] = 
+                    !empty($return) && !is_bool($return)
+                    ? $return
+                    : $record_id;
             }
         }
         $v = $this->version-1;
@@ -2197,7 +2206,7 @@ class Dataset extends Base{
                     $data,
                     $this->version
                 );
-                if (!is_bool($return)) {
+                if (!empty($return) && !is_bool($return)) {
                     $platform_id = $return;
                 }
             }
@@ -2244,7 +2253,7 @@ class Dataset extends Base{
                     $data,
                     $this->version
                 );
-                if (!is_bool($return)) {
+                if (!empty($return) && !is_bool($return)) {
                     $instrument_id = $return;
                 }
             }
@@ -2293,7 +2302,7 @@ class Dataset extends Base{
                     $data,
                     $this->version
                 );
-                if (!is_bool($return)) {
+                if (!empty($return) && !is_bool($return)) {
                     $sensor_id = $return;
                 }
             }
@@ -2340,7 +2349,7 @@ class Dataset extends Base{
                     $data,
                     $this->version
                 );
-                $current[] = is_bool($return) 
+                $current[] = empty($return) || is_bool($return) 
                     ? $this->getFormData($base_id . '_id_' . $serial) 
                     : $return;
             } else {
@@ -2405,7 +2414,7 @@ class Dataset extends Base{
                     $data,
                     $this->version
                 );
-                if (!is_bool($return)) {
+                if (!empty($return) && !is_bool($return)) {
                     $record_id = $return;
                 }
             }
@@ -2438,7 +2447,7 @@ class Dataset extends Base{
                         ],
                         $this->version
                     );
-                    $current2[] = !is_bool($return)
+                    $current2[] = !empty($return) && !is_bool($return)
                         ? $return :
                         $this->getFormData($rid2 . '_id');
                 }
