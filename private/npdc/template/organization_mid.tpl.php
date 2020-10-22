@@ -15,7 +15,7 @@ $pubModel = new \npdc\model\Publication();
 $publications = $pubModel->getList(['organization'=>[$this->data['organization_id']]]);
 echo '<h3>Publications</h3>';
 foreach ($publications as $publication) {
-	echo $pubModel->getCitation($publication);
+    echo $pubModel->getCitation($publication);
 }
 
 $projectModel = new \npdc\model\Project();
