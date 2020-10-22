@@ -1526,10 +1526,9 @@ class Dataset extends Base{
                 }
             }
             $q->where('dataset_link_url_id', 'NOT', $currentLinkUrls);
-            $q->where('old_dataset_link_url_id', 'NOT', $currentLinkUrls);
+            // $q->where('old_dataset_link_url_id', 'NOT', $currentLinkUrls);
         }
-        $q->set('dataset_version_max', $version)
-            ->update();
+        $q->set('dataset_version_max', $version)->update();
         return true;
     }
 
