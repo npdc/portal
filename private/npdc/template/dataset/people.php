@@ -23,7 +23,10 @@
     </p>
 </section><h4>Participants</h4><?php
 
-$people = $this->model->getPersons($this->data['dataset_id'], $this->data['dataset_version']);
+$people = $this->model->getPersons(
+    $this->data['dataset_id'],
+    $this->data['dataset_version']
+);
 if (count($people) === 0) {
     echo 'No persons linked to this dataset yet';
 } else {
