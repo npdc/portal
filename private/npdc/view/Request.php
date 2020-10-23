@@ -95,7 +95,10 @@ class Request extends Base{
         $this->class = 'detail';
         $this->data = $this->model->getById($id);
         $this->modelDataset = new \npdc\model\Dataset();
-        if (
+        if (empty($this->data)){
+            $this->title = 'Not found';
+            $this->mid = 'The request is not found';
+        } elseif (
             $this->session->userLevel === NPDC_ADMIN
             || $this->data['person_id'] === $this->session->userId
             || $this->modelDataset->isEditor(
