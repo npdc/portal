@@ -79,7 +79,7 @@ gulp.task('watch', function(){
 	gulp.watch('private/npdc/javascript/editor/*.js', function(){
 		return minifyJS('editor');
 	});
-	gulp.watch('private/npdc/javascript/main/*.js', function(){
+	gulp.watch('private/npdc/javascript/npdc/*.js', function(){
 		return minifyJS('npdc');
 	});
 	gulp.watch('private/npdc/scss/*.scss', function(){
