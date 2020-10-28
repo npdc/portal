@@ -12,7 +12,7 @@
         (
             isset($view->title) 
             && strlen($view->title) > 0
-            ? str_replace(['<i>', '</i>'], '', $view->title).' |'
+            ? str_replace(['<i>', '</i>'], '', $view->title).' | '
             : ''
         )
         . \npdc\config::$siteName;
