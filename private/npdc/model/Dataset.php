@@ -273,7 +273,10 @@ class Dataset extends Base{
             )
             ->where(\npdc\lib\Db::selectVersion('dataset', $id, $version));
         $q->field('*')
-            ->field($q->expr('date_start || \' - \' || date_end period'))
+            ->field(
+                $q->expr('date_start || \' - \' || COALESCE(date_end, \'...\')'),
+                'period'
+            )
             ->order($q->expr(
                 'date_start DESC, project.project_id, '
                 . \npdc\lib\Db::$sortByRecordStatus
