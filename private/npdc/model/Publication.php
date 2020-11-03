@@ -344,6 +344,10 @@ class Publication extends Base{
                 'inner'
             )
             ->where(\npdc\lib\Db::selectVersion('publication', $id, $version));
+        $q->field('*')->field(
+            $q->expr('date_start || \' - \' || date_end'),
+            'period'
+        );
         $q->order($q->expr(
             'date_start DESC, project.project_id, ' . \npdc\lib\Db::$sortByRecordStatus
         ));
