@@ -5,6 +5,8 @@
  * @package NPDC
  * @author Marten Tacoma <marten.tacoma@nioz.nl>
  */
+
+$this->json['@graph'][0]['spatialCoverage'] = [];
 ?>
 
 <section class="inline"><h4>Region</h4>
@@ -18,13 +20,17 @@ $locations = $this->model->getLocations(
     $this->data['dataset_version']
 );
 foreach ($locations as $location) {
-    echo '<li>' . $this->vocab->formatTerm('vocab_location', $location)
+    $location_string = $this->vocab->formatTerm('vocab_location', $location)
         . (
             empty($location['detailed'])
             ? ''
             : ' > ' . $location['detailed']
-        )
-        . '</li>';
+        );
+    echo '<li>' . $location_string . '</li>';
+        $this->json['@graph'][0]['spatialCoverage'][] = [
+            '@type' => 'GeoCoordinates',
+            'address' => $location_string
+        ];
 }
 ?>
 </ul>
@@ -65,14 +71,6 @@ if (count($spatialCoverages) > 0) {
                     })
                 })
             });';
-    $this->json['@graph'][0]['spatialCoverage'] = [
-        '@type'=>'Place',
-        'geo'=>[],
-        'additionalProperty' => [
-            '@type' => ["PropertyValue", "dbpedia:Coordinate_reference_system"],
-            '@id' => "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
-        ]
-    ];
     foreach ($spatialCoverages as $spatialCoverage) {
         $wkt = $spatialCoverage['wkt'];
         echo 'feature = wkt.readFeature("' . $wkt . '",{dataProjection: '
@@ -135,31 +133,39 @@ if (count($spatialCoverages) > 0) {
         switch ($spatialCoverage['type']) {
             case 'Point':
             $point = explode(',', $points[0]);
-                $this->json['@graph'][0]['spatialCoverage']['geo'][] = [
+                $geo = [
                     '@type'=>'GeoCoordinates',
                     'latitude'=>$point[0],
                     'longitude'=>$point[1]
                 ];
                 break;
             case 'LineString':
-                $this->json['@graph'][0]['spatialCoverage']['geo'][] = [
+                $geo = [
                     '@type'=>'GeoShape',
                     'line'=>implode(' ', $points)
                 ];
                 break;
             case 'Area':
-                $this->json['@graph'][0]['spatialCoverage']['geo'][] = [
+                $geo = [
                     '@type'=>'GeoShape',
                     'box'=>min($lats).' '.min($lons).' '.max($lats).' '.max($lons)
                 ];
                 break;
             case 'Polygon':
-                $this->json['@graph'][0]['spatialCoverage']['geo'][] = [
+                $geo = [
                     '@type'=>'GeoShape',
                     'polygon'=>implode(' ', $points)
                 ];
                 break;
         }
+        $this->json['@graph'][0]['spatialCoverage'][] = [
+            '@type'=>'Place',
+            'geo'=>$geo,
+            'additionalProperty' => [
+                '@type' => ["PropertyValue", "dbpedia:Coordinate_reference_system"],
+                '@id' => "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+            ]
+        ];
     }
 
     echo "var view = new ol.View({
