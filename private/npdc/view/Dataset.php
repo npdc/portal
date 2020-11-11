@@ -605,7 +605,14 @@ class Dataset extends Base{
             $this->mid .= parent::parseTemplate('dataset_mid');
             $this->right = parent::parseTemplate('dataset_right');
             $this->bottom = parent::parseTemplate('foot_technical');
-            if (
+            if(NPDC_OUTPUT === 'json'){
+                header('Content-type: Application/json');
+                echo json_encode(
+                    $this->json['@graph'][0],
+                    JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
+                );
+                die();
+            } elseif (
                 \npdc\lib\Args::exists('uuid')
                 && \npdc\lib\Args::exists('uuidtype')
             ) {
