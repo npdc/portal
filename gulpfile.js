@@ -12,7 +12,7 @@ const gulp = require('gulp')
 ;
 
 function minifyJS(file) {
-	return gulp.src('private/npdc/javascript/' + file + '/*', {sourcemaps: true})
+	return gulp.src('src/javascript/' + file + '/*', {sourcemaps: true})
 		.pipe(uglify())
 		.pipe(concat(file + '.js'))
 		.pipe(rename({ extname: '.min.js' }))
@@ -20,7 +20,7 @@ function minifyJS(file) {
 }
 
 function scss2css(){
-	return gulp.src(['private/npdc/scss/*.scss', '!private/npdc/scss/[a-z]_*.scss'], {sourcemaps: true})
+	return gulp.src(['src/scss/*.scss', '!src/scss/[a-z]_*.scss'], {sourcemaps: true})
 		.pipe(sass({outputStyle: 'compressed'}))
 		.pipe(rename({extname: '.min.css'}))
 		.pipe(gulp.dest('web/css/npdc', {sourcemaps: '.'}));
@@ -51,7 +51,7 @@ function openChangelog(){
 function writeVersion(){
 	v = getPackageJsonVersion();
 	return file('version', v, {src: true})
-		.pipe(gulp.dest('private/npdc'));
+		.pipe(gulp.dest('src'));
 }
 function bumpVersion(lvl){
 	return gulp.src(['package.json', 'package-lock.json'])
@@ -76,13 +76,13 @@ gulp.task('build:js-npdc', function(){
 });
 
 gulp.task('watch', function(){
-	gulp.watch('private/npdc/javascript/editor/*.js', function(){
+	gulp.watch('src/javascript/editor/*.js', function(){
 		return minifyJS('editor');
 	});
-	gulp.watch('private/npdc/javascript/npdc/*.js', function(){
+	gulp.watch('src/javascript/npdc/*.js', function(){
 		return minifyJS('npdc');
 	});
-	gulp.watch('private/npdc/scss/*.scss', function(){
+	gulp.watch('src/scss/*.scss', function(){
 		return scss2css();
 	});
 });
