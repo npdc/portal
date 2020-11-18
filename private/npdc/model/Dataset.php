@@ -893,7 +893,7 @@ class Dataset extends Base{
             'date_start',
             'date_end',
             'quality',
-            'license',
+            'license_id',
             'access_constraints',
             'use_constraints',
             'dataset_progress',

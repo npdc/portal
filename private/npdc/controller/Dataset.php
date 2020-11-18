@@ -92,6 +92,9 @@ class Dataset extends Base{
             case 'coverage':
                 $this->alterFieldsCoverage();
                 break;
+            case 'usage':
+                $this->alterFieldsUsage();
+                break;
             case 'references':
                 $this->alterFieldsReferences();
                 break;
@@ -132,6 +135,15 @@ class Dataset extends Base{
             ->vocab_res_time_id->options = $this->vocab->getList('vocab_res_time');
     }
     
+    private function alterFieldsUsage(){
+        $model = new \npdc\model\License();
+        $this->formController->form->fields->license_id->options = [];
+        foreach($model->getList() as $license){
+            $this->formController->form->fields->license_id
+                ->options[$license['license_id']] = 
+                $license['license'] . ' | ' . $license['description'];
+        }
+    }
     private function alterFieldsReferences(){
         $this->formController->form->fields->links->fields
             ->type->options = $this->vocab->getList('vocab_url_type');
@@ -809,7 +821,7 @@ class Dataset extends Base{
                         [
                             'dataset_progress' => $this->getFormData('dataset_progress'),
                             'quality' => $this->getFormData('quality'),
-                            'license' => $this->getFormData('license'),
+                            'license_id' => $this->getFormData('license_id'),
                             'access_constraints' => $this->getFormData('access_constraints'),
                             'use_constraints' => $this->getFormData('use_constraints')
 
