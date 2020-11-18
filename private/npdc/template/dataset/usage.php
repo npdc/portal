@@ -39,7 +39,7 @@ if (substr($this->data['license'], 0, 2) == 'cc') {
             . '/dataset/'.$this->data['uuid'] . '#access',
         'Access: '
             . (
-                $this->data['acces_constraints']
+                $this->data['access_constraints']
                 ?? 'No known constraints'
             )
             .'; Use: '
