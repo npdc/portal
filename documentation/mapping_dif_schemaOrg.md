@@ -1,7 +1,7 @@
 For all JSON fields currently in use in the NPDC portal the corresponding GCMD DIF-10 field(s) is listed.
 
 JSON-LD | DIF-10 | Comment
-- | - | -
+---- | ---- | ----
 name | Entry_Title
 description | Summary->Abstract | Summary->Purpose could be included as well
 version | Entry_ID->Version
