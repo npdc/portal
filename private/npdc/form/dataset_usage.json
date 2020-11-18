@@ -3,7 +3,7 @@
 	"action": "dataset",
 	"fileupload": true,
 	"hint": "simple+group",
-		"fields": {
+	"fields": {
 		"dataset_progress": {
 			"type": "options",
 			"label": "Dataset progress",
@@ -25,14 +25,10 @@
 			"gcmd_url": "http://gcmd.nasa.gov/DocumentBuilder/defaultDif10/guide/quality.html",
 			"hasSuggestions": true
 		},
-		"license": {
+		"license_id": {
 			"type": "options",
 			"label": "License",
-			"options":{
-				"ccby": "CC-BY | Creative Commons Attribution",
-				"cc0": "CC0 | No rights reserved",
-				"other": "Other, please specifiy under access and use constraints"
-			},
+			"options":{},
 			"multiple": false,
 			"asList": true,
 			"hint": "This license is applicable for all files that are listed as public. You can still restrict access to specific files using the settings on the files tab."
