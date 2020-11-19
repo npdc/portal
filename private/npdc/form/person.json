@@ -148,11 +148,7 @@
 			"multiple": false,
 			"asList": true,
 			"hint": "Role is only used when an account is created with the mail address provided above",
-			"options": {
-				"user": "Logged in user",
-				"editor": "Editor",
-				"admin": "Administrator"
-			},
+			"options": {},
 			"default": "user",
 			"disabled": true
 		},

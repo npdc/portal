@@ -109,7 +109,7 @@ class Publication extends Base{
         if (\npdc\lib\Args::get('action') !== 'new') {
             $this->canEdit = isset($this->session->userId)
                 && (
-                    $this->session->userLevel === NPDC_ADMIN
+                    $this->session->userLevel >= NPDC_OFFICER
                     || $this->model->isEditor(
                         $publication,
                         $this->session->userId

@@ -76,7 +76,7 @@ class Base {
                 )
             ) {
                 $this->access = (
-                    $this->session->userLevel === NPDC_ADMIN 
+                    $this->session->userLevel >= NPDC_OFFICER 
                     || $this->model->isEditor(
                         \npdc\lib\Args::get('id'),
                         $this->session->userId
@@ -464,7 +464,7 @@ class Base {
                     $this->id !== 'new'
                     && $baseData['record_status'] === 'published'
                     && !(
-                        $this->session->userLevel >= NPDC_ADMIN
+                        $this->session->userLevel >= NPDC_OFFICER
                         && $_SESSION[$this->formId]['data']['rev'] === 'minor'
                     )
                 ) {

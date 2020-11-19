@@ -32,7 +32,7 @@ class Person extends Base{
     public function __construct($session, $controller) {
         $this->session = $session;
         $this->controller = $controller;
-        $this->canEdit = $session->userLevel >= NPDC_ADMIN;
+        $this->canEdit = $session->userLevel >= NPDC_OFFICER;
         $this->baseUrl = $controller->id;
         $this->takeover = $session->userLevel === NPDC_ADMIN;
         
@@ -72,16 +72,19 @@ class Person extends Base{
             $list2[] = $person;
         }
         $this->makePager($n, $page);
+        $cols = [
+            'name'=>'Name',
+            'organization_name'=>'Organization',
+            'report'=>'Content',
+            'user_level' =>'Role'
+        ];
+        if ($this->session->userLevel === NPDC_ADMIN) {
+            $cols['takeover'] = 'Rights';
+        }
         $this->mid = $this->displayTable(
             'person searchbox',
             $list2,
-            [
-                'name'=>'Name',
-                'organization_name'=>'Organization',
-                'report'=>'Content',
-                'user_level' =>'Role',
-                'takeover'=>'Rights'
-            ], 
+            $cols, 
             ['person', 'person_id']
         );
         $this->canEdit = false;
@@ -95,7 +98,7 @@ class Person extends Base{
      */
     public function showItem($id) {
         $this->canEdit = isset($this->session->userId) 
-            && ($this->session->userLevel === NPDC_ADMIN);
+            && ($this->session->userLevel >= NPDC_OFFICER);
         if (\npdc\lib\Args::get('action') === 'new') {
             $this->title = 'Add person';
         } else {

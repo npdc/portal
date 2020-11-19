@@ -20,7 +20,7 @@
 			"options": {
 				"Arctica": "Arctic",
 				"Antarctica": "Antarctic",
-				"Bipolar": "Bipolar"
+				"Bipolar": "Both"
 			}
 		},
 		"period": {

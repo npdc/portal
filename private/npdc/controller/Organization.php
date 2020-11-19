@@ -77,7 +77,7 @@ class Organization extends Base {
             unset($_SESSION[$this->formId]['data']);
             $this->formController = new \npdc\controller\Form($this->formId);
             $this->formController->getForm('organizationlist');
-            if ($this->session->userLevel >= NPDC_ADMIN) {
+            if ($this->session->userLevel >= NPDC_OFFICER) {
                 $this->formController->form->fields->country
                     ->options = $this->getCountries(false);
             } else {
@@ -90,7 +90,7 @@ class Organization extends Base {
             if (array_key_exists('formid', $_GET)) {
                 $this->formController->doCheck('get');
             }
-            if ($this->session->userLevel < NPDC_ADMIN) {
+            if ($this->session->userLevel < NPDC_OFFICER) {
                 $this->setFormData(
                     'country',
                     \npdc\config::$defaultOrganizationFilter['country']

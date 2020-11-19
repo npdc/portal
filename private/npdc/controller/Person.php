@@ -19,7 +19,7 @@ class Person extends Base {
      */
     public function __construct($session) {
         $this->session = $session;
-        if ($session->userLevel < NPDC_ADMIN) {
+        if ($session->userLevel < NPDC_OFFICER) {
             header('Location: '.BASE_URL.'/');
             die();
         }
@@ -49,6 +49,8 @@ class Person extends Base {
             $this->formController->getForm('person');
             $this->formController->form->fields->organization_id
                 ->options = $this->getOrganizations();
+            $this->formController->form->fields->user_level
+                ->options = $this->getUserLevels();
             $this->formController->form->fields->user_level->disabled = false;
             $this->formController->form->action = $_SERVER['REQUEST_URI'];
             $this->model = new \npdc\model\Person();
@@ -97,5 +99,14 @@ class Person extends Base {
                 $this->formController->doCheck('get');
             }
         }
+    }
+    
+    private function getUserLevels(){
+        $options = [];
+        $model = new \npdc\model\Person();
+        foreach ($model->getUserLevels(true) as $level) {
+            $options[$level['label']] = $level['name'];
+        }
+        return $options;
     }
 }

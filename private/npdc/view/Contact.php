@@ -18,7 +18,7 @@ class Contact extends Base{
 
     protected $session;
     protected $controller;
-    protected $userLevelAdd = NPDC_ADMIN;
+    protected $userLevelAdd = NPDC_OFFICER;
     
     /**
      * Constructor
@@ -160,7 +160,7 @@ class Contact extends Base{
                     );
                 }
             }
-            if ($this->session->userLevel >= NPDC_ADMIN) {
+            if ($this->session->userLevel >= NPDC_OFFICER) {
                 $this->canEdit = true;
             }
         }

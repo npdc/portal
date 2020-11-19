@@ -17,7 +17,7 @@ class Project extends Base{
     public $class;
     protected $session;
     protected $controller;
-    protected $userLevelAdd = NPDC_ADMIN;
+    protected $userLevelAdd = NPDC_OFFICER;
     public $canEdit = false;
     public $baseUrl;
     public $versions;
@@ -127,7 +127,7 @@ class Project extends Base{
         if (\npdc\lib\Args::get('action') !== 'new') {
             $this->canEdit = isset($this->session->userId)
                 && (
-                    $this->session->userLevel === NPDC_ADMIN
+                    $this->session->userLevel >= NPDC_OFFICER
                     || $this->model->isEditor($project, $this->session->userId)
                 );
             if (\npdc\lib\Args::exists('version')) {
