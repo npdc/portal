@@ -94,7 +94,8 @@ class Person extends Base {
             $this->formController->getForm('personlist');
             $this->formController->form->fields->organization
                 ->options = $this->getOrganizations('person');
-            
+            $this->formController->form->fields->userLevel
+                ->options = $this->getUserLevels();
             if (array_key_exists('formid', $_GET)) {
                 $this->formController->doCheck('get');
             }
