@@ -98,7 +98,7 @@ class Project extends Base{
                 ->expr('CASE WHEN record_status = [] THEN TRUE ELSE FALSE END {}', ['draft', 'hasDraft'])
             );
         if ($session->userLevel > NPDC_USER) {
-            if ($session->userLevel === NPDC_ADMIN) {
+            if ($session->userLevel >= NPDC_OFFICER) {
                 $q->field($q->dsql()->expr('TRUE {}', ['editor']))
                     ->where('project.project_version', 
                     $q->dsql()->table(['ds2'=>'project'])

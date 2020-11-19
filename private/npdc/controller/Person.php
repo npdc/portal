@@ -19,7 +19,7 @@ class Person extends Base {
      */
     public function __construct($session) {
         $this->session = $session;
-        if ($session->userLevel < NPDC_ADMIN) {
+        if ($session->userLevel < NPDC_OFFICER) {
             header('Location: '.BASE_URL.'/');
             die();
         }

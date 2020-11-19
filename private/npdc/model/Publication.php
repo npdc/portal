@@ -73,7 +73,7 @@ class Publication extends Base{
                 )
             );
         if ($session->userLevel > NPDC_USER) {
-            if ($session->userLevel === NPDC_ADMIN) {
+            if ($session->userLevel >= NPDC_OFFICER) {
                 $q->field(
                         $q->dsql()->expr('TRUE {}', ['editor'])
                     )

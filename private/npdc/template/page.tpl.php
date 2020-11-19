@@ -81,7 +81,7 @@
                     <div id="mid">
                         <?php
                         if (
-                            $view->canEdit ?? false
+                            ($view->canEdit ?? false)
                             && !\npdc\lib\Args::exists('action')
                         ) {
                             echo '<div id="tools">';

@@ -104,11 +104,14 @@ class Person{
      *
      * @return array levels
      */
-    public function getUserLevels() {
-        return $this->dsql->dsql()
+    public function getUserLevels($onlySelectable = false) {
+        $q =$this->dsql->dsql()
             ->table('user_level')
-            ->order('user_level_id')
-            ->get();
+            ->order('user_level_id');
+        if($onlySelectable) {
+            $q->where('selectable', 1);
+        }
+        return $q->get();
     }
     
     /**

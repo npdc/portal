@@ -17,6 +17,6 @@ INSERT INTO license (license,description,spdx_url,url,sort,access_constraints,us
 	 ('MIT','Open license for software','https://spdx.org/licenses/MIT.html','https://opensource.org/licenses/MIT',3,'Freely accessible','Freely usable as long as you keep the license with the code',1),
 	 ('Other','please specifiy under access and use constraints',NULL,NULL,999,NULL,NULL,NULL);
 
-ALTER TABLE c2_npdc.dataset ADD license_id int NULL;
-ALTER TABLE c2_npdc.dataset ADD CONSTRAINT dataset_x_license_fk FOREIGN KEY (license_id) REFERENCES c2_npdc.license(license_id) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE c2_npdc.dataset DROP COLUMN license;
+ALTER TABLE dataset ADD license_id int NULL;
+ALTER TABLE dataset ADD CONSTRAINT dataset_x_license_fk FOREIGN KEY (license_id) REFERENCES license(license_id) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE dataset DROP COLUMN license;

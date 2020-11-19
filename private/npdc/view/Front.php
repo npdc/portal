@@ -26,7 +26,7 @@ class Front{
      */
     public function __construct($session) {
         $this->session = $session;
-        $this->canEdit = $session->userLevel >= NPDC_ADMIN;
+        $this->canEdit = $session->userLevel >= NPDC_OFFICER;
         $this->baseUrl = 'home';
     }
     

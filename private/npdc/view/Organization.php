@@ -32,7 +32,7 @@ class Organization extends Base{
     public function __construct($session, $controller) {
         $this->session = $session;
         $this->controller = $controller;
-        $this->canEdit = $session->userLevel >= NPDC_ADMIN;
+        $this->canEdit = $session->userLevel >= NPDC_OFFICER;
         $this->baseUrl = $controller->id;
         
         $this->model = new \npdc\model\Organization();
@@ -66,7 +66,7 @@ class Organization extends Base{
         $this->mid = $this->displayTable(
             'organization' 
             . (
-                $this->session->userLevel >= NPDC_ADMIN
+                $this->session->userLevel >= NPDC_OFFICER
                 ? ' searchbox'
                 : ''
             ),
@@ -84,7 +84,7 @@ class Organization extends Base{
      */
     public function showItem($id) {
         $this->canEdit = isset($this->session->userId) 
-            && ($this->session->userLevel === NPDC_ADMIN);
+            && ($this->session->userLevel === NPDC_OFFICER);
         if (
             \npdc\lib\Args::get('action') === 'new'
             && $this->session->userLevel >= $this->controller->userLevelAdd

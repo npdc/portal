@@ -171,7 +171,7 @@ class Dataset extends Base{
             $this->canEdit = 
                 isset($this->session->userId) 
                 && (
-                    $this->session->userLevel === NPDC_ADMIN 
+                    $this->session->userLevel >= NPDC_OFFICER 
                     || $this->model->isEditor($dataset, $this->session->userId)
                 );
             $this->versions = $this->model->getVersions($dataset);

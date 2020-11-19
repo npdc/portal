@@ -42,6 +42,7 @@ class Request {
             case NPDC_ADMIN:
                 //no filter
                 break;
+            case NPDC_OFFICER:
             case NPDC_EDITOR:
                 $q->where($q->orExpr()
                     ->where('person_id', $person_id)
