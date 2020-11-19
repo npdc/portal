@@ -9,7 +9,7 @@ CREATE TABLE `license` (
   `use_constraints` varchar(255) DEFAULT NULL,
   `free_access` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`license_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 
 INSERT INTO license (license,description,spdx_url,url,sort,access_constraints,use_constraints,free_access) VALUES
 	 ('CC-BY','Creative Commons Attribution','https://spdx.org/licenses/CC-BY-4.0','https://creativecommons.org/licenses/by/4.0/',1,'Freely accessible','Free to use',1),
