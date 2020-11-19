@@ -1,3 +1,8 @@
+## v3.4.0 - 2020-11-19
+- A lot of work on the json ld section including documentation
+- Code formatting follows PSR 12
+- Many minor fixes
+
 ## v3.3.2 - 2020-10-05
 filter non numeric organization id
 

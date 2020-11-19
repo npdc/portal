@@ -13,7 +13,7 @@ keywords | ISO_Topic_Category
 " | Ancillary_Keywords
 " | Science_Keywords | Concattenated the fields with separator ' > '
 temporalCoverage | Temporal_Coverage->Range_DateTime | formatted as yyyy-mm-dd,<br/>start and end separated with '/'
-license | Access_Constraints & Usage_Constraints | If possible an url to a license (CC)
+license | Access_Constraints & Usage_Constraints | If possible an url to a license (both to spdx.org and possible other source)
 spatialCoverage | Spatial_Coverage | @type GeoShape
 " | Location | @type GeoCoordinates
 
