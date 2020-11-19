@@ -32,11 +32,7 @@
 			"label": "Only people with user level",
 			"multiple": true,
 			"required": false,
-			"options": {
-				"user": "Logged in user",
-				"editor": "Editor",
-				"admin": "Admin"
-			}
+			"options": {}
 		},
 		"hasPassword": {
 			"type": "options",
