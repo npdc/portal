@@ -1395,7 +1395,7 @@ class Form {
         global $session;
         $return = '<div class="submitspacer"></div>'
             . (
-                $session->userLevel >= NPDC_ADMIN
+                $session->userLevel >= NPDC_OFFICER
                 && (
                     $_SESSION[$this->formId]['data']['record_status'] === 'published'
                     || $_SESSION[$this->formId]['data']['rev'] === 'minor'
