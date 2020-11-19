@@ -22,21 +22,22 @@ include 'files.php';
 <p><?=$this->data['use_constraints']?></p>
 
 <?php
-$licenseModel = new \npdc\model\License();
-$license = $licenseModel->getById($this->data['license_id']);
+if (!empty($this->data['license_id'])) {
+    $licenseModel = new \npdc\model\License();
+    $license = $licenseModel->getById($this->data['license_id']);
 
-if (!empty($license['free_access'])){
-    $this->json['@graph'][0]['isAccessbileForFree'] = (bool)$license['free_access'];
-}
-$this->json['@graph'][0]['license'] = [];
-foreach (['spdx_url', 'url'] as $url) {
-    if (!empty($license[$url])) {
-        $this->json['@graph'][0]['license'][] = $license[$url];
+    if (!empty($license['free_access'])){
+        $this->json['@graph'][0]['isAccessbileForFree'] = (bool)$license['free_access'];
     }
-    
+    $this->json['@graph'][0]['license'] = [];
+    foreach (['spdx_url', 'url'] as $url) {
+        if (!empty($license[$url])) {
+            $this->json['@graph'][0]['license'][] = $license[$url];
+        }
+    }
 }
 
-if (empty($license['spdx_url'])) {
+if (empty($this->data['license_id']) || empty($license['spdx_url'])) {
     $this->json['@graph'][0]['license'][] = 
         $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . BASE_URL
             . '/dataset/'.$this->data['uuid'] . '#access';
