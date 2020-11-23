@@ -28,7 +28,7 @@ foreach ($locations as $location) {
         );
     echo '<li>' . $location_string . '</li>';
         $this->json['@graph'][0]['spatialCoverage'][] = [
-            '@type' => 'GeoCoordinates',
+            '@type' => 'Address',
             'address' => $location_string
         ];
 }
