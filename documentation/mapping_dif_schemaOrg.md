@@ -15,6 +15,6 @@ keywords | ISO_Topic_Category
 temporalCoverage | Temporal_Coverage->Range_DateTime | formatted as yyyy-mm-dd,<br/>start and end separated with '/'
 license | Access_Constraints & Usage_Constraints | If possible an url to a license (both to spdx.org and possible other source)
 spatialCoverage | Spatial_Coverage | @type GeoShape
-" | Location | @type GeoCoordinates
+" | Location | @type Address
 
 As the JSON-LD in the portal is expanded this list will be expanded as well.
