@@ -603,7 +603,23 @@ class Dataset extends Base{
     }
 
     private function loadFormReferences(){
-        $fields = ['id', 'type', 'title', 'description', 'mime', 'protocol'];
+        $fields = [
+            'id',
+            'type',
+            'title',
+            'creator',
+            'editor',
+            'series_name',
+            'release_date',
+            'release_place',
+            'publisher',
+            'version',
+            'issue_identification',
+            'presentation_form',
+            'other',
+            'online_resource',
+            'persistent_identifier_type',
+            'persistent_identifier_identifier'];
         foreach (
             $this->model->getLinks($this->id, $this->version) 
             as $linkid => $link
