@@ -619,7 +619,8 @@ class Dataset extends Base{
             'other',
             'online_resource',
             'persistent_identifier_type',
-            'persistent_identifier_identifier'];
+            'persistent_identifier_identifier',
+            'description'];
         foreach (
             $this->model->getLinks($this->id, $this->version) 
             as $linkid => $link
@@ -1831,11 +1832,12 @@ class Dataset extends Base{
                     $data['dataset_version_min'] = $this->version;
                     return $this->model->insertTemporalCoveragePeriod($data);
                 } else {
-                    return $this->model->updateTemporalCoveragePeriod(
+                    $this->model->updateTemporalCoveragePeriod(
                         $this->getFormData($rid . '_id'),
                         $data,
                         $this->version
                     );
+                    return $this->getFormData($rid . '_id');
                 }
                 break;
             case 'periodic':
@@ -1853,11 +1855,12 @@ class Dataset extends Base{
                     $data['dataset_version_min'] = $this->version;
                     return $this->model->insertTemporalCoverageCycle($data);
                 } else {
-                    return $this->model->updateTemporalCoverageCycle(
+                    $this->model->updateTemporalCoverageCycle(
                         $this->getFormData($rid . '_id'),
                         $data,
                         $this->version
                     );
+                    return $this->getFormData($rid . '_id');
                 }
                 break;
             case 'paleo':
@@ -1871,7 +1874,8 @@ class Dataset extends Base{
                     $data['dataset_version_min'] = $this->version;
                     $id = $this->model->insertTemporalCoveragePaleo($data);
                 } else {
-                    $id = $this->model->updateTemporalCoveragePaleo(
+                    $id = $this->getFormData($rid . '_id');
+                    $this->model->updateTemporalCoveragePaleo(
                         $this->getFormData($rid . '_id'),
                         $data,
                         $this->version
