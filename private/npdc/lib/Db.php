@@ -128,6 +128,14 @@ class Db {
         } elseif (is_numeric($record)) {
             $q->where($table . '_id', $record);
         } else {
+            if(NPDC_DEV){
+                $backtrace = debug_backtrace();
+                foreach ($backtrace as $n=>$row){
+                    echo '#'.str_pad($n, 2) . '&nbsp;'. $row['class'].$row['type'].$row['function'].'('.json_encode($row['args']).'</pre>) called in '.$row['file'] . ':' . $row['line'] . '<br/>';
+                }
+            } else {
+                http_response_code(500);
+            }
             die('Illegal record selector');
         }
         return $q;
