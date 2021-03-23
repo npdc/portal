@@ -1540,6 +1540,26 @@ class Dataset extends Base{
     }
 
     public function deleteFile($dataset_id, $version, $current) {
-        $this->_deleteSub('dataset_file', $dataset_id, $version, $current);
+        $q = $this->dsql->dsql()
+            ->table('dataset_file')
+            ->where('dataset_id', $dataset_id)
+            ->where('dataset_version_max IS NULL');
+        if (
+            !empty($current)
+            && !(
+                count($current) === 1
+                && empty($current[0])
+            )
+        ) {
+            $q->where('file_id', 'NOT', $current);
+        }
+        $q->set('dataset_version_max', $version)->update();
+        $this->dsql->dsql()->table('dataset_file')
+            ->where(
+                $this->dsql->expr(
+                    'dataset_version_min > dataset_version_max'
+                )
+            )
+            ->delete();
     }
 }

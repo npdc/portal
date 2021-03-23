@@ -481,7 +481,7 @@ class Dataset extends Base{
             ) {
                 $base_id = 'temporal_coverage_' . $rowid . '_paleo_' . $srid;
                 $this->setFormData(
-                    $base_id . ' _id',
+                    $base_id . '_id',
                     $sr['temporal_coverage_paleo_id']
                 );
                 $this->setFormData($base_id . '_start', $sr['start_value']);
@@ -1416,7 +1416,7 @@ class Dataset extends Base{
                         $data,
                         $this->version
                     );
-                    $keyword[] = is_bool($return) ? $keyword_id : $return;
+                    $keyword[] = is_bool($return) || empty($return) ? $keyword_id : $return;
                 }
                 $sort++;
             }
@@ -1926,11 +1926,12 @@ class Dataset extends Base{
                     $data['dataset_version_min'] = $this->version;
                     return $this->model->insertTemporalCoverageAncillary($data);
                 } else {
-                    return $this->model->updateTemporalCoverageAncillary(
+                    $this->model->updateTemporalCoverageAncillary(
                         $this->getFormData($rid . '_id'),
                         $data,
                         $this->version
                     );
+                    return $this->getFormData($rid . '_id');
                 }
                 break;
         }
@@ -1970,9 +1971,7 @@ class Dataset extends Base{
                 $data['dataset_version_min'] = $this->version;
                 $resolutions[] = $this->model->insertResolution($data);
             } else {
-                $nr = substr($key, strlen($loopId));
-                $record_id = $this->getFormData('resolution_id' . $nr);
-
+                $record_id = $this->getFormData('resolution_' . $serial . '_id');
                 $return = $this->model->updateResolution(
                     $record_id,
                     $data,
