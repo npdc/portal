@@ -1536,7 +1536,8 @@ class Dataset extends Base{
     }
 
     public function insertFile($data) {
-        return \npdc\lib\Db::insert('dataset_file', $data, true);
+        \npdc\lib\Db::insert('dataset_file', $data);
+        return $data['file_id'];
     }
 
     public function deleteFile($dataset_id, $version, $current) {
