@@ -27,7 +27,7 @@ class Npp_theme {
     public function getList() {
         return $this->dsql->dsql()
             ->table('npp_theme')
-            ->order('npp_theme_id')
+            ->order('year DESC, npp_id')
             ->get();
     }
 

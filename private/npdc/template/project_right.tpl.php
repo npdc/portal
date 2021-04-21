@@ -18,12 +18,26 @@ if (!is_null($this->data['nwo_project_id'])) {
     echo '<section class="inline"><h4>NWO project id</h4><p>'
         . $this->data['nwo_project_id'] . '</p></section>';
 }
+$themeModel = new \npdc\model\Npp_theme();
 if (!is_null($this->data['npp_theme_id'])) {
     $themeModel = new \npdc\model\Npp_theme();
-    echo '<section class="inline"><h4>Theme</h4><p>'
+    echo '<section class="inline"><h4>Main theme</h4><p>'
         . $themeModel->getById(
             $this->data['npp_theme_id']
         )['theme_en']
+        . '</p></section>';
+}
+
+$secondaryThemes = $this->model->getSecondaryThemes($this->data['project_id'], $this->data['project_version']);
+if(count($secondaryThemes) > 0){
+    echo '<section><h4>Additional theme(s)</h4><p>';
+    $themes = [];
+    foreach($secondaryThemes as $theme){
+        $themes[] = $themeModel->getById(
+            $theme['npp_theme_id']
+        )['theme_en'];
+    }
+    echo implode(', ', $themes)
         . '</p></section>';
 }
 

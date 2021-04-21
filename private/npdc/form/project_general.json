@@ -32,11 +32,19 @@
 		},
 		"npp_theme_id": {
 			"type": "options",
-			"label": "NPP Theme",
+			"label": "Main NPP Theme",
 			"options": {},
 			"required": false,
 			"asList": true,
 			"multiple":false
+		},
+		"secondary_npp_theme_id": {
+			"type": "options",
+			"label": "Additional NPP Theme(s)",
+			"options": {},
+			"required": false,
+			"asList": true,
+			"multiple":true
 		},
 		"period": {
 			"type": "date",
