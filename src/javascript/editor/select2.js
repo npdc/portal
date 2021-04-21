@@ -1,7 +1,7 @@
 
 function makeSelect2(element){
 	placeholder = '';
-	$(element).children('option').each(function(){
+    $(element).children('option').each(function(){
 		if($(this).val() === 'please_select') {
 			placeholder = $(this).html();
 			$(this).after('<option></option>');
@@ -16,7 +16,11 @@ function makeSelect2(element){
 		builder.containerCssClass = "error";
 	}
 	$(element).siblings('.no_select2').remove();
-	builder.placeholder = 'Type here to select one or more options';
+    if(typeof $(element).attr('multiple') === 'undefined'){
+        builder.placeholder = 'Type here to select an option';
+    } else {
+        builder.placeholder = 'Type here to select one or more options';
+    }
 	if($(element).attr('data-ajax-url') !== undefined) {
 		builder.ajax = {
 			url: $(element).attr('data-ajax-url'),
