@@ -314,6 +314,13 @@ class Project extends Base{
             ->get();
     }
     
+    public function getSecondaryThemes($id, $version){
+        return $this->dsql->dsql()
+            ->table('project_theme')
+            ->where(\npdc\lib\Db::selectVersion('project', $id, $version))
+            ->get();
+    }
+    
     /**
      * function for the search page
      * @param string $string
@@ -378,6 +385,24 @@ class Project extends Base{
         return \npdc\lib\Db::insert('project_publication', $data);
     }
 
+    public function insertSecondaryTheme($theme, $project_id, $version){
+        return \npdc\lib\Db::insert('project_theme', [
+            'npp_theme_id' => $theme,
+            'project_id' => $project_id,
+            'project_version_min' => $version
+        ]);
+    }
+    
+    public function deleteSecondaryTheme($theme, $project, $version){
+        $this->dsql->dsql()
+            ->table('project_theme')
+            ->where('npp_theme_id', $theme)
+            ->where('project_id', $project)
+            ->where('project_version_max IS NULL')
+            ->set('project_version_max', $version)
+            ->update();
+    }
+    
     public function deletePublication(
         $project_id,
         $version,

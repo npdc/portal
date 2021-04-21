@@ -60,6 +60,8 @@ class Project extends Base{
     protected function alterFields() {
         $this->formController->form->fields->npp_theme_id
             ->options = $this->getNppThemes();
+        $this->formController->form->fields->secondary_npp_theme_id
+            ->options = $this->getNppThemes();
         $this->formController->form->fields->program_id
             ->options = $this->getPrograms();
         $this->formController->form->fields->people->fields->organization_id
@@ -119,6 +121,14 @@ class Project extends Base{
                 'publications',
                 $this->model->getPublications($this->id, $this->version)
             );
+            $secondaryThemes = [];
+            foreach($this->model->getsecondaryThemes($this->id, $this->version) as $theme){
+                $secondaryThemes[] = $theme['npp_theme_id'];
+            }
+            $this->setFormData(
+                'secondary_npp_theme_id',
+                $secondaryThemes
+            );
         }
     }
 
@@ -126,7 +136,7 @@ class Project extends Base{
         $model = new \npdc\model\Npp_theme();
         $return = [];
         foreach ($model->getList() as $theme) {
-            $return[$theme['npp_theme_id']] = $theme['npp_theme_id'].'. '.$theme['theme_en'];
+            $return['Themes ' .$theme['year']][$theme['npp_theme_id']] = $theme['npp_id'].'. '.$theme['theme_en'];
         }
         return $return;
     }
@@ -158,6 +168,7 @@ class Project extends Base{
         $this->saveLinks();
         $this->savePublications();
         $this->saveDatasets();
+        $this->savesecondaryThemes();
 
         $saved = $this->savePeople();
 
@@ -172,6 +183,31 @@ class Project extends Base{
             );
             echo 'redirect';
             die();
+        }
+    }
+    
+    /**
+     * Save secondary themes
+     * 
+     * @return void
+     */
+    private function savesecondaryThemes(){
+        $currentThemes = $this->model->getsecondaryThemes($this->id, $this->version);
+        $current = [];
+        foreach($currentThemes as $theme){
+            $current[] = $theme['npp_theme_id'];
+        }
+        $old = array_diff($current, $this->getFormData('secondary_npp_theme_id'));
+        $new = array_diff($this->getFormData('secondary_npp_theme_id'), $current);
+        if(count($old) > 0){
+            foreach($old as $id){
+                $this->model->deleteSecondaryTheme($id, $this->id, $this->version-1);
+            }
+        }
+        if(count($new) > 0){
+            foreach($new as $id){
+                $this->model->insertSecondaryTheme($id, $this->id, $this->version);
+            }
         }
     }
     
