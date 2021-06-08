@@ -35,7 +35,9 @@ class Mailer {
             $this->mail->isSMTP();
             $this->mail->Host = \npdc\config::$mail['host'];
             $this->mail->Port = \npdc\config::$mail['port'];
-            $this->mail->SMTPSecure = \npdc\config::$mail['SMTPSecure'];
+            if (isset(\npdc\config::$mail['SMTPSecure'])) {
+                $this->mail->SMTPSecure = \npdc\config::$mail['SMTPSecure'];
+            }
             if (\npdc\config::$mail['user'] ?? false) {
                 $this->mail->SMTPAuth = true;
                 $this->mail->Username = \npdc\config::$mail['user'];
