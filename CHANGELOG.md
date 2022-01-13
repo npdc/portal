@@ -1,3 +1,6 @@
+## v3.4.1 - 2022-01-13
+Enable proper json formatting
+
 ## v3.4.0 - 2020-11-19
 - A lot of work on the json ld section including documentation
 - Code formatting follows PSR 12
