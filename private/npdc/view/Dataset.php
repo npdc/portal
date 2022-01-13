@@ -16,6 +16,8 @@ class Dataset extends Base{
     public $baseUrl;
     public $versions;
     public $allowDuplicate = true;
+    
+    private $jsonFlags = JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES;
 
     /**
      * Constructor
@@ -154,7 +156,7 @@ class Dataset extends Base{
                         '<script id="schemaorg" type="application/ld+json">'
                         . json_encode(
                             $this->json,
-                            JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
+                            $this->jsonFlags
                         )
                         . '</script>';
         }
@@ -609,7 +611,7 @@ class Dataset extends Base{
                 header('Content-type: Application/json');
                 echo json_encode(
                     $this->json['@graph'][0],
-                    JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
+                    $this->jsonFlags
                 );
                 die();
             } elseif (
@@ -620,7 +622,7 @@ class Dataset extends Base{
                     . '/ld+json">'
                     . json_encode(
                         $this->json,
-                        JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
+                        $this->jsonFlags
                     )
                     . '</script>';
             }
