@@ -20,7 +20,7 @@ class Mailer {
      */
     public function __construct($fromName = null, $replyMail = null) {
         $this->mail = new \PHPMailer\PHPMailer\PHPMailer();
-        $this->IsSMTP();
+        $this->mail->IsSMTP();
         $this->mail->setFrom(
             \npdc\config::$mail['from'],
             is_null($fromName) 
