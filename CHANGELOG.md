@@ -1,3 +1,6 @@
+## v3.5.0 - 2022-12-19
+Add email notifications to registration workflow
+
 ## v3.4.1 - 2022-01-13
 Enable proper json formatting
 
