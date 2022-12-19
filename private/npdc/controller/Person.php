@@ -72,10 +72,17 @@ class Person extends Base {
                             $id = $this->model->insertPerson($data);
                         } else {
                             $id = \npdc\lib\Args::get('id');
+                            $cur = $this->model->getById($id);
                             $this->model->updatePerson(
                                 $data,
                                 \npdc\lib\Args::get('id')
                             );
+                            if($cur['user_level'] != $data['user_level'] && $data['user_level'] == 'editor'){
+                                $mail = new \npdc\lib\Mailer(null, \npdc\config::$mail['contact']);
+                                $mail->to($data['mail']);
+                                $mail->fromTemplate('becomes_editor', $data);
+                                $mail->send();
+                            }
                         }
                         $_SESSION['notice'] = 'The changes have been saved';
                         header('Location: '.BASE_URL.'/person/'.$id);
