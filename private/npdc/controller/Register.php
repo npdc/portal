@@ -157,9 +157,25 @@ class Register extends Login{
             }
             $this->model->usePasswordNew(\npdc\lib\Args::get('loginid'));
             $_SESSION['notice'] = 'Your account has been created';
+            $account = $this->model->getById($person_id);
             $perms = $this->model->getUserLevelDetails(
-                $this->model->getById($person_id)['user_level']
+                $account['user_level']
             );
+            $data = [
+                'name' => $account['name'],
+                'mail'=>$account['mail'],
+                'user_level'=>$perms['name'],
+                'permissions'=>$perms['description_plain']
+            ];
+            $usermail = new \npdc\lib\Mailer(null, \npdc\config::$mail['contact']);
+            $usermail->to($data['mail']);
+            $usermail->fromTemplate('welcome', $data);
+            $usermail->send();
+            
+            $adminmail = new \npdc\lib\Mailer();
+            $adminmail->to(\npdc\config::$mail['contact']);
+            $adminmail->fromTemplate('admin_new_account', $data);
+            $adminmail->send();
             $_SESSION['notice'] .= '<section class="inline">Your user level is '
                 . $perms['name'] . $perms['description'];
             unset($_SESSION[$this->formId]);

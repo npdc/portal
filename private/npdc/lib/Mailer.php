@@ -88,10 +88,21 @@ class Mailer {
      * @return void
      */
     public function send() {
-			if (!NPDC_DEV) {
-					echo 'Starting to send';
-
-var_dump(            $this->mail->send());
+        if (!NPDC_DEV) {
+            $this->mail->send();
         }
+    }
+    
+    /**
+     * Setup email from template
+     *
+     * @param string $template template file
+     * @param array $data data to use in template
+     * @return void
+     */
+    public function fromTemplate($template, $data){
+        include 'template/email/' . $template . '.tpl.php';
+        $this->subject($subject);
+        $this->text($text);
     }
 }

@@ -138,14 +138,18 @@ class Person{
         foreach ($rows as $row) {
             $description .= $row['description']."\r\n";
         }
-        $description = '<ul>'
+        $description_formatted = '<ul>'
             .str_replace(
                 ['- ', "\r\n"],
                 ['<li>', '</li>'],
                 $description
             )
             .'</ul>';
-        return ['name'=>$row['name'], 'description'=>$description];
+        return [
+            'name'=>$row['name'],
+            'description'=>$description_formatted,
+            'description_plain' => $description
+        ];
     }
     
     /**
