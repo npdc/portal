@@ -16,6 +16,11 @@ class Push {
      * @return void
      */
     public static function send($title, $url, $text=null) {
+        $mastodon = new Mastodon(
+            \npdc\config::$mastodon['host'],
+            \npdc\config::$mastodon['token']
+        );
+        $mastodon->post(strip_tags($title) . ' ' . $url);
         if (!NPDC_DEV && !empty(\npdc\config::$ifttt['token'])) {
             $events = is_array(\npdc\config::$ifttt['event']) 
                 ? \npdc\config::$ifttt['event']

@@ -1,3 +1,7 @@
+## v3.6.0 - 2022-12-22
+Add mastodon push (additional to twitter push)
+Upgrade deps
+
 ## v3.5.0 - 2022-12-19
 Add email notifications to registration workflow
 
