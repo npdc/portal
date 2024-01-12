@@ -66,30 +66,6 @@ We recommend to run cron daily (we suggest early morning local time) to work wit
 - When changing your css also increase version number in `private/npdc/version` (recommended to append with something to keep versioning in line with git repo), this can be done by running the gulp taks `bump:test`.
 - In `private/npdc/template` Copy `footer.example.php` to `footer.tpl.php` and edit to your liking
 
-## Linking with Twitter
-- Create account at IFTTT or use an existing one
-  - Since an IFTTT account can only be linked to one Twitter account you can only use your current account if it has been linked to the Twitter you want to use here or not linked to Twitter yet
-- Generate webhook key
-  - Go to https://ifttt.com/maker_webhooks and click settings (or connect)
-  - NEVER click edit connection after setup, this resets the token
-  - Copy the token (URL part after `/use/`) and store in earlier created `config.php` as `$ifttt['token']`
-- Create applet at https://ifttt.com/my_applets
-  - Click 'New Applet'
-  - Click +this:
-    - Search for Webhooks
-    - Click 'Receive a web request'
-    - Event Name: any string you like, also store this string in `config.php` as `$ifttt['event']`, suggested value: `npdc`
-    - Click Create trigger
-  - Click +that:
-    - Search for Twitter
-    - Click 'Post a tweet' (you will be guided to connecting to Twitter if not yet connected)
-    - Set Tweet Text, recommended value: `{{Value1}} {{Value2}}`
-      - `{{Value1}}` is type and name of new content, eg: '[New Content] Example content'
-      - `{{Value2}}` is url to content, eg: 'https://example.com/content/1'
-      - So message send to twitter will be '[New Content] Example content https://example.com/content/1' in this example
-    - Click Create action
-  - Click Finish
-
 ## Front blocks
 The blocks on the front page are filled from different sources
 - The news table in the database (currently no interface to add news)

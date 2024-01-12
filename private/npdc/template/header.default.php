@@ -49,16 +49,7 @@
                 . '/login\')">Log in</a>';
         }
         ?></span>
-        <?php
-        if (
-            \npdc\config::$social['twitter_in_head']
-            && !empty(\npdc\config::$social['twitter']
-        )) {
-            echo '<span id="social"> - <a href="https://twitter.com/'
-                . \npdc\config::$social['twitter']
-                . '"><span class="icon-twitter"></span></a></span>';
-        }
-        ?></div>
+        </div>
     </div>
     <div id="title">
         <a href="<?=BASE_URL?>/">

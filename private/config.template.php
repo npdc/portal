@@ -65,12 +65,6 @@ class config {
         ]
     ];
     
-    
-    public static $social =[
-        'twitter'=>'',//twitter name without @
-        'twitter_in_head'=>true //display link to twitter in top of each page
-    ];
-
     //path to location for data files and download zips, recommend outside webroot, no trailing slash
     public static $fileDir = DOCROOT_APP.'/../data';//dir to store data
     public static $downloadDir = DOCROOT_APP.'/../download';//dir to store downloadable files
@@ -102,11 +96,6 @@ class config {
     
     public static $reviewBeforePublish = false;
     
-    //used to send a message to twitter
-    public static $ifttt = [
-        'token'=>'',
-        'event'=>''
-    ];
     
     public static $loginEnabled = true;//UPDATE message below BEFORE taking site OFFLINE
     public static $loginDisabledMessage = 'Login is disabled because of maintenance. We expect to be finished Friday 12 May at 11 am.';
