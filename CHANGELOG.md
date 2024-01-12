@@ -1,3 +1,6 @@
+## v3.7.0 - 2024-01-12
+Removed all twitter push code
+
 ## v3.6.0 - 2022-12-22
 Add mastodon push (additional to twitter push)
 Upgrade deps
